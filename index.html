@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Складський журнал</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px;
+      padding-bottom: 90px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0;
+      text-align: center;
+    }
+    h2 {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+    .topbar {
+      display: grid;
+      grid-template-columns: 46px 1fr 46px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      position: sticky;
+      top: 0;
+      background: #0f172a;
+      z-index: 5;
+      padding: 8px 0;
+    }
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #fff;
+      font-size: 22px;
+      padding: 0;
+      margin: 0;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.22);
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #cbd5e1;
+      margin: 10px 0 5px;
+    }
+    input, select, button, textarea {
+      width: 100%;
+      padding: 11px;
+      border-radius: 12px;
+      border: 1px solid #475569;
+      font-size: 16px;
+    }
+    input, select, textarea {
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      font-weight: 800;
+      border: none;
+      margin-top: 8px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    button.secondary { background: #475569; }
+    button.danger { background: #dc2626; }
+    button.green { background: #16a34a; }
+    button.yellow { background: #ca8a04; }
+    button.smallbtn {
+      padding: 8px 9px;
+      font-size: 13px;
+      border-radius: 10px;
+      margin-top: 0;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .item {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .name {
+      font-weight: 900;
+      font-size: 16px;
+    }
+    .total {
+      font-size: 17px;
+      font-weight: 900;
+      color: #93c5fd;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .small {
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-top: 6px;
+      white-space: pre-wrap;
+      line-height: 1.35;
+    }
+    .entry-row {
+      border-top: 1px solid #334155;
+      margin-top: 9px;
+      padding-top: 9px;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .actions3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hidden { display: none !important; }
+    .drawer-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 20;
+    }
+    .drawer {
+      position: fixed;
+      left: -292px;
+      top: 0;
+      width: 285px;
+      height: 100%;
+      background: #020617;
+      border-right: 1px solid #334155;
+      z-index: 21;
+      padding: 16px;
+      transition: .2s;
+      overflow: auto;
+    }
+    .drawer.open { left: 0; }
+    .drawer-bg.open { display: block; }
+    .menu-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+    .menu-btn {
+      background: #1e293b;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #334155;
+      color: #e2e8f0;
+      font-size: 12px;
+      margin: 2px 4px 2px 0;
+    }
+    .date-line {
+      text-align: center;
+      color: #cbd5e1;
+      margin-top: -6px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .empty {
+      color: #cbd5e1;
+      text-align: center;
+      padding: 18px 8px;
+    }
+    .toast {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 18px;
+      background: #16a34a;
+      color: white;
+      padding: 12px;
+      border-radius: 14px;
+      text-align: center;
+      font-weight: 800;
+      z-index: 40;
+      display: none;
+    }
+    .edit-box {
+      background: #020617;
+      border: 1px solid #475569;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    @media print {
+      body { background: white; color: black; padding: 0; }
+      .no-print, .topbar, .drawer, .drawer-bg, .actions, .actions3, .edit-box, .toast { display: none !important; }
+      .card, .item { background: white; color: black; border: 1px solid #ddd; box-shadow: none; }
+      .small, label, .date-line { color: black; }
+      .total { color: black; }
+    }
+  </style>
+</head>
+<body>
+  <div class="drawer-bg" id="drawerBg"></div>
+  <aside class="drawer" id="drawer">
+    <div class="menu-title">Меню</div>
+    <button class="menu-btn" data-page="today">📦 Поточний підрахунок</button>
+    <button class="menu-btn" data-page="history">🕘 Історія</button>
+    <button class="menu-btn" data-page="products">🏷️ Найменування</button>
+    <button class="menu-btn" data-page="settings">⚙️ Налаштування</button>
+  </aside>
+
+  <div class="topbar no-print">
+    <button class="icon-btn" id="openMenuBtn">☰</button>
+    <h1>Складський журнал</h1>
+    <button class="icon-btn" id="newDayBtn">＋</button>
+  </div>
+
+  <div id="pageToday">
+    <div class="date-line" id="activeDateLabel"></div>
+
+    <div class="card no-print">
+      <h2 id="formTitle">Додати до підрахунку</h2>
+
+      <input type="hidden" id="editingEntryId" />
+
+      <label>Позиція</label>
+      <select id="productSelect"></select>
+
+      <div class="row">
+        <div>
+          <label>Піддонів</label>
+          <input id="pallets" type="number" inputmode="decimal" placeholder="5" />
+        </div>
+        <div>
+          <label>Кг на піддон</label>
+          <input id="kgPerPallet" type="number" inputmode="decimal" placeholder="675" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Кількість, шт</label>
+          <input id="pieces" type="number" inputmode="decimal" placeholder="10" />
+        </div>
+        <div>
+          <label>Кг за 1 шт</label>
+          <input id="kgPerPiece" type="number" inputmode="decimal" placeholder="25" />
+        </div>
+      </div>
+
+      <label>Або просто кг</label>
+      <input id="directKg" type="number" inputmode="decimal" placeholder="200" />
+
+      <label>Коментар</label>
+      <input id="comment" placeholder="Наприклад: неповний піддон" />
+
+      <button class="green" id="saveEntryBtn">Додати</button>
+      <button class="secondary" id="cancelEditBtn">Очистити / скасувати</button>
+    </div>
+
+    <div class="card no-print">
+      <button id="copyReportBtn">Скопіювати звіт</button>
+      <button id="downloadTxtBtn">Завантажити TXT-звіт</button>
+      <button id="printBtn">Друк / PDF</button>
+      <button class="danger" id="clearDayBtn">Очистити поточний день</button>
+    </div>
+
+    <div id="todayList"></div>
+  </div>
+
+  <div id="pageHistory" class="hidden">
+    <div class="card">
+      <h2>Історія підрахунків</h2>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <div id="pageProducts" class="hidden">
+    <div class="card">
+      <h2 id="productFormTitle">Найменування</h2>
+      <input type="hidden" id="editingProductId" />
+
+      <label>Назва</label>
+      <input id="newProductName" placeholder="Наприклад: Молоко 26%" />
+
+      <label>Типова вага піддона, кг</label>
+      <input id="newDefaultPalletKg" type="number" inputmode="decimal" placeholder="675" />
+
+      <label>Типова вага штуки/мішка, кг</label>
+      <input id="newDefaultPieceKg" type="number" inputmode="decimal" placeholder="25" />
+
+      <button class="green" id="saveProductBtn">Зберегти найменування</button>
+      <button class="secondary" id="cancelProductBtn">Очистити / скасувати</button>
+    </div>
+
+    <div id="productsList"></div>
+  </div>
+
+  <div id="pageSettings" class="hidden">
+    <div class="card">
+      <h2>Налаштування</h2>
+      <p class="small">
+        Дані зберігаються в пам'яті цього браузера. Для надійності періодично роби резервну копію.
+      </p>
+      <button id="copyBackupBtn">Скопіювати резервну копію</button>
+      <button id="downloadBackupBtn">Завантажити backup.json</button>
+
+      <label>Імпорт резервної копії</label>
+      <textarea id="importData" rows="5" placeholder="Встав сюди JSON"></textarea>
+      <button class="yellow" id="importBtn">Імпортувати</button>
+      <button class="danger" id="resetBtn">Повне очищення програми</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const STORAGE_KEY = "warehouseJournalV3";
+
+  let state = loadState();
+
+  function loadState() {
+    const v3 = localStorage.getItem(STORAGE_KEY);
+    if (v3) return JSON.parse(v3);
+
+    const v2 = localStorage.getItem("warehouseJournalV2");
+    if (v2) {
+      const old = JSON.parse(v2);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(old));
+      return old;
+    }
+
+    return { products: [], days: [], activeDayId: null };
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    render();
+  }
+
+  function saveOnly() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function todayISO() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function nowText() {
+    return new Date().toLocaleString("uk-UA");
+  }
+
+  function niceDate(iso) {
+    if (!iso || !iso.includes("-")) return iso || "";
+    const [y, m, d] = iso.split("-");
+    return `${d}.${m}.${y}`;
+  }
+
+  function formatKg(value) {
+    return Number(value || 0).toLocaleString("uk-UA", { maximumFractionDigits: 2 }) + " кг";
+  }
+
+  function toast(text, danger = false) {
+    const el = document.getElementById("toast");
+    el.textContent = text;
+    el.style.background = danger ? "#dc2626" : "#16a34a";
+    el.style.display = "block";
+    setTimeout(() => el.style.display = "none", 1800);
+  }
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, s => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[s]));
+  }
+
+  function ensureActiveDay() {
+    if (!state.activeDayId || !state.days.some(d => d.id === state.activeDayId)) {
+      const id = uid();
+      state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
+      state.activeDayId = id;
+      saveOnly();
+    }
+  }
+
+  function getActiveDay() {
+    ensureActiveDay();
+    return state.days.find(d => d.id === state.activeDayId);
+  }
+
+  function openMenu() {
+    document.getElementById("drawer").classList.add("open");
+    document.getElementById("drawerBg").classList.add("open");
+  }
+
+  function closeMenu() {
+    document.getElementById("drawer").classList.remove("open");
+    document.getElementById("drawerBg").classList.remove("open");
+  }
+
+  function showPage(page) {
+    closeMenu();
+    document.getElementById("pageToday").classList.add("hidden");
+    document.getElementById("pageHistory").classList.add("hidden");
+    document.getElementById("pageProducts").classList.add("hidden");
+    document.getElementById("pageSettings").classList.add("hidden");
+
+    if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
+    if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
+    if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
+    if (page === "settings") document.getElementById("pageSettings").classList.remove("hidden");
+
+    render();
+  }
+
+  function createNewDay() {
+    const id = uid();
+    state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
+    state.activeDayId = id;
+    clearEntryForm();
+    save();
+    showPage("today");
+    toast("Створено новий підрахунок");
+  }
+
+  function selectDay(id) {
+    state.activeDayId = id;
+    clearEntryForm();
+    save();
+    showPage("today");
+  }
+
+  function recalcEntry(e) {
+    e.totalKg = 0;
+    e.parts = [];
+
+    if (Number(e.pallets) > 0 && Number(e.kgPerPallet) > 0) {
+      const kg = Number(e.pallets) * Number(e.kgPerPallet);
+      e.totalKg += kg;
+      e.parts.push(`${e.pallets} підд. × ${e.kgPerPallet} кг = ${kg} кг`);
+    }
+
+    if (Number(e.pieces) > 0 && Number(e.kgPerPiece) > 0) {
+      const kg = Number(e.pieces) * Number(e.kgPerPiece);
+      e.totalKg += kg;
+      e.parts.push(`${e.pieces} шт × ${e.kgPerPiece} кг = ${kg} кг`);
+    }
+
+    if (Number(e.directKg) > 0) {
+      e.totalKg += Number(e.directKg);
+      e.parts.push(`${e.directKg} кг окремо`);
+    }
+  }
+
+  function saveEntry() {
+    const productId = document.getElementById("productSelect").value;
+    const product = state.products.find(p => p.id === productId);
+    if (!product) {
+      toast("Спочатку додай найменування", true);
+      return;
+    }
+
+    const editingId = document.getElementById("editingEntryId").value;
+
+    const entryData = {
+      productId,
+      productName: product.name,
+      pallets: Number(document.getElementById("pallets").value || 0),
+      kgPerPallet: Number(document.getElementById("kgPerPallet").value || 0),
+      pieces: Number(document.getElementById("pieces").value || 0),
+      kgPerPiece: Number(document.getElementById("kgPerPiece").value || 0),
+      directKg: Number(document.getElementById("directKg").value || 0),
+      comment: document.getElementById("comment").value.trim()
+    };
+
+    recalcEntry(entryData);
+
+    if (entryData.totalKg <= 0) {
+      toast("Введи вагу або кількість", true);
+      return;
+    }
+
+    const day = getActiveDay();
+
+    if (editingId) {
+      const old = day.entries.find(e => e.id === editingId);
+      if (!old) {
+        toast("Запис не знайдено", true);
+        clearEntryForm();
+        return;
+      }
+      Object.assign(old, entryData, { editedAt: nowText() });
+      toast("Запис оновлено");
+    } else {
+      day.entries.push({
+        id: uid(),
+        createdAt: nowText(),
+        ...entryData
+      });
+      toast("Додано");
+    }
+
+    clearEntryForm();
+    save();
+  }
+
+  function startEditEntry(id) {
+    const day = getActiveDay();
+    const e = day.entries.find(x => x.id === id);
+    if (!e) return;
+
+    document.getElementById("editingEntryId").value = e.id;
+    document.getElementById("productSelect").value = e.productId;
+    document.getElementById("pallets").value = e.pallets || "";
+    document.getElementById("kgPerPallet").value = e.kgPerPallet || "";
+    document.getElementById("pieces").value = e.pieces || "";
+    document.getElementById("kgPerPiece").value = e.kgPerPiece || "";
+    document.getElementById("directKg").value = e.directKg || "";
+    document.getElementById("comment").value = e.comment || "";
+    document.getElementById("formTitle").textContent = "Редагувати запис";
+    document.getElementById("saveEntryBtn").textContent = "Зберегти зміни";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function deleteEntry(id) {
+    const day = getActiveDay();
+    const before = day.entries.length;
+    day.entries = day.entries.filter(e => e.id !== id);
+
+    if (day.entries.length === before) {
+      toast("Не знайшов запис", true);
+      return;
+    }
+
+    if (document.getElementById("editingEntryId").value === id) clearEntryForm();
+
+    save();
+    toast("Запис видалено");
+  }
+
+  function clearEntryForm() {
+    document.getElementById("editingEntryId").value = "";
+    document.getElementById("pallets").value = "";
+    document.getElementById("kgPerPallet").value = "";
+    document.getElementById("pieces").value = "";
+    document.getElementById("kgPerPiece").value = "";
+    document.getElementById("directKg").value = "";
+    document.getElementById("comment").value = "";
+    document.getElementById("formTitle").textContent = "Додати до підрахунку";
+    document.getElementById("saveEntryBtn").textContent = "Додати";
+    fillDefaultWeights();
+  }
+
+  function fillDefaultWeights() {
+    const product = state.products.find(p => p.id === document.getElementById("productSelect").value);
+    if (!product) return;
+    if (product.defaultPalletKg) document.getElementById("kgPerPallet").value = product.defaultPalletKg;
+    if (product.defaultPieceKg) document.getElementById("kgPerPiece").value = product.defaultPieceKg;
+  }
+
+  function clearCurrentDay() {
+    const day = getActiveDay();
+    day.entries = [];
+    clearEntryForm();
+    save();
+    toast("Поточний день очищено");
+  }
+
+  function saveProduct() {
+    const editingId = document.getElementById("editingProductId").value;
+    const name = document.getElementById("newProductName").value.trim();
+    const defaultPalletKg = Number(document.getElementById("newDefaultPalletKg").value || 0);
+    const defaultPieceKg = Number(document.getElementById("newDefaultPieceKg").value || 0);
+
+    if (!name) {
+      toast("Введи назву", true);
+      return;
+    }
+
+    const duplicate = state.products.find(p => p.name.toLowerCase() === name.toLowerCase() && p.id !== editingId);
+    if (duplicate) {
+      toast("Таке найменування вже є", true);
+      return;
+    }
+
+    if (editingId) {
+      const p = state.products.find(x => x.id === editingId);
+      if (!p) return;
+      p.name = name;
+      p.defaultPalletKg = defaultPalletKg;
+      p.defaultPieceKg = defaultPieceKg;
+
+      state.days.forEach(day => {
+        day.entries.forEach(e => {
+          if (e.productId === editingId) e.productName = name;
+        });
+      });
+
+      toast("Найменування оновлено");
+    } else {
+      state.products.push({ id: uid(), name, defaultPalletKg, defaultPieceKg });
+      toast("Найменування додано");
+    }
+
+    clearProductForm();
+    save();
+  }
+
+  function startEditProduct(id) {
+    const p = state.products.find(x => x.id === id);
+    if (!p) return;
+
+    document.getElementById("editingProductId").value = p.id;
+    document.getElementById("newProductName").value = p.name;
+    document.getElementById("newDefaultPalletKg").value = p.defaultPalletKg || "";
+    document.getElementById("newDefaultPieceKg").value = p.defaultPieceKg || "";
+    document.getElementById("productFormTitle").textContent = "Редагувати найменування";
+    document.getElementById("saveProductBtn").textContent = "Зберегти зміни";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function deleteProduct(id) {
+    state.products = state.products.filter(p => p.id !== id);
+    if (document.getElementById("editingProductId").value === id) clearProductForm();
+    save();
+    toast("Найменування видалено");
+  }
+
+  function clearProductForm() {
+    document.getElementById("editingProductId").value = "";
+    document.getElementById("newProductName").value = "";
+    document.getElementById("newDefaultPalletKg").value = "";
+    document.getElementById("newDefaultPieceKg").value = "";
+    document.getElementById("productFormTitle").textContent = "Найменування";
+    document.getElementById("saveProductBtn").textContent = "Зберегти найменування";
+  }
+
+  function groupEntries(day) {
+    const map = {};
+    day.entries.forEach(e => {
+      const key = e.productId || e.productName;
+      if (!map[key]) map[key] = { name: e.productName, totalKg: 0, entries: [] };
+      map[key].totalKg += Number(e.totalKg || 0);
+      map[key].entries.push(e);
+    });
+    return Object.values(map);
+  }
+
+  function makeReport() {
+    const day = getActiveDay();
+    let text = `Складський підрахунок\nПідрахунок від ${niceDate(day.date)}\n\n`;
+
+    const groups = groupEntries(day);
+    if (!groups.length) return text + "Записів немає.";
+
+    groups.forEach((g, i) => {
+      text += `${i + 1}. ${g.name}: ${formatKg(g.totalKg)}\n`;
+      g.entries.forEach(e => {
+        const line = e.parts && e.parts.length ? e.parts.join(" + ") : "";
+        text += `   - ${line}`;
+        if (e.comment) text += ` (${e.comment})`;
+        text += "\n";
+      });
+      text += "\n";
+    });
+
+    return text.trim();
+  }
+
+  async function copyReport() {
+    const text = makeReport();
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Звіт скопійовано");
+    } catch (err) {
+      document.getElementById("importData").value = text;
+      showPage("settings");
+      toast("Скопіюй звіт з поля вручну", true);
+    }
+  }
+
+  function downloadFile(filename, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+  }
+
+  function downloadTextReport() {
+    downloadFile(`sklad-${getActiveDay().date}.txt`, makeReport(), "text/plain;charset=utf-8");
+    toast("TXT-звіт створено");
+  }
+
+  function copyBackup() {
+    const text = JSON.stringify(state, null, 2);
+    navigator.clipboard.writeText(text).then(() => {
+      toast("Backup скопійовано");
+    }).catch(() => {
+      document.getElementById("importData").value = text;
+      toast("Backup вставлено в поле", true);
+    });
+  }
+
+  function downloadBackup() {
+    downloadFile(`sklad-backup-${todayISO()}.json`, JSON.stringify(state, null, 2), "application/json;charset=utf-8");
+    toast("Backup-файл створено");
+  }
+
+  function importBackup() {
+    const raw = document.getElementById("importData").value.trim();
+    if (!raw) {
+      toast("Встав JSON", true);
+      return;
+    }
+    try {
+      const data = JSON.parse(raw);
+      if (!Array.isArray(data.products) || !Array.isArray(data.days)) throw new Error("bad");
+      state = data;
+      ensureActiveDay();
+      save();
+      toast("Імпортовано");
+      showPage("today");
+    } catch (e) {
+      toast("Помилка імпорту JSON", true);
+    }
+  }
+
+  function resetApp() {
+    state = { products: [], days: [], activeDayId: null };
+    localStorage.removeItem("warehouseJournalV2");
+    save();
+    clearEntryForm();
+    clearProductForm();
+    toast("Програму очищено");
+    showPage("today");
+  }
+
+  function renderSelect() {
+    const select = document.getElementById("productSelect");
+    const selected = select.value;
+    select.innerHTML = "";
+
+    if (!state.products.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Додай найменування в меню";
+      select.appendChild(option);
+      return;
+    }
+
+    state.products.forEach(p => {
+      const option = document.createElement("option");
+      option.value = p.id;
+      option.textContent = p.name;
+      select.appendChild(option);
+    });
+
+    if (state.products.some(p => p.id === selected)) select.value = selected;
+  }
+
+  function renderToday() {
+    const day = getActiveDay();
+    document.getElementById("activeDateLabel").textContent = `Поточний підрахунок: ${niceDate(day.date)}`;
+
+    const list = document.getElementById("todayList");
+    list.innerHTML = "";
+
+    const groups = groupEntries(day);
+    if (!groups.length) {
+      list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
+      return;
+    }
+
+    groups.forEach(g => {
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const entriesHtml = g.entries.map(e => `
+        <div class="entry-row">
+          <div class="small">• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}\n${escapeHtml(e.createdAt || "")}${e.editedAt ? " / ред. " + escapeHtml(e.editedAt) : ""}</div>
+          <div class="actions">
+            <button class="smallbtn yellow" data-action="edit-entry" data-id="${e.id}">Редагувати</button>
+            <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
+          </div>
+        </div>
+      `).join("");
+
+      div.innerHTML = `
+        <div class="item-top">
+          <div class="name">${escapeHtml(g.name)}</div>
+          <div class="total">${formatKg(g.totalKg)}</div>
+        </div>
+        ${entriesHtml}
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  function renderProducts() {
+    const list = document.getElementById("productsList");
+    list.innerHTML = "";
+
+    if (!state.products.length) {
+      list.innerHTML = `<div class="card empty">Найменувань ще немає.</div>`;
+      return;
+    }
+
+    state.products.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div class="item-top">
+          <div>
+            <div class="name">${escapeHtml(p.name)}</div>
+            <div class="small">
+              ${p.defaultPalletKg ? `<span class="pill">піддон ${p.defaultPalletKg} кг</span>` : ""}
+              ${p.defaultPieceKg ? `<span class="pill">штука ${p.defaultPieceKg} кг</span>` : ""}
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="smallbtn yellow" data-action="edit-product" data-id="${p.id}">Редагувати</button>
+          <button class="smallbtn danger" data-action="delete-product" data-id="${p.id}">Видалити</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function renderHistory() {
+    const list = document.getElementById("historyList");
+    list.innerHTML = "";
+
+    if (!state.days.length) {
+      list.innerHTML = `<div class="empty">Історії ще немає.</div>`;
+      return;
+    }
+
+    state.days.forEach(day => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div class="item-top">
+          <div>
+            <div class="name">${niceDate(day.date)}</div>
+            <div class="small">Записів: ${day.entries.length}\nСтворено: ${escapeHtml(day.createdAt)}</div>
+          </div>
+        </div>
+        <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function render() {
+    ensureActiveDay();
+    renderSelect();
+    renderToday();
+    renderProducts();
+    renderHistory();
+  }
+
+  document.addEventListener("click", function (event) {
+    const el = event.target.closest("button");
+    if (!el) return;
+
+    const action = el.dataset.action;
+    const id = el.dataset.id;
+
+    if (action === "edit-entry") startEditEntry(id);
+    if (action === "delete-entry") deleteEntry(id);
+    if (action === "edit-product") startEditProduct(id);
+    if (action === "delete-product") deleteProduct(id);
+    if (action === "select-day") selectDay(id);
+  });
+
+  document.getElementById("openMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("drawerBg").addEventListener("click", closeMenu);
+  document.getElementById("newDayBtn").addEventListener("click", createNewDay);
+
+  document.querySelectorAll(".menu-btn").forEach(btn => {
+    btn.addEventListener("click", () => showPage(btn.dataset.page));
+  });
+
+  document.getElementById("saveEntryBtn").addEventListener("click", saveEntry);
+  document.getElementById("cancelEditBtn").addEventListener("click", clearEntryForm);
+  document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
+
+  document.getElementById("copyReportBtn").addEventListener("click", copyReport);
+  document.getElementById("downloadTxtBtn").addEventListener("click", downloadTextReport);
+  document.getElementById("printBtn").addEventListener("click", () => window.print());
+  document.getElementById("clearDayBtn").addEventListener("click", clearCurrentDay);
+
+  document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
+  document.getElementById("cancelProductBtn").addEventListener("click", clearProductForm);
+
+  document.getElementById("copyBackupBtn").addEventListener("click", copyBackup);
+  document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
+  document.getElementById("importBtn").addEventListener("click", importBackup);
+  document.getElementById("resetBtn").addEventListener("click", resetApp);
+
+  render();
+})();
+</script>
+</body>
+</html>
