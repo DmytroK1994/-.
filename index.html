@@ -203,22 +203,37 @@
       font-size: 14px;
       font-weight: 800;
     }
-    .search-results {
-      margin-top: 8px;
-      display: grid;
-      gap: 6px;
+    .combo-wrap {
+      position: relative;
     }
-    .result-btn {
+    .combo-list {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 6px);
+      max-height: 230px;
+      overflow-y: auto;
+      background: #020617;
+      border: 1px solid #475569;
+      border-radius: 12px;
+      z-index: 30;
+      box-shadow: 0 12px 28px rgba(0,0,0,.45);
+      padding: 6px;
+    }
+    .combo-option {
       width: 100%;
       text-align: left;
-      padding: 9px 10px;
-      border-radius: 10px;
-      background: #334155;
+      padding: 10px;
+      border-radius: 9px;
+      background: transparent;
       color: #f8fafc;
-      border: 1px solid #475569;
-      font-size: 14px;
-      font-weight: 800;
+      border: none;
+      font-size: 15px;
+      font-weight: 750;
       margin-top: 0;
+    }
+    .combo-option:active {
+      background: #334155;
     }
     .date-line {
       text-align: center;
@@ -289,11 +304,13 @@
       <input type="hidden" id="editingEntryId" />
 
       <label>Пошук позиції</label>
-      <input id="productSearch" placeholder="Почни вводити назву: молоко, какао, жир..." autocomplete="off" />
+      <div class="combo-wrap">
+        <input id="productSearch" placeholder="Почни вводити назву: молоко, какао, жир..." autocomplete="off" />
+        <div id="productSearchResults" class="combo-list hidden"></div>
+      </div>
 
       <select id="productSelect" class="hidden-select"></select>
       <div id="selectedProductLabel" class="selected-product">Позицію не вибрано</div>
-      <div id="productSearchResults" class="search-results"></div>
 
       <div class="row">
         <div>
@@ -846,18 +863,20 @@
     showPage("today");
   }
 
-  function renderSelect() {
+  function renderSelect(showDropdown = false) {
     const select = document.getElementById("productSelect");
     const results = document.getElementById("productSearchResults");
     const label = document.getElementById("selectedProductLabel");
-    const search = (document.getElementById("productSearch")?.value || "").trim().toLowerCase();
-    const selected = select.value;
+    const searchInput = document.getElementById("productSearch");
+    const search = (searchInput?.value || "").trim().toLowerCase();
+    const currentSelected = select.value;
 
     select.innerHTML = "";
     results.innerHTML = "";
 
     if (!state.products.length) {
       label.textContent = "Спочатку додай найменування в меню";
+      results.classList.add("hidden");
       return;
     }
 
@@ -868,35 +887,42 @@
       select.appendChild(option);
     });
 
+    if (currentSelected && state.products.some(p => p.id === currentSelected)) {
+      select.value = currentSelected;
+    } else if (!select.value) {
+      select.value = "";
+    }
+
+    const selectedProduct = state.products.find(p => p.id === select.value);
+    label.textContent = selectedProduct ? "Вибрано: " + selectedProduct.name : "Позицію не вибрано";
+
     let productsToShow = state.products;
 
     if (search) {
       productsToShow = state.products.filter(p => p.name.toLowerCase().includes(search));
     }
 
-    if (!selected || !state.products.some(p => p.id === selected)) {
-      select.value = productsToShow[0]?.id || state.products[0].id;
-    }
-
-    const selectedProduct = state.products.find(p => p.id === select.value);
-    label.textContent = selectedProduct ? "Вибрано: " + selectedProduct.name : "Позицію не вибрано";
-
-    if (!productsToShow.length) {
-      results.innerHTML = '<div class="small">Нічого не знайдено</div>';
+    if (!showDropdown || !search) {
+      results.classList.add("hidden");
       return;
     }
 
-    productsToShow.slice(0, 8).forEach(p => {
+    results.classList.remove("hidden");
+
+    if (!productsToShow.length) {
+      results.innerHTML = '<div class="small" style="padding:10px;">Нічого не знайдено</div>';
+      return;
+    }
+
+    productsToShow.slice(0, 30).forEach(p => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "result-btn";
+      btn.className = "combo-option";
       btn.textContent = p.name;
       btn.dataset.action = "select-product";
       btn.dataset.id = p.id;
       results.appendChild(btn);
     });
-
-    fillDefaultWeights();
   }
 
   function renderToday() {
@@ -1010,6 +1036,7 @@
     document.getElementById("productSearch").value = p.name;
     document.getElementById("selectedProductLabel").textContent = "Вибрано: " + p.name;
     document.getElementById("productSearchResults").innerHTML = "";
+    document.getElementById("productSearchResults").classList.add("hidden");
     fillDefaultWeights();
   }
 
@@ -1057,7 +1084,8 @@
   document.getElementById("saveEntryBtn").addEventListener("click", saveEntry);
   document.getElementById("cancelEditBtn").addEventListener("click", clearEntryForm);
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
-  document.getElementById("productSearch").addEventListener("input", renderSelect);
+  document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
+  document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
 
   document.getElementById("copyReportBtn").addEventListener("click", copyReport);
   document.getElementById("downloadTxtBtn").addEventListener("click", downloadTextReport);
@@ -1073,6 +1101,15 @@
   document.getElementById("resetBtn").addEventListener("click", resetApp);
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("updateAppMenuBtn").addEventListener("click", updateApp);
+
+  document.addEventListener("click", function (event) {
+    const combo = event.target.closest(".combo-wrap");
+    const isOption = event.target.closest("[data-action='select-product']");
+    if (!combo && !isOption) {
+      const results = document.getElementById("productSearchResults");
+      if (results) results.classList.add("hidden");
+    }
+  });
 
   render();
 })();
