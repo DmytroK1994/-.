@@ -232,7 +232,8 @@
       font-weight: 750;
       margin-top: 0;
     }
-    .combo-option:active {
+    .combo-option:active,
+    .combo-option:hover {
       background: #334155;
     }
     .date-line {
@@ -269,11 +270,97 @@
       margin-top: 10px;
     }
     @media print {
-      body { background: white; color: black; padding: 0; }
-      .no-print, .topbar, .drawer, .drawer-bg, .actions, .actions3, .edit-box, .toast { display: none !important; }
-      .card, .item { background: white; color: black; border: 1px solid #ddd; box-shadow: none; }
-      .small, label, .date-line { color: black; }
-      .total { color: black; }
+      @page {
+        size: A4;
+        margin: 10mm;
+      }
+
+      body {
+        background: white;
+        color: black;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      .no-print,
+      .topbar,
+      .drawer,
+      .drawer-bg,
+      .actions,
+      .actions3,
+      .edit-box,
+      .toast,
+      .card.no-print,
+      #pageHistory,
+      #pageProducts,
+      #pageSettings,
+      #pageAbout {
+        display: none !important;
+      }
+
+      .date-line {
+        color: black;
+        font-size: 12px;
+        text-align: left;
+        margin: 0 0 6px;
+      }
+
+      .card,
+      .item {
+        background: white;
+        color: black;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+      }
+
+      .item {
+        border-bottom: 1px solid #ddd;
+        padding: 3px 0;
+        page-break-inside: avoid;
+      }
+
+      .item-top {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: start;
+      }
+
+      .name {
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .total {
+        color: black;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .entry-row {
+        border-top: none;
+        margin-top: 1px;
+        padding-top: 0;
+      }
+
+      .small {
+        color: black;
+        font-size: 10px;
+        line-height: 1.15;
+        margin-top: 1px;
+        white-space: pre-wrap;
+      }
+
+      h1, h2 {
+        font-size: 13px;
+        margin: 0 0 5px;
+      }
     }
   </style>
 </head>
@@ -379,6 +466,13 @@
       <button class="secondary" id="cancelProductBtn">Очистити / скасувати</button>
     </div>
 
+    <div class="card">
+      <h2>Масове додавання</h2>
+      <p class="small">Один рядок = одне найменування. Дублікати буде пропущено.</p>
+      <textarea id="bulkProductsText" rows="7" placeholder="Молоко 26%&#10;Молоко 0%&#10;Какао&#10;Арахіс"></textarea>
+      <button class="green" id="bulkAddProductsBtn">Додати список</button>
+    </div>
+
     <div id="productsList"></div>
   </div>
 
@@ -402,7 +496,7 @@
     <div class="card">
       <h2>Інформація про додаток</h2>
       <p class="small">
-        <b>Складський журнал v4</b><br><br>
+        <b>Складський журнал v6</b><br><br>
         Мобільний додаток для обліку сировини, піддонів, штук та складських залишків.
         Дані зберігаються локально в браузері цього телефону.
       </p>
@@ -415,7 +509,9 @@
         • окреме додавання кг;<br>
         • історія по датах;<br>
         • копіювання звіту;<br>
-        • резервна копія JSON.
+        • резервна копія JSON;<br>
+        • масове додавання найменувань;<br>
+        • компактний друк/PDF на А4.
       </div>
       <button id="updateAppBtn">Оновити додаток</button>
     </div>
@@ -725,6 +821,7 @@
       toast("Найменування додано");
     }
 
+    state.products = sortedProducts();
     clearProductForm();
     save();
   }
@@ -863,6 +960,15 @@
     showPage("today");
   }
 
+  function sortedProducts() {
+    return [...state.products].sort((a, b) =>
+      String(a.name || "").localeCompare(String(b.name || ""), "uk", {
+        sensitivity: "base",
+        numeric: true
+      })
+    );
+  }
+
   function renderSelect(showDropdown = false) {
     const select = document.getElementById("productSelect");
     const results = document.getElementById("productSearchResults");
@@ -870,39 +976,45 @@
     const searchInput = document.getElementById("productSearch");
     const search = (searchInput?.value || "").trim().toLowerCase();
     const currentSelected = select.value;
+    const productsSorted = sortedProducts();
 
     select.innerHTML = "";
     results.innerHTML = "";
 
-    if (!state.products.length) {
+    if (!productsSorted.length) {
       label.textContent = "Спочатку додай найменування в меню";
       results.classList.add("hidden");
       return;
     }
 
-    state.products.forEach(p => {
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "";
+    select.appendChild(emptyOption);
+
+    productsSorted.forEach(p => {
       const option = document.createElement("option");
       option.value = p.id;
       option.textContent = p.name;
       select.appendChild(option);
     });
 
-    if (currentSelected && state.products.some(p => p.id === currentSelected)) {
+    if (currentSelected && productsSorted.some(p => p.id === currentSelected)) {
       select.value = currentSelected;
-    } else if (!select.value) {
+    } else {
       select.value = "";
     }
 
-    const selectedProduct = state.products.find(p => p.id === select.value);
+    const selectedProduct = productsSorted.find(p => p.id === select.value);
     label.textContent = selectedProduct ? "Вибрано: " + selectedProduct.name : "Позицію не вибрано";
 
-    let productsToShow = state.products;
+    let productsToShow = productsSorted;
 
     if (search) {
-      productsToShow = state.products.filter(p => p.name.toLowerCase().includes(search));
+      productsToShow = productsSorted.filter(p => p.name.toLowerCase().includes(search));
     }
 
-    if (!showDropdown || !search) {
+    if (!showDropdown) {
       results.classList.add("hidden");
       return;
     }
@@ -914,7 +1026,7 @@
       return;
     }
 
-    productsToShow.slice(0, 30).forEach(p => {
+    productsToShow.slice(0, 80).forEach(p => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "combo-option";
@@ -964,6 +1076,45 @@
     });
   }
 
+  function bulkAddProducts() {
+    const textarea = document.getElementById("bulkProductsText");
+    const raw = textarea.value.trim();
+
+    if (!raw) {
+      toast("Встав список найменувань", true);
+      return;
+    }
+
+    const lines = raw
+      .split(/\r?\n/)
+      .map(x => x.trim())
+      .filter(Boolean);
+
+    let added = 0;
+    let skipped = 0;
+
+    lines.forEach(name => {
+      const exists = state.products.some(p => p.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        skipped++;
+        return;
+      }
+
+      state.products.push({
+        id: uid(),
+        name,
+        defaultPalletKg: 0,
+        defaultPieceKg: 0
+      });
+      added++;
+    });
+
+    state.products = sortedProducts();
+    textarea.value = "";
+    save();
+    toast(`Додано: ${added}. Пропущено: ${skipped}`);
+  }
+
   function renderProducts() {
     const list = document.getElementById("productsList");
     list.innerHTML = "";
@@ -973,7 +1124,7 @@
       return;
     }
 
-    state.products.forEach(p => {
+    sortedProducts().forEach(p => {
       const div = document.createElement("div");
       div.className = "item";
       div.innerHTML = `
@@ -1094,6 +1245,7 @@
 
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
   document.getElementById("cancelProductBtn").addEventListener("click", clearProductForm);
+  document.getElementById("bulkAddProductsBtn").addEventListener("click", bulkAddProducts);
 
   document.getElementById("copyBackupBtn").addEventListener("click", copyBackup);
   document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
