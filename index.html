@@ -295,6 +295,19 @@
       padding: 12px;
       margin-top: 10px;
     }
+    .history-checkline {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+    .history-checkbox {
+      width: 22px;
+      height: 22px;
+      margin-top: 4px;
+      accent-color: #2563eb;
+    }
+
     @media print {
       @page {
         size: A4;
@@ -471,6 +484,15 @@
   <div id="pageHistory" class="hidden">
     <div class="card">
       <h2>Історія підрахунків</h2>
+      <div class="actions3 no-print" id="historyNormalActions">
+        <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
+        <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
+        <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
+      </div>
+      <div class="actions no-print hidden" id="historySelectActions">
+        <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
+        <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
+      </div>
       <div id="historyList"></div>
     </div>
   </div>
@@ -523,7 +545,7 @@
     <div class="card">
       <h2>Інформація про додаток</h2>
       <p class="small">
-        <b>Складський журнал v7</b><br><br>
+        <b>Складський журнал v8</b><br><br>
         Мобільний додаток для обліку сировини, піддонів, штук та складських залишків.
         Дані зберігаються локально в браузері цього телефону.
       </p>
@@ -553,6 +575,8 @@
   const STORAGE_KEY = "warehouseJournalV3";
 
   let state = loadState();
+  let historySelectMode = false;
+  let selectedHistoryIds = new Set();
 
   function loadState() {
     const v3 = localStorage.getItem(STORAGE_KEY);
@@ -673,6 +697,95 @@
     clearEntryForm();
     save();
     showPage("today");
+  }
+
+  function deleteDay(id) {
+    const day = state.days.find(d => d.id === id);
+    if (!day) {
+      toast("Підрахунок не знайдено", true);
+      return;
+    }
+
+    if (!confirm(`Видалити підрахунок від ${niceDate(day.date)}?`)) return;
+
+    state.days = state.days.filter(d => d.id !== id);
+    selectedHistoryIds.delete(id);
+
+    if (state.activeDayId === id) {
+      state.activeDayId = state.days[0]?.id || null;
+    }
+
+    ensureActiveDay();
+    save();
+    toast("Історію видалено");
+  }
+
+  function toggleHistorySelectMode(enabled) {
+    historySelectMode = enabled;
+    selectedHistoryIds.clear();
+    renderHistory();
+  }
+
+  function toggleHistorySelected(id, checked) {
+    if (checked) selectedHistoryIds.add(id);
+    else selectedHistoryIds.delete(id);
+  }
+
+  function deleteSelectedHistory() {
+    const ids = Array.from(selectedHistoryIds);
+    if (!ids.length) {
+      toast("Нічого не вибрано", true);
+      return;
+    }
+
+    if (!confirm(`Видалити вибрані підрахунки: ${ids.length}?`)) return;
+
+    state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
+    if (!state.days.some(d => d.id === state.activeDayId)) {
+      state.activeDayId = state.days[0]?.id || null;
+    }
+
+    selectedHistoryIds.clear();
+    historySelectMode = false;
+    ensureActiveDay();
+    save();
+    toast("Вибрану історію видалено");
+  }
+
+  function deleteEmptyDays() {
+    const count = state.days.filter(d => !d.entries.length).length;
+    if (!count) {
+      toast("Порожніх підрахунків немає");
+      return;
+    }
+
+    if (!confirm(`Видалити порожні підрахунки: ${count}?`)) return;
+
+    state.days = state.days.filter(d => d.entries.length > 0);
+    if (!state.days.some(d => d.id === state.activeDayId)) {
+      state.activeDayId = state.days[0]?.id || null;
+    }
+
+    ensureActiveDay();
+    save();
+    toast("Порожню історію видалено");
+  }
+
+  function deleteAllHistory() {
+    if (!state.days.length) {
+      toast("Історії ще немає", true);
+      return;
+    }
+
+    if (!confirm("Повністю очистити всю історію підрахунків?")) return;
+
+    state.days = [];
+    state.activeDayId = null;
+    selectedHistoryIds.clear();
+    historySelectMode = false;
+    ensureActiveDay();
+    save();
+    toast("Історію очищено");
   }
 
   function recalcEntry(e) {
@@ -1193,7 +1306,15 @@
 
   function renderHistory() {
     const list = document.getElementById("historyList");
+    const normalActions = document.getElementById("historyNormalActions");
+    const selectActions = document.getElementById("historySelectActions");
+
     list.innerHTML = "";
+
+    if (normalActions && selectActions) {
+      normalActions.classList.toggle("hidden", historySelectMode);
+      selectActions.classList.toggle("hidden", !historySelectMode);
+    }
 
     if (!state.days.length) {
       list.innerHTML = `<div class="empty">Історії ще немає.</div>`;
@@ -1203,14 +1324,31 @@
     state.days.forEach(day => {
       const div = document.createElement("div");
       div.className = "item";
+
+      const checkboxHtml = historySelectMode
+        ? `<input class="history-checkbox" type="checkbox" data-action="toggle-history-day" data-id="${day.id}" ${selectedHistoryIds.has(day.id) ? "checked" : ""} />`
+        : "";
+
+      const buttonsHtml = historySelectMode
+        ? ""
+        : `<div class="actions">
+            <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
+            <button class="smallbtn danger" data-action="delete-day" data-id="${day.id}">Видалити</button>
+          </div>`;
+
       div.innerHTML = `
-        <div class="item-top">
+        <div class="history-checkline">
+          ${checkboxHtml}
           <div>
-            <div class="name">${niceDate(day.date)}</div>
-            <div class="small">Записів: ${day.entries.length}\nСтворено: ${escapeHtml(day.createdAt)}</div>
+            <div class="item-top">
+              <div>
+                <div class="name">${niceDate(day.date)}</div>
+                <div class="small">Записів: ${day.entries.length}\nСтворено: ${escapeHtml(day.createdAt)}</div>
+              </div>
+            </div>
+            ${buttonsHtml}
           </div>
         </div>
-        <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
       `;
       list.appendChild(div);
     });
@@ -1267,12 +1405,24 @@
     if (action === "edit-product") startEditProduct(id);
     if (action === "delete-product") deleteProduct(id);
     if (action === "select-day") selectDay(id);
+    if (action === "delete-day") deleteDay(id);
     if (action === "select-product") selectProduct(id);
+  });
+
+  document.addEventListener("change", function (event) {
+    const el = event.target.closest("[data-action='toggle-history-day']");
+    if (!el) return;
+    toggleHistorySelected(el.dataset.id, el.checked);
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("drawerBg").addEventListener("click", closeMenu);
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
+  document.getElementById("toggleHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(true));
+  document.getElementById("cancelHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(false));
+  document.getElementById("deleteSelectedHistoryBtn").addEventListener("click", deleteSelectedHistory);
+  document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
+  document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
 
   document.querySelectorAll(".menu-btn").forEach(btn => {
     btn.addEventListener("click", () => showPage(btn.dataset.page));
