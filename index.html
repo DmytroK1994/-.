@@ -206,32 +206,6 @@
     .combo-wrap {
       position: relative;
     }
-    .combo-wrap input {
-      padding-right: 46px;
-    }
-    .clear-search-btn {
-      position: absolute;
-      right: 7px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      border: 1px solid #475569;
-      background: #334155;
-      color: #f8fafc;
-      font-size: 20px;
-      line-height: 1;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 31;
-    }
-    .clear-search-btn:active {
-      background: #475569;
-    }
     .combo-list {
       position: absolute;
       left: 0;
@@ -258,8 +232,7 @@
       font-weight: 750;
       margin-top: 0;
     }
-    .combo-option:active,
-    .combo-option:hover {
+    .combo-option:active {
       background: #334155;
     }
     .date-line {
@@ -295,19 +268,6 @@
       padding: 12px;
       margin-top: 10px;
     }
-    .history-checkline {
-      display: grid;
-      grid-template-columns: 30px 1fr;
-      gap: 8px;
-      align-items: start;
-    }
-    .history-checkbox {
-      width: 22px;
-      height: 22px;
-      margin-top: 4px;
-      accent-color: #2563eb;
-    }
-
     @media print {
       @page {
         size: A4;
@@ -402,6 +362,15 @@
       }
     }
   </style>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-512.png">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Складський журнал">
+
 </head>
 <body>
   <div class="drawer-bg" id="drawerBg"></div>
@@ -432,7 +401,6 @@
       <label>Пошук позиції</label>
       <div class="combo-wrap">
         <input id="productSearch" placeholder="Почни вводити назву: молоко, какао, жир..." autocomplete="off" />
-        <button type="button" id="clearProductSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
         <div id="productSearchResults" class="combo-list hidden"></div>
       </div>
 
@@ -484,15 +452,6 @@
   <div id="pageHistory" class="hidden">
     <div class="card">
       <h2>Історія підрахунків</h2>
-      <div class="actions3 no-print" id="historyNormalActions">
-        <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
-        <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
-        <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
-      </div>
-      <div class="actions no-print hidden" id="historySelectActions">
-        <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
-        <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
-      </div>
       <div id="historyList"></div>
     </div>
   </div>
@@ -545,7 +504,7 @@
     <div class="card">
       <h2>Інформація про додаток</h2>
       <p class="small">
-        <b>Складський журнал v8</b><br><br>
+        <b>Складський журнал v5</b><br><br>
         Мобільний додаток для обліку сировини, піддонів, штук та складських залишків.
         Дані зберігаються локально в браузері цього телефону.
       </p>
@@ -575,8 +534,6 @@
   const STORAGE_KEY = "warehouseJournalV3";
 
   let state = loadState();
-  let historySelectMode = false;
-  let selectedHistoryIds = new Set();
 
   function loadState() {
     const v3 = localStorage.getItem(STORAGE_KEY);
@@ -697,95 +654,6 @@
     clearEntryForm();
     save();
     showPage("today");
-  }
-
-  function deleteDay(id) {
-    const day = state.days.find(d => d.id === id);
-    if (!day) {
-      toast("Підрахунок не знайдено", true);
-      return;
-    }
-
-    if (!confirm(`Видалити підрахунок від ${niceDate(day.date)}?`)) return;
-
-    state.days = state.days.filter(d => d.id !== id);
-    selectedHistoryIds.delete(id);
-
-    if (state.activeDayId === id) {
-      state.activeDayId = state.days[0]?.id || null;
-    }
-
-    ensureActiveDay();
-    save();
-    toast("Історію видалено");
-  }
-
-  function toggleHistorySelectMode(enabled) {
-    historySelectMode = enabled;
-    selectedHistoryIds.clear();
-    renderHistory();
-  }
-
-  function toggleHistorySelected(id, checked) {
-    if (checked) selectedHistoryIds.add(id);
-    else selectedHistoryIds.delete(id);
-  }
-
-  function deleteSelectedHistory() {
-    const ids = Array.from(selectedHistoryIds);
-    if (!ids.length) {
-      toast("Нічого не вибрано", true);
-      return;
-    }
-
-    if (!confirm(`Видалити вибрані підрахунки: ${ids.length}?`)) return;
-
-    state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
-    if (!state.days.some(d => d.id === state.activeDayId)) {
-      state.activeDayId = state.days[0]?.id || null;
-    }
-
-    selectedHistoryIds.clear();
-    historySelectMode = false;
-    ensureActiveDay();
-    save();
-    toast("Вибрану історію видалено");
-  }
-
-  function deleteEmptyDays() {
-    const count = state.days.filter(d => !d.entries.length).length;
-    if (!count) {
-      toast("Порожніх підрахунків немає");
-      return;
-    }
-
-    if (!confirm(`Видалити порожні підрахунки: ${count}?`)) return;
-
-    state.days = state.days.filter(d => d.entries.length > 0);
-    if (!state.days.some(d => d.id === state.activeDayId)) {
-      state.activeDayId = state.days[0]?.id || null;
-    }
-
-    ensureActiveDay();
-    save();
-    toast("Порожню історію видалено");
-  }
-
-  function deleteAllHistory() {
-    if (!state.days.length) {
-      toast("Історії ще немає", true);
-      return;
-    }
-
-    if (!confirm("Повністю очистити всю історію підрахунків?")) return;
-
-    state.days = [];
-    state.activeDayId = null;
-    selectedHistoryIds.clear();
-    historySelectMode = false;
-    ensureActiveDay();
-    save();
-    toast("Історію очищено");
   }
 
   function recalcEntry(e) {
@@ -961,7 +829,6 @@
       toast("Найменування додано");
     }
 
-    state.products = sortedProducts();
     clearProductForm();
     save();
   }
@@ -1100,31 +967,6 @@
     showPage("today");
   }
 
-  function sortedProducts() {
-    return [...state.products].sort((a, b) =>
-      String(a.name || "").localeCompare(String(b.name || ""), "uk", {
-        sensitivity: "base",
-        numeric: true
-      })
-    );
-  }
-
-  function updateClearSearchButton() {
-    const input = document.getElementById("productSearch");
-    const btn = document.getElementById("clearProductSearchBtn");
-    if (!input || !btn) return;
-    btn.classList.toggle("hidden", !input.value);
-  }
-
-  function clearProductSearch() {
-    const input = document.getElementById("productSearch");
-    if (!input) return;
-    input.value = "";
-    updateClearSearchButton();
-    input.focus();
-    renderSelect(true);
-  }
-
   function renderSelect(showDropdown = false) {
     const select = document.getElementById("productSelect");
     const results = document.getElementById("productSearchResults");
@@ -1132,47 +974,39 @@
     const searchInput = document.getElementById("productSearch");
     const search = (searchInput?.value || "").trim().toLowerCase();
     const currentSelected = select.value;
-    const productsSorted = sortedProducts();
-
-    updateClearSearchButton();
 
     select.innerHTML = "";
     results.innerHTML = "";
 
-    if (!productsSorted.length) {
+    if (!state.products.length) {
       label.textContent = "Спочатку додай найменування в меню";
       results.classList.add("hidden");
       return;
     }
 
-    const emptyOption = document.createElement("option");
-    emptyOption.value = "";
-    emptyOption.textContent = "";
-    select.appendChild(emptyOption);
-
-    productsSorted.forEach(p => {
+    state.products.forEach(p => {
       const option = document.createElement("option");
       option.value = p.id;
       option.textContent = p.name;
       select.appendChild(option);
     });
 
-    if (currentSelected && productsSorted.some(p => p.id === currentSelected)) {
+    if (currentSelected && state.products.some(p => p.id === currentSelected)) {
       select.value = currentSelected;
-    } else {
+    } else if (!select.value) {
       select.value = "";
     }
 
-    const selectedProduct = productsSorted.find(p => p.id === select.value);
+    const selectedProduct = state.products.find(p => p.id === select.value);
     label.textContent = selectedProduct ? "Вибрано: " + selectedProduct.name : "Позицію не вибрано";
 
-    let productsToShow = productsSorted;
+    let productsToShow = state.products;
 
     if (search) {
-      productsToShow = productsSorted.filter(p => p.name.toLowerCase().includes(search));
+      productsToShow = state.products.filter(p => p.name.toLowerCase().includes(search));
     }
 
-    if (!showDropdown) {
+    if (!showDropdown || !search) {
       results.classList.add("hidden");
       return;
     }
@@ -1184,7 +1018,7 @@
       return;
     }
 
-    productsToShow.slice(0, 80).forEach(p => {
+    productsToShow.slice(0, 30).forEach(p => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "combo-option";
@@ -1267,7 +1101,6 @@
       added++;
     });
 
-    state.products = sortedProducts();
     textarea.value = "";
     save();
     toast(`Додано: ${added}. Пропущено: ${skipped}`);
@@ -1282,7 +1115,7 @@
       return;
     }
 
-    sortedProducts().forEach(p => {
+    state.products.forEach(p => {
       const div = document.createElement("div");
       div.className = "item";
       div.innerHTML = `
@@ -1306,15 +1139,7 @@
 
   function renderHistory() {
     const list = document.getElementById("historyList");
-    const normalActions = document.getElementById("historyNormalActions");
-    const selectActions = document.getElementById("historySelectActions");
-
     list.innerHTML = "";
-
-    if (normalActions && selectActions) {
-      normalActions.classList.toggle("hidden", historySelectMode);
-      selectActions.classList.toggle("hidden", !historySelectMode);
-    }
 
     if (!state.days.length) {
       list.innerHTML = `<div class="empty">Історії ще немає.</div>`;
@@ -1324,31 +1149,14 @@
     state.days.forEach(day => {
       const div = document.createElement("div");
       div.className = "item";
-
-      const checkboxHtml = historySelectMode
-        ? `<input class="history-checkbox" type="checkbox" data-action="toggle-history-day" data-id="${day.id}" ${selectedHistoryIds.has(day.id) ? "checked" : ""} />`
-        : "";
-
-      const buttonsHtml = historySelectMode
-        ? ""
-        : `<div class="actions">
-            <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
-            <button class="smallbtn danger" data-action="delete-day" data-id="${day.id}">Видалити</button>
-          </div>`;
-
       div.innerHTML = `
-        <div class="history-checkline">
-          ${checkboxHtml}
+        <div class="item-top">
           <div>
-            <div class="item-top">
-              <div>
-                <div class="name">${niceDate(day.date)}</div>
-                <div class="small">Записів: ${day.entries.length}\nСтворено: ${escapeHtml(day.createdAt)}</div>
-              </div>
-            </div>
-            ${buttonsHtml}
+            <div class="name">${niceDate(day.date)}</div>
+            <div class="small">Записів: ${day.entries.length}\nСтворено: ${escapeHtml(day.createdAt)}</div>
           </div>
         </div>
+        <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
       `;
       list.appendChild(div);
     });
@@ -1368,7 +1176,6 @@
 
     document.getElementById("productSelect").value = id;
     document.getElementById("productSearch").value = p.name;
-    updateClearSearchButton();
     document.getElementById("selectedProductLabel").textContent = "Вибрано: " + p.name;
     document.getElementById("productSearchResults").innerHTML = "";
     document.getElementById("productSearchResults").classList.add("hidden");
@@ -1405,24 +1212,12 @@
     if (action === "edit-product") startEditProduct(id);
     if (action === "delete-product") deleteProduct(id);
     if (action === "select-day") selectDay(id);
-    if (action === "delete-day") deleteDay(id);
     if (action === "select-product") selectProduct(id);
-  });
-
-  document.addEventListener("change", function (event) {
-    const el = event.target.closest("[data-action='toggle-history-day']");
-    if (!el) return;
-    toggleHistorySelected(el.dataset.id, el.checked);
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("drawerBg").addEventListener("click", closeMenu);
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
-  document.getElementById("toggleHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(true));
-  document.getElementById("cancelHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(false));
-  document.getElementById("deleteSelectedHistoryBtn").addEventListener("click", deleteSelectedHistory);
-  document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
-  document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
 
   document.querySelectorAll(".menu-btn").forEach(btn => {
     btn.addEventListener("click", () => showPage(btn.dataset.page));
@@ -1433,7 +1228,6 @@
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
-  document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
 
   document.getElementById("copyReportBtn").addEventListener("click", copyReport);
   document.getElementById("downloadTxtBtn").addEventListener("click", downloadTextReport);
