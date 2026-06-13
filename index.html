@@ -206,6 +206,32 @@
     .combo-wrap {
       position: relative;
     }
+    .combo-wrap input {
+      padding-right: 46px;
+    }
+    .clear-search-btn {
+      position: absolute;
+      right: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #334155;
+      color: #f8fafc;
+      font-size: 20px;
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 31;
+    }
+    .clear-search-btn:active {
+      background: #475569;
+    }
     .combo-list {
       position: absolute;
       left: 0;
@@ -393,6 +419,7 @@
       <label>Пошук позиції</label>
       <div class="combo-wrap">
         <input id="productSearch" placeholder="Почни вводити назву: молоко, какао, жир..." autocomplete="off" />
+        <button type="button" id="clearProductSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
         <div id="productSearchResults" class="combo-list hidden"></div>
       </div>
 
@@ -496,7 +523,7 @@
     <div class="card">
       <h2>Інформація про додаток</h2>
       <p class="small">
-        <b>Складський журнал v6</b><br><br>
+        <b>Складський журнал v7</b><br><br>
         Мобільний додаток для обліку сировини, піддонів, штук та складських залишків.
         Дані зберігаються локально в браузері цього телефону.
       </p>
@@ -969,6 +996,22 @@
     );
   }
 
+  function updateClearSearchButton() {
+    const input = document.getElementById("productSearch");
+    const btn = document.getElementById("clearProductSearchBtn");
+    if (!input || !btn) return;
+    btn.classList.toggle("hidden", !input.value);
+  }
+
+  function clearProductSearch() {
+    const input = document.getElementById("productSearch");
+    if (!input) return;
+    input.value = "";
+    updateClearSearchButton();
+    input.focus();
+    renderSelect(true);
+  }
+
   function renderSelect(showDropdown = false) {
     const select = document.getElementById("productSelect");
     const results = document.getElementById("productSearchResults");
@@ -977,6 +1020,8 @@
     const search = (searchInput?.value || "").trim().toLowerCase();
     const currentSelected = select.value;
     const productsSorted = sortedProducts();
+
+    updateClearSearchButton();
 
     select.innerHTML = "";
     results.innerHTML = "";
@@ -1185,6 +1230,7 @@
 
     document.getElementById("productSelect").value = id;
     document.getElementById("productSearch").value = p.name;
+    updateClearSearchButton();
     document.getElementById("selectedProductLabel").textContent = "Вибрано: " + p.name;
     document.getElementById("productSearchResults").innerHTML = "";
     document.getElementById("productSearchResults").classList.add("hidden");
@@ -1237,6 +1283,7 @@
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
+  document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
 
   document.getElementById("copyReportBtn").addEventListener("click", copyReport);
   document.getElementById("downloadTxtBtn").addEventListener("click", downloadTextReport);
