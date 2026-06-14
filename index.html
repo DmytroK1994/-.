@@ -13,7 +13,7 @@
       color: #f8fafc;
       padding: 12px;
       padding-bottom: 90px;
-      padding-top: calc(env(safe-area-inset-top) + 12px);
+      padding-top: calc(env(safe-area-inset-top) + 112px);
     }
     h1 {
       font-size: 22px;
@@ -25,12 +25,15 @@
       margin: 0 0 10px;
     }
     .app-header {
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 15;
+      left: 12px;
+      right: 12px;
+      z-index: 100;
       background: #0f172a;
-      padding: 8px 0 10px;
-      margin-bottom: 12px;
+      padding: calc(env(safe-area-inset-top) + 8px) 0 10px;
+      margin-bottom: 0;
+      box-shadow: 0 10px 18px rgba(15, 23, 42, .92);
     }
     .topbar {
       display: grid;
@@ -68,7 +71,7 @@
     }
     input, select, button, textarea {
       width: 100%;
-      padding: 13px;
+      padding: 11px;
       border-radius: 12px;
       border: 1px solid #475569;
       font-size: 16px;
@@ -170,6 +173,11 @@
       transition: .2s;
       overflow: auto;
     }
+
+    body.drawer-open .app-header {
+      display: none;
+    }
+
     .drawer.open { left: 0; }
     .drawer-bg.open { display: block; }
     .menu-title {
@@ -276,7 +284,7 @@
     }
     .product-list-search-card {
       position: sticky;
-      top: 92px;
+      top: calc(env(safe-area-inset-top) + 105px);
       z-index: 9;
     }
     .empty {
@@ -356,6 +364,7 @@
       #pageHistory,
       #pageProducts,
       #pageSettings,
+      #pageInstall,
       #pageAbout {
         display: none !important;
       }
@@ -442,6 +451,7 @@
     <button class="menu-btn" data-page="products">🏷️ Найменування</button>
     <button class="menu-btn" data-page="settings">⚙️ Налаштування</button>
     <button class="menu-btn" data-page="about">ℹ️ Інформація про додаток</button>
+    <button class="menu-btn" data-page="install">📲 Інструкція встановлення</button>
     <button class="menu-btn" id="updateAppMenuBtn">🔄 Оновити додаток</button>
   </aside>
 
@@ -584,11 +594,37 @@
     </div>
   </div>
 
+
+  <div id="pageInstall" class="hidden">
+    <div class="card">
+      <h2>📲 Інструкція встановлення</h2>
+
+      <div class="small">
+        <b>iPhone / iOS</b><br>
+        1. Відкрий цей додаток у Safari.<br>
+        2. Натисни кнопку “Поділитися”.<br>
+        3. Обери “На початковий екран”.<br>
+        4. Натисни “Додати”.<br><br>
+
+        Після цього “Складський журнал” з’явиться на екрані телефона як звичайний додаток.<br><br>
+
+        <b>Android</b><br>
+        1. Відкрий цей додаток у Google Chrome.<br>
+        2. Натисни меню ⋮ у правому верхньому куті.<br>
+        3. Обери “Встановити додаток” або “Додати на головний екран”.<br>
+        4. Підтвердь встановлення.<br><br>
+
+        <b>Як оновити додаток</b><br>
+        Якщо після оновлення щось виглядає неправильно, видали ярлик з екрана телефона і додай додаток заново.
+      </div>
+    </div>
+  </div>
+
   <div id="pageAbout" class="hidden">
     <div class="card">
       <h2>Інформація про додаток</h2>
       <p class="small">
-        <b>Складський журнал v15</b><br><br>
+        <b>Складський журнал v18</b><br><br>
         Мобільний додаток для обліку сировини, піддонів, штук та складських залишків.
         Дані зберігаються локально в браузері цього телефону.
       </p>
@@ -699,11 +735,13 @@
   }
 
   function openMenu() {
+    document.body.classList.add("drawer-open");
     document.getElementById("drawer").classList.add("open");
     document.getElementById("drawerBg").classList.add("open");
   }
 
   function closeMenu() {
+    document.body.classList.remove("drawer-open");
     document.getElementById("drawer").classList.remove("open");
     document.getElementById("drawerBg").classList.remove("open");
   }
@@ -715,12 +753,14 @@
     document.getElementById("pageProducts").classList.add("hidden");
     document.getElementById("pageSettings").classList.add("hidden");
     document.getElementById("pageAbout").classList.add("hidden");
+    document.getElementById("pageInstall").classList.add("hidden");
 
     if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
     if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
     if (page === "settings") document.getElementById("pageSettings").classList.remove("hidden");
     if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
+    if (page === "install") document.getElementById("pageInstall").classList.remove("hidden");
 
     render();
   }
@@ -1342,7 +1382,20 @@
       return;
     }
 
-    sortedProducts().forEach(p => {
+    const query = (document.getElementById("productListSearch")?.value || "").trim().toLowerCase();
+    const productsToRender = sortedProducts().filter(p =>
+      !query || String(p.name || "").toLowerCase().includes(query)
+    );
+
+    if (!productsToRender.length) {
+      list.innerHTML = `<div class="card empty">Нічого не знайдено.</div>`;
+      updateProductListSearchClearButton();
+      return;
+    }
+
+    updateProductListSearchClearButton();
+
+    productsToRender.forEach(p => {
       const div = document.createElement("div");
       div.className = "item";
       div.innerHTML = `
