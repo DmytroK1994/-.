@@ -318,6 +318,14 @@
     }
     #todayList .report-item {
       display: block;
+      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    #todayList .report-item.recently-edited {
+      background:
+        linear-gradient(rgba(34, 197, 94, .15), rgba(34, 197, 94, .15)),
+        var(--surface-strong);
+      border-color: rgba(34, 197, 94, .62);
+      box-shadow: 0 8px 24px rgba(34, 197, 94, .16);
     }
     #todayList .report-item-header {
       display: grid;
@@ -691,6 +699,14 @@
       top: calc(env(safe-area-inset-top) + 105px);
       z-index: 9;
     }
+    .current-list-search {
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+    .current-list-search label {
+      margin: 0 0 5px;
+    }
     .empty {
       color: var(--muted);
       text-align: center;
@@ -866,14 +882,14 @@
       }
       #todayList .entry-actions {
         display: grid;
-        grid-template-columns: repeat(2, 72px);
+        grid-template-columns: repeat(2, 80px);
         justify-self: end;
         gap: 5px;
         margin: 0;
       }
       #todayList .entry-actions button.smallbtn {
-        width: 72px;
-        min-width: 72px;
+        width: 80px;
+        min-width: 80px;
         margin: 0;
       }
       #todayList button.smallbtn,
@@ -923,6 +939,15 @@
       #pageProducts .product-list-search-card input {
         min-height: 42px;
         padding: 8px 10px;
+      }
+      .current-list-search {
+        margin-top: 9px;
+        padding-top: 8px;
+      }
+      .current-list-search input {
+        min-height: 42px;
+        padding-top: 8px;
+        padding-bottom: 8px;
       }
       #historyNormalActions {
         display: grid;
@@ -1689,7 +1714,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">61</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">63</span></div>
     </div>
   </div>
 
@@ -1787,6 +1812,13 @@
     <div class="card no-print">
       <button id="previewDocumentBtn">Попередній перегляд документа</button>
       <button id="printBtn">Друк / PDF</button>
+      <div class="current-list-search">
+        <label for="todayListSearch">Пошук у поточному підрахунку</label>
+        <div class="combo-wrap">
+          <input id="todayListSearch" placeholder="Введи назву позиції..." autocomplete="off" />
+          <button type="button" id="clearTodayListSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
+        </div>
+      </div>
     </div>
 
     <div id="todayList" class="screen-only"></div>
@@ -1987,7 +2019,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">61</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">63</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2005,8 +2037,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">61</span></div>
-        <div class="small">Кнопки редагування та видалення в поточному підрахунку винесено в однакову праву колонку й вирівняно по краю кожної картки.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">63</span></div>
+        <div class="small">Вибрана для редагування позиція підсвічується зеленим до вибору іншої, а мобільні кнопки розширено для повного відображення написів.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2020,7 +2052,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "61";
+  const APP_VERSION = "63";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2083,6 +2115,7 @@
   let appDialogResolver = null;
   let appDialogPreviousFocus = null;
   const editReturnScroll = { entry: null, product: null };
+  let highlightedEntryId = null;
 
   function isAppKeyboardField(element) {
     return element instanceof Element && Boolean(element.closest(
@@ -2744,6 +2777,8 @@
     const id = uid();
     state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
     state.activeDayId = id;
+    highlightedEntryId = null;
+    resetTodayListSearch();
     clearEntryForm();
     save();
     showPage("today");
@@ -2752,6 +2787,8 @@
 
   function selectDay(id) {
     state.activeDayId = id;
+    highlightedEntryId = null;
+    resetTodayListSearch();
     clearEntryForm();
     save();
     showPage("today");
@@ -2773,6 +2810,7 @@
     });
     if (!confirmed) return;
 
+    if (day.entries.some(entry => entry.id === highlightedEntryId)) highlightedEntryId = null;
     state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
 
@@ -2835,6 +2873,10 @@
     });
     if (!confirmed) return;
 
+    const highlightedDayIsSelected = state.days.some(day =>
+      selectedHistoryIds.has(day.id) && day.entries.some(entry => entry.id === highlightedEntryId)
+    );
+    if (highlightedDayIsSelected) highlightedEntryId = null;
     state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
     if (!state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
@@ -2890,6 +2932,7 @@
 
     state.days = [];
     state.activeDayId = null;
+    highlightedEntryId = null;
     selectedHistoryIds.clear();
     historySelectMode = false;
     ensureActiveDay();
@@ -2980,6 +3023,8 @@
     if (!e) return;
 
     rememberEditPosition("entry");
+    highlightedEntryId = id;
+    renderToday();
 
     document.getElementById("editingEntryId").value = e.id;
     document.getElementById("productSelect").value = e.productId;
@@ -3012,6 +3057,7 @@
     });
     if (!confirmed) return;
     day.entries = day.entries.filter(e => e.id !== id);
+    if (highlightedEntryId === id) highlightedEntryId = null;
 
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
 
@@ -3221,6 +3267,7 @@
       const data = JSON.parse(raw);
       if (!Array.isArray(data.products) || !Array.isArray(data.days)) throw new Error("bad");
       state = data;
+      highlightedEntryId = null;
       ensureActiveDay();
       save();
       toast("Імпортовано");
@@ -3233,6 +3280,7 @@
   function resetApp() {
     closeResetConfirmation();
     state = { products: [], days: [], activeDayId: null };
+    highlightedEntryId = null;
     localStorage.removeItem("warehouseJournalV2");
     save();
     clearEntryForm();
@@ -3286,6 +3334,28 @@
     const btn = document.getElementById("clearProductListSearchBtn");
     if (!input || !btn) return;
     btn.classList.toggle("hidden", !input.value);
+  }
+
+  function updateTodayListSearchClearButton() {
+    const input = document.getElementById("todayListSearch");
+    const btn = document.getElementById("clearTodayListSearchBtn");
+    if (!input || !btn) return;
+    btn.classList.toggle("hidden", !input.value);
+  }
+
+  function resetTodayListSearch() {
+    const input = document.getElementById("todayListSearch");
+    if (!input) return;
+    input.value = "";
+    updateTodayListSearchClearButton();
+  }
+
+  function clearTodayListSearch() {
+    const input = document.getElementById("todayListSearch");
+    if (!input) return;
+    resetTodayListSearch();
+    renderToday();
+    input.focus();
   }
 
   function clearProductListSearch() {
@@ -3433,16 +3503,28 @@
     const printList = document.getElementById("printTodayList");
     list.innerHTML = "";
     printList.innerHTML = buildDocumentRows(day);
+    updateTodayListSearchClearButton();
 
-    const groups = groupEntries(day);
-    if (!groups.length) {
+    const allGroups = groupEntries(day);
+    if (!allGroups.length) {
       list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
+      return;
+    }
+
+    const query = (document.getElementById("todayListSearch")?.value || "").trim().toLocaleLowerCase("uk-UA");
+    const groups = allGroups.filter(group =>
+      !query || String(group.name || "").toLocaleLowerCase("uk-UA").includes(query)
+    );
+
+    if (!groups.length) {
+      list.innerHTML = `<div class="card empty">У поточному підрахунку нічого не знайдено.</div>`;
       return;
     }
 
     groups.forEach(g => {
       const div = document.createElement("div");
-      div.className = "item report-item";
+      const isHighlighted = g.entries.some(entry => entry.id === highlightedEntryId);
+      div.className = `item report-item${isHighlighted ? " recently-edited" : ""}`;
 
       const entriesHtml = g.entries.map(e => `
         <div class="entry-row">
@@ -3735,6 +3817,11 @@
   document.getElementById("closeDocumentPreviewBtn").addEventListener("click", closeDocumentPreview);
   document.getElementById("printPreviewBtn").addEventListener("click", () => window.print());
   document.getElementById("printBtn").addEventListener("click", () => window.print());
+  document.getElementById("todayListSearch").addEventListener("input", () => {
+    updateTodayListSearchClearButton();
+    renderToday();
+  });
+  document.getElementById("clearTodayListSearchBtn").addEventListener("click", clearTodayListSearch);
 
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
   document.getElementById("cancelProductBtn").addEventListener("click", () => {
