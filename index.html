@@ -458,12 +458,8 @@
       .drawer {
         display: flex;
         flex-direction: column;
-        left: -100vw;
-        width: 100vw;
         overflow: hidden;
-        border-right: 0;
         padding-bottom: 0;
-        box-shadow: none;
       }
       .drawer-menu-content {
         flex: 1 1 auto;
@@ -1232,7 +1228,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">41</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">40</span></div>
     </div>
   </div>
 
@@ -1247,7 +1243,7 @@
       <button class="menu-btn" data-page="history">Історія</button>
       <button class="menu-btn" data-page="management">Керування</button>
       <button class="menu-btn" data-page="about">Про додаток</button>
-      <div class="menu-version">Версія <span id="menuVersionLabel">41</span></div>
+      <div class="menu-version">Версія <span id="menuVersionLabel">40</span></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
@@ -1510,7 +1506,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">41</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">40</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1528,8 +1524,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">41</span></div>
-        <div class="small">На iPhone та Android меню розгортається на весь екран. Свайп уліво закриває відкрите меню на обох платформах.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">40</span></div>
+        <div class="small">Повернено експериментальний Taptic-відгук для iPhone через локальний Safari-polyfill. Межі джойстика збережені: на першому й останньому пунктах гортання зупиняється.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1543,7 +1539,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "41";
+  const APP_VERSION = "40";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1601,7 +1597,6 @@
 
   const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const IS_TOUCH_DEVICE = navigator.maxTouchPoints > 0 || "ontouchstart" in window;
 
   function isStandaloneApp() {
     return window.matchMedia("(display-mode: standalone)").matches ||
@@ -1892,8 +1887,8 @@
     });
   }
 
-  function initPhoneSwipeNavigation() {
-    if (!IS_TOUCH_DEVICE) return;
+  function initIphoneEdgeSwipe() {
+    if (!IS_IOS) return;
 
     let swipeMode = "";
     let swipeStartX = 0;
@@ -1904,7 +1899,7 @@
       const touch = event.touches[0];
       const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
 
-      if (!drawerIsOpen && IS_IOS) {
+      if (!drawerIsOpen) {
         swipeMode = "open";
       } else if (drawerIsOpen && touch.clientX <= document.getElementById("drawer").getBoundingClientRect().right) {
         swipeMode = "close";
@@ -2934,7 +2929,7 @@
   render();
   updatePageBackButton();
   initGestureMenuPad();
-  initPhoneSwipeNavigation();
+  initIphoneEdgeSwipe();
   updateInstallUI();
   registerServiceWorker();
   setTimeout(finishSplashScreen, 3650);
