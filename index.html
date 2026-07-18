@@ -389,6 +389,9 @@
       text-align: center;
       padding-top: 20px;
     }
+    .drawer-menu-content {
+      min-height: 0;
+    }
     .drawer-gesture-pad {
       display: none;
       position: sticky;
@@ -439,19 +442,27 @@
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       .drawer {
-        padding-bottom: calc(clamp(260px, 45dvh, 420px) + 18px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-bottom: 0;
+      }
+      .drawer-menu-content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-bottom: 14px;
       }
       .drawer-gesture-pad {
-        position: fixed;
-        left: 0;
-        right: auto;
-        bottom: 0;
+        position: static;
         flex-direction: column;
         justify-content: center;
-        width: min(88vw, 320px);
+        width: calc(100% + 28px);
         height: clamp(260px, 45dvh, 420px);
         min-height: 260px;
-        margin: 0;
+        flex: 0 0 clamp(260px, 45dvh, 420px);
+        margin: 0 -14px;
         padding: 30px 20px calc(env(safe-area-inset-bottom) + 30px);
         border-right: 0;
         border-bottom: 0;
@@ -1202,24 +1213,23 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">31</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">33</span></div>
     </div>
   </div>
 
   <div class="drawer-bg" id="drawerBg"></div>
   <aside class="drawer" id="drawer">
-    <div class="menu-header">
-      <div class="menu-title">Меню</div>
-      <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
+    <div class="drawer-menu-content">
+      <div class="menu-header">
+        <div class="menu-title">Меню</div>
+        <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
+      </div>
+      <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
+      <button class="menu-btn" data-page="history">Історія</button>
+      <button class="menu-btn" data-page="management">Керування</button>
+      <button class="menu-btn" data-page="about">Про додаток</button>
+      <div class="menu-version">Версія <span id="menuVersionLabel">33</span></div>
     </div>
-    <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
-    <button class="menu-btn" data-page="history">Історія</button>
-    <button class="menu-btn" data-page="products">Найменування</button>
-    <button class="menu-btn" data-page="settings">Налаштування</button>
-    <button class="menu-btn" data-page="about">Про додаток</button>
-    <button class="menu-btn" data-page="install">Встановлення</button>
-    <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
-    <div class="menu-version">Версія <span id="menuVersionLabel">31</span></div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
       <span class="gesture-pad-selection" id="gesturePadSelection">Вибрано: Поточний підрахунок</span>
@@ -1364,6 +1374,15 @@
     </div>
   </div>
 
+  <div id="pageManagement" class="hidden">
+    <div class="card">
+      <h2>Керування</h2>
+      <p class="small">Обери, з чим потрібно працювати.</p>
+      <button id="openProductsBtn">Найменування</button>
+      <button id="openSettingsBtn">Налаштування</button>
+    </div>
+  </div>
+
   <div id="pageProducts" class="hidden">
     <div class="card">
       <h2 id="productFormTitle">Найменування</h2>
@@ -1468,7 +1487,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">31</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">33</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1486,9 +1505,10 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">31</span></div>
-        <div class="small">Сенсорна зона меню тепер займає до 45% висоти екрана та завжди прилягає до нижнього краю. Напрямок керування виправлено: рух пальця вниз обирає пункти нижче, рух угору — вище.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">33</span></div>
+        <div class="small">Головне меню скорочено й упорядковано. Найменування та налаштування перенесено в «Керування», а встановлення й перевірку оновлень — у розділ «Про додаток». Сенсорна зона більше не перекриває пункти меню.</div>
       </div>
+      <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
   </div>
@@ -1500,7 +1520,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "31";
+  const APP_VERSION = "33";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1851,7 +1871,7 @@
       const touch = event.touches[0];
       const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
 
-      if (!drawerIsOpen && touch.clientX <= 30) {
+      if (!drawerIsOpen) {
         swipeMode = "open";
       } else if (drawerIsOpen && touch.clientX <= document.getElementById("drawer").getBoundingClientRect().right) {
         swipeMode = "close";
@@ -1902,6 +1922,7 @@
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
     document.getElementById("pageHistory").classList.add("hidden");
+    document.getElementById("pageManagement").classList.add("hidden");
     document.getElementById("pageProducts").classList.add("hidden");
     document.getElementById("pageSettings").classList.add("hidden");
     document.getElementById("pageAbout").classList.add("hidden");
@@ -1909,6 +1930,7 @@
 
     if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
     if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
+    if (page === "management") document.getElementById("pageManagement").classList.remove("hidden");
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
     if (page === "settings") document.getElementById("pageSettings").classList.remove("hidden");
     if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
@@ -1917,8 +1939,9 @@
       updateInstallUI();
     }
 
+    const activeMenuPage = ["products", "settings"].includes(page) ? "management" : (page === "install" ? "about" : page);
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.page === page);
+      btn.classList.toggle("active", btn.dataset.page === activeMenuPage);
     });
 
     render();
@@ -2828,7 +2851,9 @@
     toast("Тему змінено");
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
-  document.getElementById("updateAppMenuBtn").addEventListener("click", updateApp);
+  document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
+  document.getElementById("openSettingsBtn").addEventListener("click", () => showPage("settings"));
+  document.getElementById("openInstallFromAboutBtn").addEventListener("click", () => showPage("install"));
   document.getElementById("installAppBtn").addEventListener("click", installApp);
   document.getElementById("shareAppBtn").addEventListener("click", shareApp);
 
