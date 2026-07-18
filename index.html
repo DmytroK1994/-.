@@ -411,6 +411,89 @@
       margin-top: 4px;
       accent-color: #2563eb;
     }
+    .document-preview-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      overflow: auto;
+      background: #d7dbe1;
+      color: #111;
+      padding: 68px 12px 20px;
+    }
+    body.preview-open {
+      overflow: hidden;
+    }
+    .preview-toolbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 201;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+    }
+    .preview-toolbar-title {
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .preview-close-btn {
+      width: auto;
+      min-width: 92px;
+      margin: 0;
+      padding: 9px 12px;
+    }
+    .preview-sheet {
+      width: min(100%, 210mm);
+      min-height: min(297mm, calc((100vw - 24px) * 1.414));
+      margin: 0 auto;
+      padding: clamp(10px, 3vw, 7mm);
+      background: white;
+      color: black;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, .22);
+      font-family: Arial, sans-serif;
+    }
+    .preview-report-title {
+      margin: 0 0 5px;
+      font-size: 13px;
+      text-align: left;
+    }
+    .preview-report-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 9px;
+      line-height: 1.15;
+    }
+    .preview-report-table th,
+    .preview-report-table td {
+      border-top: .5px solid #777;
+      border-bottom: .5px solid #777;
+      border-left: 1px solid #777;
+      padding: 3px 4px;
+      vertical-align: top;
+      text-align: left;
+    }
+    .preview-report-table th {
+      background: #e5e7eb;
+      font-size: 10px;
+    }
+    .preview-report-table th:last-child,
+    .preview-report-table td:last-child {
+      width: 34mm;
+      border-right: 1px solid #777;
+      text-align: right;
+      font-weight: 700;
+    }
+    .preview-report-table .name {
+      font-size: 11px;
+      margin-bottom: 1px;
+    }
 
     @media print {
       @page {
@@ -443,6 +526,7 @@
       .edit-box,
       .toast,
       .card.no-print,
+      .document-preview-overlay,
       #pageHistory,
       #pageProducts,
       #pageSettings,
@@ -480,7 +564,8 @@
         display: table !important;
         width: 100%;
         table-layout: fixed;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
       }
 
       .print-table-header {
@@ -495,13 +580,16 @@
 
       .print-table-header-row > th {
         background: #e5e7eb;
-        border: 1px solid #777;
+        border-top: .5px solid #777;
+        border-bottom: .5px solid #777;
+        border-left: 1px solid #777;
         padding: 3px 4px;
         text-align: left;
       }
 
       .print-table-header-row > th:last-child {
         width: 34mm;
+        border-right: 1px solid #777;
         text-align: right;
       }
 
@@ -526,9 +614,15 @@
       }
 
       .print-report-row > td {
-        border: 1px solid #777;
+        border-top: .5px solid #777;
+        border-bottom: .5px solid #777;
+        border-left: 1px solid #777;
         padding: 3px 4px;
         vertical-align: top;
+      }
+
+      .print-report-row > td:last-child {
+        border-right: 1px solid #777;
       }
 
       .print-position-cell .name {
@@ -688,10 +782,8 @@
     </div>
 
     <div class="card no-print">
-      <button id="copyReportBtn">Скопіювати звіт</button>
-      <button id="downloadTxtBtn">Завантажити TXT-звіт</button>
+      <button id="previewDocumentBtn">Попередній перегляд документа</button>
       <button id="printBtn">Друк / PDF</button>
-      <button class="danger" id="clearDayBtn">Очистити поточний день</button>
     </div>
 
     <div id="todayList" class="screen-only"></div>
@@ -705,6 +797,25 @@
       </thead>
       <tbody id="printTodayList"></tbody>
     </table>
+  </div>
+
+  <div class="document-preview-overlay hidden" id="documentPreview">
+    <div class="preview-toolbar">
+      <div class="preview-toolbar-title">Попередній перегляд</div>
+      <button class="secondary preview-close-btn" id="closeDocumentPreviewBtn">Закрити</button>
+    </div>
+    <div class="preview-sheet">
+      <h1 class="preview-report-title" id="previewReportTitle"></h1>
+      <table class="preview-report-table">
+        <thead>
+          <tr>
+            <th>Позиція та підрахунки</th>
+            <th>Загальна вага</th>
+          </tr>
+        </thead>
+        <tbody id="previewTodayList"></tbody>
+      </table>
+    </div>
   </div>
 
   <div id="pageHistory" class="hidden">
@@ -1737,6 +1848,21 @@
     renderHistory();
   }
 
+  function openDocumentPreview() {
+    renderToday();
+    document.getElementById("previewReportTitle").textContent =
+      document.getElementById("printReportTitle").textContent;
+    document.getElementById("previewTodayList").innerHTML =
+      document.getElementById("printTodayList").innerHTML;
+    document.getElementById("documentPreview").classList.remove("hidden");
+    document.body.classList.add("preview-open");
+  }
+
+  function closeDocumentPreview() {
+    document.getElementById("documentPreview").classList.add("hidden");
+    document.body.classList.remove("preview-open");
+  }
+
   function selectProduct(id) {
     const p = state.products.find(x => x.id === id);
     if (!p) return;
@@ -1799,7 +1925,7 @@
   document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
   document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
 
-  document.querySelectorAll(".menu-btn").forEach(btn => {
+  document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
     btn.addEventListener("click", () => showPage(btn.dataset.page));
   });
 
@@ -1810,10 +1936,9 @@
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
 
-  document.getElementById("copyReportBtn").addEventListener("click", copyReport);
-  document.getElementById("downloadTxtBtn").addEventListener("click", downloadTextReport);
+  document.getElementById("previewDocumentBtn").addEventListener("click", openDocumentPreview);
+  document.getElementById("closeDocumentPreviewBtn").addEventListener("click", closeDocumentPreview);
   document.getElementById("printBtn").addEventListener("click", () => window.print());
-  document.getElementById("clearDayBtn").addEventListener("click", clearCurrentDay);
 
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
   document.getElementById("cancelProductBtn").addEventListener("click", clearProductForm);
@@ -1831,6 +1956,12 @@
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("updateAppMenuBtn").addEventListener("click", updateApp);
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !document.getElementById("documentPreview").classList.contains("hidden")) {
+      closeDocumentPreview();
+    }
+  });
 
   document.addEventListener("click", function (event) {
     const combo = event.target.closest(".combo-wrap");
