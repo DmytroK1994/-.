@@ -1121,7 +1121,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">27</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">28</span></div>
     </div>
   </div>
 
@@ -1138,7 +1138,7 @@
     <button class="menu-btn" data-page="about">Про додаток</button>
     <button class="menu-btn" data-page="install">Встановлення</button>
     <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
-    <div class="menu-version">Версія <span id="menuVersionLabel">27</span></div>
+    <div class="menu-version">Версія <span id="menuVersionLabel">28</span></div>
   </aside>
 
   <div class="app-header no-print">
@@ -1382,7 +1382,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">27</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">28</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1400,8 +1400,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">27</span></div>
-        <div class="small">У розділі встановлення додано кнопку «Поділитися застосунком» із системним меню поширення та копіюванням посилання як запасним варіантом.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">28</span></div>
+        <div class="small">Кнопка «Поділитися застосунком» тепер передає лише чисте посилання — без назви та додаткового опису.</div>
       </div>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
@@ -1414,7 +1414,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "27";
+  const APP_VERSION = "28";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1518,11 +1518,7 @@
   }
 
   async function shareApp() {
-    const shareData = {
-      title: "Облік залишків",
-      text: "Застосунок для обліку складських залишків і підрахунків",
-      url: APP_SHARE_URL
-    };
+    const shareData = { url: APP_SHARE_URL };
 
     if (navigator.share) {
       try {
