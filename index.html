@@ -1349,7 +1349,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">53</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">55</span></div>
     </div>
   </div>
 
@@ -1580,8 +1580,9 @@
       <p class="small">
         Дані зберігаються в пам'яті цього браузера. Для надійності періодично роби резервну копію.
       </p>
-      <button id="copyBackupBtn">Скопіювати резервну копію</button>
-      <button id="downloadBackupBtn">Завантажити backup.json</button>
+      <p class="small">Копіювання збереже текст резервної копії в буфері обміну. Завантаження створить окремий файл на пристрої.</p>
+      <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
+      <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
 
       <label>Імпорт резервної копії</label>
       <textarea id="importData" rows="5" placeholder="Встав сюди JSON"></textarea>
@@ -1630,7 +1631,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">53</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">55</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1648,8 +1649,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">53</span></div>
-        <div class="small">Повернення сторінки після закриття клавіатури отримало коротку плавну анімацію без різкого стрибка.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">55</span></div>
+        <div class="small">Відновлення положення після клавіатури працює в усьому застосунку. Розділи та застосунок відкриваються згори, а дії з резервною копією отримали зрозумілі назви.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1663,7 +1664,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "53";
+  const APP_VERSION = "55";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1700,6 +1701,7 @@
     document.body.classList.remove("splash-active");
     const splash = document.getElementById("appSplash");
     if (splash) splash.remove();
+    scrollAppToTop();
   }
 
   let savedTheme = "dark";
@@ -1717,41 +1719,41 @@
   let gesturePadMoved = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
-  let entryFormScrollY = null;
-  let entryFormViewportHeight = null;
-  let entryFormKeyboardDetected = false;
-  let entryFormRestoreTimers = [];
-  let entryFormScrollAnimationFrame = 0;
+  let keyboardScrollY = null;
+  let keyboardViewportHeight = null;
+  let keyboardWasDetected = false;
+  let keyboardRestoreTimers = [];
+  let keyboardScrollAnimationFrame = 0;
 
-  function isEntryFormKeyboardField(element) {
-    return element instanceof Element && element.matches(
-      "#pageToday .entry-form-card input:not([type='hidden']), #pageToday .entry-form-card textarea, #pageToday .entry-form-card select"
-    );
+  function isAppKeyboardField(element) {
+    return element instanceof Element && Boolean(element.closest(
+      "input:not([type='hidden']):not([disabled]), textarea:not([disabled]), select:not([disabled]), [contenteditable='true']"
+    ));
   }
 
-  function clearEntryFormRestoreTimers() {
-    entryFormRestoreTimers.forEach(timer => clearTimeout(timer));
-    entryFormRestoreTimers = [];
-    if (entryFormScrollAnimationFrame) {
-      cancelAnimationFrame(entryFormScrollAnimationFrame);
-      entryFormScrollAnimationFrame = 0;
+  function clearKeyboardRestoreTimers() {
+    keyboardRestoreTimers.forEach(timer => clearTimeout(timer));
+    keyboardRestoreTimers = [];
+    if (keyboardScrollAnimationFrame) {
+      cancelAnimationFrame(keyboardScrollAnimationFrame);
+      keyboardScrollAnimationFrame = 0;
     }
   }
 
-  function finishEntryFormScrollRestore() {
-    entryFormScrollY = null;
-    entryFormViewportHeight = null;
-    entryFormKeyboardDetected = false;
-    entryFormRestoreTimers = [];
-    entryFormScrollAnimationFrame = 0;
+  function finishKeyboardScrollRestore() {
+    keyboardScrollY = null;
+    keyboardViewportHeight = null;
+    keyboardWasDetected = false;
+    keyboardRestoreTimers = [];
+    keyboardScrollAnimationFrame = 0;
   }
 
-  function animateEntryFormScrollRestore(targetY, duration = 200) {
+  function animateKeyboardScrollRestore(targetY, duration = 200) {
     const startY = window.scrollY;
     const distance = targetY - startY;
     if (Math.abs(distance) < 1) {
       window.scrollTo(0, targetY);
-      finishEntryFormScrollRestore();
+      finishKeyboardScrollRestore();
       return;
     }
 
@@ -1763,64 +1765,75 @@
       window.scrollTo(0, startY + distance * eased);
 
       if (progress < 1) {
-        entryFormScrollAnimationFrame = requestAnimationFrame(animate);
+        keyboardScrollAnimationFrame = requestAnimationFrame(animate);
       } else {
-        finishEntryFormScrollRestore();
+        finishKeyboardScrollRestore();
       }
     };
 
-    entryFormScrollAnimationFrame = requestAnimationFrame(animate);
+    keyboardScrollAnimationFrame = requestAnimationFrame(animate);
   }
 
-  function rememberEntryFormScrollPosition() {
-    clearEntryFormRestoreTimers();
-    if (entryFormScrollY !== null) return;
-    entryFormScrollY = window.scrollY;
-    entryFormViewportHeight = window.visualViewport?.height || window.innerHeight;
-    entryFormKeyboardDetected = false;
+  function rememberKeyboardScrollPosition() {
+    clearKeyboardRestoreTimers();
+    if (keyboardScrollY !== null) return;
+    keyboardScrollY = window.scrollY;
+    keyboardViewportHeight = window.visualViewport?.height || window.innerHeight;
+    keyboardWasDetected = false;
   }
 
-  function scheduleEntryFormScrollRestore(force = false) {
-    if (entryFormScrollY === null) return;
-    clearEntryFormRestoreTimers();
-    const savedY = entryFormScrollY;
+  function scheduleKeyboardScrollRestore(force = false) {
+    if (keyboardScrollY === null) return;
+    clearKeyboardRestoreTimers();
+    const savedY = keyboardScrollY;
     const timer = setTimeout(() => {
-      entryFormRestoreTimers = [];
-      const fieldStillFocused = isEntryFormKeyboardField(document.activeElement);
+      keyboardRestoreTimers = [];
+      const fieldStillFocused = isAppKeyboardField(document.activeElement);
       if (fieldStillFocused && !force) return;
-      animateEntryFormScrollRestore(savedY, 200);
+      animateKeyboardScrollRestore(savedY, 200);
     }, 70);
-    entryFormRestoreTimers = [timer];
+    keyboardRestoreTimers = [timer];
   }
 
-  function initEntryFormKeyboardScrollRestore() {
-    const form = document.querySelector("#pageToday .entry-form-card");
-    if (!form) return;
-
-    form.addEventListener("pointerdown", event => {
-      if (isEntryFormKeyboardField(event.target)) rememberEntryFormScrollPosition();
+  function initAppKeyboardScrollRestore() {
+    document.addEventListener("pointerdown", event => {
+      if (isAppKeyboardField(event.target)) rememberKeyboardScrollPosition();
     }, { capture: true, passive: true });
 
-    form.addEventListener("focusin", event => {
-      if (!isEntryFormKeyboardField(event.target)) return;
-      rememberEntryFormScrollPosition();
+    document.addEventListener("focusin", event => {
+      if (!isAppKeyboardField(event.target)) return;
+      rememberKeyboardScrollPosition();
     });
 
-    form.addEventListener("focusout", event => {
-      if (!isEntryFormKeyboardField(event.target)) return;
-      scheduleEntryFormScrollRestore();
+    document.addEventListener("focusout", event => {
+      if (!isAppKeyboardField(event.target)) return;
+      scheduleKeyboardScrollRestore();
     });
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", () => {
-        if (entryFormScrollY === null || entryFormViewportHeight === null) return;
+        if (keyboardScrollY === null || keyboardViewportHeight === null) return;
         const currentHeight = window.visualViewport.height;
-        if (entryFormViewportHeight - currentHeight > 100) entryFormKeyboardDetected = true;
-        if (entryFormKeyboardDetected && currentHeight >= entryFormViewportHeight - 50) {
-          scheduleEntryFormScrollRestore(true);
+        if (keyboardViewportHeight - currentHeight > 100) keyboardWasDetected = true;
+        if (keyboardWasDetected && currentHeight >= keyboardViewportHeight - 50) {
+          scheduleKeyboardScrollRestore(true);
         }
       }, { passive: true });
     }
+  }
+
+  function scrollAppToTop() {
+    clearKeyboardRestoreTimers();
+    finishKeyboardScrollRestore();
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+  }
+
+  function initAppTopPosition() {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.addEventListener("pageshow", scrollAppToTop);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") scrollAppToTop();
+    });
   }
 
   function isStandaloneApp() {
@@ -2106,15 +2119,19 @@
     let swipeMode = "";
     let swipeStartX = 0;
     let swipeStartY = 0;
+    const isAndroid = /Android/i.test(navigator.userAgent);
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
       const touch = event.touches[0];
       const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
       const startedInsideScreen = touch.clientX >= 28 && touch.clientX <= window.innerWidth - 28;
+      const startedAtRightEdge = touch.clientX > window.innerWidth - 28;
       const startedOnInput = Boolean(event.target.closest("input, textarea, select, [contenteditable='true']"));
 
-      if (!drawerIsOpen && startedInsideScreen && !startedOnInput) {
+      if (!drawerIsOpen && startedAtRightEdge && !isAndroid) {
+        swipeMode = "block-forward";
+      } else if (!drawerIsOpen && startedInsideScreen && !startedOnInput) {
         swipeMode = "open";
       } else if (drawerIsOpen && touch.clientX <= document.getElementById("drawer").getBoundingClientRect().right) {
         swipeMode = "close";
@@ -2131,6 +2148,12 @@
       const touch = event.touches[0];
       const deltaX = touch.clientX - swipeStartX;
       const deltaY = touch.clientY - swipeStartY;
+
+      if (swipeMode === "block-forward") {
+        if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX <= -8) event.preventDefault();
+        return;
+      }
+
       if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 12) return;
 
       event.preventDefault();
@@ -2141,7 +2164,7 @@
         swipeMode = "";
         closeMenu();
       }
-    }, { passive: false });
+    }, { capture: true, passive: false });
 
     document.addEventListener("touchend", () => { swipeMode = ""; }, { passive: true });
     document.addEventListener("touchcancel", () => { swipeMode = ""; }, { passive: true });
@@ -2207,6 +2230,7 @@
 
     updatePageBackButton();
     render();
+    scrollAppToTop();
   }
 
   function createNewDay() {
@@ -2594,16 +2618,16 @@
   function copyBackup() {
     const text = JSON.stringify(state, null, 2);
     navigator.clipboard.writeText(text).then(() => {
-      toast("Backup скопійовано");
+      toast("Текст резервної копії скопійовано");
     }).catch(() => {
       document.getElementById("importData").value = text;
-      toast("Backup вставлено в поле", true);
+      toast("Текст резервної копії вставлено в поле", true);
     });
   }
 
   function downloadBackup() {
     downloadFile(`sklad-backup-${todayISO()}.json`, JSON.stringify(state, null, 2), "application/json;charset=utf-8");
-    toast("Backup-файл створено");
+    toast("Файл резервної копії створено");
   }
 
   function importBackup() {
@@ -3078,14 +3102,14 @@
   });
 
   document.getElementById("saveEntryBtn").addEventListener("click", () => {
-    if (isEntryFormKeyboardField(document.activeElement)) document.activeElement.blur();
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     saveEntry();
-    scheduleEntryFormScrollRestore();
+    scheduleKeyboardScrollRestore();
   });
   document.getElementById("cancelEditBtn").addEventListener("click", () => {
-    if (isEntryFormKeyboardField(document.activeElement)) document.activeElement.blur();
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     clearEntryForm();
-    scheduleEntryFormScrollRestore();
+    scheduleKeyboardScrollRestore();
   });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
@@ -3159,7 +3183,8 @@
   renderAppVersion();
   render();
   updatePageBackButton();
-  initEntryFormKeyboardScrollRestore();
+  initAppKeyboardScrollRestore();
+  initAppTopPosition();
   initGestureMenuPad();
   initMenuSwipeGestures();
   updateInstallUI();
