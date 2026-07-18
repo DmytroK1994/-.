@@ -396,12 +396,6 @@
       color: white;
       background: #2563eb;
     }
-    .menu-version {
-      color: var(--muted-soft);
-      font-size: 12px;
-      text-align: center;
-      padding-top: 20px;
-    }
     .drawer-menu-content {
       min-height: 0;
     }
@@ -512,18 +506,14 @@
         color: white;
         background: #2563eb;
       }
-      .menu-version {
-        flex: 0 0 auto;
-        padding: 8px 0 14px;
-      }
       .drawer-gesture-pad {
         position: static;
         flex-direction: column;
         justify-content: center;
         width: calc(100% + 28px);
-        height: clamp(210px, 30dvh, 300px);
-        min-height: 210px;
-        flex: 0 0 clamp(210px, 30dvh, 300px);
+        height: clamp(260px, 38dvh, 380px);
+        min-height: 260px;
+        flex: 0 0 clamp(260px, 38dvh, 380px);
         margin: 0 -14px;
         padding: 28px 20px calc(env(safe-area-inset-bottom) + 28px);
         border-right: 0;
@@ -1274,7 +1264,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">46</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">47</span></div>
     </div>
   </div>
 
@@ -1291,12 +1281,11 @@
         <button class="menu-btn" data-page="management">Керування</button>
         <button class="menu-btn" data-page="about">Про додаток</button>
       </div>
-      <div class="menu-version">Версія <span id="menuVersionLabel">46</span></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
       <span class="gesture-pad-selection" id="gesturePadSelection">Вибрано: Поточний підрахунок</span>
-      <span class="gesture-pad-hint">Затисни й веди вгору або вниз · подвійний дотик — відкрити</span>
+      <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
     </div>
   </aside>
 
@@ -1554,7 +1543,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">46</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">47</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1572,8 +1561,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">46</span></div>
-        <div class="small">Синім позначається лише пункт, фактично вибраний джойстиком. Кнопку закриття меню піднято над прокручуваним вмістом і виправлено її форму.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">47</span></div>
+        <div class="small">Свайп вправо з внутрішньої частини екрана відкриває меню на Android та iPhone. Вибраний пункт відкривається одним дотиком, сенсорну зону збільшено, а номер версії прибрано з меню.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1587,7 +1576,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "46";
+  const APP_VERSION = "47";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1614,7 +1603,7 @@
   }
 
   function renderAppVersion() {
-    ["splashVersionLabel", "menuVersionLabel", "aboutVersionLabel", "aboutWhatsNewVersion"].forEach(id => {
+    ["splashVersionLabel", "aboutVersionLabel", "aboutWhatsNewVersion"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = APP_VERSION;
     });
@@ -1639,12 +1628,8 @@
   let gestureDragStartIndex = 0;
   let gesturePadDragging = false;
   let gesturePadMoved = false;
-  let gestureLastTap = 0;
   let currentPage = "today";
   let pageNavigationHistory = [];
-
-  const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
   function isStandaloneApp() {
     return window.matchMedia("(display-mode: standalone)").matches ||
@@ -1907,17 +1892,8 @@
       pad.classList.remove("dragging");
       try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
 
-      if (event.type === "pointercancel" || gesturePadMoved) {
-        gestureLastTap = 0;
-        return;
-      }
-      const now = Date.now();
-      if (now - gestureLastTap <= 380) {
-        gestureLastTap = 0;
-        activateGestureMenuSelection();
-      } else {
-        gestureLastTap = now;
-      }
+      if (event.type === "pointercancel" || gesturePadMoved) return;
+      activateGestureMenuSelection();
     };
 
     pad.addEventListener("pointerup", finishPadGesture);
@@ -1934,9 +1910,7 @@
     });
   }
 
-  function initIphoneEdgeSwipe() {
-    if (!IS_IOS) return;
-
+  function initMenuSwipeGestures() {
     let swipeMode = "";
     let swipeStartX = 0;
     let swipeStartY = 0;
@@ -1945,8 +1919,10 @@
       if (event.touches.length !== 1) return;
       const touch = event.touches[0];
       const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
+      const startedInsideScreen = touch.clientX >= 28 && touch.clientX <= window.innerWidth - 28;
+      const startedOnInput = Boolean(event.target.closest("input, textarea, select, [contenteditable='true']"));
 
-      if (!drawerIsOpen) {
+      if (!drawerIsOpen && startedInsideScreen && !startedOnInput) {
         swipeMode = "open";
       } else if (drawerIsOpen && touch.clientX <= document.getElementById("drawer").getBoundingClientRect().right) {
         swipeMode = "close";
@@ -2976,7 +2952,7 @@
   render();
   updatePageBackButton();
   initGestureMenuPad();
-  initIphoneEdgeSwipe();
+  initMenuSwipeGestures();
   updateInstallUI();
   registerServiceWorker();
   setTimeout(finishSplashScreen, 3650);
