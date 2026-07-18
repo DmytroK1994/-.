@@ -391,15 +391,19 @@
     }
     .hidden { display: none !important; }
     .drawer-bg {
-      display: none;
+      display: block;
       position: fixed;
       inset: 0;
       background: var(--overlay);
       z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .36s cubic-bezier(.22, .75, .28, 1);
+      will-change: opacity;
     }
     .drawer {
       position: fixed;
-      left: min(-340px, -90vw);
+      left: 0;
       top: 0;
       width: min(88vw, 320px);
       height: 100dvh;
@@ -407,17 +411,31 @@
       border-right: 1px solid var(--border);
       z-index: 21;
       padding: calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 18px);
-      transition: left .24s ease;
+      transform: translate3d(-100%, 0, 0);
+      transition: transform .36s cubic-bezier(.22, .75, .28, 1);
+      will-change: transform;
       overflow: auto;
-      box-shadow: 20px 0 45px rgba(0, 0, 0, .24);
+      box-shadow: none;
     }
 
     body.drawer-open .app-header {
-      display: none;
+      display: block;
     }
 
-    .drawer.open { left: 0; }
-    .drawer-bg.open { display: block; }
+    .drawer.open { transform: translate3d(0, 0, 0); }
+    .drawer.open,
+    .drawer.swiping { box-shadow: 20px 0 45px rgba(0, 0, 0, .24); }
+    .drawer-bg.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .drawer.swiping,
+    .drawer-bg.swiping {
+      transition: none;
+    }
+    body.drawer-swiping {
+      overflow: hidden;
+    }
     .menu-header {
       display: flex;
       align-items: center;
@@ -529,7 +547,7 @@
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       .drawer {
-        left: -100vw;
+        left: 0;
         width: 100vw;
         display: flex;
         flex-direction: column;
@@ -1737,7 +1755,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">65</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">66</span></div>
     </div>
   </div>
 
@@ -2042,7 +2060,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">65</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">66</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2060,8 +2078,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">65</span></div>
-        <div class="small">Для закриття попереднього перегляду документа свайпом тепер достатньо протягнути його на 30% ширини екрана.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">66</span></div>
+        <div class="small">Бокове меню тепер плавно тягнеться за пальцем під час відкриття та закриття, а рішення приймається після проходження 35% ширини.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2075,7 +2093,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "65";
+  const APP_VERSION = "66";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2590,7 +2608,54 @@
     let swipeMode = "";
     let swipeStartX = 0;
     let swipeStartY = 0;
+    let swipeCurrentX = 0;
+    let horizontalSwipe = false;
+    let drawerWasOpen = false;
     const isAndroid = /Android/i.test(navigator.userAgent);
+    const settleDuration = 360;
+    const drawer = document.getElementById("drawer");
+    const drawerBg = document.getElementById("drawerBg");
+
+    const clearSwipeStyles = () => {
+      drawer.classList.remove("swiping");
+      drawerBg.classList.remove("swiping");
+      drawer.style.transform = "";
+      drawerBg.style.opacity = "";
+      document.body.classList.remove("drawer-swiping");
+    };
+
+    const settleDrawer = shouldOpen => {
+      const drawerWidth = drawer.getBoundingClientRect().width || window.innerWidth;
+      drawer.classList.remove("swiping");
+      drawerBg.classList.remove("swiping");
+      document.body.classList.remove("drawer-swiping");
+
+      if (shouldOpen) {
+        drawer.classList.add("open");
+        drawerBg.classList.add("open");
+        document.body.classList.add("drawer-open");
+      } else {
+        drawer.classList.remove("open");
+        document.body.classList.remove("drawer-open");
+      }
+
+      void drawer.offsetWidth;
+      drawer.style.transform = `translate3d(${shouldOpen ? 0 : -drawerWidth}px, 0, 0)`;
+      drawerBg.style.opacity = shouldOpen ? "1" : "0";
+
+      window.setTimeout(() => {
+        drawer.style.transform = "";
+        drawerBg.style.opacity = "";
+        const isStillOpen = drawer.classList.contains("open");
+        if (!isStillOpen) {
+          drawerBg.classList.remove("open");
+          document.body.classList.remove("drawer-open");
+          getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
+        } else if (!drawerWasOpen) {
+          initializeGestureMenuSelection();
+        }
+      }, settleDuration);
+    };
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
@@ -2601,7 +2666,7 @@
         return;
       }
       const touch = event.touches[0];
-      const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
+      const drawerIsOpen = drawer.classList.contains("open");
       const startedInsideScreen = touch.clientX >= 28 && touch.clientX <= window.innerWidth - 28;
       const startedAtRightEdge = touch.clientX > window.innerWidth - 28;
       const startedOnInput = Boolean(event.target.closest("input, textarea, select, [contenteditable='true']"));
@@ -2618,6 +2683,9 @@
 
       swipeStartX = touch.clientX;
       swipeStartY = touch.clientY;
+      swipeCurrentX = 0;
+      horizontalSwipe = false;
+      drawerWasOpen = drawerIsOpen;
     }, { passive: true });
 
     document.addEventListener("touchmove", event => {
@@ -2631,20 +2699,57 @@
         return;
       }
 
-      if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 12) return;
+      if (!horizontalSwipe) {
+        if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+          swipeMode = "";
+          return;
+        }
+        if ((swipeMode === "open" && deltaX <= 0) || (swipeMode === "close" && deltaX >= 0)) return;
+
+        horizontalSwipe = true;
+        drawer.classList.add("swiping");
+        drawerBg.classList.add("open", "swiping");
+        document.body.classList.add("drawer-swiping");
+      }
 
       event.preventDefault();
-      if (swipeMode === "open" && deltaX >= 62) {
-        swipeMode = "";
-        openMenu();
-      } else if (swipeMode === "close" && deltaX <= -62) {
-        swipeMode = "";
-        closeMenu();
-      }
+      const drawerWidth = drawer.getBoundingClientRect().width || window.innerWidth;
+      swipeCurrentX = swipeMode === "open"
+        ? Math.max(0, Math.min(drawerWidth, deltaX))
+        : Math.min(0, Math.max(-drawerWidth, deltaX));
+      const offset = swipeMode === "open" ? -drawerWidth + swipeCurrentX : swipeCurrentX;
+      const progress = swipeMode === "open"
+        ? swipeCurrentX / drawerWidth
+        : 1 + swipeCurrentX / drawerWidth;
+
+      drawer.style.transform = `translate3d(${offset}px, 0, 0)`;
+      drawerBg.style.opacity = String(Math.max(0, Math.min(1, progress)));
     }, { capture: true, passive: false });
 
-    document.addEventListener("touchend", () => { swipeMode = ""; }, { passive: true });
-    document.addEventListener("touchcancel", () => { swipeMode = ""; }, { passive: true });
+    const finishMenuSwipe = event => {
+      if (!swipeMode) return;
+
+      if (swipeMode === "block-forward" || !horizontalSwipe) {
+        swipeMode = "";
+        horizontalSwipe = false;
+        clearSwipeStyles();
+        return;
+      }
+
+      const drawerWidth = drawer.getBoundingClientRect().width || window.innerWidth;
+      const reachedThreshold = Math.abs(swipeCurrentX) >= drawerWidth * .35;
+      const shouldOpen = event.type !== "touchcancel"
+        ? (swipeMode === "open" ? reachedThreshold : !reachedThreshold)
+        : drawerWasOpen;
+
+      settleDrawer(shouldOpen);
+      swipeMode = "";
+      horizontalSwipe = false;
+    };
+
+    document.addEventListener("touchend", finishMenuSwipe, { passive: true });
+    document.addEventListener("touchcancel", finishMenuSwipe, { passive: true });
   }
 
   function initDocumentPreviewSwipe() {
@@ -2726,16 +2831,30 @@
   }
 
   function openMenu() {
+    const drawer = document.getElementById("drawer");
+    const drawerBg = document.getElementById("drawerBg");
+    drawer.classList.remove("swiping");
+    drawerBg.classList.remove("swiping");
+    drawer.style.transform = "";
+    drawerBg.style.opacity = "";
+    document.body.classList.remove("drawer-swiping");
     document.body.classList.add("drawer-open");
-    document.getElementById("drawer").classList.add("open");
-    document.getElementById("drawerBg").classList.add("open");
+    drawer.classList.add("open");
+    drawerBg.classList.add("open");
     initializeGestureMenuSelection();
   }
 
   function closeMenu() {
+    const drawer = document.getElementById("drawer");
+    const drawerBg = document.getElementById("drawerBg");
+    drawer.classList.remove("swiping");
+    drawerBg.classList.remove("swiping");
+    drawer.style.transform = "";
+    drawerBg.style.opacity = "";
+    document.body.classList.remove("drawer-swiping");
     document.body.classList.remove("drawer-open");
-    document.getElementById("drawer").classList.remove("open");
-    document.getElementById("drawerBg").classList.remove("open");
+    drawer.classList.remove("open");
+    drawerBg.classList.remove("open");
     getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
   }
 
