@@ -423,11 +423,13 @@
     }
 
     .drawer.open { transform: translate3d(0, 0, 0); }
+    .drawer.open { transition-duration: .28s; }
     .drawer.open,
     .drawer.swiping { box-shadow: 20px 0 45px rgba(0, 0, 0, .24); }
     .drawer-bg.open {
       opacity: 1;
       pointer-events: auto;
+      transition-duration: .28s;
     }
     .drawer.swiping,
     .drawer-bg.swiping {
@@ -435,6 +437,9 @@
     }
     body.drawer-swiping {
       overflow: hidden;
+    }
+    body.drawer-swiping .drawer-gesture-pad {
+      pointer-events: none;
     }
     .menu-header {
       display: flex;
@@ -1755,7 +1760,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">66</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">67</span></div>
     </div>
   </div>
 
@@ -2060,7 +2065,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">66</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">67</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2078,8 +2083,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">66</span></div>
-        <div class="small">Бокове меню тепер плавно тягнеться за пальцем під час відкриття та закриття, а рішення приймається після проходження 35% ширини.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">67</span></div>
+        <div class="small">Меню швидко й плавно відкривається коротким свайпом, закривається після 30% руху, а джойстик блокується під час горизонтального жесту.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2093,7 +2098,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "66";
+  const APP_VERSION = "67";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2142,6 +2147,7 @@
   let selectedHistoryIds = new Set();
   let deferredInstallPrompt = null;
   let gestureMenuIndex = 0;
+  let gestureDragStartX = 0;
   let gestureDragStartY = 0;
   let gestureDragStartIndex = 0;
   let gesturePadDragging = false;
@@ -2560,6 +2566,7 @@
       event.preventDefault();
       gesturePadDragging = true;
       gesturePadMoved = false;
+      gestureDragStartX = event.clientX;
       gestureDragStartY = event.clientY;
       gestureDragStartIndex = gestureMenuIndex;
       pad.classList.add("dragging");
@@ -2568,8 +2575,18 @@
 
     pad.addEventListener("pointermove", event => {
       if (!gesturePadDragging) return;
+      const horizontalDistance = event.clientX - gestureDragStartX;
+      const verticalDistance = event.clientY - gestureDragStartY;
+      if (document.body.classList.contains("drawer-swiping") ||
+          (Math.abs(horizontalDistance) > 10 && Math.abs(horizontalDistance) > Math.abs(verticalDistance))) {
+        gesturePadDragging = false;
+        gesturePadMoved = false;
+        pad.classList.remove("dragging");
+        try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+        return;
+      }
       event.preventDefault();
-      const distance = event.clientY - gestureDragStartY;
+      const distance = verticalDistance;
       if (Math.abs(distance) > 10) gesturePadMoved = true;
       const rawIndex = gestureDragStartIndex + Math.round(distance / 42);
       const itemCount = getGestureMenuItems().length;
@@ -2707,6 +2724,14 @@
         }
         if ((swipeMode === "open" && deltaX <= 0) || (swipeMode === "close" && deltaX >= 0)) return;
 
+        if (swipeMode === "open") {
+          event.preventDefault();
+          swipeMode = "";
+          horizontalSwipe = false;
+          openMenu();
+          return;
+        }
+
         horizontalSwipe = true;
         drawer.classList.add("swiping");
         drawerBg.classList.add("open", "swiping");
@@ -2738,7 +2763,7 @@
       }
 
       const drawerWidth = drawer.getBoundingClientRect().width || window.innerWidth;
-      const reachedThreshold = Math.abs(swipeCurrentX) >= drawerWidth * .35;
+      const reachedThreshold = Math.abs(swipeCurrentX) >= drawerWidth * .30;
       const shouldOpen = event.type !== "touchcancel"
         ? (swipeMode === "open" ? reachedThreshold : !reachedThreshold)
         : drawerWasOpen;
