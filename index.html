@@ -1349,7 +1349,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">51</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">52</span></div>
     </div>
   </div>
 
@@ -1630,7 +1630,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">51</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">52</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1648,8 +1648,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">51</span></div>
-        <div class="small">Кнопки керування історією зроблено компактнішими та відокремлено від записів. Для звичайних операцій видалення додано коротке підтвердження.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">52</span></div>
+        <div class="small">Після закриття мобільної клавіатури головна сторінка автоматично повертається до положення, у якому була перед введенням даних.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1663,7 +1663,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "51";
+  const APP_VERSION = "52";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1717,6 +1717,79 @@
   let gesturePadMoved = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
+  let entryFormScrollY = null;
+  let entryFormViewportHeight = null;
+  let entryFormKeyboardDetected = false;
+  let entryFormRestoreTimers = [];
+
+  function isEntryFormKeyboardField(element) {
+    return element instanceof Element && element.matches(
+      "#pageToday .entry-form-card input:not([type='hidden']), #pageToday .entry-form-card textarea, #pageToday .entry-form-card select"
+    );
+  }
+
+  function clearEntryFormRestoreTimers() {
+    entryFormRestoreTimers.forEach(timer => clearTimeout(timer));
+    entryFormRestoreTimers = [];
+  }
+
+  function rememberEntryFormScrollPosition() {
+    clearEntryFormRestoreTimers();
+    if (entryFormScrollY !== null) return;
+    entryFormScrollY = window.scrollY;
+    entryFormViewportHeight = window.visualViewport?.height || window.innerHeight;
+    entryFormKeyboardDetected = false;
+  }
+
+  function scheduleEntryFormScrollRestore(force = false) {
+    if (entryFormScrollY === null) return;
+    clearEntryFormRestoreTimers();
+    const savedY = entryFormScrollY;
+    const delays = [80, 240, 520];
+
+    entryFormRestoreTimers = delays.map((delay, index) => setTimeout(() => {
+      const fieldStillFocused = isEntryFormKeyboardField(document.activeElement);
+      if (fieldStillFocused && !force) return;
+
+      window.scrollTo({ top: savedY, left: 0, behavior: "auto" });
+      if (index === delays.length - 1) {
+        entryFormScrollY = null;
+        entryFormViewportHeight = null;
+        entryFormKeyboardDetected = false;
+        entryFormRestoreTimers = [];
+      }
+    }, delay));
+  }
+
+  function initEntryFormKeyboardScrollRestore() {
+    const form = document.querySelector("#pageToday .entry-form-card");
+    if (!form) return;
+
+    form.addEventListener("pointerdown", event => {
+      if (isEntryFormKeyboardField(event.target)) rememberEntryFormScrollPosition();
+    }, { capture: true, passive: true });
+
+    form.addEventListener("focusin", event => {
+      if (!isEntryFormKeyboardField(event.target)) return;
+      rememberEntryFormScrollPosition();
+    });
+
+    form.addEventListener("focusout", event => {
+      if (!isEntryFormKeyboardField(event.target)) return;
+      scheduleEntryFormScrollRestore();
+    });
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        if (entryFormScrollY === null || entryFormViewportHeight === null) return;
+        const currentHeight = window.visualViewport.height;
+        if (entryFormViewportHeight - currentHeight > 100) entryFormKeyboardDetected = true;
+        if (entryFormKeyboardDetected && currentHeight >= entryFormViewportHeight - 50) {
+          scheduleEntryFormScrollRestore(true);
+        }
+      }, { passive: true });
+    }
+  }
 
   function isStandaloneApp() {
     return window.matchMedia("(display-mode: standalone)").matches ||
@@ -2972,8 +3045,16 @@
     btn.addEventListener("click", () => showPage(btn.dataset.page));
   });
 
-  document.getElementById("saveEntryBtn").addEventListener("click", saveEntry);
-  document.getElementById("cancelEditBtn").addEventListener("click", clearEntryForm);
+  document.getElementById("saveEntryBtn").addEventListener("click", () => {
+    if (isEntryFormKeyboardField(document.activeElement)) document.activeElement.blur();
+    saveEntry();
+    scheduleEntryFormScrollRestore();
+  });
+  document.getElementById("cancelEditBtn").addEventListener("click", () => {
+    if (isEntryFormKeyboardField(document.activeElement)) document.activeElement.blur();
+    clearEntryForm();
+    scheduleEntryFormScrollRestore();
+  });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
@@ -3046,6 +3127,7 @@
   renderAppVersion();
   render();
   updatePageBackButton();
+  initEntryFormKeyboardScrollRestore();
   initGestureMenuPad();
   initMenuSwipeGestures();
   updateInstallUI();
