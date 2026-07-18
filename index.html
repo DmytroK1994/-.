@@ -418,7 +418,7 @@
       overflow: auto;
       background: #d7dbe1;
       color: #111;
-      padding: 68px 12px 20px;
+      padding: calc(68px + env(safe-area-inset-top)) 12px calc(20px + env(safe-area-inset-bottom));
     }
     body.preview-open {
       overflow: hidden;
@@ -427,12 +427,12 @@
       position: fixed;
       inset: 0 0 auto 0;
       z-index: 201;
-      height: 56px;
+      min-height: calc(56px + env(safe-area-inset-top));
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 8px 12px;
+      padding: calc(8px + env(safe-area-inset-top)) 12px 8px;
       background: var(--surface-deep);
       color: var(--text);
       box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
