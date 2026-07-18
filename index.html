@@ -606,10 +606,17 @@
     }
     .preview-table-header-row > div:last-child,
     .preview-report-table .print-report-row > div:last-child {
-      flex: 0 0 34mm;
+      flex: 0 0 38mm;
       border-left: 1px solid #777;
       text-align: right;
       font-weight: 700;
+    }
+    .preview-report-table .print-total-cell {
+      font-size: 14px;
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -.15px;
+      white-space: nowrap;
     }
     .preview-report-table .name {
       font-size: 11px;
@@ -958,7 +965,7 @@
       }
 
       .print-table-header-row > div:last-child {
-        flex: 0 0 34mm;
+        flex: 0 0 38mm;
         border-left: 1px solid #777;
         text-align: right;
       }
@@ -999,7 +1006,7 @@
       }
 
       .print-report-row > div:last-child {
-        flex: 0 0 34mm;
+        flex: 0 0 38mm;
         border-left: 1px solid #777;
       }
 
@@ -1020,10 +1027,12 @@
       }
 
       .print-total-cell {
-        width: 34mm;
+        width: 38mm;
         color: black;
-        font-size: 11px;
-        font-weight: 700;
+        font-size: 15px;
+        line-height: 1.08;
+        font-weight: 900;
+        letter-spacing: -.2px;
         white-space: nowrap;
         text-align: right;
       }
@@ -1093,7 +1102,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">24</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">25</span></div>
     </div>
   </div>
 
@@ -1110,7 +1119,7 @@
     <button class="menu-btn" data-page="about">Про додаток</button>
     <button class="menu-btn" data-page="install">Встановлення</button>
     <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
-    <div class="menu-version">Версія <span id="menuVersionLabel">24</span></div>
+    <div class="menu-version">Версія <span id="menuVersionLabel">25</span></div>
   </aside>
 
   <div class="app-header no-print">
@@ -1345,7 +1354,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">24</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">25</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1363,8 +1372,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">24</span></div>
-        <div class="small">Посилено захист від випадкового очищення: кнопка остаточного видалення активується лише після ручного введення слова «ВИДАЛИТИ».</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">25</span></div>
+        <div class="small">Збільшено та посилено шрифт загальної ваги у PDF і попередньому перегляді, щоб підсумкові значення було легше помічати.</div>
       </div>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
@@ -1377,7 +1386,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "24";
+  const APP_VERSION = "25";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEMES = ["dark", "beige", "white"];
