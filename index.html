@@ -734,6 +734,28 @@
       margin-top: 4px;
       accent-color: #2563eb;
     }
+    .history-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
+      gap: 6px;
+      margin: 6px 0 16px;
+    }
+    .history-toolbar button {
+      width: auto;
+      min-width: 0;
+      min-height: 38px;
+      flex: 0 1 auto;
+      margin: 0;
+      padding: 7px 9px;
+      border-radius: 11px;
+      font-size: 12px;
+      line-height: 1.15;
+    }
+    #historyList {
+      margin-top: 4px;
+    }
     .document-preview-overlay {
       position: fixed;
       inset: 0;
@@ -1327,7 +1349,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">50</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">51</span></div>
     </div>
   </div>
 
@@ -1482,12 +1504,12 @@
   <div id="pageHistory" class="hidden">
     <div class="card">
       <h2>Історія підрахунків</h2>
-      <div class="actions3 no-print" id="historyNormalActions">
+      <div class="actions3 history-toolbar no-print" id="historyNormalActions">
         <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
         <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
         <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
       </div>
-      <div class="actions no-print hidden" id="historySelectActions">
+      <div class="actions history-toolbar no-print hidden" id="historySelectActions">
         <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
         <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
       </div>
@@ -1608,7 +1630,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">50</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">51</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1626,8 +1648,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">50</span></div>
-        <div class="small">Форму введення на головній сторінці зроблено компактнішою на смартфонах: зменшено проміжки, внутрішні відступи та висоту полів без втрати зручності натискання.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">51</span></div>
+        <div class="small">Кнопки керування історією зроблено компактнішими та відокремлено від записів. Для звичайних операцій видалення додано коротке підтвердження.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1641,7 +1663,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "50";
+  const APP_VERSION = "51";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2106,7 +2128,7 @@
       return;
     }
 
-    if (!confirm(`Видалити підрахунок від ${niceDate(day.date)}?`)) return;
+    if (!confirm(`Точно видалити підрахунок від ${niceDate(day.date)}?`)) return;
 
     state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
@@ -2138,7 +2160,7 @@
       return;
     }
 
-    if (!confirm(`Видалити вибрані підрахунки: ${ids.length}?`)) return;
+    if (!confirm(`Точно видалити вибрані підрахунки (${ids.length})?`)) return;
 
     state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
     if (!state.days.some(d => d.id === state.activeDayId)) {
@@ -2159,7 +2181,7 @@
       return;
     }
 
-    if (!confirm(`Видалити порожні підрахунки: ${count}?`)) return;
+    if (!confirm(`Точно видалити порожні підрахунки (${count})?`)) return;
 
     state.days = state.days.filter(d => d.entries.length > 0);
     if (!state.days.some(d => d.id === state.activeDayId)) {
@@ -2177,7 +2199,7 @@
       return;
     }
 
-    if (!confirm("Повністю очистити всю історію підрахунків?")) return;
+    if (!confirm("Точно повністю очистити всю історію підрахунків?")) return;
 
     state.days = [];
     state.activeDayId = null;
@@ -2283,13 +2305,14 @@
 
   function deleteEntry(id) {
     const day = getActiveDay();
-    const before = day.entries.length;
-    day.entries = day.entries.filter(e => e.id !== id);
-
-    if (day.entries.length === before) {
+    const entry = day.entries.find(e => e.id === id);
+    if (!entry) {
       toast("Не знайшов запис", true);
       return;
     }
+
+    if (!confirm(`Точно видалити запис «${entry.productName}»?`)) return;
+    day.entries = day.entries.filter(e => e.id !== id);
 
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
 
@@ -2380,6 +2403,13 @@
   }
 
   function deleteProduct(id) {
+    const product = state.products.find(p => p.id === id);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+
+    if (!confirm(`Точно видалити найменування «${product.name}»?`)) return;
     state.products = state.products.filter(p => p.id !== id);
     if (document.getElementById("editingProductId").value === id) clearProductForm();
     save();
