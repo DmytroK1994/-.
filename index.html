@@ -756,6 +756,74 @@
     #historyList {
       margin-top: 4px;
     }
+    @media (hover: none), (pointer: coarse), (max-width: 900px) {
+      #todayList .item,
+      #productsList .item {
+        padding: 8px 10px;
+        margin-bottom: 7px;
+        border-radius: 13px;
+        box-shadow: 0 4px 12px var(--card-shadow);
+      }
+      #todayList .report-item {
+        gap: 6px;
+      }
+      #todayList .name,
+      #productsList .name {
+        font-size: 14px;
+        line-height: 1.2;
+      }
+      #todayList .total {
+        font-size: 15px;
+      }
+      #todayList .small,
+      #productsList .small {
+        margin-top: 3px;
+        font-size: 12px;
+        line-height: 1.2;
+      }
+      #todayList .entry-row {
+        margin-top: 5px;
+        padding-top: 5px;
+      }
+      #todayList .actions,
+      #productsList .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 5px;
+        margin-top: 5px;
+      }
+      #todayList button.smallbtn,
+      #productsList button.smallbtn {
+        width: auto;
+        min-width: 68px;
+        min-height: 34px;
+        padding: 5px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        line-height: 1.1;
+        box-shadow: none;
+      }
+      #productsList .pill {
+        padding: 3px 6px;
+        font-size: 11px;
+      }
+      #pageProducts .product-list-search-card {
+        padding: 11px 12px;
+        border-radius: 16px;
+      }
+      #pageProducts .product-list-search-card h2 {
+        margin-bottom: 3px;
+        font-size: 17px;
+      }
+      #pageProducts .product-list-search-card .small {
+        margin: 2px 0 6px;
+        font-size: 12px;
+      }
+      #pageProducts .product-list-search-card input {
+        min-height: 42px;
+        padding: 8px 10px;
+      }
+    }
     .document-preview-overlay {
       position: fixed;
       inset: 0;
@@ -1349,7 +1417,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">55</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">56</span></div>
     </div>
   </div>
 
@@ -1631,7 +1699,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">55</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">56</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1649,8 +1717,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">55</span></div>
-        <div class="small">Відновлення положення після клавіатури працює в усьому застосунку. Розділи та застосунок відкриваються згори, а дії з резервною копією отримали зрозумілі назви.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">56</span></div>
+        <div class="small">Списки поточного підрахунку та найменувань значно ущільнено на смартфонах: картки, текст, проміжки й кнопки редагування та видалення займають менше місця.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1664,7 +1732,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "55";
+  const APP_VERSION = "56";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
