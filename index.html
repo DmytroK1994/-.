@@ -672,6 +672,22 @@
       border-radius: 16px;
       background: var(--surface-deep);
     }
+    .install-action-card {
+      margin-bottom: 18px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface-deep);
+    }
+    .install-status {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    #installAppBtn {
+      margin-top: 12px;
+    }
     .reset-confirmation-overlay {
       position: fixed;
       inset: 0;
@@ -1069,6 +1085,8 @@
 <link rel="icon" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-512.png">
 <meta name="theme-color" id="themeColorMeta" content="#0f172a">
+<meta name="application-name" content="Облік залишків">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Облік залишків">
@@ -1102,7 +1120,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">25</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">26</span></div>
     </div>
   </div>
 
@@ -1119,7 +1137,7 @@
     <button class="menu-btn" data-page="about">Про додаток</button>
     <button class="menu-btn" data-page="install">Встановлення</button>
     <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
-    <div class="menu-version">Версія <span id="menuVersionLabel">25</span></div>
+    <div class="menu-version">Версія <span id="menuVersionLabel">26</span></div>
   </aside>
 
   <div class="app-header no-print">
@@ -1328,6 +1346,11 @@
     <div class="card">
       <h2>Інструкція встановлення</h2>
 
+      <div class="install-action-card">
+        <p class="install-status" id="installStatus">Перевіряю можливість встановлення на цьому пристрої…</p>
+        <button class="green hidden" id="installAppBtn">Встановити застосунок</button>
+      </div>
+
       <div class="small">
         <b>iPhone / iOS</b><br>
         1. Відкрий цей додаток у Safari.<br>
@@ -1338,10 +1361,13 @@
         Після цього “Облік залишків” з’явиться на екрані телефона як звичайний додаток.<br><br>
 
         <b>Android</b><br>
-        1. Відкрий цей додаток у Google Chrome.<br>
-        2. Натисни меню ⋮ у правому верхньому куті.<br>
-        3. Обери “Встановити додаток” або “Додати на головний екран”.<br>
-        4. Підтвердь встановлення.<br><br>
+        1. Відкрий опублікований застосунок через HTTPS у Google Chrome.<br>
+        2. Натисни зелену кнопку “Встановити застосунок”, якщо вона з’явилася вище.<br>
+        3. Підтвердь системне встановлення Chrome.<br>
+        4. Якщо кнопки немає, відкрий меню Chrome ⋮ та обери “Встановити додаток” або “Додати на головний екран”.<br><br>
+
+        <b>Важливо</b><br>
+        Локальний файл <code>file://</code> не можна встановити як PWA на Android. Використовуй опубліковану HTTPS-адресу GitHub Pages.<br><br>
 
         <b>Як оновити додаток</b><br>
         Якщо після оновлення щось виглядає неправильно, видали ярлик з екрана телефона і додай додаток заново.
@@ -1354,7 +1380,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">25</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">26</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1372,8 +1398,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">25</span></div>
-        <div class="small">Збільшено та посилено шрифт загальної ваги у PDF і попередньому перегляді, щоб підсумкові значення було легше помічати.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">26</span></div>
+        <div class="small">Додано повноцінне встановлення на Android: системну кнопку Chrome, PWA-маніфест, іконки, офлайн-кеш і автоматичне оновлення встановленого застосунку.</div>
       </div>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
@@ -1386,7 +1412,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "25";
+  const APP_VERSION = "26";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEMES = ["dark", "beige", "white"];
@@ -1431,6 +1457,93 @@
   let state = loadState();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
+  let deferredInstallPrompt = null;
+
+  function isStandaloneApp() {
+    return window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+  }
+
+  function updateInstallUI(message = "") {
+    const status = document.getElementById("installStatus");
+    const button = document.getElementById("installAppBtn");
+    if (!status || !button) return;
+
+    if (isStandaloneApp()) {
+      status.textContent = "Застосунок уже встановлено на цьому пристрої.";
+      button.classList.add("hidden");
+      return;
+    }
+
+    if (deferredInstallPrompt) {
+      status.textContent = "Застосунок готовий до встановлення на Android.";
+      button.classList.remove("hidden");
+      return;
+    }
+
+    button.classList.add("hidden");
+    if (message) {
+      status.textContent = message;
+    } else if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+      status.textContent = "Для встановлення на Android відкрий опубліковану HTTPS-версію застосунку.";
+    } else {
+      status.textContent = "Chrome перевіряє можливість встановлення. Якщо кнопка не з’явиться, скористайся меню Chrome ⋮.";
+    }
+  }
+
+  async function installApp() {
+    if (!deferredInstallPrompt) {
+      updateInstallUI("Системне встановлення зараз недоступне. Відкрий меню Chrome ⋮ та обери «Встановити додаток».");
+      return;
+    }
+
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    document.getElementById("installAppBtn").classList.add("hidden");
+
+    try {
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      if (choice.outcome === "accepted") {
+        updateInstallUI("Встановлення підтверджено. Застосунок з’явиться на головному екрані.");
+      } else {
+        updateInstallUI("Встановлення скасовано. Його можна запустити повторно через меню Chrome.");
+      }
+    } catch (error) {
+      updateInstallUI("Не вдалося відкрити системне встановлення. Спробуй через меню Chrome ⋮.");
+    }
+  }
+
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) {
+      updateInstallUI("Цей браузер не підтримує встановлення застосунку. Відкрий сторінку в Chrome.");
+      return;
+    }
+
+    const secureContext = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    if (!secureContext) {
+      updateInstallUI();
+      return;
+    }
+
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => updateInstallUI())
+        .catch(() => updateInstallUI("Не вдалося підготувати встановлення. Онови сторінку в Chrome."));
+    });
+  }
+
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    updateInstallUI();
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    updateInstallUI("Застосунок успішно встановлено.");
+    toast("Застосунок встановлено");
+  });
 
   function loadState() {
     const v3 = localStorage.getItem(STORAGE_KEY);
@@ -1535,7 +1648,10 @@
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
     if (page === "settings") document.getElementById("pageSettings").classList.remove("hidden");
     if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
-    if (page === "install") document.getElementById("pageInstall").classList.remove("hidden");
+    if (page === "install") {
+      document.getElementById("pageInstall").classList.remove("hidden");
+      updateInstallUI();
+    }
 
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.page === page);
@@ -2449,6 +2565,7 @@
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("updateAppMenuBtn").addEventListener("click", updateApp);
+  document.getElementById("installAppBtn").addEventListener("click", installApp);
 
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
@@ -2472,6 +2589,8 @@
 
   renderAppVersion();
   render();
+  updateInstallUI();
+  registerServiceWorker();
   setTimeout(finishSplashScreen, 3650);
 })();
 </script>
