@@ -32,6 +32,7 @@
       --card-shadow: rgba(0, 0, 0, .22);
       --popover-shadow: rgba(0, 0, 0, .45);
       --overlay: rgba(0, 0, 0, .55);
+      --page-glow: rgba(37, 99, 235, .14);
     }
     :root[data-theme="beige"] {
       color-scheme: light;
@@ -50,6 +51,7 @@
       --card-shadow: rgba(90, 70, 42, .14);
       --popover-shadow: rgba(75, 57, 34, .25);
       --overlay: rgba(50, 42, 31, .42);
+      --page-glow: rgba(180, 125, 55, .13);
     }
     :root[data-theme="white"] {
       color-scheme: light;
@@ -68,15 +70,19 @@
       --card-shadow: rgba(30, 41, 59, .11);
       --popover-shadow: rgba(30, 41, 59, .22);
       --overlay: rgba(15, 23, 42, .38);
+      --page-glow: rgba(37, 99, 235, .08);
     }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 50% -10%, var(--page-glow), transparent 38%),
+        var(--bg);
+      background-attachment: fixed;
       color: var(--text);
       padding: 12px;
       padding-bottom: 90px;
-      padding-top: calc(env(safe-area-inset-top) + 112px);
+      padding-top: calc(env(safe-area-inset-top) + 122px);
     }
     h1 {
       font-size: 22px;
@@ -84,8 +90,18 @@
       text-align: center;
     }
     h2 {
-      font-size: 18px;
-      margin: 0 0 10px;
+      font-size: 19px;
+      letter-spacing: -.2px;
+      margin: 0 0 12px;
+    }
+    #pageToday,
+    #pageHistory,
+    #pageProducts,
+    #pageSettings,
+    #pageInstall,
+    #pageAbout {
+      width: min(100%, 720px);
+      margin-inline: auto;
     }
     .app-header {
       position: fixed;
@@ -93,10 +109,15 @@
       left: 12px;
       right: 12px;
       z-index: 100;
-      background: var(--bg);
-      padding: calc(env(safe-area-inset-top) + 8px) 0 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 0;
+      border-radius: 0 0 22px 22px;
+      padding: calc(env(safe-area-inset-top) + 10px) 10px 12px;
       margin-bottom: 0;
-      box-shadow: 0 10px 18px var(--header-shadow);
+      box-shadow: 0 12px 30px var(--header-shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
     .topbar {
       display: grid;
@@ -104,27 +125,62 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 10px;
-      background: var(--bg);
+      background: transparent;
       padding: 0;
     }
     .icon-btn {
       width: 44px;
       height: 44px;
-      border-radius: 14px;
+      border-radius: 15px;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
-      font-size: 22px;
+      font-size: 0;
       padding: 0;
       margin: 0;
+      display: grid;
+      place-items: center;
+      box-shadow: none;
     }
+    .hamburger-icon,
+    .hamburger-icon::before,
+    .hamburger-icon::after {
+      width: 19px;
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
+      content: "";
+      display: block;
+    }
+    .hamburger-icon { position: relative; }
+    .hamburger-icon::before { position: absolute; top: -6px; left: 0; }
+    .hamburger-icon::after { position: absolute; top: 6px; left: 0; }
+    .plus-icon {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+    .plus-icon::before,
+    .plus-icon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
+      transform: translate(-50%, -50%);
+    }
+    .plus-icon::after { transform: translate(-50%, -50%) rotate(90deg); }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 10px 25px var(--card-shadow);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 12px 30px var(--card-shadow);
     }
     label {
       display: block;
@@ -135,13 +191,20 @@
     input, select, button, textarea {
       width: 100%;
       padding: 11px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: 1px solid var(--border-strong);
       font-size: 16px;
     }
     input, select, textarea {
       background: var(--surface-deep);
       color: var(--text);
+      min-height: 48px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .2);
     }
     input::placeholder, textarea::placeholder { color: var(--muted-soft); opacity: .9; }
     button {
@@ -152,7 +215,11 @@
       margin-top: 8px;
       cursor: pointer;
       touch-action: manipulation;
+      min-height: 46px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .16);
+      transition: transform .14s ease, filter .14s ease, box-shadow .14s ease;
     }
+    button:active { transform: scale(.985); filter: brightness(.96); }
     button.secondary { background: #475569; }
     button.danger { background: #dc2626; }
     button.green { background: #16a34a; }
@@ -171,9 +238,10 @@
     .item {
       background: var(--surface-strong);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 10px;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 20px var(--card-shadow);
     }
     .item-top {
       display: flex;
@@ -236,16 +304,17 @@
     }
     .drawer {
       position: fixed;
-      left: -292px;
+      left: min(-340px, -90vw);
       top: 0;
-      width: 285px;
-      height: 100%;
+      width: min(88vw, 320px);
+      height: 100dvh;
       background: var(--surface-deep);
       border-right: 1px solid var(--border);
       z-index: 21;
-      padding: 16px;
-      transition: .2s;
+      padding: calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 18px);
+      transition: left .24s ease;
       overflow: auto;
+      box-shadow: 20px 0 45px rgba(0, 0, 0, .24);
     }
 
     body.drawer-open .app-header {
@@ -254,16 +323,56 @@
 
     .drawer.open { left: 0; }
     .drawer-bg.open { display: block; }
-    .menu-title {
-      font-size: 20px;
-      font-weight: 900;
-      margin-bottom: 14px;
+    .menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 0 2px;
     }
-    .menu-btn {
+    .menu-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+    }
+    .drawer-close-btn {
+      width: auto;
+      min-height: 38px;
+      padding: 8px 12px;
+      margin: 0;
+      border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
+      box-shadow: none;
+      font-size: 13px;
+    }
+    .menu-btn {
+      background: transparent;
+      color: var(--text);
       text-align: left;
-      margin-top: 8px;
+      margin-top: 7px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: none;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .menu-btn:active,
+    .menu-btn:hover {
+      background: var(--surface);
+    }
+    .menu-btn.active {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: white;
+    }
+    .menu-version {
+      color: var(--muted-soft);
+      font-size: 12px;
+      text-align: center;
+      padding-top: 20px;
     }
     .pill {
       display: inline-block;
@@ -464,35 +573,90 @@
     }
     .preview-report-table {
       width: 100%;
-      table-layout: fixed;
-      border-collapse: separate;
-      border-spacing: 0;
       font-size: 9px;
       line-height: 1.15;
     }
-    .preview-report-table th,
-    .preview-report-table td {
-      border-top: .5px solid #777;
-      border-bottom: .5px solid #777;
-      border-left: 1px solid #777;
+    .preview-table-header-row,
+    .preview-report-table .print-report-row {
+      display: flex;
+      border: .5px solid #777;
+    }
+    .preview-table-header-row > div,
+    .preview-report-table .print-report-row > div {
       padding: 3px 4px;
       vertical-align: top;
       text-align: left;
     }
-    .preview-report-table th {
+    .preview-table-header-row > div:first-child,
+    .preview-report-table .print-report-row > div:first-child {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .preview-table-header-row {
       background: #e5e7eb;
       font-size: 10px;
+      font-weight: 700;
     }
-    .preview-report-table th:last-child,
-    .preview-report-table td:last-child {
-      width: 34mm;
-      border-right: 1px solid #777;
+    .preview-table-header-row > div:last-child,
+    .preview-report-table .print-report-row > div:last-child {
+      flex: 0 0 34mm;
+      border-left: 1px solid #777;
       text-align: right;
       font-weight: 700;
     }
     .preview-report-table .name {
       font-size: 11px;
       margin-bottom: 1px;
+    }
+    .about-heading-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .about-heading-row h2 {
+      margin-bottom: 4px;
+      font-size: 23px;
+    }
+    .about-version {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--surface-deep);
+      border: 1px solid var(--border);
+      color: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .about-lead {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0 0 18px;
+    }
+    .about-section-title {
+      margin: 0 0 9px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .feature-list {
+      margin: 0 0 18px;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .feature-list li + li { margin-top: 5px; }
+    .whats-new-card {
+      margin: 4px 0 14px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface-deep);
     }
 
     @media print {
@@ -561,40 +725,42 @@
       }
 
       .print-report-table {
-        display: table !important;
+        display: block !important;
         width: 100%;
-        table-layout: fixed;
-        border-collapse: separate;
-        border-spacing: 0;
       }
 
       .print-table-header {
-        display: table-header-group;
+        display: block;
         font-size: 10px;
         font-weight: 700;
       }
 
       .print-table-header-row {
-        display: table-row;
+        display: flex;
+        background: #e5e7eb;
+        border: .5px solid #777;
+        break-inside: avoid;
+        page-break-inside: avoid;
       }
 
-      .print-table-header-row > th {
-        background: #e5e7eb;
-        border-top: .5px solid #777;
-        border-bottom: .5px solid #777;
-        border-left: 1px solid #777;
+      .print-table-header-row > div {
         padding: 3px 4px;
         text-align: left;
       }
 
-      .print-table-header-row > th:last-child {
-        width: 34mm;
-        border-right: 1px solid #777;
+      .print-table-header-row > div:first-child {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .print-table-header-row > div:last-child {
+        flex: 0 0 34mm;
+        border-left: 1px solid #777;
         text-align: right;
       }
 
       #printTodayList {
-        display: table-row-group;
+        display: block;
       }
 
       .card,
@@ -609,20 +775,28 @@
       }
 
       .print-report-row {
+        display: flex;
+        width: 100%;
+        border: .5px solid #777;
+        overflow: hidden;
         page-break-inside: avoid;
         break-inside: avoid;
+        -webkit-column-break-inside: avoid;
       }
 
-      .print-report-row > td {
-        border-top: .5px solid #777;
-        border-bottom: .5px solid #777;
-        border-left: 1px solid #777;
+      .print-report-row > div {
         padding: 3px 4px;
         vertical-align: top;
       }
 
-      .print-report-row > td:last-child {
-        border-right: 1px solid #777;
+      .print-report-row > div:first-child {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .print-report-row > div:last-child {
+        flex: 0 0 34mm;
+        border-left: 1px solid #777;
       }
 
       .print-position-cell .name {
@@ -707,21 +881,25 @@
 <body>
   <div class="drawer-bg" id="drawerBg"></div>
   <aside class="drawer" id="drawer">
-    <div class="menu-title">Меню</div>
-    <button class="menu-btn" data-page="today">📦 Поточний підрахунок</button>
-    <button class="menu-btn" data-page="history">🕘 Історія</button>
-    <button class="menu-btn" data-page="products">🏷️ Найменування</button>
-    <button class="menu-btn" data-page="settings">⚙️ Налаштування</button>
-    <button class="menu-btn" data-page="about">ℹ️ Інформація про додаток</button>
-    <button class="menu-btn" data-page="install">📲 Інструкція встановлення</button>
-    <button class="menu-btn" id="updateAppMenuBtn">🔄 Оновити додаток</button>
+    <div class="menu-header">
+      <div class="menu-title">Меню</div>
+      <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
+    </div>
+    <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
+    <button class="menu-btn" data-page="history">Історія</button>
+    <button class="menu-btn" data-page="products">Найменування</button>
+    <button class="menu-btn" data-page="settings">Налаштування</button>
+    <button class="menu-btn" data-page="about">Про додаток</button>
+    <button class="menu-btn" data-page="install">Встановлення</button>
+    <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
+    <div class="menu-version">Версія <span id="menuVersionLabel">20</span></div>
   </aside>
 
   <div class="app-header no-print">
     <div class="topbar">
-      <button class="icon-btn" id="openMenuBtn">☰</button>
+      <button class="icon-btn" id="openMenuBtn" aria-label="Відкрити меню"><span class="hamburger-icon"></span></button>
       <h1>Складський журнал</h1>
-      <button class="icon-btn" id="newDayBtn">＋</button>
+      <button class="icon-btn" id="newDayBtn" aria-label="Створити новий підрахунок"><span class="plus-icon"></span></button>
     </div>
     <div class="date-line" id="activeDateLabel"></div>
   </div>
@@ -788,15 +966,15 @@
 
     <div id="todayList" class="screen-only"></div>
 
-    <table class="print-only print-report-table">
-      <thead class="print-table-header">
-        <tr class="print-table-header-row">
-          <th>Позиція та підрахунки</th>
-          <th>Загальна вага</th>
-        </tr>
-      </thead>
-      <tbody id="printTodayList"></tbody>
-    </table>
+    <div class="print-only print-report-table">
+      <div class="print-table-header">
+        <div class="print-table-header-row">
+          <div>Позиція та підрахунки</div>
+          <div>Загальна вага</div>
+        </div>
+      </div>
+      <div id="printTodayList"></div>
+    </div>
   </div>
 
   <div class="document-preview-overlay hidden" id="documentPreview">
@@ -806,15 +984,13 @@
     </div>
     <div class="preview-sheet">
       <h1 class="preview-report-title" id="previewReportTitle"></h1>
-      <table class="preview-report-table">
-        <thead>
-          <tr>
-            <th>Позиція та підрахунки</th>
-            <th>Загальна вага</th>
-          </tr>
-        </thead>
-        <tbody id="previewTodayList"></tbody>
-      </table>
+      <div class="preview-report-table">
+        <div class="preview-table-header-row">
+          <div>Позиція та підрахунки</div>
+          <div>Загальна вага</div>
+        </div>
+        <div id="previewTodayList"></div>
+      </div>
     </div>
   </div>
 
@@ -901,7 +1077,7 @@
 
   <div id="pageInstall" class="hidden">
     <div class="card">
-      <h2>📲 Інструкція встановлення</h2>
+      <h2>Інструкція встановлення</h2>
 
       <div class="small">
         <b>iPhone / iOS</b><br>
@@ -926,26 +1102,31 @@
 
   <div id="pageAbout" class="hidden">
     <div class="card">
-      <h2>Інформація про додаток</h2>
-      <p class="small">
-        <b>Складський журнал v19</b><br><br>
-        Мобільний додаток для обліку сировини, піддонів, штук та складських залишків.
-        Дані зберігаються локально в браузері цього телефону.
-      </p>
-      <div class="small">
-        Що є:<br>
-        • довідник найменувань;<br>
-        • пошук позиції по назві;<br>
-        • підрахунок піддонів × кг;<br>
-        • підрахунок штук × кг;<br>
-        • окреме додавання кг;<br>
-        • історія по датах;<br>
-        • копіювання звіту;<br>
-        • резервна копія JSON;<br>
-        • масове додавання найменувань;<br>
-        • компактний друк/PDF на А4.
+      <div class="about-heading-row">
+        <div>
+          <h2>Складський журнал</h2>
+          <div class="about-version">Версія <span id="aboutVersionLabel">20</span></div>
+        </div>
       </div>
-      <button id="updateAppBtn">Оновити додаток</button>
+      <p class="about-lead">
+        Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.
+      </p>
+
+      <h3 class="about-section-title">Основні можливості</h3>
+      <ul class="feature-list">
+        <li>довідник найменувань і швидкий пошук;</li>
+        <li>підрахунок піддонів, штук та окремої ваги;</li>
+        <li>історія підрахунків за датами;</li>
+        <li>три теми оформлення;</li>
+        <li>попередній перегляд і компактний PDF формату A4;</li>
+        <li>резервне копіювання та відновлення даних.</li>
+      </ul>
+
+      <div class="whats-new-card">
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">20</span></div>
+        <div class="small">Оновлений сучасний дизайн, безпечні відступи для iPhone, чистіше меню та стабільні межі таблиці у багатосторінковому PDF.</div>
+      </div>
+      <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
   </div>
 
@@ -955,6 +1136,8 @@
 (function () {
   "use strict";
 
+  // Збільшуй номер після кожного оновлення додатка.
+  const APP_VERSION = "20";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEMES = ["dark", "beige", "white"];
@@ -977,6 +1160,13 @@
     if (persist) {
       try { localStorage.setItem(THEME_KEY, selected); } catch (e) {}
     }
+  }
+
+  function renderAppVersion() {
+    ["menuVersionLabel", "aboutVersionLabel", "aboutWhatsNewVersion"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = APP_VERSION;
+    });
   }
 
   let savedTheme = "dark";
@@ -1091,6 +1281,10 @@
     if (page === "settings") document.getElementById("pageSettings").classList.remove("hidden");
     if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
     if (page === "install") document.getElementById("pageInstall").classList.remove("hidden");
+
+    document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.page === page);
+    });
 
     render();
   }
@@ -1638,7 +1832,7 @@
     const groups = groupEntries(day);
     if (!groups.length) {
       list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
-      printList.innerHTML = `<tr class="print-report-row"><td colspan="2">Записів немає.</td></tr>`;
+      printList.innerHTML = `<div class="print-report-row"><div class="print-position-cell">Записів немає.</div><div class="print-total-cell"></div></div>`;
       return;
     }
 
@@ -1676,13 +1870,13 @@
       ].filter(Boolean).map(escapeHtml).join("<br>");
 
       printList.insertAdjacentHTML("beforeend", `
-        <tr class="print-report-row">
-          <td class="print-position-cell">
+        <div class="print-report-row">
+          <div class="print-position-cell">
             <div class="name">${escapeHtml(g.name)}</div>
             <div class="compact-details">${compactDetails}</div>
-          </td>
-          <td class="print-total-cell">${formatKg(g.totalKg)}</td>
-        </tr>
+          </div>
+          <div class="print-total-cell">${formatKg(g.totalKg)}</div>
+        </div>
       `);
 
       const entriesHtml = g.entries.map(e => `
@@ -1917,6 +2111,7 @@
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
   document.getElementById("drawerBg").addEventListener("click", closeMenu);
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
   document.getElementById("toggleHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(true));
@@ -1934,6 +2129,20 @@
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
+  document.getElementById("productSearch").addEventListener("blur", () => {
+    setTimeout(() => {
+      if (document.activeElement !== document.getElementById("productSearch")) {
+        document.getElementById("productSearchResults").classList.add("hidden");
+      }
+    }, 150);
+  });
+  document.getElementById("productSearch").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      event.currentTarget.blur();
+      document.getElementById("productSearchResults").classList.add("hidden");
+    }
+  });
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
 
   document.getElementById("previewDocumentBtn").addEventListener("click", openDocumentPreview);
@@ -1972,6 +2181,7 @@
     }
   });
 
+  renderAppVersion();
   render();
 })();
 </script>
