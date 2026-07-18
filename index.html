@@ -1227,7 +1227,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">36</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">38</span></div>
     </div>
   </div>
 
@@ -1242,7 +1242,7 @@
       <button class="menu-btn" data-page="history">Історія</button>
       <button class="menu-btn" data-page="management">Керування</button>
       <button class="menu-btn" data-page="about">Про додаток</button>
-      <div class="menu-version">Версія <span id="menuVersionLabel">36</span></div>
+      <div class="menu-version">Версія <span id="menuVersionLabel">38</span></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
@@ -1505,7 +1505,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">36</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">38</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1523,8 +1523,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">36</span></div>
-        <div class="small">Сенсорну зону керування меню зроблено повністю прозорою: без фону, рамок і тіні. Залишено лише текст та активну смужку-індикатор.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">38</span></div>
+        <div class="small">Додано чіткіший короткий вібровідгук при кожному переході на новий пункт сенсорного меню на пристроях і в браузерах, які підтримують Vibration API.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1538,7 +1538,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "36";
+  const APP_VERSION = "38";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1793,11 +1793,20 @@
     return Array.from(document.querySelectorAll("#drawer .menu-btn"));
   }
 
+  function normalizeGestureMenuIndex(index, itemCount) {
+    return ((index % itemCount) + itemCount) % itemCount;
+  }
+
+  function triggerMenuHapticFeedback() {
+    if (typeof navigator.vibrate !== "function") return;
+    try { navigator.vibrate(20); } catch (error) {}
+  }
+
   function setGestureMenuSelection(index, vibrate = false) {
     const items = getGestureMenuItems();
     if (!items.length) return;
 
-    gestureMenuIndex = Math.max(0, Math.min(items.length - 1, index));
+    gestureMenuIndex = normalizeGestureMenuIndex(index, items.length);
     items.forEach((item, itemIndex) => {
       item.classList.toggle("gesture-selected", itemIndex === gestureMenuIndex);
     });
@@ -1807,7 +1816,7 @@
     if (label) label.textContent = "Вибрано: " + selectedItem.textContent.trim();
     selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
 
-    if (vibrate && navigator.vibrate) navigator.vibrate(12);
+    if (vibrate) triggerMenuHapticFeedback();
   }
 
   function initializeGestureMenuSelection() {
@@ -1842,7 +1851,8 @@
       event.preventDefault();
       const distance = event.clientY - gestureDragStartY;
       if (Math.abs(distance) > 10) gesturePadMoved = true;
-      const nextIndex = gestureDragStartIndex + Math.round(distance / 42);
+      const rawIndex = gestureDragStartIndex + Math.round(distance / 42);
+      const nextIndex = normalizeGestureMenuIndex(rawIndex, getGestureMenuItems().length);
       if (nextIndex !== gestureMenuIndex) setGestureMenuSelection(nextIndex, true);
     });
 
