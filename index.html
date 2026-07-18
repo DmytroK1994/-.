@@ -413,10 +413,10 @@
       z-index: 2;
       margin-top: 14px;
       padding: 13px 12px calc(env(safe-area-inset-bottom) + 13px);
-      border: 1px solid var(--border-strong);
-      border-radius: 18px 18px 10px 10px;
-      background: var(--surface);
-      box-shadow: 0 -8px 24px rgba(0, 0, 0, .2);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
       text-align: center;
       touch-action: none;
       user-select: none;
@@ -424,8 +424,8 @@
       -webkit-tap-highlight-color: transparent;
     }
     .drawer-gesture-pad.dragging {
-      border-color: #60a5fa;
-      background: var(--surface-strong);
+      border-color: transparent;
+      background: transparent;
     }
     .gesture-pad-handle {
       display: block;
@@ -1227,7 +1227,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">35</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">36</span></div>
     </div>
   </div>
 
@@ -1242,7 +1242,7 @@
       <button class="menu-btn" data-page="history">Історія</button>
       <button class="menu-btn" data-page="management">Керування</button>
       <button class="menu-btn" data-page="about">Про додаток</button>
-      <div class="menu-version">Версія <span id="menuVersionLabel">35</span></div>
+      <div class="menu-version">Версія <span id="menuVersionLabel">36</span></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
@@ -1505,7 +1505,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">35</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">36</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1523,8 +1523,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">35</span></div>
-        <div class="small">Верхню шапку з назвою, датою, кнопкою меню та створення нового підрахунку розтягнуто на всю ширину екрана.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">36</span></div>
+        <div class="small">Сенсорну зону керування меню зроблено повністю прозорою: без фону, рамок і тіні. Залишено лише текст та активну смужку-індикатор.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1538,7 +1538,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "35";
+  const APP_VERSION = "36";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
