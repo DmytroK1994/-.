@@ -395,7 +395,7 @@
       position: fixed;
       inset: 0;
       background: var(--overlay);
-      z-index: 20;
+      z-index: 110;
       opacity: 0;
       pointer-events: none;
       transition: opacity .36s cubic-bezier(.22, .75, .28, 1);
@@ -409,7 +409,7 @@
       height: 100dvh;
       background: var(--surface-deep);
       border-right: 1px solid var(--border);
-      z-index: 21;
+      z-index: 111;
       padding: calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 18px);
       transform: translate3d(-100%, 0, 0);
       transition: transform .36s cubic-bezier(.22, .75, .28, 1);
@@ -1760,7 +1760,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">67</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">68</span></div>
     </div>
   </div>
 
@@ -2065,7 +2065,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">67</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">68</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2083,8 +2083,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">67</span></div>
-        <div class="small">Меню швидко й плавно відкривається коротким свайпом, закривається після 30% руху, а джойстик блокується під час горизонтального жесту.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">68</span></div>
+        <div class="small">Бокове меню та його затемнення тепер завжди розташовані поверх шапки, тому заголовок «Меню» більше нічим не перекривається.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2098,7 +2098,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "67";
+  const APP_VERSION = "68";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
