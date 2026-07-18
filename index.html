@@ -724,9 +724,24 @@
     }
     .history-checkline {
       display: grid;
-      grid-template-columns: 30px 1fr;
+      grid-template-columns: 1fr;
       gap: 8px;
       align-items: start;
+    }
+    .history-checkline.selecting {
+      grid-template-columns: 30px 1fr;
+    }
+    .history-title-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .history-created {
+      color: var(--muted-soft);
+      font-size: 11px;
+      line-height: 1.2;
+      text-align: right;
     }
     .history-checkbox {
       width: 22px;
@@ -782,8 +797,15 @@
         line-height: 1.2;
       }
       #todayList .entry-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 6px;
         margin-top: 5px;
         padding-top: 5px;
+      }
+      #todayList .entry-row > .small {
+        margin: 0;
       }
       #todayList .actions,
       #productsList .actions {
@@ -802,6 +824,15 @@
         font-size: 11px;
         line-height: 1.1;
         box-shadow: none;
+      }
+      #productsList .item-top {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 6px;
+      }
+      #productsList .list-item-actions {
+        margin-top: 0;
       }
       #productsList .pill {
         padding: 3px 6px;
@@ -822,6 +853,46 @@
       #pageProducts .product-list-search-card input {
         min-height: 42px;
         padding: 8px 10px;
+      }
+      #historyNormalActions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+      }
+      #historyNormalActions button {
+        width: 100%;
+        min-height: 38px;
+        padding: 5px 3px;
+        font-size: 10.5px;
+        line-height: 1.1;
+      }
+      #historyList .item {
+        padding: 8px 10px;
+        margin-bottom: 7px;
+        border-radius: 13px;
+        box-shadow: 0 4px 12px var(--card-shadow);
+      }
+      #historyList .name {
+        font-size: 14px;
+      }
+      #historyList .small {
+        margin-top: 2px;
+        font-size: 11px;
+      }
+      #historyList .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 4px;
+        margin-top: 5px;
+      }
+      #historyList button.smallbtn {
+        width: auto;
+        min-width: 58px;
+        min-height: 32px;
+        padding: 4px 7px;
+        border-radius: 8px;
+        font-size: 10px;
+        box-shadow: none;
       }
     }
     .document-preview-overlay {
@@ -854,11 +925,37 @@
       font-size: 16px;
       font-weight: 900;
     }
+    .preview-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .preview-print-btn,
     .preview-close-btn {
       width: auto;
-      min-width: 92px;
+      min-width: 86px;
+      min-height: 40px;
       margin: 0;
-      padding: 9px 12px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    @media (max-width: 420px) {
+      .preview-toolbar {
+        gap: 6px;
+        padding-right: 8px;
+        padding-left: 8px;
+      }
+      .preview-toolbar-title {
+        font-size: 13px;
+      }
+      .preview-print-btn,
+      .preview-close-btn {
+        min-width: 74px;
+        min-height: 38px;
+        padding: 7px 8px;
+        font-size: 12px;
+      }
     }
     .preview-sheet {
       width: min(100%, 210mm);
@@ -1239,6 +1336,10 @@
         display: none !important;
       }
 
+      body.printing-report #pageToday.hidden {
+        display: block !important;
+      }
+
       .print-report-header {
         margin-bottom: 4px;
       }
@@ -1417,7 +1518,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">56</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">57</span></div>
     </div>
   </div>
 
@@ -1533,7 +1634,10 @@
   <div class="document-preview-overlay hidden" id="documentPreview">
     <div class="preview-toolbar">
       <div class="preview-toolbar-title">Попередній перегляд</div>
-      <button class="secondary preview-close-btn" id="closeDocumentPreviewBtn">Закрити</button>
+      <div class="preview-toolbar-actions">
+        <button class="preview-print-btn" id="printPreviewBtn">Друк / PDF</button>
+        <button class="secondary preview-close-btn" id="closeDocumentPreviewBtn">Закрити</button>
+      </div>
     </div>
     <div class="preview-sheet">
       <h1 class="preview-report-title" id="previewReportTitle"></h1>
@@ -1699,7 +1803,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">56</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">57</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1717,8 +1821,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">56</span></div>
-        <div class="small">Списки поточного підрахунку та найменувань значно ущільнено на смартфонах: картки, текст, проміжки й кнопки редагування та видалення займають менше місця.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">57</span></div>
+        <div class="small">Кнопки списків переміщено вправо, панель історії вміщується в один рядок, картки історії ущільнено, а збережені підрахунки отримали попередній перегляд і друк/PDF.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1732,7 +1836,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "56";
+  const APP_VERSION = "57";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2863,27 +2967,13 @@
     });
   }
 
-  function renderToday() {
-    const day = getActiveDay();
-    document.getElementById("activeDateLabel").textContent = `Поточний підрахунок: ${niceDate(day.date)}`;
-    document.getElementById("printReportTitle").textContent = `Залишки на ${niceDate(day.date)}`;
-
-    const list = document.getElementById("todayList");
-    const printList = document.getElementById("printTodayList");
-    list.innerHTML = "";
-    printList.innerHTML = "";
-
+  function buildDocumentRows(day) {
     const groups = groupEntries(day);
     if (!groups.length) {
-      list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
-      printList.innerHTML = `<div class="print-report-row"><div class="print-position-cell">Записів немає.</div><div class="print-total-cell"></div></div>`;
-      return;
+      return `<div class="print-report-row"><div class="print-position-cell">Записів немає.</div><div class="print-total-cell"></div></div>`;
     }
 
-    groups.forEach(g => {
-      const div = document.createElement("div");
-      div.className = "item report-item";
-
+    return groups.map(g => {
       const directWeights = [];
       const otherDetails = [];
 
@@ -2913,7 +3003,7 @@
         ...otherDetails
       ].filter(Boolean).map(escapeHtml).join("<br>");
 
-      printList.insertAdjacentHTML("beforeend", `
+      return `
         <div class="print-report-row">
           <div class="print-position-cell">
             <div class="name">${escapeHtml(g.name)}</div>
@@ -2921,7 +3011,29 @@
           </div>
           <div class="print-total-cell">${formatKg(g.totalKg)}</div>
         </div>
-      `);
+      `;
+    }).join("");
+  }
+
+  function renderToday() {
+    const day = getActiveDay();
+    document.getElementById("activeDateLabel").textContent = `Поточний підрахунок: ${niceDate(day.date)}`;
+    document.getElementById("printReportTitle").textContent = `Залишки на ${niceDate(day.date)}`;
+
+    const list = document.getElementById("todayList");
+    const printList = document.getElementById("printTodayList");
+    list.innerHTML = "";
+    printList.innerHTML = buildDocumentRows(day);
+
+    const groups = groupEntries(day);
+    if (!groups.length) {
+      list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
+      return;
+    }
+
+    groups.forEach(g => {
+      const div = document.createElement("div");
+      div.className = "item report-item";
 
       const entriesHtml = g.entries.map(e => `
         <div class="entry-row">
@@ -3018,10 +3130,10 @@
               ${p.defaultPieceKg ? `<span class="pill">штука ${p.defaultPieceKg} кг</span>` : ""}
             </div>
           </div>
-        </div>
-        <div class="actions">
-          <button class="smallbtn yellow" data-action="edit-product" data-id="${p.id}">Редагувати</button>
-          <button class="smallbtn danger" data-action="delete-product" data-id="${p.id}">Видалити</button>
+          <div class="actions list-item-actions">
+            <button class="smallbtn yellow" data-action="edit-product" data-id="${p.id}">Редагувати</button>
+            <button class="smallbtn danger" data-action="delete-product" data-id="${p.id}">Видалити</button>
+          </div>
         </div>
       `;
       list.appendChild(div);
@@ -3057,19 +3169,19 @@
         ? ""
         : `<div class="actions">
             <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
+            <button class="smallbtn" data-action="preview-day" data-id="${day.id}" aria-label="Попередній перегляд документа">Перегляд</button>
             <button class="smallbtn danger" data-action="delete-day" data-id="${day.id}">Видалити</button>
           </div>`;
 
       div.innerHTML = `
-        <div class="history-checkline">
+        <div class="history-checkline${historySelectMode ? " selecting" : ""}">
           ${checkboxHtml}
           <div>
-            <div class="item-top">
-              <div>
+            <div class="history-title-line">
                 <div class="name">${niceDate(day.date)}</div>
-                <div class="small">Записів: ${day.entries.length}\nСтворено: ${escapeHtml(day.createdAt)}</div>
-              </div>
+                <div class="history-created">Створено: ${escapeHtml(day.createdAt)}</div>
             </div>
+            <div class="small">Записів: ${day.entries.length}</div>
             ${buttonsHtml}
           </div>
         </div>
@@ -3086,19 +3198,26 @@
     renderHistory();
   }
 
-  function openDocumentPreview() {
-    renderToday();
-    document.getElementById("previewReportTitle").textContent =
-      document.getElementById("printReportTitle").textContent;
-    document.getElementById("previewTodayList").innerHTML =
-      document.getElementById("printTodayList").innerHTML;
+  function openDocumentPreview(dayId = null) {
+    const day = dayId ? state.days.find(item => item.id === dayId) : getActiveDay();
+    if (!day) {
+      toast("Підрахунок не знайдено", true);
+      return;
+    }
+
+    const reportTitle = `Залишки на ${niceDate(day.date)}`;
+    const reportRows = buildDocumentRows(day);
+    document.getElementById("printReportTitle").textContent = reportTitle;
+    document.getElementById("printTodayList").innerHTML = reportRows;
+    document.getElementById("previewReportTitle").textContent = reportTitle;
+    document.getElementById("previewTodayList").innerHTML = reportRows;
     document.getElementById("documentPreview").classList.remove("hidden");
-    document.body.classList.add("preview-open");
+    document.body.classList.add("preview-open", "printing-report");
   }
 
   function closeDocumentPreview() {
     document.getElementById("documentPreview").classList.add("hidden");
-    document.body.classList.remove("preview-open");
+    document.body.classList.remove("preview-open", "printing-report");
   }
 
   function selectProduct(id) {
@@ -3144,6 +3263,7 @@
     if (action === "edit-product") startEditProduct(id);
     if (action === "delete-product") deleteProduct(id);
     if (action === "select-day") selectDay(id);
+    if (action === "preview-day") openDocumentPreview(id);
     if (action === "delete-day") deleteDay(id);
     if (action === "select-product") selectProduct(id);
   });
@@ -3198,8 +3318,9 @@
   });
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
 
-  document.getElementById("previewDocumentBtn").addEventListener("click", openDocumentPreview);
+  document.getElementById("previewDocumentBtn").addEventListener("click", () => openDocumentPreview());
   document.getElementById("closeDocumentPreviewBtn").addEventListener("click", closeDocumentPreview);
+  document.getElementById("printPreviewBtn").addEventListener("click", () => window.print());
   document.getElementById("printBtn").addEventListener("click", () => window.print());
 
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
