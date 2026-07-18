@@ -204,7 +204,7 @@
       margin-top: 9px;
       padding-top: 9px;
     }
-    .report-item-layout {
+    .report-item {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 8px;
@@ -415,7 +415,14 @@
     @media print {
       @page {
         size: A4;
-        margin: 10mm;
+        margin: 6mm 7mm 11mm;
+
+        @bottom-center {
+          content: "Сторінка " counter(page) " із " counter(pages);
+          font-family: Arial, sans-serif;
+          font-size: 8px;
+          color: #555;
+        }
       }
 
       body {
@@ -455,32 +462,51 @@
         display: block;
       }
 
+      .screen-only {
+        display: none !important;
+      }
+
       .print-report-header {
-        margin-bottom: 7px;
+        margin-bottom: 4px;
       }
 
       .print-report-header h1 {
-        font-size: 15px;
+        font-size: 13px;
         text-align: left;
-        margin-bottom: 2px;
+        margin: 0;
+      }
+
+      .print-report-table {
+        display: table !important;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
       }
 
       .print-table-header {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 34mm;
-        background: #e5e7eb;
-        border: 1px solid #777;
+        display: table-header-group;
         font-size: 10px;
         font-weight: 700;
       }
 
-      .print-table-header > div {
-        padding: 4px 5px;
+      .print-table-header-row {
+        display: table-row;
       }
 
-      .print-table-header > div:last-child {
-        border-left: 1px solid #777;
+      .print-table-header-row > th {
+        background: #e5e7eb;
+        border: 1px solid #777;
+        padding: 3px 4px;
+        text-align: left;
+      }
+
+      .print-table-header-row > th:last-child {
+        width: 34mm;
         text-align: right;
+      }
+
+      #printTodayList {
+        display: table-row-group;
       }
 
       .card,
@@ -494,23 +520,19 @@
         border-radius: 0;
       }
 
-      .item {
-        border: none;
-        border-right: 1px solid #777;
-        border-bottom: 1px solid #777;
-        border-left: 1px solid #777;
-        padding: 0;
+      .print-report-row {
         page-break-inside: avoid;
+        break-inside: avoid;
       }
 
-      .report-item-layout {
-        grid-template-columns: minmax(0, 1fr) 34mm;
-        gap: 0;
-        align-items: stretch;
+      .print-report-row > td {
+        border: 1px solid #777;
+        padding: 3px 4px;
+        vertical-align: top;
       }
 
-      .report-item-content {
-        padding: 4px 5px;
+      .print-position-cell .name {
+        margin-bottom: 1px;
       }
 
       .item-top {
@@ -525,16 +547,13 @@
         font-weight: 700;
       }
 
-      .total {
+      .print-total-cell {
+        width: 34mm;
         color: black;
         font-size: 11px;
         font-weight: 700;
         white-space: nowrap;
-        border-left: 1px solid #777;
-        padding: 4px 5px;
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-end;
+        text-align: right;
       }
 
       .entry-row {
@@ -545,14 +564,17 @@
 
       .small {
         color: black;
-        font-size: 10px;
-        line-height: 1.15;
+        font-size: 9px;
+        line-height: 1.1;
         margin-top: 1px;
         white-space: pre-wrap;
       }
 
-      .report-item .entry-row {
-        padding-left: 8px;
+      .compact-details {
+        font-size: 9px;
+        line-height: 1.15;
+        margin-top: 1px;
+        overflow-wrap: anywhere;
       }
 
       h1, h2 {
@@ -613,8 +635,7 @@
   <div id="pageToday">
 
     <div class="print-only print-report-header">
-      <h1>Складський підрахунок</h1>
-      <div class="date-line" id="printDateLabel"></div>
+      <h1 id="printReportTitle"></h1>
     </div>
 
     <div class="card no-print">
@@ -673,11 +694,17 @@
       <button class="danger" id="clearDayBtn">Очистити поточний день</button>
     </div>
 
-    <div class="print-table-header">
-      <div>Позиція та окремі підрахунки</div>
-      <div>Загальна вага</div>
-    </div>
-    <div id="todayList"></div>
+    <div id="todayList" class="screen-only"></div>
+
+    <table class="print-only print-report-table">
+      <thead class="print-table-header">
+        <tr class="print-table-header-row">
+          <th>Позиція та підрахунки</th>
+          <th>Загальна вага</th>
+        </tr>
+      </thead>
+      <tbody id="printTodayList"></tbody>
+    </table>
   </div>
 
   <div id="pageHistory" class="hidden">
@@ -1490,20 +1517,62 @@
   function renderToday() {
     const day = getActiveDay();
     document.getElementById("activeDateLabel").textContent = `Поточний підрахунок: ${niceDate(day.date)}`;
-    document.getElementById("printDateLabel").textContent = `Підрахунок від ${niceDate(day.date)}`;
+    document.getElementById("printReportTitle").textContent = `Залишки на ${niceDate(day.date)}`;
 
     const list = document.getElementById("todayList");
+    const printList = document.getElementById("printTodayList");
     list.innerHTML = "";
+    printList.innerHTML = "";
 
     const groups = groupEntries(day);
     if (!groups.length) {
       list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
+      printList.innerHTML = `<tr class="print-report-row"><td colspan="2">Записів немає.</td></tr>`;
       return;
     }
 
     groups.forEach(g => {
       const div = document.createElement("div");
       div.className = "item report-item";
+
+      const directWeights = [];
+      const otherDetails = [];
+
+      g.entries.forEach(e => {
+        const directKg = Number(e.directKg || 0);
+        const parts = Array.isArray(e.parts) ? e.parts : [];
+
+        if (directKg > 0) {
+          let directText = formatKg(directKg);
+          if (e.comment && parts.length === 1) directText += ` (${e.comment})`;
+          directWeights.push(directText);
+        }
+
+        const remainingParts = parts.filter(part =>
+          !(directKg > 0 && /кг\s+окремо\s*$/i.test(String(part).trim()))
+        );
+
+        if (remainingParts.length) {
+          let detail = remainingParts.join(" + ");
+          if (e.comment) detail += ` — ${e.comment}`;
+          otherDetails.push(detail);
+        }
+      });
+
+      const compactDetails = [
+        directWeights.length ? `Окремо: ${directWeights.join(" + ")}` : "",
+        ...otherDetails
+      ].filter(Boolean).map(escapeHtml).join("<br>");
+
+      printList.insertAdjacentHTML("beforeend", `
+        <tr class="print-report-row">
+          <td class="print-position-cell">
+            <div class="name">${escapeHtml(g.name)}</div>
+            <div class="compact-details">${compactDetails}</div>
+          </td>
+          <td class="print-total-cell">${formatKg(g.totalKg)}</td>
+        </tr>
+      `);
 
       const entriesHtml = g.entries.map(e => `
         <div class="entry-row">
@@ -1516,13 +1585,11 @@
       `).join("");
 
       div.innerHTML = `
-        <div class="report-item-layout">
-          <div class="report-item-content">
-            <div class="name">${escapeHtml(g.name)}</div>
-            ${entriesHtml}
-          </div>
-          <div class="total">${formatKg(g.totalKg)}</div>
+        <div class="report-item-content">
+          <div class="name">${escapeHtml(g.name)}</div>
+          ${entriesHtml}
         </div>
+        <div class="total">${formatKg(g.totalKg)}</div>
       `;
 
       list.appendChild(div);
