@@ -1,9 +1,8 @@
-const CACHE_NAME = "oblik-zalyshkiv-v40";
+const CACHE_NAME = "oblik-zalyshkiv-v41";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./ios-haptics.js",
   "./icon-192.png",
   "./icon-512.png",
   "./banner.png"
