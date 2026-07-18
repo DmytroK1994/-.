@@ -1349,7 +1349,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">52</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">53</span></div>
     </div>
   </div>
 
@@ -1630,7 +1630,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">52</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">53</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1648,8 +1648,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">52</span></div>
-        <div class="small">Після закриття мобільної клавіатури головна сторінка автоматично повертається до положення, у якому була перед введенням даних.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">53</span></div>
+        <div class="small">Повернення сторінки після закриття клавіатури отримало коротку плавну анімацію без різкого стрибка.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1663,7 +1663,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "52";
+  const APP_VERSION = "53";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1721,6 +1721,7 @@
   let entryFormViewportHeight = null;
   let entryFormKeyboardDetected = false;
   let entryFormRestoreTimers = [];
+  let entryFormScrollAnimationFrame = 0;
 
   function isEntryFormKeyboardField(element) {
     return element instanceof Element && element.matches(
@@ -1731,6 +1732,44 @@
   function clearEntryFormRestoreTimers() {
     entryFormRestoreTimers.forEach(timer => clearTimeout(timer));
     entryFormRestoreTimers = [];
+    if (entryFormScrollAnimationFrame) {
+      cancelAnimationFrame(entryFormScrollAnimationFrame);
+      entryFormScrollAnimationFrame = 0;
+    }
+  }
+
+  function finishEntryFormScrollRestore() {
+    entryFormScrollY = null;
+    entryFormViewportHeight = null;
+    entryFormKeyboardDetected = false;
+    entryFormRestoreTimers = [];
+    entryFormScrollAnimationFrame = 0;
+  }
+
+  function animateEntryFormScrollRestore(targetY, duration = 200) {
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    if (Math.abs(distance) < 1) {
+      window.scrollTo(0, targetY);
+      finishEntryFormScrollRestore();
+      return;
+    }
+
+    let startedAt = null;
+    const animate = timestamp => {
+      if (startedAt === null) startedAt = timestamp;
+      const progress = Math.min(1, (timestamp - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      window.scrollTo(0, startY + distance * eased);
+
+      if (progress < 1) {
+        entryFormScrollAnimationFrame = requestAnimationFrame(animate);
+      } else {
+        finishEntryFormScrollRestore();
+      }
+    };
+
+    entryFormScrollAnimationFrame = requestAnimationFrame(animate);
   }
 
   function rememberEntryFormScrollPosition() {
@@ -1745,20 +1784,13 @@
     if (entryFormScrollY === null) return;
     clearEntryFormRestoreTimers();
     const savedY = entryFormScrollY;
-    const delays = [80, 240, 520];
-
-    entryFormRestoreTimers = delays.map((delay, index) => setTimeout(() => {
+    const timer = setTimeout(() => {
+      entryFormRestoreTimers = [];
       const fieldStillFocused = isEntryFormKeyboardField(document.activeElement);
       if (fieldStillFocused && !force) return;
-
-      window.scrollTo({ top: savedY, left: 0, behavior: "auto" });
-      if (index === delays.length - 1) {
-        entryFormScrollY = null;
-        entryFormViewportHeight = null;
-        entryFormKeyboardDetected = false;
-        entryFormRestoreTimers = [];
-      }
-    }, delay));
+      animateEntryFormScrollRestore(savedY, 200);
+    }, 70);
+    entryFormRestoreTimers = [timer];
   }
 
   function initEntryFormKeyboardScrollRestore() {
