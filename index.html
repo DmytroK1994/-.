@@ -316,6 +316,32 @@
       gap: 8px;
       align-items: start;
     }
+    #todayList .report-item {
+      display: block;
+    }
+    #todayList .report-item-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 8px;
+    }
+    #todayList .entry-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+    #todayList .entry-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 82px);
+      justify-self: end;
+      gap: 6px;
+      margin: 0;
+    }
+    #todayList .entry-actions button {
+      width: 82px;
+      margin: 0;
+    }
     .print-only,
     .print-table-header {
       display: none;
@@ -785,6 +811,13 @@
       font-size: 12px;
       line-height: 1.15;
     }
+    #historySelectActions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    #historySelectActions button {
+      width: 100%;
+    }
     #historyList {
       margin-top: 4px;
     }
@@ -830,6 +863,18 @@
         justify-content: flex-end;
         gap: 5px;
         margin-top: 5px;
+      }
+      #todayList .entry-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 72px);
+        justify-self: end;
+        gap: 5px;
+        margin: 0;
+      }
+      #todayList .entry-actions button.smallbtn {
+        width: 72px;
+        min-width: 72px;
+        margin: 0;
       }
       #todayList button.smallbtn,
       #productsList button.smallbtn {
@@ -889,6 +934,15 @@
         min-height: 38px;
         padding: 5px 3px;
         font-size: 10.5px;
+        line-height: 1.1;
+      }
+      #historySelectActions {
+        gap: 4px;
+      }
+      #historySelectActions button {
+        min-height: 38px;
+        padding: 5px 3px;
+        font-size: 10px;
         line-height: 1.1;
       }
       #historyList .item {
@@ -1133,6 +1187,84 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
+    .app-dialog-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 240;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 18px);
+      background: rgba(2, 6, 23, .76);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    body.app-dialog-open {
+      overflow: hidden;
+    }
+    .app-dialog {
+      width: min(100%, 440px);
+      padding: 20px;
+      border: 1px solid var(--border-strong);
+      border-radius: 24px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+      animation: app-dialog-in .2s cubic-bezier(.2, .75, .25, 1) both;
+    }
+    .app-dialog.destructive {
+      border-color: rgba(239, 68, 68, .55);
+    }
+    .app-dialog-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border: 1px solid rgba(59, 130, 246, .42);
+      border-radius: 999px;
+      background: rgba(37, 99, 235, .13);
+      color: var(--accent-soft);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .45px;
+      text-transform: uppercase;
+    }
+    .app-dialog.destructive .app-dialog-label {
+      border-color: rgba(239, 68, 68, .42);
+      background: rgba(220, 38, 38, .13);
+      color: #f87171;
+    }
+    .app-dialog h2 {
+      margin: 0 0 9px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+    .app-dialog-message {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+    .app-dialog-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .app-dialog-actions button {
+      margin: 0;
+    }
+    @keyframes app-dialog-in {
+      from { opacity: 0; transform: translateY(12px) scale(.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (max-width: 390px) {
+      .app-dialog-actions {
+        grid-template-columns: 1fr;
+      }
+    }
     body.reset-confirmation-open {
       overflow: hidden;
     }
@@ -1349,6 +1481,7 @@
       .toast,
       .card.no-print,
       .document-preview-overlay,
+      .app-dialog-overlay,
       .reset-confirmation-overlay,
       .app-splash,
       #pageHistory,
@@ -1556,7 +1689,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">58</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">61</span></div>
     </div>
   </div>
 
@@ -1689,6 +1822,18 @@
     </div>
   </div>
 
+  <div class="app-dialog-overlay hidden" id="appDialogOverlay" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
+    <div class="app-dialog" id="appDialog">
+      <div class="app-dialog-label" id="appDialogLabel">Підтвердження</div>
+      <h2 id="appDialogTitle">Підтвердити дію?</h2>
+      <p class="app-dialog-message" id="appDialogMessage"></p>
+      <div class="app-dialog-actions">
+        <button class="secondary" id="appDialogCancelBtn">Скасувати</button>
+        <button id="appDialogConfirmBtn">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+
   <div class="reset-confirmation-overlay hidden" id="resetConfirmation" role="dialog" aria-modal="true" aria-labelledby="resetConfirmationTitle">
     <div class="reset-confirmation-dialog">
       <div class="reset-warning-label">Увага</div>
@@ -1720,6 +1865,7 @@
         <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
       </div>
       <div class="actions history-toolbar no-print hidden" id="historySelectActions">
+        <button id="selectAllHistoryBtn">Вибрати все</button>
         <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
         <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
       </div>
@@ -1841,7 +1987,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">58</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">61</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1859,8 +2005,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">58</span></div>
-        <div class="small">Кнопки в списку найменувань вирівняно по правому краю, а попередній перегляд документа тепер можна плавно закрити свайпом вправо або вліво.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">61</span></div>
+        <div class="small">Кнопки редагування та видалення в поточному підрахунку винесено в однакову праву колонку й вирівняно по краю кожної картки.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1874,7 +2020,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "58";
+  const APP_VERSION = "61";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1934,6 +2080,9 @@
   let keyboardWasDetected = false;
   let keyboardRestoreTimers = [];
   let keyboardScrollAnimationFrame = 0;
+  let appDialogResolver = null;
+  let appDialogPreviousFocus = null;
+  const editReturnScroll = { entry: null, product: null };
 
   function isAppKeyboardField(element) {
     return element instanceof Element && Boolean(element.closest(
@@ -2214,6 +2363,62 @@
     setTimeout(() => el.style.display = "none", 1800);
   }
 
+  function showAppDialog({
+    label = "Підтвердження",
+    title = "Підтвердити дію?",
+    message = "",
+    confirmText = "Підтвердити",
+    danger = false
+  } = {}) {
+    if (appDialogResolver) appDialogResolver(false);
+
+    const overlay = document.getElementById("appDialogOverlay");
+    const dialog = document.getElementById("appDialog");
+    const confirmButton = document.getElementById("appDialogConfirmBtn");
+    appDialogPreviousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    document.getElementById("appDialogLabel").textContent = label;
+    document.getElementById("appDialogTitle").textContent = title;
+    document.getElementById("appDialogMessage").textContent = message;
+    confirmButton.textContent = confirmText;
+    confirmButton.classList.toggle("danger", danger);
+    dialog.classList.toggle("destructive", danger);
+    overlay.classList.remove("hidden");
+    document.body.classList.add("app-dialog-open");
+    document.getElementById("appDialogCancelBtn").focus();
+
+    return new Promise(resolve => {
+      appDialogResolver = resolve;
+    });
+  }
+
+  function closeAppDialog(result = false) {
+    if (!appDialogResolver) return;
+    const resolve = appDialogResolver;
+    appDialogResolver = null;
+    document.getElementById("appDialogOverlay").classList.add("hidden");
+    document.body.classList.remove("app-dialog-open");
+    resolve(result);
+    if (appDialogPreviousFocus?.isConnected) appDialogPreviousFocus.focus({ preventScroll: true });
+    appDialogPreviousFocus = null;
+  }
+
+  function rememberEditPosition(type) {
+    editReturnScroll[type] = window.scrollY;
+  }
+
+  function restoreEditPosition(type) {
+    const targetY = editReturnScroll[type];
+    editReturnScroll[type] = null;
+    if (targetY === null) return;
+
+    window.setTimeout(() => {
+      clearKeyboardRestoreTimers();
+      finishKeyboardScrollRestore();
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+    }, 300);
+  }
+
   function escapeHtml(str) {
     return String(str || "").replace(/[&<>"']/g, s => ({
       "&": "&amp;",
@@ -2333,7 +2538,9 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
-      if (!document.getElementById("documentPreview").classList.contains("hidden")) {
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation"]
+        .some(id => !document.getElementById(id).classList.contains("hidden"));
+      if (overlayIsOpen) {
         swipeMode = "";
         return;
       }
@@ -2525,7 +2732,15 @@
     scrollAppToTop();
   }
 
-  function createNewDay() {
+  async function createNewDay() {
+    const confirmed = await showAppDialog({
+      label: "Новий підрахунок",
+      title: "Створити новий підрахунок?",
+      message: `Буде створено окремий підрахунок на ${niceDate(todayISO())}. Поточний підрахунок залишиться збереженим в історії.`,
+      confirmText: "Створити"
+    });
+    if (!confirmed) return;
+
     const id = uid();
     state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
     state.activeDayId = id;
@@ -2542,14 +2757,21 @@
     showPage("today");
   }
 
-  function deleteDay(id) {
+  async function deleteDay(id) {
     const day = state.days.find(d => d.id === id);
     if (!day) {
       toast("Підрахунок не знайдено", true);
       return;
     }
 
-    if (!confirm(`Точно видалити підрахунок від ${niceDate(day.date)}?`)) return;
+    const confirmed = await showAppDialog({
+      label: "Видалення",
+      title: "Видалити підрахунок?",
+      message: `Підрахунок від ${niceDate(day.date)} буде видалено безповоротно.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
 
     state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
@@ -2569,19 +2791,49 @@
     renderHistory();
   }
 
+  function allHistoryDaysSelected() {
+    return state.days.length > 0 && state.days.every(day => selectedHistoryIds.has(day.id));
+  }
+
+  function updateSelectAllHistoryButton() {
+    const button = document.getElementById("selectAllHistoryBtn");
+    if (!button) return;
+    const allSelected = allHistoryDaysSelected();
+    button.textContent = allSelected ? "Зняти все" : "Вибрати все";
+    button.classList.toggle("yellow", allSelected);
+    button.setAttribute("aria-pressed", String(allSelected));
+  }
+
+  function toggleSelectAllHistory() {
+    if (allHistoryDaysSelected()) {
+      selectedHistoryIds.clear();
+    } else {
+      state.days.forEach(day => selectedHistoryIds.add(day.id));
+    }
+    renderHistory();
+  }
+
   function toggleHistorySelected(id, checked) {
     if (checked) selectedHistoryIds.add(id);
     else selectedHistoryIds.delete(id);
+    updateSelectAllHistoryButton();
   }
 
-  function deleteSelectedHistory() {
+  async function deleteSelectedHistory() {
     const ids = Array.from(selectedHistoryIds);
     if (!ids.length) {
       toast("Нічого не вибрано", true);
       return;
     }
 
-    if (!confirm(`Точно видалити вибрані підрахунки (${ids.length})?`)) return;
+    const confirmed = await showAppDialog({
+      label: "Видалення",
+      title: "Видалити вибрані підрахунки?",
+      message: `Буде безповоротно видалено: ${ids.length}.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
 
     state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
     if (!state.days.some(d => d.id === state.activeDayId)) {
@@ -2595,14 +2847,21 @@
     toast("Вибрану історію видалено");
   }
 
-  function deleteEmptyDays() {
+  async function deleteEmptyDays() {
     const count = state.days.filter(d => !d.entries.length).length;
     if (!count) {
       toast("Порожніх підрахунків немає");
       return;
     }
 
-    if (!confirm(`Точно видалити порожні підрахунки (${count})?`)) return;
+    const confirmed = await showAppDialog({
+      label: "Видалення",
+      title: "Видалити порожні підрахунки?",
+      message: `Буде безповоротно видалено порожніх підрахунків: ${count}.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
 
     state.days = state.days.filter(d => d.entries.length > 0);
     if (!state.days.some(d => d.id === state.activeDayId)) {
@@ -2614,13 +2873,20 @@
     toast("Порожню історію видалено");
   }
 
-  function deleteAllHistory() {
+  async function deleteAllHistory() {
     if (!state.days.length) {
       toast("Історії ще немає", true);
       return;
     }
 
-    if (!confirm("Точно повністю очистити всю історію підрахунків?")) return;
+    const confirmed = await showAppDialog({
+      label: "Увага",
+      title: "Очистити всю історію?",
+      message: "Усі збережені підрахунки буде видалено безповоротно.",
+      confirmText: "Очистити історію",
+      danger: true
+    });
+    if (!confirmed) return;
 
     state.days = [];
     state.activeDayId = null;
@@ -2662,6 +2928,7 @@
     }
 
     const editingId = document.getElementById("editingEntryId").value;
+    const wasEditing = Boolean(editingId);
 
     const entryData = {
       productId,
@@ -2688,6 +2955,7 @@
       if (!old) {
         toast("Запис не знайдено", true);
         clearEntryForm();
+        restoreEditPosition("entry");
         return;
       }
       Object.assign(old, entryData, { editedAt: nowText() });
@@ -2703,12 +2971,15 @@
 
     clearEntryForm();
     save();
+    if (wasEditing) restoreEditPosition("entry");
   }
 
   function startEditEntry(id) {
     const day = getActiveDay();
     const e = day.entries.find(x => x.id === id);
     if (!e) return;
+
+    rememberEditPosition("entry");
 
     document.getElementById("editingEntryId").value = e.id;
     document.getElementById("productSelect").value = e.productId;
@@ -2724,7 +2995,7 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function deleteEntry(id) {
+  async function deleteEntry(id) {
     const day = getActiveDay();
     const entry = day.entries.find(e => e.id === id);
     if (!entry) {
@@ -2732,7 +3003,14 @@
       return;
     }
 
-    if (!confirm(`Точно видалити запис «${entry.productName}»?`)) return;
+    const confirmed = await showAppDialog({
+      label: "Видалення",
+      title: "Видалити позицію?",
+      message: `Запис «${entry.productName}» буде видалено з поточного підрахунку.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
     day.entries = day.entries.filter(e => e.id !== id);
 
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
@@ -2771,6 +3049,7 @@
 
   function saveProduct() {
     const editingId = document.getElementById("editingProductId").value;
+    const wasEditing = Boolean(editingId);
     const name = document.getElementById("newProductName").value.trim();
     const defaultPalletKg = Number(document.getElementById("newDefaultPalletKg").value || 0);
     const defaultPieceKg = Number(document.getElementById("newDefaultPieceKg").value || 0);
@@ -2808,11 +3087,14 @@
     state.products = sortedProducts();
     clearProductForm();
     save();
+    if (wasEditing) restoreEditPosition("product");
   }
 
   function startEditProduct(id) {
     const p = state.products.find(x => x.id === id);
     if (!p) return;
+
+    rememberEditPosition("product");
 
     document.getElementById("editingProductId").value = p.id;
     document.getElementById("newProductName").value = p.name;
@@ -2823,14 +3105,21 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function deleteProduct(id) {
+  async function deleteProduct(id) {
     const product = state.products.find(p => p.id === id);
     if (!product) {
       toast("Найменування не знайдено", true);
       return;
     }
 
-    if (!confirm(`Точно видалити найменування «${product.name}»?`)) return;
+    const confirmed = await showAppDialog({
+      label: "Видалення",
+      title: "Видалити найменування?",
+      message: `Найменування «${product.name}» буде видалено зі списку. Записи в уже збережених підрахунках залишаться.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
     state.products = state.products.filter(p => p.id !== id);
     if (document.getElementById("editingProductId").value === id) clearProductForm();
     save();
@@ -3158,7 +3447,7 @@
       const entriesHtml = g.entries.map(e => `
         <div class="entry-row">
           <div class="small">• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
-          <div class="actions">
+          <div class="actions entry-actions">
             <button class="smallbtn yellow" data-action="edit-entry" data-id="${e.id}">Редагувати</button>
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
           </div>
@@ -3166,11 +3455,11 @@
       `).join("");
 
       div.innerHTML = `
-        <div class="report-item-content">
+        <div class="report-item-header">
           <div class="name">${escapeHtml(g.name)}</div>
-          ${entriesHtml}
+          <div class="total">${formatKg(g.totalKg)}</div>
         </div>
-        <div class="total">${formatKg(g.totalKg)}</div>
+        <div class="report-item-content">${entriesHtml}</div>
       `;
 
       list.appendChild(div);
@@ -3271,6 +3560,7 @@
       normalActions.classList.toggle("hidden", historySelectMode);
       selectActions.classList.toggle("hidden", !historySelectMode);
     }
+    updateSelectAllHistoryButton();
 
     if (!state.days.length) {
       list.innerHTML = `<div class="empty">Історії ще немає.</div>`;
@@ -3400,6 +3690,7 @@
   document.getElementById("pageBackBtn").addEventListener("click", navigateBack);
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
   document.getElementById("toggleHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(true));
+  document.getElementById("selectAllHistoryBtn").addEventListener("click", toggleSelectAllHistory);
   document.getElementById("cancelHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(false));
   document.getElementById("deleteSelectedHistoryBtn").addEventListener("click", deleteSelectedHistory);
   document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
@@ -3415,9 +3706,11 @@
     scheduleKeyboardScrollRestore();
   });
   document.getElementById("cancelEditBtn").addEventListener("click", () => {
+    const wasEditing = Boolean(document.getElementById("editingEntryId").value);
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     clearEntryForm();
     scheduleKeyboardScrollRestore();
+    if (wasEditing) restoreEditPosition("entry");
   });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
@@ -3444,7 +3737,13 @@
   document.getElementById("printBtn").addEventListener("click", () => window.print());
 
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
-  document.getElementById("cancelProductBtn").addEventListener("click", clearProductForm);
+  document.getElementById("cancelProductBtn").addEventListener("click", () => {
+    const wasEditing = Boolean(document.getElementById("editingProductId").value);
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    clearProductForm();
+    scheduleKeyboardScrollRestore();
+    if (wasEditing) restoreEditPosition("product");
+  });
   document.getElementById("bulkAddProductsBtn").addEventListener("click", bulkAddProducts);
   document.getElementById("productListSearch").addEventListener("input", () => { updateProductListSearchClearButton(); renderProducts(); });
   document.getElementById("clearProductListSearchBtn").addEventListener("click", clearProductListSearch);
@@ -3453,6 +3752,11 @@
   document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
   document.getElementById("importBtn").addEventListener("click", importBackup);
   document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
+  document.getElementById("appDialogCancelBtn").addEventListener("click", () => closeAppDialog(false));
+  document.getElementById("appDialogConfirmBtn").addEventListener("click", () => closeAppDialog(true));
+  document.getElementById("appDialogOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeAppDialog(false);
+  });
   document.getElementById("cancelResetBtn").addEventListener("click", closeResetConfirmation);
   document.getElementById("resetConfirmationInput").addEventListener("input", event => {
     document.getElementById("confirmResetBtn").disabled = event.target.value.trim().toUpperCase() !== "ВИДАЛИТИ";
@@ -3471,6 +3775,11 @@
 
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
+
+    if (!document.getElementById("appDialogOverlay").classList.contains("hidden")) {
+      closeAppDialog(false);
+      return;
+    }
 
     if (!document.getElementById("resetConfirmation").classList.contains("hidden")) {
       closeResetConfirmation();
