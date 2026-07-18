@@ -339,6 +339,29 @@
       align-items: center;
       gap: 8px;
     }
+    #todayList .entry-row.recently-edited-entry {
+      margin-right: -5px;
+      margin-left: -5px;
+      padding: 8px 6px 8px 9px;
+      border: 1px solid rgba(34, 197, 94, .58);
+      border-left: 4px solid #22c55e;
+      border-radius: 11px;
+      background: rgba(34, 197, 94, .2);
+      box-shadow: 0 5px 16px rgba(34, 197, 94, .13);
+    }
+    .edited-entry-label {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 5px 2px 0;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, .92);
+      color: white;
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: .15px;
+    }
     #todayList .entry-actions {
       display: grid;
       grid-template-columns: repeat(2, 82px);
@@ -1714,7 +1737,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">63</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">64</span></div>
     </div>
   </div>
 
@@ -2019,7 +2042,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">63</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">64</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2037,8 +2060,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">63</span></div>
-        <div class="small">Вибрана для редагування позиція підсвічується зеленим до вибору іншої, а мобільні кнопки розширено для повного відображення написів.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">64</span></div>
+        <div class="small">Окрім зеленої картки товару, тепер окремо позначається конкретний рядок ваги, який було успішно відредаговано.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2052,7 +2075,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "63";
+  const APP_VERSION = "64";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3002,6 +3025,7 @@
         return;
       }
       Object.assign(old, entryData, { editedAt: nowText() });
+      highlightedEntryId = editingId;
       toast("Запис оновлено");
     } else {
       day.entries.push({
@@ -3023,8 +3047,6 @@
     if (!e) return;
 
     rememberEditPosition("entry");
-    highlightedEntryId = id;
-    renderToday();
 
     document.getElementById("editingEntryId").value = e.id;
     document.getElementById("productSelect").value = e.productId;
@@ -3526,15 +3548,18 @@
       const isHighlighted = g.entries.some(entry => entry.id === highlightedEntryId);
       div.className = `item report-item${isHighlighted ? " recently-edited" : ""}`;
 
-      const entriesHtml = g.entries.map(e => `
-        <div class="entry-row">
-          <div class="small">• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
+      const entriesHtml = g.entries.map(e => {
+        const isEditedEntry = e.id === highlightedEntryId;
+        return `
+        <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}">
+          <div class="small">${isEditedEntry ? `<span class="edited-entry-label">Відредаговано</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
           <div class="actions entry-actions">
             <button class="smallbtn yellow" data-action="edit-entry" data-id="${e.id}">Редагувати</button>
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
           </div>
         </div>
-      `).join("");
+      `;
+      }).join("");
 
       div.innerHTML = `
         <div class="report-item-header">
