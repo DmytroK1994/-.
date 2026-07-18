@@ -658,6 +658,77 @@
       border-radius: 16px;
       background: var(--surface-deep);
     }
+    .reset-confirmation-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 230;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 18px);
+      background: rgba(2, 6, 23, .82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    body.reset-confirmation-open {
+      overflow: hidden;
+    }
+    .reset-confirmation-dialog {
+      width: min(100%, 520px);
+      padding: 20px;
+      border: 1px solid #7f1d1d;
+      border-radius: 24px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+    }
+    .reset-warning-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 11px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: rgba(220, 38, 38, .16);
+      border: 1px solid rgba(239, 68, 68, .45);
+      color: #f87171;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+    .reset-confirmation-dialog h2 {
+      margin-bottom: 10px;
+      font-size: 23px;
+    }
+    .reset-confirmation-dialog p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .reset-data-list {
+      margin: 0 0 14px;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .reset-final-warning {
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(220, 38, 38, .11);
+      border: 1px solid rgba(239, 68, 68, .35);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+    .reset-confirmation-actions {
+      display: grid;
+      gap: 9px;
+    }
 
     @media print {
       @page {
@@ -691,6 +762,7 @@
       .toast,
       .card.no-print,
       .document-preview-overlay,
+      .reset-confirmation-overlay,
       #pageHistory,
       #pageProducts,
       #pageSettings,
@@ -892,7 +964,7 @@
     <button class="menu-btn" data-page="about">Про додаток</button>
     <button class="menu-btn" data-page="install">Встановлення</button>
     <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
-    <div class="menu-version">Версія <span id="menuVersionLabel">20</span></div>
+    <div class="menu-version">Версія <span id="menuVersionLabel">21</span></div>
   </aside>
 
   <div class="app-header no-print">
@@ -990,6 +1062,24 @@
           <div>Загальна вага</div>
         </div>
         <div id="previewTodayList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reset-confirmation-overlay hidden" id="resetConfirmation" role="dialog" aria-modal="true" aria-labelledby="resetConfirmationTitle">
+    <div class="reset-confirmation-dialog">
+      <div class="reset-warning-label">Увага</div>
+      <h2 id="resetConfirmationTitle">Повністю очистити програму?</h2>
+      <p>Після підтвердження з цього пристрою буде назавжди видалено:</p>
+      <ul class="reset-data-list">
+        <li>усі найменування та типові ваги;</li>
+        <li>поточний підрахунок;</li>
+        <li>всю історію підрахунків.</li>
+      </ul>
+      <div class="reset-final-warning">Цю дію неможливо скасувати. Відновити дані можна буде лише з попередньо збереженої резервної копії.</div>
+      <div class="reset-confirmation-actions">
+        <button class="secondary" id="cancelResetBtn">Скасувати</button>
+        <button class="danger" id="confirmResetBtn">Так, стерти всі дані</button>
       </div>
     </div>
   </div>
@@ -1105,7 +1195,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Складський журнал</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">20</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">21</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1123,8 +1213,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">20</span></div>
-        <div class="small">Оновлений сучасний дизайн, безпечні відступи для iPhone, чистіше меню та стабільні межі таблиці у багатосторінковому PDF.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">21</span></div>
+        <div class="small">Додано захищене повноекранне підтвердження перед повним очищенням програми, щоб усі дані не можна було стерти випадковим натисканням.</div>
       </div>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
@@ -1137,7 +1227,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "20";
+  const APP_VERSION = "21";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEMES = ["dark", "beige", "white"];
@@ -1698,6 +1788,7 @@
   }
 
   function resetApp() {
+    closeResetConfirmation();
     state = { products: [], days: [], activeDayId: null };
     localStorage.removeItem("warehouseJournalV2");
     save();
@@ -1705,6 +1796,17 @@
     clearProductForm();
     toast("Програму очищено");
     showPage("today");
+  }
+
+  function openResetConfirmation() {
+    document.getElementById("resetConfirmation").classList.remove("hidden");
+    document.body.classList.add("reset-confirmation-open");
+    document.getElementById("cancelResetBtn").focus();
+  }
+
+  function closeResetConfirmation() {
+    document.getElementById("resetConfirmation").classList.add("hidden");
+    document.body.classList.remove("reset-confirmation-open");
   }
 
   function sortedProducts() {
@@ -2158,7 +2260,9 @@
   document.getElementById("copyBackupBtn").addEventListener("click", copyBackup);
   document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
   document.getElementById("importBtn").addEventListener("click", importBackup);
-  document.getElementById("resetBtn").addEventListener("click", resetApp);
+  document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
+  document.getElementById("cancelResetBtn").addEventListener("click", closeResetConfirmation);
+  document.getElementById("confirmResetBtn").addEventListener("click", resetApp);
   document.getElementById("themeSelect").addEventListener("change", event => {
     applyTheme(event.target.value);
     toast("Тему змінено");
@@ -2167,9 +2271,14 @@
   document.getElementById("updateAppMenuBtn").addEventListener("click", updateApp);
 
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !document.getElementById("documentPreview").classList.contains("hidden")) {
-      closeDocumentPreview();
+    if (event.key !== "Escape") return;
+
+    if (!document.getElementById("resetConfirmation").classList.contains("hidden")) {
+      closeResetConfirmation();
+      return;
     }
+
+    if (!document.getElementById("documentPreview").classList.contains("hidden")) closeDocumentPreview();
   });
 
   document.addEventListener("click", function (event) {
