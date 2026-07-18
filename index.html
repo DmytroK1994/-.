@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" class="splash-active">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -338,7 +338,7 @@
       box-shadow: 20px 0 45px rgba(0, 0, 0, .24);
     }
 
-    body.drawer-open .app-header {
+    html.drawer-open .app-header {
       display: none;
     }
 
@@ -458,8 +458,12 @@
       .drawer {
         display: flex;
         flex-direction: column;
+        left: -100vw;
+        width: 100vw;
         overflow: hidden;
+        border-right: 0;
         padding-bottom: 0;
+        box-shadow: none;
       }
       .drawer-menu-content {
         flex: 1 1 auto;
@@ -642,7 +646,7 @@
       color: #111;
       padding: calc(68px + env(safe-area-inset-top)) 12px calc(20px + env(safe-area-inset-bottom));
     }
-    body.preview-open {
+    html.preview-open {
       overflow: hidden;
     }
     .preview-toolbar {
@@ -807,7 +811,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-    body.reset-confirmation-open {
+    html.reset-confirmation-open {
       overflow: hidden;
     }
     .reset-confirmation-dialog {
@@ -897,7 +901,7 @@
       color: var(--text);
       animation: splash-fade-out .5s ease 3.1s forwards;
     }
-    body.splash-active {
+    html.splash-active {
       overflow: hidden;
     }
     .splash-content {
@@ -1214,9 +1218,10 @@
 <meta name="twitter:description" content="Облік сировини, піддонів та складських залишків">
 <meta name="twitter:image" content="https://dmytrok1994.github.io/-./banner.png">
 
+<script src="ios-haptics.js"></script>
 
 </head>
-<body class="splash-active">
+<body>
   <div class="app-splash" id="appSplash" aria-label="Запуск Обліку залишків">
     <div class="splash-content">
       <div class="splash-mark" aria-hidden="true">
@@ -1227,7 +1232,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">39</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">41</span></div>
     </div>
   </div>
 
@@ -1242,7 +1247,7 @@
       <button class="menu-btn" data-page="history">Історія</button>
       <button class="menu-btn" data-page="management">Керування</button>
       <button class="menu-btn" data-page="about">Про додаток</button>
-      <div class="menu-version">Версія <span id="menuVersionLabel">39</span></div>
+      <div class="menu-version">Версія <span id="menuVersionLabel">41</span></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
@@ -1505,7 +1510,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">39</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">41</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1523,8 +1528,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">39</span></div>
-        <div class="small">Сенсорне гортання меню знову має межі: на першому пункті рух угору зупиняється, а на останньому зупиняється рух униз.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">41</span></div>
+        <div class="small">На iPhone та Android меню розгортається на весь екран. Свайп уліво закриває відкрите меню на обох платформах.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1538,7 +1543,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "39";
+  const APP_VERSION = "41";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1572,7 +1577,7 @@
   }
 
   function finishSplashScreen() {
-    document.body.classList.remove("splash-active");
+    document.documentElement.classList.remove("splash-active");
     const splash = document.getElementById("appSplash");
     if (splash) splash.remove();
   }
@@ -1596,6 +1601,7 @@
 
   const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const IS_TOUCH_DEVICE = navigator.maxTouchPoints > 0 || "ontouchstart" in window;
 
   function isStandaloneApp() {
     return window.matchMedia("(display-mode: standalone)").matches ||
@@ -1886,8 +1892,8 @@
     });
   }
 
-  function initIphoneEdgeSwipe() {
-    if (!IS_IOS) return;
+  function initPhoneSwipeNavigation() {
+    if (!IS_TOUCH_DEVICE) return;
 
     let swipeMode = "";
     let swipeStartX = 0;
@@ -1898,7 +1904,7 @@
       const touch = event.touches[0];
       const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
 
-      if (!drawerIsOpen) {
+      if (!drawerIsOpen && IS_IOS) {
         swipeMode = "open";
       } else if (drawerIsOpen && touch.clientX <= document.getElementById("drawer").getBoundingClientRect().right) {
         swipeMode = "close";
@@ -1932,14 +1938,14 @@
   }
 
   function openMenu() {
-    document.body.classList.add("drawer-open");
+    document.documentElement.classList.add("drawer-open");
     document.getElementById("drawer").classList.add("open");
     document.getElementById("drawerBg").classList.add("open");
     initializeGestureMenuSelection();
   }
 
   function closeMenu() {
-    document.body.classList.remove("drawer-open");
+    document.documentElement.classList.remove("drawer-open");
     document.getElementById("drawer").classList.remove("open");
     document.getElementById("drawerBg").classList.remove("open");
     getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
@@ -2418,13 +2424,13 @@
     input.value = "";
     confirmButton.disabled = true;
     document.getElementById("resetConfirmation").classList.remove("hidden");
-    document.body.classList.add("reset-confirmation-open");
+    document.documentElement.classList.add("reset-confirmation-open");
     document.getElementById("cancelResetBtn").focus();
   }
 
   function closeResetConfirmation() {
     document.getElementById("resetConfirmation").classList.add("hidden");
-    document.body.classList.remove("reset-confirmation-open");
+    document.documentElement.classList.remove("reset-confirmation-open");
     document.getElementById("resetConfirmationInput").value = "";
     document.getElementById("confirmResetBtn").disabled = true;
   }
@@ -2777,12 +2783,12 @@
     document.getElementById("previewTodayList").innerHTML =
       document.getElementById("printTodayList").innerHTML;
     document.getElementById("documentPreview").classList.remove("hidden");
-    document.body.classList.add("preview-open");
+    document.documentElement.classList.add("preview-open");
   }
 
   function closeDocumentPreview() {
     document.getElementById("documentPreview").classList.add("hidden");
-    document.body.classList.remove("preview-open");
+    document.documentElement.classList.remove("preview-open");
   }
 
   function selectProduct(id) {
@@ -2928,7 +2934,7 @@
   render();
   updatePageBackButton();
   initGestureMenuPad();
-  initIphoneEdgeSwipe();
+  initPhoneSwipeNavigation();
   updateInstallUI();
   registerServiceWorker();
   setTimeout(finishSplashScreen, 3650);
