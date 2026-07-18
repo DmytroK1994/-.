@@ -270,6 +270,23 @@
       gap: 8px;
       align-items: flex-start;
     }
+    #productsList .item-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      width: 100%;
+    }
+    #productsList .list-item-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 82px);
+      justify-self: end;
+      gap: 6px;
+      margin: 0;
+    }
+    #productsList .list-item-actions button {
+      width: 82px;
+      margin: 0;
+    }
     .name {
       font-weight: 900;
       font-size: 16px;
@@ -832,7 +849,15 @@
         gap: 6px;
       }
       #productsList .list-item-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 72px);
+        justify-self: end;
         margin-top: 0;
+      }
+      #productsList .list-item-actions button.smallbtn {
+        width: 72px;
+        min-width: 72px;
+        margin: 0;
       }
       #productsList .pill {
         padding: 3px 6px;
@@ -900,9 +925,22 @@
       inset: 0;
       z-index: 200;
       overflow: auto;
+      overscroll-behavior-x: none;
       background: #d7dbe1;
       color: #111;
       padding: calc(68px + env(safe-area-inset-top)) 12px calc(20px + env(safe-area-inset-bottom));
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+      transition: transform .24s cubic-bezier(.22, .75, .28, 1), border-radius .24s ease, box-shadow .24s ease;
+    }
+    .document-preview-overlay.preview-swipe-active {
+      transition: none;
+      border-radius: 20px;
+      box-shadow: 0 0 34px rgba(0, 0, 0, .38);
+    }
+    .document-preview-overlay.preview-swipe-settling {
+      border-radius: 20px;
+      box-shadow: 0 0 34px rgba(0, 0, 0, .38);
     }
     body.preview-open {
       overflow: hidden;
@@ -1518,7 +1556,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">57</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">58</span></div>
     </div>
   </div>
 
@@ -1803,7 +1841,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">57</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">58</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1821,8 +1859,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">57</span></div>
-        <div class="small">Кнопки списків переміщено вправо, панель історії вміщується в один рядок, картки історії ущільнено, а збережені підрахунки отримали попередній перегляд і друк/PDF.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">58</span></div>
+        <div class="small">Кнопки в списку найменувань вирівняно по правому краю, а попередній перегляд документа тепер можна плавно закрити свайпом вправо або вліво.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1836,7 +1874,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "57";
+  const APP_VERSION = "58";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2295,6 +2333,10 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
+      if (!document.getElementById("documentPreview").classList.contains("hidden")) {
+        swipeMode = "";
+        return;
+      }
       const touch = event.touches[0];
       const drawerIsOpen = document.getElementById("drawer").classList.contains("open");
       const startedInsideScreen = touch.clientX >= 28 && touch.clientX <= window.innerWidth - 28;
@@ -2340,6 +2382,84 @@
 
     document.addEventListener("touchend", () => { swipeMode = ""; }, { passive: true });
     document.addEventListener("touchcancel", () => { swipeMode = ""; }, { passive: true });
+  }
+
+  function initDocumentPreviewSwipe() {
+    const preview = document.getElementById("documentPreview");
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let tracking = false;
+    let horizontalSwipe = false;
+
+    const resetPreviewPosition = () => {
+      preview.classList.remove("preview-swipe-active", "preview-swipe-settling");
+      preview.style.transform = "";
+    };
+
+    preview.addEventListener("touchstart", event => {
+      if (event.touches.length !== 1 || event.target.closest("button")) return;
+      const touch = event.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      currentX = 0;
+      tracking = true;
+      horizontalSwipe = false;
+      preview.classList.remove("preview-swipe-settling");
+    }, { passive: true });
+
+    preview.addEventListener("touchmove", event => {
+      if (!tracking || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      if (!horizontalSwipe) {
+        if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+          tracking = false;
+          return;
+        }
+        horizontalSwipe = true;
+        preview.classList.add("preview-swipe-active");
+      }
+
+      currentX = deltaX;
+      preview.style.transform = `translate3d(${currentX}px, 0, 0)`;
+      event.preventDefault();
+    }, { passive: false });
+
+    const finishSwipe = event => {
+      if (!tracking && !horizontalSwipe) return;
+      tracking = false;
+
+      if (event.type === "touchcancel" || !horizontalSwipe) {
+        resetPreviewPosition();
+        horizontalSwipe = false;
+        return;
+      }
+
+      const closeThreshold = window.innerWidth * .45;
+      preview.classList.remove("preview-swipe-active");
+      preview.classList.add("preview-swipe-settling");
+
+      if (Math.abs(currentX) >= closeThreshold) {
+        const direction = currentX < 0 ? -1 : 1;
+        preview.style.transform = `translate3d(${direction * window.innerWidth}px, 0, 0)`;
+        window.setTimeout(() => {
+          closeDocumentPreview();
+          resetPreviewPosition();
+        }, 240);
+      } else {
+        preview.style.transform = "translate3d(0, 0, 0)";
+        window.setTimeout(resetPreviewPosition, 240);
+      }
+
+      horizontalSwipe = false;
+    };
+
+    preview.addEventListener("touchend", finishSwipe, { passive: true });
+    preview.addEventListener("touchcancel", finishSwipe, { passive: true });
   }
 
   function openMenu() {
@@ -3376,6 +3496,7 @@
   initAppTopPosition();
   initGestureMenuPad();
   initMenuSwipeGestures();
+  initDocumentPreviewSwipe();
   updateInstallUI();
   registerServiceWorker();
   setTimeout(finishSplashScreen, 3650);
