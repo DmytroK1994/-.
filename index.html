@@ -357,6 +357,9 @@
       font-weight: 900;
       letter-spacing: -.4px;
     }
+    .menu-swipe-hint {
+      display: none;
+    }
     .drawer-close-btn {
       width: auto;
       min-height: 38px;
@@ -477,8 +480,18 @@
         flex: 0 0 auto;
         justify-content: center;
         min-height: 48px;
+        margin-bottom: 8px;
         padding: 4px 2px;
         background: var(--surface-deep);
+      }
+      .menu-swipe-hint {
+        display: block;
+        flex: 0 0 auto;
+        margin: 0;
+        color: var(--muted-soft);
+        font-size: 12px;
+        line-height: 1.35;
+        text-align: center;
       }
       .drawer-close-btn {
         position: absolute;
@@ -616,6 +629,19 @@
       color: var(--muted);
       margin: 0;
       font-size: 14px;
+    }
+    .menu-open-swipe-hint {
+      display: none;
+      margin: 4px 0 0;
+      color: var(--muted-soft);
+      font-size: 11px;
+      line-height: 1.3;
+      text-align: center;
+    }
+    @media (hover: none), (pointer: coarse), (max-width: 900px) {
+      .menu-open-swipe-hint {
+        display: block;
+      }
     }
     .product-list-search-card {
       position: sticky;
@@ -1264,7 +1290,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">47</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">49</span></div>
     </div>
   </div>
 
@@ -1275,6 +1301,7 @@
         <div class="menu-title">Меню</div>
         <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
       </div>
+      <p class="menu-swipe-hint">Свайпни вліво, щоб закрити меню</p>
       <div class="menu-wheel" id="menuWheel">
         <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
         <button class="menu-btn" data-page="history">Історія</button>
@@ -1296,6 +1323,7 @@
       <button class="icon-btn" id="newDayBtn" aria-label="Створити новий підрахунок"><span class="plus-icon"></span></button>
     </div>
     <div class="date-line" id="activeDateLabel"></div>
+    <div class="menu-open-swipe-hint">Свайпни вправо, щоб відкрити меню</div>
   </div>
 
   <div class="page-back-bar no-print hidden" id="pageBackBar">
@@ -1543,7 +1571,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">47</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">49</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1561,8 +1589,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">47</span></div>
-        <div class="small">Свайп вправо з внутрішньої частини екрана відкриває меню на Android та iPhone. Вибраний пункт відкривається одним дотиком, сенсорну зону збільшено, а номер версії прибрано з меню.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">49</span></div>
+        <div class="small">У головній шапці додано підказку про відкриття меню свайпом управо. Разом із підказкою всередині меню користувач бачить обидва доступні жести.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1576,7 +1604,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "47";
+  const APP_VERSION = "49";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
