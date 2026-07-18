@@ -435,6 +435,10 @@
     .drawer-bg.swiping {
       transition: none;
     }
+    .drawer.no-transition,
+    .drawer-bg.no-transition {
+      transition: none !important;
+    }
     body.drawer-swiping {
       overflow: hidden;
     }
@@ -468,6 +472,9 @@
       color: var(--text);
       box-shadow: none;
       font-size: 13px;
+    }
+    html.mobile-device .drawer-close-btn {
+      display: none;
     }
     .menu-btn {
       background: transparent;
@@ -589,14 +596,6 @@
         font-size: 12px;
         line-height: 1.35;
         text-align: center;
-      }
-      .drawer-close-btn {
-        position: absolute;
-        right: 2px;
-        top: 50%;
-        z-index: 1;
-        min-height: 40px;
-        transform: translateY(-50%);
       }
       .menu-wheel {
         display: flex;
@@ -1760,7 +1759,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">69</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">70</span></div>
     </div>
   </div>
 
@@ -1771,7 +1770,7 @@
         <div class="menu-title">Меню</div>
         <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
       </div>
-      <p class="menu-swipe-hint">Свайпни вліво, щоб закрити меню</p>
+      <p class="menu-swipe-hint">Свайпни вліво або вправо, щоб закрити меню</p>
       <div class="menu-wheel" id="menuWheel">
         <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
         <button class="menu-btn" data-page="history">Історія</button>
@@ -2065,7 +2064,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">69</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">70</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2083,8 +2082,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">69</span></div>
-        <div class="small">Джойстик меню фіксує вертикальний режим до відпускання пальця, тому тривале керування вгору-вниз більше випадково не переривається.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">70</span></div>
+        <div class="small">На телефонах прибрано кнопку закриття меню: свайп вліво закриває його після 25%, а достатній свайп вправо — одразу без анімації.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2098,11 +2097,14 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "69";
+  const APP_VERSION = "70";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEMES = ["dark", "beige", "white"];
+  const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+    (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  document.documentElement.classList.toggle("mobile-device", isMobileDevice);
 
   function applyTheme(theme, persist = true) {
     const selected = THEMES.includes(theme) ? theme : "dark";
@@ -2638,6 +2640,7 @@
     let swipeStartY = 0;
     let swipeCurrentX = 0;
     let horizontalSwipe = false;
+    let closeSwipeDirection = "";
     let drawerWasOpen = false;
     const isAndroid = /Android/i.test(navigator.userAgent);
     const settleDuration = 360;
@@ -2713,6 +2716,7 @@
       swipeStartY = touch.clientY;
       swipeCurrentX = 0;
       horizontalSwipe = false;
+      closeSwipeDirection = "";
       drawerWasOpen = drawerIsOpen;
     }, { passive: true });
 
@@ -2733,7 +2737,7 @@
           swipeMode = "";
           return;
         }
-        if ((swipeMode === "open" && deltaX <= 0) || (swipeMode === "close" && deltaX >= 0)) return;
+        if (swipeMode === "open" && deltaX <= 0) return;
 
         if (swipeMode === "open") {
           event.preventDefault();
@@ -2744,6 +2748,7 @@
         }
 
         horizontalSwipe = true;
+        closeSwipeDirection = deltaX > 0 ? "right" : "left";
         drawer.classList.add("swiping");
         drawerBg.classList.add("open", "swiping");
         document.body.classList.add("drawer-swiping");
@@ -2751,6 +2756,18 @@
 
       event.preventDefault();
       const drawerWidth = drawer.getBoundingClientRect().width || window.innerWidth;
+
+      if (swipeMode === "close" && closeSwipeDirection === "right") {
+        swipeCurrentX = Math.max(0, Math.min(drawerWidth, deltaX));
+        if (swipeCurrentX >= drawerWidth * .25) {
+          swipeMode = "";
+          horizontalSwipe = false;
+          closeSwipeDirection = "";
+          closeMenuImmediately();
+        }
+        return;
+      }
+
       swipeCurrentX = swipeMode === "open"
         ? Math.max(0, Math.min(drawerWidth, deltaX))
         : Math.min(0, Math.max(-drawerWidth, deltaX));
@@ -2774,7 +2791,15 @@
       }
 
       const drawerWidth = drawer.getBoundingClientRect().width || window.innerWidth;
-      const reachedThreshold = Math.abs(swipeCurrentX) >= drawerWidth * .30;
+      if (swipeMode === "close" && closeSwipeDirection === "right") {
+        swipeMode = "";
+        horizontalSwipe = false;
+        closeSwipeDirection = "";
+        clearSwipeStyles();
+        return;
+      }
+
+      const reachedThreshold = Math.abs(swipeCurrentX) >= drawerWidth * .25;
       const shouldOpen = event.type !== "touchcancel"
         ? (swipeMode === "open" ? reachedThreshold : !reachedThreshold)
         : drawerWasOpen;
@@ -2782,6 +2807,7 @@
       settleDrawer(shouldOpen);
       swipeMode = "";
       horizontalSwipe = false;
+      closeSwipeDirection = "";
     };
 
     document.addEventListener("touchend", finishMenuSwipe, { passive: true });
@@ -2892,6 +2918,19 @@
     drawer.classList.remove("open");
     drawerBg.classList.remove("open");
     getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
+  }
+
+  function closeMenuImmediately() {
+    const drawer = document.getElementById("drawer");
+    const drawerBg = document.getElementById("drawerBg");
+    drawer.classList.add("no-transition");
+    drawerBg.classList.add("no-transition");
+    closeMenu();
+    void drawer.offsetWidth;
+    requestAnimationFrame(() => {
+      drawer.classList.remove("no-transition");
+      drawerBg.classList.remove("no-transition");
+    });
   }
 
   function updatePageBackButton() {
