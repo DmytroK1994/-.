@@ -220,6 +220,13 @@
       transition: transform .14s ease, filter .14s ease, box-shadow .14s ease;
     }
     button:active { transform: scale(.985); filter: brightness(.96); }
+    button:disabled {
+      opacity: .42;
+      cursor: not-allowed;
+      box-shadow: none;
+      filter: grayscale(.25);
+    }
+    button:disabled:active { transform: none; filter: grayscale(.25); }
     button.secondary { background: #475569; }
     button.danger { background: #dc2626; }
     button.green { background: #16a34a; }
@@ -725,6 +732,24 @@
       line-height: 1.45;
       font-weight: 750;
     }
+    .reset-confirmation-field {
+      margin-bottom: 14px;
+    }
+    .reset-confirmation-field label {
+      margin-top: 0;
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .reset-confirmation-word {
+      color: #f87171;
+      font-weight: 900;
+      letter-spacing: .5px;
+    }
+    #resetConfirmationInput {
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: .7px;
+    }
     .reset-confirmation-actions {
       display: grid;
       gap: 9px;
@@ -1068,7 +1093,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">23</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">24</span></div>
     </div>
   </div>
 
@@ -1085,7 +1110,7 @@
     <button class="menu-btn" data-page="about">Про додаток</button>
     <button class="menu-btn" data-page="install">Встановлення</button>
     <button class="menu-btn" id="updateAppMenuBtn">Перевірити оновлення</button>
-    <div class="menu-version">Версія <span id="menuVersionLabel">23</span></div>
+    <div class="menu-version">Версія <span id="menuVersionLabel">24</span></div>
   </aside>
 
   <div class="app-header no-print">
@@ -1198,9 +1223,13 @@
         <li>всю історію підрахунків.</li>
       </ul>
       <div class="reset-final-warning">Цю дію неможливо скасувати. Відновити дані можна буде лише з попередньо збереженої резервної копії.</div>
+      <div class="reset-confirmation-field">
+        <label for="resetConfirmationInput">Щоб розблокувати видалення, введи слово <span class="reset-confirmation-word">ВИДАЛИТИ</span></label>
+        <input id="resetConfirmationInput" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ВИДАЛИТИ" />
+      </div>
       <div class="reset-confirmation-actions">
         <button class="secondary" id="cancelResetBtn">Скасувати</button>
-        <button class="danger" id="confirmResetBtn">Так, стерти всі дані</button>
+        <button class="danger" id="confirmResetBtn" disabled>Стерти всі дані безповоротно</button>
       </div>
     </div>
   </div>
@@ -1316,7 +1345,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">23</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">24</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1334,8 +1363,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">23</span></div>
-        <div class="small">Застосунок отримав нову назву — «Облік залишків». Назву оновлено в інтерфейсі, заставці, встановленому застосунку та даних для поширення.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">24</span></div>
+        <div class="small">Посилено захист від випадкового очищення: кнопка остаточного видалення активується лише після ручного введення слова «ВИДАЛИТИ».</div>
       </div>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
@@ -1348,7 +1377,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "23";
+  const APP_VERSION = "24";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEMES = ["dark", "beige", "white"];
@@ -1926,6 +1955,10 @@
   }
 
   function openResetConfirmation() {
+    const input = document.getElementById("resetConfirmationInput");
+    const confirmButton = document.getElementById("confirmResetBtn");
+    input.value = "";
+    confirmButton.disabled = true;
     document.getElementById("resetConfirmation").classList.remove("hidden");
     document.body.classList.add("reset-confirmation-open");
     document.getElementById("cancelResetBtn").focus();
@@ -1934,6 +1967,14 @@
   function closeResetConfirmation() {
     document.getElementById("resetConfirmation").classList.add("hidden");
     document.body.classList.remove("reset-confirmation-open");
+    document.getElementById("resetConfirmationInput").value = "";
+    document.getElementById("confirmResetBtn").disabled = true;
+  }
+
+  function confirmResetApp() {
+    const confirmation = document.getElementById("resetConfirmationInput").value.trim().toUpperCase();
+    if (confirmation !== "ВИДАЛИТИ") return;
+    resetApp();
   }
 
   function sortedProducts() {
@@ -2389,7 +2430,10 @@
   document.getElementById("importBtn").addEventListener("click", importBackup);
   document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
   document.getElementById("cancelResetBtn").addEventListener("click", closeResetConfirmation);
-  document.getElementById("confirmResetBtn").addEventListener("click", resetApp);
+  document.getElementById("resetConfirmationInput").addEventListener("input", event => {
+    document.getElementById("confirmResetBtn").disabled = event.target.value.trim().toUpperCase() !== "ВИДАЛИТИ";
+  });
+  document.getElementById("confirmResetBtn").addEventListener("click", confirmResetApp);
   document.getElementById("themeSelect").addEventListener("change", event => {
     applyTheme(event.target.value);
     toast("Тему змінено");
