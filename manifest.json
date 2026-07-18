@@ -1,6 +1,6 @@
 {
-  "name": "Складський журнал",
-  "short_name": "Склад",
+  "name": "Облік залишків",
+  "short_name": "Залишки",
   "description": "Облік складських залишків та підрахунків",
   "start_url": "./",
   "display": "standalone",
