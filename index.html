@@ -350,9 +350,10 @@
       box-shadow: 0 5px 16px rgba(34, 197, 94, .13);
     }
     .edited-entry-label {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      margin: 0 5px 2px 0;
+      width: max-content;
+      margin: 0 0 5px;
       padding: 2px 6px;
       border-radius: 999px;
       background: rgba(22, 163, 74, .92);
@@ -1759,7 +1760,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">70</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">71</span></div>
     </div>
   </div>
 
@@ -2064,7 +2065,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">70</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">71</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2082,8 +2083,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">70</span></div>
-        <div class="small">На телефонах прибрано кнопку закриття меню: свайп вліво закриває його після 25%, а достатній свайп вправо — одразу без анімації.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">71</span></div>
+        <div class="small">У підсвіченому записі позначка «Відредаговано» відображається окремим верхнім рядком, а вага та підрахунок — нижче.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2097,7 +2098,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "70";
+  const APP_VERSION = "71";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
