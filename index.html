@@ -33,8 +33,6 @@
       --popover-shadow: rgba(0, 0, 0, .45);
       --overlay: rgba(0, 0, 0, .55);
       --page-glow: rgba(37, 99, 235, .14);
-      --menu-lens-bg: rgba(30, 41, 59, .96);
-      --menu-lens-text: #f8fafc;
     }
     :root[data-theme="beige"] {
       color-scheme: light;
@@ -54,8 +52,6 @@
       --popover-shadow: rgba(75, 57, 34, .25);
       --overlay: rgba(50, 42, 31, .42);
       --page-glow: rgba(180, 125, 55, .13);
-      --menu-lens-bg: rgba(255, 250, 240, .97);
-      --menu-lens-text: #29231b;
     }
     :root[data-theme="white"] {
       color-scheme: light;
@@ -75,8 +71,6 @@
       --popover-shadow: rgba(30, 41, 59, .22);
       --overlay: rgba(15, 23, 42, .38);
       --page-glow: rgba(37, 99, 235, .08);
-      --menu-lens-bg: rgba(246, 248, 251, .98);
-      --menu-lens-text: #172033;
     }
     body {
       margin: 0;
@@ -415,6 +409,54 @@
     .menu-wheel {
       display: contents;
     }
+    .drawer-gesture-pad {
+      display: none;
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      margin-top: 14px;
+      padding: 13px 12px calc(env(safe-area-inset-bottom) + 13px);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      text-align: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .drawer-gesture-pad.dragging {
+      border-color: transparent;
+      background: transparent;
+    }
+    .gesture-pad-handle {
+      display: block;
+      width: 72px;
+      height: 7px;
+      margin: 0 auto 14px;
+      border-radius: 999px;
+      background: var(--border-strong);
+      transition: transform .14s ease, background .14s ease;
+    }
+    .drawer-gesture-pad.dragging .gesture-pad-handle {
+      transform: scaleX(1.14);
+      background: #60a5fa;
+    }
+    .gesture-pad-selection {
+      display: block;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.3;
+    }
+    .gesture-pad-hint {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted-soft);
+      font-size: 11px;
+      line-height: 1.3;
+    }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       .drawer {
         left: -100vw;
@@ -431,8 +473,9 @@
         min-height: 0;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        padding-bottom: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-bottom: 12px;
       }
       .menu-header {
         position: relative;
@@ -444,65 +487,44 @@
         right: 2px;
       }
       .menu-wheel {
-        position: relative;
         display: flex;
         flex: 1 1 auto;
-        min-height: 190px;
+        min-height: max-content;
         flex-direction: column;
-        overflow-x: hidden;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        scroll-snap-type: y mandatory;
-        scroll-behavior: smooth;
-        scrollbar-width: none;
-        touch-action: pan-y;
-        cursor: grab;
-        padding: 0 12px;
-        -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
-        mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%);
-      }
-      .menu-wheel::-webkit-scrollbar {
-        display: none;
-      }
-      .menu-wheel::before,
-      .menu-wheel::after {
-        content: "";
-        flex: 0 0 calc(50% - 36px);
+        justify-content: center;
+        padding-top: clamp(36px, 6dvh, 68px);
       }
       .menu-wheel .menu-btn {
-        width: min(88%, 420px);
+        width: min(100%, 440px);
         flex: 0 0 auto;
         align-self: center;
         text-align: center;
-        scroll-snap-align: center;
-        opacity: .28;
-        filter: blur(1.5px);
-        transform: scale(.78);
-        transition: transform .22s ease, opacity .22s ease, filter .22s ease,
-          background .22s ease, box-shadow .22s ease;
-      }
-      .menu-wheel .menu-btn.gesture-neighbor {
-        opacity: .58;
-        filter: blur(.65px);
-        transform: scale(.88);
       }
       .menu-wheel .menu-btn.gesture-selected {
-        position: relative;
-        z-index: 1;
-        opacity: 1;
-        filter: none;
-        transform: scale(1.08);
-        border-color: rgba(96, 165, 250, .72);
-        outline: 0;
-        color: var(--menu-lens-text);
-        background: var(--menu-lens-bg);
-        box-shadow: 0 16px 38px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 255, 255, .16);
-        backdrop-filter: blur(18px) saturate(1.25);
-        -webkit-backdrop-filter: blur(18px) saturate(1.25);
+        color: white;
+        background: #2563eb;
       }
       .menu-version {
         flex: 0 0 auto;
         padding: 8px 0 14px;
+      }
+      .drawer-gesture-pad {
+        position: static;
+        flex-direction: column;
+        justify-content: center;
+        width: calc(100% + 28px);
+        height: clamp(210px, 30dvh, 300px);
+        min-height: 210px;
+        flex: 0 0 clamp(210px, 30dvh, 300px);
+        margin: 0 -14px;
+        padding: 28px 20px calc(env(safe-area-inset-bottom) + 28px);
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 24px 24px 0 0;
+      }
+      .drawer.open .drawer-gesture-pad {
+        display: flex;
       }
     }
     .pill {
@@ -1244,7 +1266,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">44</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">45</span></div>
     </div>
   </div>
 
@@ -1255,13 +1277,18 @@
         <div class="menu-title">Меню</div>
         <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
       </div>
-      <div class="menu-wheel" id="menuWheel" tabindex="0" aria-label="Прокручуваний список меню">
+      <div class="menu-wheel" id="menuWheel">
         <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
         <button class="menu-btn" data-page="history">Історія</button>
         <button class="menu-btn" data-page="management">Керування</button>
         <button class="menu-btn" data-page="about">Про додаток</button>
       </div>
-      <div class="menu-version">Версія <span id="menuVersionLabel">44</span></div>
+      <div class="menu-version">Версія <span id="menuVersionLabel">45</span></div>
+    </div>
+    <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
+      <span class="gesture-pad-handle"></span>
+      <span class="gesture-pad-selection" id="gesturePadSelection">Вибрано: Поточний підрахунок</span>
+      <span class="gesture-pad-hint">Затисни й веди вгору або вниз · подвійний дотик — відкрити</span>
     </div>
   </aside>
 
@@ -1519,7 +1546,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">44</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">45</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1537,8 +1564,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">44</span></div>
-        <div class="small">Окрему активну зону прибрано: весь список меню тепер працює як сенсорне колесо. Центральний пункт можна вибрати натисканням, а його текст має окремий контрастний колір для кожної теми.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">45</span></div>
+        <div class="small">Повернено звичайний список і окремий джойстик меню. На телефонах меню залишається повноекранним, а пункти розташовано нижче та ближче до візуального центра.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1552,7 +1579,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "44";
+  const APP_VERSION = "45";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1600,8 +1627,11 @@
   let selectedHistoryIds = new Set();
   let deferredInstallPrompt = null;
   let gestureMenuIndex = 0;
-  let gestureMenuAutoScrolling = false;
-  let gestureWheelScrollTimer = 0;
+  let gestureDragStartY = 0;
+  let gestureDragStartIndex = 0;
+  let gesturePadDragging = false;
+  let gesturePadMoved = false;
+  let gestureLastTap = 0;
   let currentPage = "today";
   let pageNavigationHistory = [];
 
@@ -1804,88 +1834,19 @@
     return Array.from(document.querySelectorAll("#drawer .menu-btn"));
   }
 
-  function setGestureMenuSelection(index, scrollToSelection = true) {
+  function setGestureMenuSelection(index) {
     const items = getGestureMenuItems();
     if (!items.length) return;
 
     gestureMenuIndex = Math.max(0, Math.min(items.length - 1, index));
     items.forEach((item, itemIndex) => {
-      const distance = Math.abs(itemIndex - gestureMenuIndex);
-      item.classList.toggle("gesture-selected", distance === 0);
-      item.classList.toggle("gesture-neighbor", distance === 1);
+      item.classList.toggle("gesture-selected", itemIndex === gestureMenuIndex);
     });
 
     const selectedItem = items[gestureMenuIndex];
-    const wheel = document.getElementById("menuWheel");
-    if (scrollToSelection && wheel && getComputedStyle(wheel).display !== "contents") {
-      gestureMenuAutoScrolling = true;
-      selectedItem.scrollIntoView({ block: "center", behavior: "smooth" });
-    }
-
-  }
-
-  function selectMenuItemNearestLensCenter() {
-    const wheel = document.getElementById("menuWheel");
-    const items = getGestureMenuItems();
-    if (!wheel || !items.length) return;
-
-    const wheelRect = wheel.getBoundingClientRect();
-    const lensCenter = wheelRect.top + wheelRect.height / 2;
-    let nearestIndex = 0;
-    let nearestDistance = Infinity;
-
-    items.forEach((item, index) => {
-      const rect = item.getBoundingClientRect();
-      const distance = Math.abs(rect.top + rect.height / 2 - lensCenter);
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestIndex = index;
-      }
-    });
-
-    if (nearestIndex !== gestureMenuIndex) setGestureMenuSelection(nearestIndex, false);
-  }
-
-  function initGestureMenuWheel() {
-    const wheel = document.getElementById("menuWheel");
-    if (!wheel) return;
-
-    wheel.addEventListener("pointerdown", () => {
-      gestureMenuAutoScrolling = false;
-    }, { passive: true });
-
-    wheel.addEventListener("click", event => {
-      const item = event.target.closest(".menu-btn");
-      if (!item) return;
-      const itemIndex = getGestureMenuItems().indexOf(item);
-      if (itemIndex !== gestureMenuIndex) {
-        event.preventDefault();
-        event.stopPropagation();
-        setGestureMenuSelection(itemIndex);
-      }
-    }, true);
-
-    wheel.addEventListener("scroll", () => {
-      clearTimeout(gestureWheelScrollTimer);
-      if (!gestureMenuAutoScrolling) {
-        requestAnimationFrame(selectMenuItemNearestLensCenter);
-      }
-      gestureWheelScrollTimer = setTimeout(() => {
-        gestureMenuAutoScrolling = false;
-        selectMenuItemNearestLensCenter();
-      }, 120);
-    }, { passive: true });
-
-    wheel.addEventListener("keydown", event => {
-      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-        event.preventDefault();
-        setGestureMenuSelection(gestureMenuIndex + (event.key === "ArrowDown" ? 1 : -1));
-      }
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        activateGestureMenuSelection();
-      }
-    });
+    const label = document.getElementById("gesturePadSelection");
+    if (label) label.textContent = "Вибрано: " + selectedItem.textContent.trim();
+    selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function initializeGestureMenuSelection() {
@@ -1898,6 +1859,65 @@
     const item = getGestureMenuItems()[gestureMenuIndex];
     if (!item) return;
     item.click();
+  }
+
+  function initGestureMenuPad() {
+    const pad = document.getElementById("drawerGesturePad");
+    if (!pad) return;
+
+    pad.addEventListener("pointerdown", event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      event.preventDefault();
+      gesturePadDragging = true;
+      gesturePadMoved = false;
+      gestureDragStartY = event.clientY;
+      gestureDragStartIndex = gestureMenuIndex;
+      pad.classList.add("dragging");
+      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    pad.addEventListener("pointermove", event => {
+      if (!gesturePadDragging) return;
+      event.preventDefault();
+      const distance = event.clientY - gestureDragStartY;
+      if (Math.abs(distance) > 10) gesturePadMoved = true;
+      const rawIndex = gestureDragStartIndex + Math.round(distance / 42);
+      const itemCount = getGestureMenuItems().length;
+      const nextIndex = Math.max(0, Math.min(itemCount - 1, rawIndex));
+      if (nextIndex !== gestureMenuIndex) setGestureMenuSelection(nextIndex);
+    });
+
+    const finishPadGesture = event => {
+      if (!gesturePadDragging) return;
+      gesturePadDragging = false;
+      pad.classList.remove("dragging");
+      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+
+      if (event.type === "pointercancel" || gesturePadMoved) {
+        gestureLastTap = 0;
+        return;
+      }
+      const now = Date.now();
+      if (now - gestureLastTap <= 380) {
+        gestureLastTap = 0;
+        activateGestureMenuSelection();
+      } else {
+        gestureLastTap = now;
+      }
+    };
+
+    pad.addEventListener("pointerup", finishPadGesture);
+    pad.addEventListener("pointercancel", finishPadGesture);
+    pad.addEventListener("keydown", event => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        setGestureMenuSelection(gestureMenuIndex + (event.key === "ArrowDown" ? 1 : -1));
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activateGestureMenuSelection();
+      }
+    });
   }
 
   function initIphoneEdgeSwipe() {
@@ -1956,7 +1976,7 @@
     document.body.classList.remove("drawer-open");
     document.getElementById("drawer").classList.remove("open");
     document.getElementById("drawerBg").classList.remove("open");
-    getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected", "gesture-neighbor"));
+    getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
   }
 
   function updatePageBackButton() {
@@ -2941,7 +2961,7 @@
   renderAppVersion();
   render();
   updatePageBackButton();
-  initGestureMenuWheel();
+  initGestureMenuPad();
   initIphoneEdgeSwipe();
   updateInstallUI();
   registerServiceWorker();
