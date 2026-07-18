@@ -363,6 +363,7 @@
       padding: 8px 12px;
       margin: 0;
       border: 1px solid var(--border);
+      border-radius: 14px;
       background: var(--surface);
       color: var(--text);
       box-shadow: none;
@@ -385,16 +386,14 @@
       background: var(--surface);
     }
     .menu-btn.active {
-      background: #2563eb;
-      border-color: #3b82f6;
-      color: white;
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
     }
     .menu-btn.gesture-selected {
       border-color: #60a5fa;
       outline: 3px solid rgba(96, 165, 250, .28);
-      background: var(--surface);
-    }
-    .menu-btn.active.gesture-selected {
+      color: white;
       background: #2563eb;
     }
     .menu-version {
@@ -478,13 +477,22 @@
         padding-bottom: 12px;
       }
       .menu-header {
-        position: relative;
+        position: sticky;
+        top: 0;
+        z-index: 5;
         flex: 0 0 auto;
         justify-content: center;
+        min-height: 48px;
+        padding: 4px 2px;
+        background: var(--surface-deep);
       }
       .drawer-close-btn {
         position: absolute;
         right: 2px;
+        top: 50%;
+        z-index: 1;
+        min-height: 40px;
+        transform: translateY(-50%);
       }
       .menu-wheel {
         display: flex;
@@ -1266,7 +1274,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">45</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">46</span></div>
     </div>
   </div>
 
@@ -1283,7 +1291,7 @@
         <button class="menu-btn" data-page="management">Керування</button>
         <button class="menu-btn" data-page="about">Про додаток</button>
       </div>
-      <div class="menu-version">Версія <span id="menuVersionLabel">45</span></div>
+      <div class="menu-version">Версія <span id="menuVersionLabel">46</span></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
@@ -1546,7 +1554,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">45</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">46</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -1564,8 +1572,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">45</span></div>
-        <div class="small">Повернено звичайний список і окремий джойстик меню. На телефонах меню залишається повноекранним, а пункти розташовано нижче та ближче до візуального центра.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">46</span></div>
+        <div class="small">Синім позначається лише пункт, фактично вибраний джойстиком. Кнопку закриття меню піднято над прокручуваним вмістом і виправлено її форму.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -1579,7 +1587,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "45";
+  const APP_VERSION = "46";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -1852,7 +1860,10 @@
   function initializeGestureMenuSelection() {
     const items = getGestureMenuItems();
     const activeIndex = items.findIndex(item => item.classList.contains("active"));
-    setGestureMenuSelection(activeIndex >= 0 ? activeIndex : 0);
+    gestureMenuIndex = activeIndex >= 0 ? activeIndex : 0;
+    items.forEach(item => item.classList.remove("gesture-selected"));
+    const label = document.getElementById("gesturePadSelection");
+    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
   }
 
   function activateGestureMenuSelection() {
@@ -1884,7 +1895,10 @@
       const rawIndex = gestureDragStartIndex + Math.round(distance / 42);
       const itemCount = getGestureMenuItems().length;
       const nextIndex = Math.max(0, Math.min(itemCount - 1, rawIndex));
-      if (nextIndex !== gestureMenuIndex) setGestureMenuSelection(nextIndex);
+      const currentItem = getGestureMenuItems()[nextIndex];
+      if (nextIndex !== gestureMenuIndex || (gesturePadMoved && !currentItem?.classList.contains("gesture-selected"))) {
+        setGestureMenuSelection(nextIndex);
+      }
     });
 
     const finishPadGesture = event => {
