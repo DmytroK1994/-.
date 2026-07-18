@@ -1760,7 +1760,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">68</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">69</span></div>
     </div>
   </div>
 
@@ -2065,7 +2065,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">68</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">69</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2083,8 +2083,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">68</span></div>
-        <div class="small">Бокове меню та його затемнення тепер завжди розташовані поверх шапки, тому заголовок «Меню» більше нічим не перекривається.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">69</span></div>
+        <div class="small">Джойстик меню фіксує вертикальний режим до відпускання пальця, тому тривале керування вгору-вниз більше випадково не переривається.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2098,7 +2098,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "68";
+  const APP_VERSION = "69";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2150,6 +2150,7 @@
   let gestureDragStartX = 0;
   let gestureDragStartY = 0;
   let gestureDragStartIndex = 0;
+  let gesturePadAxis = "";
   let gesturePadDragging = false;
   let gesturePadMoved = false;
   let currentPage = "today";
@@ -2566,6 +2567,7 @@
       event.preventDefault();
       gesturePadDragging = true;
       gesturePadMoved = false;
+      gesturePadAxis = "";
       gestureDragStartX = event.clientX;
       gestureDragStartY = event.clientY;
       gestureDragStartIndex = gestureMenuIndex;
@@ -2577,14 +2579,22 @@
       if (!gesturePadDragging) return;
       const horizontalDistance = event.clientX - gestureDragStartX;
       const verticalDistance = event.clientY - gestureDragStartY;
-      if (document.body.classList.contains("drawer-swiping") ||
-          (Math.abs(horizontalDistance) > 10 && Math.abs(horizontalDistance) > Math.abs(verticalDistance))) {
+      const horizontalSwipeHasStarted = document.body.classList.contains("drawer-swiping");
+
+      if (!gesturePadAxis && Math.max(Math.abs(horizontalDistance), Math.abs(verticalDistance)) > 10) {
+        gesturePadAxis = Math.abs(horizontalDistance) > Math.abs(verticalDistance) ? "horizontal" : "vertical";
+      }
+
+      if (horizontalSwipeHasStarted || gesturePadAxis === "horizontal") {
         gesturePadDragging = false;
         gesturePadMoved = false;
+        gesturePadAxis = "";
         pad.classList.remove("dragging");
         try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
         return;
       }
+
+      if (gesturePadAxis !== "vertical") return;
       event.preventDefault();
       const distance = verticalDistance;
       if (Math.abs(distance) > 10) gesturePadMoved = true;
@@ -2600,6 +2610,7 @@
     const finishPadGesture = event => {
       if (!gesturePadDragging) return;
       gesturePadDragging = false;
+      gesturePadAxis = "";
       pad.classList.remove("dragging");
       try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
 
