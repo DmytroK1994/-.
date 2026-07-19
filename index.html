@@ -1760,7 +1760,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">72</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">73</span></div>
     </div>
   </div>
 
@@ -2065,7 +2065,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">72</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">73</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2083,8 +2083,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">72</span></div>
-        <div class="small">Усі відредаговані записи залишаються постійно позначеними й підсвіченими, навіть після редагування інших позицій або перезапуску застосунку.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">73</span></div>
+        <div class="small">Свайп відкриття меню працює поверх неактивних полів введення, але повністю блокується, доки екранна клавіатура відкрита.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2098,7 +2098,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "72";
+  const APP_VERSION = "73";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2171,6 +2171,12 @@
     return element instanceof Element && Boolean(element.closest(
       "input:not([type='hidden']):not([disabled]), textarea:not([disabled]), select:not([disabled]), [contenteditable='true']"
     ));
+  }
+
+  function isVirtualKeyboardVisible() {
+    if (!window.visualViewport) return keyboardWasDetected && isAppKeyboardField(document.activeElement);
+    const baselineHeight = keyboardViewportHeight || window.innerHeight;
+    return keyboardWasDetected && baselineHeight - window.visualViewport.height > 80;
   }
 
   function clearKeyboardRestoreTimers() {
@@ -2700,11 +2706,13 @@
       const drawerIsOpen = drawer.classList.contains("open");
       const startedInsideScreen = touch.clientX >= 28 && touch.clientX <= window.innerWidth - 28;
       const startedAtRightEdge = touch.clientX > window.innerWidth - 28;
-      const startedOnInput = Boolean(event.target.closest("input, textarea, select, [contenteditable='true']"));
+      const keyboardIsVisible = isVirtualKeyboardVisible();
 
       if (!drawerIsOpen && startedAtRightEdge && !isAndroid) {
         swipeMode = "block-forward";
-      } else if (!drawerIsOpen && startedInsideScreen && !startedOnInput) {
+      } else if (!drawerIsOpen && keyboardIsVisible) {
+        swipeMode = "";
+      } else if (!drawerIsOpen && startedInsideScreen) {
         swipeMode = "open";
       } else if (drawerIsOpen && touch.clientX <= document.getElementById("drawer").getBoundingClientRect().right) {
         swipeMode = "close";
@@ -2893,6 +2901,10 @@
   }
 
   function openMenu() {
+    if (isVirtualKeyboardVisible()) return;
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    clearKeyboardRestoreTimers();
+    finishKeyboardScrollRestore();
     const drawer = document.getElementById("drawer");
     const drawerBg = document.getElementById("drawerBg");
     drawer.classList.remove("swiping");
