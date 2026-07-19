@@ -221,6 +221,14 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, .2);
     }
     input::placeholder, textarea::placeholder { color: var(--muted-soft); opacity: .9; }
+    input:not([type="hidden"]),
+    textarea,
+    [contenteditable="true"] {
+      user-select: text;
+      -webkit-user-select: text;
+      -webkit-touch-callout: default;
+      touch-action: auto;
+    }
     button {
       background: #2563eb;
       color: white;
@@ -690,59 +698,6 @@
     }
     .clear-search-btn:active {
       background: var(--border-strong);
-    }
-    .text-magnifier {
-      position: fixed;
-      left: 0;
-      top: 0;
-      z-index: 260;
-      width: 176px;
-      min-height: 58px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      padding: 9px 12px;
-      border: 2px solid var(--border-strong);
-      border-radius: 22px;
-      background: var(--surface);
-      background: color-mix(in srgb, var(--surface) 94%, transparent);
-      color: var(--text);
-      box-shadow: 0 16px 38px rgba(0, 0, 0, .32);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      pointer-events: none;
-      user-select: none;
-      -webkit-user-select: none;
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.15;
-      white-space: nowrap;
-      transform-origin: center bottom;
-      animation: text-magnifier-in .13s ease both;
-    }
-    .text-magnifier-caret {
-      width: 2px;
-      height: 28px;
-      flex: 0 0 2px;
-      margin: 0 1px;
-      border-radius: 999px;
-      background: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
-    }
-    .text-magnifier-before,
-    .text-magnifier-after {
-      display: block;
-      flex: 1 1 50%;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: clip;
-    }
-    .text-magnifier-before { text-align: right; }
-    .text-magnifier-after { text-align: left; }
-    @keyframes text-magnifier-in {
-      from { opacity: 0; transform: translateY(5px) scale(.94); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .combo-list {
       position: absolute;
@@ -1813,7 +1768,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">74</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">75</span></div>
     </div>
   </div>
 
@@ -2118,7 +2073,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">74</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">75</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2136,8 +2091,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">74</span></div>
-        <div class="small">Під час руху пальцем по полю з відкритою клавіатурою з’являється тематична лінза зі збільшеним текстом і положенням курсора.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">75</span></div>
+        <div class="small">Прибрано дублюючу лінзу застосунку та відновлено нативну системну лінзу, яка з’являється після затискання текстового поля.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2146,18 +2101,12 @@
 
   <div class="toast" id="toast"></div>
 
-  <div class="text-magnifier hidden" id="textMagnifier" aria-hidden="true">
-    <span class="text-magnifier-before" id="textMagnifierBefore"></span>
-    <span class="text-magnifier-caret"></span>
-    <span class="text-magnifier-after" id="textMagnifierAfter"></span>
-  </div>
-
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "74";
+  const APP_VERSION = "75";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2236,79 +2185,6 @@
     if (!window.visualViewport) return keyboardWasDetected && isAppKeyboardField(document.activeElement);
     const baselineHeight = keyboardViewportHeight || window.innerHeight;
     return keyboardWasDetected && baselineHeight - window.visualViewport.height > 80;
-  }
-
-  function initTextMagnifier() {
-    const lens = document.getElementById("textMagnifier");
-    const before = document.getElementById("textMagnifierBefore");
-    const after = document.getElementById("textMagnifierAfter");
-    let updateFrame = 0;
-
-    const hideLens = () => {
-      if (updateFrame) cancelAnimationFrame(updateFrame);
-      updateFrame = 0;
-      lens.classList.add("hidden");
-      lens.setAttribute("aria-hidden", "true");
-    };
-
-    document.addEventListener("touchmove", event => {
-      if (!isVirtualKeyboardVisible() || event.touches.length !== 1) {
-        hideLens();
-        return;
-      }
-
-      const field = event.target instanceof Element ? event.target.closest(
-        "input:not([type='hidden']):not([disabled]), textarea:not([disabled]), [contenteditable='true']"
-      ) : null;
-      if (!field) {
-        hideLens();
-        return;
-      }
-
-      const touch = event.touches[0];
-      const clientX = touch.clientX;
-      const clientY = touch.clientY;
-      if (updateFrame) cancelAnimationFrame(updateFrame);
-      updateFrame = requestAnimationFrame(() => {
-        updateFrame = 0;
-        const rawValue = "value" in field ? String(field.value || "") : String(field.textContent || "");
-        const value = rawValue.replace(/[\r\n]+/g, " ");
-        let caret = value.length;
-        try {
-          if (typeof field.selectionStart === "number") caret = field.selectionStart;
-        } catch (error) {}
-        caret = Math.max(0, Math.min(value.length, caret));
-
-        if (value) {
-          before.textContent = value.slice(Math.max(0, caret - 16), caret);
-          after.textContent = value.slice(caret, Math.min(value.length, caret + 16));
-        } else {
-          before.textContent = "";
-          after.textContent = field.getAttribute("placeholder") || "Порожньо";
-        }
-
-        const lensWidth = 176;
-        const edgeGap = 8;
-        const left = Math.max(edgeGap, Math.min(window.innerWidth - lensWidth - edgeGap, clientX - lensWidth / 2));
-        const safeTop = (window.visualViewport?.offsetTop || 0) + edgeGap;
-        let top = clientY - 82;
-        if (top < safeTop) top = clientY + 28;
-
-        lens.style.left = `${left}px`;
-        lens.style.top = `${top}px`;
-        lens.classList.remove("hidden");
-        lens.setAttribute("aria-hidden", "false");
-      });
-    }, { capture: true, passive: true });
-
-    document.addEventListener("touchend", hideLens, { capture: true, passive: true });
-    document.addEventListener("touchcancel", hideLens, { capture: true, passive: true });
-    document.addEventListener("focusout", () => window.setTimeout(() => {
-      if (!isVirtualKeyboardVisible()) hideLens();
-    }, 80));
-    window.visualViewport?.addEventListener("resize", () => {
-      if (!isVirtualKeyboardVisible()) hideLens();
-    }, { passive: true });
   }
 
   function clearKeyboardRestoreTimers() {
@@ -4240,7 +4116,6 @@
   render();
   updatePageBackButton();
   initAppKeyboardScrollRestore();
-  initTextMagnifier();
   initAppTopPosition();
   initGestureMenuPad();
   initMenuSwipeGestures();
