@@ -1760,7 +1760,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">71</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">72</span></div>
     </div>
   </div>
 
@@ -2065,7 +2065,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">71</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">72</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2083,8 +2083,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">71</span></div>
-        <div class="small">У підсвіченому записі позначка «Відредаговано» відображається окремим верхнім рядком, а вага та підрахунок — нижче.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">72</span></div>
+        <div class="small">Усі відредаговані записи залишаються постійно позначеними й підсвіченими, навіть після редагування інших позицій або перезапуску застосунку.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2098,7 +2098,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "71";
+  const APP_VERSION = "72";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2166,7 +2166,6 @@
   let appDialogResolver = null;
   let appDialogPreviousFocus = null;
   const editReturnScroll = { entry: null, product: null };
-  let highlightedEntryId = null;
 
   function isAppKeyboardField(element) {
     return element instanceof Element && Boolean(element.closest(
@@ -2995,7 +2994,6 @@
     const id = uid();
     state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
     state.activeDayId = id;
-    highlightedEntryId = null;
     resetTodayListSearch();
     clearEntryForm();
     save();
@@ -3005,7 +3003,6 @@
 
   function selectDay(id) {
     state.activeDayId = id;
-    highlightedEntryId = null;
     resetTodayListSearch();
     clearEntryForm();
     save();
@@ -3028,7 +3025,6 @@
     });
     if (!confirmed) return;
 
-    if (day.entries.some(entry => entry.id === highlightedEntryId)) highlightedEntryId = null;
     state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
 
@@ -3091,10 +3087,6 @@
     });
     if (!confirmed) return;
 
-    const highlightedDayIsSelected = state.days.some(day =>
-      selectedHistoryIds.has(day.id) && day.entries.some(entry => entry.id === highlightedEntryId)
-    );
-    if (highlightedDayIsSelected) highlightedEntryId = null;
     state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
     if (!state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
@@ -3150,7 +3142,6 @@
 
     state.days = [];
     state.activeDayId = null;
-    highlightedEntryId = null;
     selectedHistoryIds.clear();
     historySelectMode = false;
     ensureActiveDay();
@@ -3220,7 +3211,6 @@
         return;
       }
       Object.assign(old, entryData, { editedAt: nowText() });
-      highlightedEntryId = editingId;
       toast("Запис оновлено");
     } else {
       day.entries.push({
@@ -3274,7 +3264,6 @@
     });
     if (!confirmed) return;
     day.entries = day.entries.filter(e => e.id !== id);
-    if (highlightedEntryId === id) highlightedEntryId = null;
 
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
 
@@ -3484,7 +3473,6 @@
       const data = JSON.parse(raw);
       if (!Array.isArray(data.products) || !Array.isArray(data.days)) throw new Error("bad");
       state = data;
-      highlightedEntryId = null;
       ensureActiveDay();
       save();
       toast("Імпортовано");
@@ -3497,7 +3485,6 @@
   function resetApp() {
     closeResetConfirmation();
     state = { products: [], days: [], activeDayId: null };
-    highlightedEntryId = null;
     localStorage.removeItem("warehouseJournalV2");
     save();
     clearEntryForm();
@@ -3740,11 +3727,11 @@
 
     groups.forEach(g => {
       const div = document.createElement("div");
-      const isHighlighted = g.entries.some(entry => entry.id === highlightedEntryId);
+      const isHighlighted = g.entries.some(entry => Boolean(entry.editedAt));
       div.className = `item report-item${isHighlighted ? " recently-edited" : ""}`;
 
       const entriesHtml = g.entries.map(e => {
-        const isEditedEntry = e.id === highlightedEntryId;
+        const isEditedEntry = Boolean(e.editedAt);
         return `
         <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}">
           <div class="small">${isEditedEntry ? `<span class="edited-entry-label">Відредаговано</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
