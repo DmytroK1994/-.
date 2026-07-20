@@ -33,18 +33,18 @@
       --popover-shadow: rgba(0, 0, 0, .45);
       --overlay: rgba(0, 0, 0, .55);
       --page-glow: rgba(37, 99, 235, .14);
-      --soft-action-bg: rgba(148, 163, 184, .14);
-      --soft-action-border: rgba(148, 163, 184, .34);
-      --soft-action-text: #e2e8f0;
-      --soft-success-bg: rgba(34, 197, 94, .16);
-      --soft-success-border: rgba(74, 222, 128, .38);
-      --soft-success-text: #86efac;
-      --soft-warning-bg: rgba(245, 158, 11, .16);
-      --soft-warning-border: rgba(251, 191, 36, .38);
-      --soft-warning-text: #fde68a;
-      --soft-danger-bg: rgba(239, 68, 68, .15);
-      --soft-danger-border: rgba(248, 113, 113, .38);
-      --soft-danger-text: #fca5a5;
+      --soft-action-bg: #cbd5e1;
+      --soft-action-border: #94a3b8;
+      --soft-action-text: #111827;
+      --soft-success-bg: #86efac;
+      --soft-success-border: #22c55e;
+      --soft-success-text: #111827;
+      --soft-warning-bg: #fde68a;
+      --soft-warning-border: #f59e0b;
+      --soft-warning-text: #111827;
+      --soft-danger-bg: #fca5a5;
+      --soft-danger-border: #ef4444;
+      --soft-danger-text: #111827;
     }
     :root[data-theme="beige"] {
       color-scheme: light;
@@ -64,18 +64,18 @@
       --popover-shadow: rgba(75, 57, 34, .25);
       --overlay: rgba(50, 42, 31, .42);
       --page-glow: rgba(180, 125, 55, .13);
-      --soft-action-bg: rgba(120, 108, 90, .1);
-      --soft-action-border: rgba(120, 108, 90, .3);
-      --soft-action-text: #3f372c;
-      --soft-success-bg: rgba(22, 163, 74, .11);
-      --soft-success-border: rgba(22, 163, 74, .3);
-      --soft-success-text: #126235;
-      --soft-warning-bg: rgba(202, 138, 4, .12);
-      --soft-warning-border: rgba(180, 120, 0, .3);
-      --soft-warning-text: #744b00;
-      --soft-danger-bg: rgba(220, 38, 38, .1);
-      --soft-danger-border: rgba(220, 38, 38, .28);
-      --soft-danger-text: #a11d1d;
+      --soft-action-bg: #d8d0c3;
+      --soft-action-border: #aa9677;
+      --soft-action-text: #111111;
+      --soft-success-bg: #86efac;
+      --soft-success-border: #22c55e;
+      --soft-success-text: #111111;
+      --soft-warning-bg: #fde68a;
+      --soft-warning-border: #f59e0b;
+      --soft-warning-text: #111111;
+      --soft-danger-bg: #fca5a5;
+      --soft-danger-border: #ef4444;
+      --soft-danger-text: #111111;
     }
     :root[data-theme="white"] {
       color-scheme: light;
@@ -95,18 +95,18 @@
       --popover-shadow: rgba(30, 41, 59, .22);
       --overlay: rgba(15, 23, 42, .38);
       --page-glow: rgba(37, 99, 235, .08);
-      --soft-action-bg: rgba(71, 85, 105, .08);
-      --soft-action-border: rgba(71, 85, 105, .24);
-      --soft-action-text: #334155;
-      --soft-success-bg: rgba(22, 163, 74, .09);
-      --soft-success-border: rgba(22, 163, 74, .27);
-      --soft-success-text: #116530;
-      --soft-warning-bg: rgba(202, 138, 4, .1);
-      --soft-warning-border: rgba(202, 138, 4, .28);
-      --soft-warning-text: #795200;
-      --soft-danger-bg: rgba(220, 38, 38, .08);
-      --soft-danger-border: rgba(220, 38, 38, .25);
-      --soft-danger-text: #a51d1d;
+      --soft-action-bg: #dbe3ec;
+      --soft-action-border: #9ca9ba;
+      --soft-action-text: #111827;
+      --soft-success-bg: #86efac;
+      --soft-success-border: #22c55e;
+      --soft-success-text: #111827;
+      --soft-warning-bg: #fde68a;
+      --soft-warning-border: #f59e0b;
+      --soft-warning-text: #111827;
+      --soft-danger-bg: #fca5a5;
+      --soft-danger-border: #ef4444;
+      --soft-danger-text: #111827;
     }
     body {
       margin: 0;
@@ -326,10 +326,18 @@
       justify-self: end;
       gap: 6px;
       margin: 0;
+      position: relative;
+      z-index: 3;
     }
     #productsList .list-item-actions button {
       width: 82px;
       margin: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      line-height: 1.1;
+      position: relative;
+      z-index: 4;
     }
     .name {
       font-weight: 900;
@@ -413,11 +421,15 @@
       justify-self: end;
       gap: 6px;
       margin: 0;
+      position: relative;
+      z-index: 3;
     }
     #todayList .entry-actions button {
       width: 82px;
       margin: 0;
       box-shadow: none;
+      position: relative;
+      z-index: 4;
     }
     #saveEntryBtn {
       border: 1px solid var(--soft-success-border);
@@ -427,18 +439,24 @@
     }
     #previewDocumentBtn,
     #printBtn {
-      border: 1px solid var(--soft-action-border);
-      background: var(--soft-action-bg);
-      color: var(--soft-action-text);
+      color: #111827;
       box-shadow: none;
+    }
+    #previewDocumentBtn {
+      border: 1px solid #8b5cf6;
+      background: #c4b5fd;
+    }
+    #printBtn {
+      border: 1px solid #06b6d4;
+      background: #67e8f9;
     }
     #previewDocumentBtn:hover,
     #previewDocumentBtn:active,
     #printBtn:hover,
     #printBtn:active {
       border-color: var(--border-strong);
-      background: var(--surface-deep);
-      color: var(--text);
+      color: #111827;
+      filter: saturate(1.12) brightness(.97);
     }
     #todayList .entry-actions button.yellow {
       border: 1px solid var(--soft-warning-border);
@@ -776,6 +794,10 @@
       }
       .management-gesture-pad {
         display: flex;
+        width: 100vw;
+        max-width: none;
+        margin-right: calc(50% - 50vw);
+        margin-left: calc(50% - 50vw);
       }
     }
     .pill {
@@ -1970,7 +1992,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">80</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">82</span></div>
     </div>
   </div>
 
@@ -2282,7 +2304,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">80</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">82</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2300,8 +2322,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">80</span></div>
-        <div class="small">Кнопки попереднього перегляду документа та друку PDF отримали нейтральне оформлення без синьої заливки.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">82</span></div>
+        <div class="small">Сенсорну панель у розділі «Керування» розтягнуто до лівого та правого краю екрана на телефонах.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2318,7 +2340,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "80";
+  const APP_VERSION = "82";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
