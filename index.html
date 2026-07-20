@@ -2567,7 +2567,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">119</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">120</span></div>
     </div>
   </div>
 
@@ -2644,8 +2644,8 @@
         <input class="theme-designer-control" type="number" id="themeDesignerRadius" min="0" max="48" inputmode="numeric" />
       </div>
       <select class="theme-designer-scope theme-designer-control" id="themeDesignerScope">
-        <option value="type">Усі елементи цього типу</option>
         <option value="element">Лише цей елемент</option>
+        <option value="type">Усі елементи цього типу</option>
       </select>
       <div class="theme-designer-actions">
         <button type="button" class="theme-designer-control" id="themeDesignerApplyBtn">Застосувати</button>
@@ -2982,7 +2982,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">119</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">120</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3000,8 +3000,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">119</span></div>
-        <div class="small">Редагування одного елемента тепер закривається окремо, тому можна послідовно налаштовувати багато елементів без виходу з конструктора.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">120</span></div>
+        <div class="small">Конструктор за замовчуванням змінює лише вибраний елемент і підтримує оформлення випадаючого списку та його рядків.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3057,7 +3057,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "119";
+  const APP_VERSION = "120";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3104,6 +3104,8 @@
     { key: "header", label: "верхні шапки", selector: ".app-header" },
     { key: "button", label: "звичайні кнопки", selector: "button:not(.theme-designer-control)" },
     { key: "navigation", label: "кнопки навігації", selector: ".menu-btn, .app-bottom-nav button, .compact-menu-btn" },
+    { key: "dropdown", label: "випадаючі списки", selector: ".combo-list" },
+    { key: "dropdownOption", label: "рядки випадаючого списку", selector: ".combo-option" },
     { key: "success", label: "кнопки додавання", selector: "button.green:not(.theme-designer-control)" },
     { key: "warning", label: "кнопки редагування", selector: "button.yellow:not(.theme-designer-control), button[data-action^='edit']:not(.theme-designer-control)" },
     { key: "danger", label: "кнопки видалення", selector: "button.danger:not(.theme-designer-control), button[data-action^='delete']:not(.theme-designer-control)" }
@@ -3361,7 +3363,7 @@
     document.getElementById("themeDesignerText").value = normalizeThemeColor(styles.color, loadCustomTheme().customText);
     document.getElementById("themeDesignerBorder").value = normalizeThemeColor(styles.borderColor, loadCustomTheme().customBorder);
     document.getElementById("themeDesignerRadius").value = Math.round(Math.max(0, parseFloat(styles.borderRadius) || 0));
-    document.getElementById("themeDesignerScope").value = "type";
+    document.getElementById("themeDesignerScope").value = "element";
     const shortText = String(element.textContent || element.getAttribute("aria-label") || "").trim().replace(/\s+/g, " ").slice(0, 38);
     document.getElementById("themeDesignerSelectionName").textContent = `Вибрано: ${type.label}${shortText ? ` — ${shortText}` : ""}`;
     document.getElementById("themeDesignerSelection").classList.remove("hidden");
@@ -5857,6 +5859,7 @@
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("blur", () => {
     setTimeout(() => {
+      if (themeDesignerActive && themeDesignerPicking) return;
       if (document.activeElement !== document.getElementById("productSearch")) {
         document.getElementById("productSearchResults").classList.add("hidden");
       }
@@ -5992,6 +5995,7 @@
   });
 
   document.addEventListener("click", function (event) {
+    if (themeDesignerActive && themeDesignerPicking) return;
     const combo = event.target.closest(".combo-wrap");
     const isOption = event.target.closest("[data-action='select-product']");
     if (!combo && !isOption) {
