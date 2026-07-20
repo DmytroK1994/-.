@@ -1004,6 +1004,144 @@
       background: var(--soft-success-bg);
       color: var(--soft-success-text);
     }
+    #historyList button[data-action="preview-day"] {
+      border-color: #8b5cf6;
+      background: #c4b5fd;
+      color: #111827;
+    }
+    #printPreviewBtn {
+      border-color: #06b6d4;
+      background: #67e8f9;
+      color: #111827;
+      box-shadow: none;
+    }
+    #closeDocumentPreviewBtn {
+      border-color: var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    #todayList .report-item {
+      cursor: pointer;
+    }
+    .quick-edit-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 240;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-top: calc(env(safe-area-inset-top) + 18px);
+      background: var(--overlay);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .quick-edit-overlay.hidden {
+      display: none;
+    }
+    body.quick-edit-open {
+      overflow: hidden;
+    }
+    .quick-edit-dialog {
+      width: min(100%, 620px);
+      max-height: min(86dvh, 760px);
+      overflow-y: auto;
+      padding: 18px 16px calc(env(safe-area-inset-bottom) + 18px);
+      border: 1px solid var(--border-strong);
+      border-bottom: 0;
+      border-radius: 24px 24px 0 0;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 -18px 50px rgba(0, 0, 0, .3);
+    }
+    .quick-edit-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .quick-edit-header h2 {
+      margin: 0;
+    }
+    .quick-edit-close {
+      width: auto;
+      min-width: 76px;
+      min-height: 38px;
+      margin: 0;
+      padding: 7px 12px;
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    .quick-edit-tabs {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      margin: 0 -2px 12px;
+      padding: 2px 2px 6px;
+      scrollbar-width: thin;
+    }
+    .quick-edit-tab {
+      width: auto;
+      min-width: max-content;
+      min-height: 38px;
+      margin: 0;
+      padding: 7px 11px;
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+      font-size: 12px;
+    }
+    .quick-edit-tab.active {
+      border-color: var(--soft-warning-border);
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+    }
+    .quick-edit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 10px;
+    }
+    .quick-edit-grid label {
+      margin-top: 7px;
+    }
+    .quick-edit-grid input {
+      min-height: 44px;
+    }
+    .quick-edit-comment {
+      margin-top: 2px;
+    }
+    .quick-edit-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 13px;
+    }
+    #saveQuickEditBtn {
+      border: 1px solid var(--soft-success-border);
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
+      box-shadow: none;
+    }
+    #cancelQuickEditBtn {
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    @media (min-width: 901px) and (hover: hover) {
+      .quick-edit-overlay {
+        align-items: center;
+        padding: 24px;
+      }
+      .quick-edit-dialog {
+        border-bottom: 1px solid var(--border-strong);
+        border-radius: 24px;
+      }
+    }
 
     .form-section-title {
       margin: 14px 0 6px;
@@ -1992,7 +2130,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">82</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">83</span></div>
     </div>
   </div>
 
@@ -2304,7 +2442,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">82</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">83</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2322,8 +2460,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">82</span></div>
-        <div class="small">Сенсорну панель у розділі «Керування» розтягнуто до лівого та правого краю екрана на телефонах.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">83</span></div>
+        <div class="small">Додано швидке редагування позицій у компактному вікні. Кольори кнопок попереднього перегляду, історії та найменувань узгоджено зі стилем застосунку.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2335,12 +2473,52 @@
     <div class="success-check-mark" aria-hidden="true">✓</div>
   </div>
 
+  <div class="quick-edit-overlay hidden" id="quickEditOverlay" role="dialog" aria-modal="true" aria-labelledby="quickEditTitle">
+    <div class="quick-edit-dialog">
+      <div class="quick-edit-header">
+        <h2 id="quickEditTitle">Редагування позиції</h2>
+        <button class="quick-edit-close" id="closeQuickEditBtn">Закрити</button>
+      </div>
+      <div class="quick-edit-tabs" id="quickEditTabs"></div>
+      <input type="hidden" id="quickEditProductId" />
+      <input type="hidden" id="quickEditEntryId" />
+      <div class="quick-edit-grid">
+        <div>
+          <label for="quickEditPallets">Піддонів</label>
+          <input id="quickEditPallets" type="number" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="quickEditKgPerPallet">Кілограмів у піддоні</label>
+          <input id="quickEditKgPerPallet" type="number" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="quickEditPieces">Кількість штук</label>
+          <input id="quickEditPieces" type="number" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="quickEditKgPerPiece">Кілограмів у штуці</label>
+          <input id="quickEditKgPerPiece" type="number" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="quick-edit-comment">
+        <label for="quickEditDirectKg">Окрема вага, кг</label>
+        <input id="quickEditDirectKg" type="number" inputmode="decimal" />
+        <label for="quickEditComment">Коментар</label>
+        <input id="quickEditComment" />
+      </div>
+      <div class="quick-edit-actions">
+        <button id="saveQuickEditBtn">Зберегти зміни</button>
+        <button id="cancelQuickEditBtn">Скасувати</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "82";
+  const APP_VERSION = "83";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3025,7 +3203,7 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
-      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation"]
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
         swipeMode = "";
@@ -3513,6 +3691,98 @@
     }
   }
 
+  function getQuickEditEntries(productId) {
+    return getActiveDay().entries.filter(entry => (entry.productId || entry.productName) === productId);
+  }
+
+  function fillQuickEditForm(entry) {
+    if (!entry) return;
+    document.getElementById("quickEditEntryId").value = entry.id;
+    document.getElementById("quickEditPallets").value = entry.pallets || "";
+    document.getElementById("quickEditKgPerPallet").value = entry.kgPerPallet || "";
+    document.getElementById("quickEditPieces").value = entry.pieces || "";
+    document.getElementById("quickEditKgPerPiece").value = entry.kgPerPiece || "";
+    document.getElementById("quickEditDirectKg").value = entry.directKg || "";
+    document.getElementById("quickEditComment").value = entry.comment || "";
+  }
+
+  function renderQuickEditTabs(entries, selectedId) {
+    const tabs = document.getElementById("quickEditTabs");
+    tabs.innerHTML = entries.map((entry, index) => `
+      <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
+        data-action="select-quick-edit-entry" data-id="${entry.id}">
+        ${index + 1}. ${formatKg(entry.totalKg)}
+      </button>
+    `).join("");
+    tabs.classList.toggle("hidden", entries.length < 2);
+  }
+
+  function selectQuickEditEntry(entryId) {
+    const productId = document.getElementById("quickEditProductId").value;
+    const entries = getQuickEditEntries(productId);
+    const entry = entries.find(item => item.id === entryId);
+    if (!entry) return;
+    renderQuickEditTabs(entries, entry.id);
+    fillQuickEditForm(entry);
+  }
+
+  function openQuickEdit(productId, preferredEntryId = "") {
+    const entries = getQuickEditEntries(productId);
+    if (!entries.length) {
+      toast("Позицію не знайдено", true);
+      return;
+    }
+    const product = state.products.find(item => item.id === productId);
+    const selected = entries.find(item => item.id === preferredEntryId) || entries[0];
+    document.getElementById("quickEditProductId").value = productId;
+    document.getElementById("quickEditTitle").textContent = product?.name || selected.productName || "Редагування позиції";
+    renderQuickEditTabs(entries, selected.id);
+    fillQuickEditForm(selected);
+    document.getElementById("quickEditOverlay").classList.remove("hidden");
+    document.body.classList.add("quick-edit-open");
+  }
+
+  function closeQuickEdit() {
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    document.getElementById("quickEditOverlay").classList.add("hidden");
+    document.body.classList.remove("quick-edit-open");
+    document.getElementById("quickEditProductId").value = "";
+    document.getElementById("quickEditEntryId").value = "";
+    scheduleKeyboardScrollRestore();
+  }
+
+  function saveQuickEditEntry() {
+    const productId = document.getElementById("quickEditProductId").value;
+    const entryId = document.getElementById("quickEditEntryId").value;
+    const entry = getActiveDay().entries.find(item => item.id === entryId && (item.productId || item.productName) === productId);
+    if (!entry) {
+      toast("Запис не знайдено", true);
+      closeQuickEdit();
+      return;
+    }
+
+    const updated = {
+      pallets: Number(document.getElementById("quickEditPallets").value || 0),
+      kgPerPallet: Number(document.getElementById("quickEditKgPerPallet").value || 0),
+      pieces: Number(document.getElementById("quickEditPieces").value || 0),
+      kgPerPiece: Number(document.getElementById("quickEditKgPerPiece").value || 0),
+      directKg: Number(document.getElementById("quickEditDirectKg").value || 0),
+      comment: document.getElementById("quickEditComment").value.trim()
+    };
+    recalcEntry(updated);
+    if (updated.totalKg <= 0) {
+      toast("Введи вагу або кількість", true);
+      return;
+    }
+
+    Object.assign(entry, updated, { editedAt: nowText() });
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    save();
+    openQuickEdit(productId, entryId);
+    showSuccessCheck();
+    scheduleKeyboardScrollRestore();
+  }
+
   function saveEntry() {
     const productId = document.getElementById("productSelect").value;
     const product = state.products.find(p => p.id === productId);
@@ -3733,7 +4003,7 @@
     const map = {};
     day.entries.forEach(e => {
       const key = e.productId || e.productName;
-      if (!map[key]) map[key] = { name: e.productName, totalKg: 0, entries: [] };
+      if (!map[key]) map[key] = { productId: e.productId || key, name: e.productName, totalKg: 0, entries: [] };
       map[key].totalKg += Number(e.totalKg || 0);
       map[key].entries.push(e);
     });
@@ -4071,11 +4341,13 @@
       const div = document.createElement("div");
       const isHighlighted = g.entries.some(entry => Boolean(entry.editedAt));
       div.className = `item report-item${isHighlighted ? " recently-edited" : ""}`;
+      div.dataset.action = "open-quick-edit";
+      div.dataset.productId = g.productId;
 
       const entriesHtml = g.entries.map(e => {
         const isEditedEntry = Boolean(e.editedAt);
         return `
-        <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}">
+        <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}" data-entry-id="${e.id}">
           <div class="small">${isEditedEntry ? `<span class="edited-entry-label">Відредаговано</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
           <div class="actions entry-actions">
             <button class="smallbtn yellow" data-action="edit-entry" data-id="${e.id}">Редагувати</button>
@@ -4293,6 +4565,13 @@
   }
 
   document.addEventListener("click", function (event) {
+    const quickEditCard = event.target.closest("[data-action='open-quick-edit']");
+    if (quickEditCard && !event.target.closest("button")) {
+      const entryRow = event.target.closest(".entry-row[data-entry-id]");
+      openQuickEdit(quickEditCard.dataset.productId, entryRow?.dataset.entryId || "");
+      return;
+    }
+
     const el = event.target.closest("button");
     if (!el) return;
 
@@ -4307,6 +4586,7 @@
     if (action === "preview-day") openDocumentPreview(id);
     if (action === "delete-day") deleteDay(id);
     if (action === "select-product") selectProduct(id);
+    if (action === "select-quick-edit-entry") selectQuickEditEntry(id);
   });
 
   document.addEventListener("change", function (event) {
@@ -4371,6 +4651,12 @@
     renderToday();
   });
   document.getElementById("clearTodayListSearchBtn").addEventListener("click", clearTodayListSearch);
+  document.getElementById("saveQuickEditBtn").addEventListener("click", saveQuickEditEntry);
+  document.getElementById("cancelQuickEditBtn").addEventListener("click", closeQuickEdit);
+  document.getElementById("closeQuickEditBtn").addEventListener("click", closeQuickEdit);
+  document.getElementById("quickEditOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeQuickEdit();
+  });
 
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
   document.getElementById("cancelProductBtn").addEventListener("click", () => {
@@ -4419,6 +4705,11 @@
 
     if (!document.getElementById("resetConfirmation").classList.contains("hidden")) {
       closeResetConfirmation();
+      return;
+    }
+
+    if (!document.getElementById("quickEditOverlay").classList.contains("hidden")) {
+      closeQuickEdit();
       return;
     }
 
