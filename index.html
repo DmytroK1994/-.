@@ -175,11 +175,35 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
+    body.page-today {
+      padding-top: calc(env(safe-area-inset-top) + 142px);
+    }
     body.page-today .app-header {
-      overflow: hidden;
+      isolation: isolate;
+      overflow: visible;
       border-bottom-color: transparent;
-      border-radius: 0 0 30px 30px;
-      box-shadow: 0 14px 32px var(--header-shadow);
+      border-radius: 0;
+      box-shadow: none;
+    }
+    body.page-today .app-header::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: -22px;
+      left: 0;
+      z-index: -1;
+      height: 34px;
+      background:
+        radial-gradient(ellipse 23% 92% at 0% 0%, var(--surface) 0 97%, transparent 100%),
+        radial-gradient(ellipse 21% 82% at 25% 0%, var(--surface) 0 97%, transparent 100%),
+        radial-gradient(ellipse 24% 100% at 51% 0%, var(--surface) 0 97%, transparent 100%),
+        radial-gradient(ellipse 20% 86% at 77% 0%, var(--surface) 0 97%, transparent 100%),
+        radial-gradient(ellipse 23% 94% at 100% 0%, var(--surface) 0 97%, transparent 100%);
+      filter: drop-shadow(0 9px 9px var(--header-shadow));
+      pointer-events: none;
+    }
+    body.page-today .current-list-search-card {
+      top: calc(env(safe-area-inset-top) + 130px);
     }
     .topbar {
       display: grid;
@@ -955,25 +979,25 @@
       position: relative;
     }
     .combo-wrap input {
-      padding-right: 40px;
+      padding-right: 46px;
     }
     .clear-search-btn {
       position: absolute;
-      right: 7px;
+      right: 5px;
       top: 50%;
       transform: translateY(-50%);
-      width: 28px;
-      min-width: 28px;
-      max-width: 28px;
-      height: 28px;
-      min-height: 28px;
-      max-height: 28px;
+      width: 32px;
+      min-width: 32px;
+      max-width: 32px;
+      height: 32px;
+      min-height: 32px;
+      max-height: 32px;
       overflow: hidden;
-      border-radius: 9px;
+      border-radius: 10px;
       border: 1px solid var(--border-strong);
       background: var(--border);
       color: var(--text);
-      font-size: 17px;
+      font-size: 20px;
       line-height: 1;
       padding: 0;
       margin: 0;
@@ -984,23 +1008,6 @@
     }
     .clear-search-btn:active {
       background: var(--border-strong);
-    }
-    #pageToday #clearProductSearchBtn,
-    #pageToday #clearTodayListSearchBtn {
-      inline-size: 22px !important;
-      block-size: 22px !important;
-      width: 22px !important;
-      min-width: 22px !important;
-      max-width: 22px !important;
-      height: 22px !important;
-      min-height: 22px !important;
-      max-height: 22px !important;
-      padding: 0 !important;
-      border-radius: 7px;
-      font-size: 14px;
-      line-height: 1;
-      appearance: none;
-      -webkit-appearance: none;
     }
     .combo-list {
       position: absolute;
@@ -2382,7 +2389,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">98</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">100</span></div>
     </div>
   </div>
 
@@ -2748,7 +2755,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">98</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">100</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2766,8 +2773,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">98</span></div>
-        <div class="small">Блок із пунктами меню повернено до положення версії 95 — трохи вище середини екрана.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">100</span></div>
+        <div class="small">Нижню частину шапки поточного підрахунку оформлено як справжній нерівний край хмари без перекриття вмісту.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2823,7 +2830,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "98";
+  const APP_VERSION = "100";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
