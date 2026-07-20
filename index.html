@@ -924,15 +924,19 @@
         display: block;
       }
     }
-    .product-list-search-card {
+    .product-list-search-card,
+    .current-list-search-card {
       position: sticky;
       top: calc(env(safe-area-inset-top) + 105px);
       z-index: 9;
     }
+    .current-list-search-card {
+      border-top: 2px solid var(--border-strong);
+    }
     .current-list-search {
-      margin-top: 12px;
-      padding-top: 11px;
-      border-top: 1px solid var(--border);
+      margin: 0;
+      padding: 0;
+      border: 0;
     }
     .current-list-search label {
       margin: 0 0 5px;
@@ -1380,8 +1384,12 @@
         padding: 8px 10px;
       }
       .current-list-search {
-        margin-top: 9px;
-        padding-top: 8px;
+        margin: 0;
+        padding: 0;
+      }
+      #pageToday .current-list-search-card {
+        padding: 11px 12px;
+        border-radius: 16px;
       }
       .current-list-search input {
         min-height: 42px;
@@ -2153,7 +2161,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">86</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">87</span></div>
     </div>
   </div>
 
@@ -2251,6 +2259,9 @@
     <div class="card no-print">
       <button id="previewDocumentBtn">Попередній перегляд документа</button>
       <button id="printBtn">Друк / PDF</button>
+    </div>
+
+    <div class="card no-print current-list-search-card">
       <div class="current-list-search">
         <label for="todayListSearch">Пошук у поточному підрахунку</label>
         <div class="combo-wrap">
@@ -2465,7 +2476,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">86</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">87</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2483,8 +2494,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">86</span></div>
-        <div class="small">Вікно швидкого редагування переміщено в центр екрана, важливі кнопки встановлення стали синіми, а джойстик у «Керуванні» закріплено до нижнього краю.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">87</span></div>
+        <div class="small">Пошук у поточному підрахунку став липкою панеллю: фіксується під шапкою, поки список позицій прокручується.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2541,7 +2552,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "86";
+  const APP_VERSION = "87";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
