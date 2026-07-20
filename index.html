@@ -951,42 +951,6 @@
       font-size: 14px;
       font-weight: 800;
     }
-    .weight-calculator {
-      margin-top: 4px;
-    }
-    .weight-calculator-result {
-      min-height: 20px;
-      margin: 5px 2px 0;
-      color: var(--accent-soft);
-      font-size: 13px;
-      font-weight: 850;
-    }
-    .weight-calculator-result.invalid {
-      color: var(--soft-danger-bg);
-    }
-    .weight-calculator-keys {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 5px;
-      margin-top: 5px;
-    }
-    .weight-calculator-key {
-      min-width: 0;
-      min-height: 38px;
-      margin: 0;
-      padding: 6px 3px;
-      border: 1px solid var(--border-strong);
-      border-radius: 11px;
-      background: var(--surface-strong);
-      color: var(--text);
-      box-shadow: none;
-      font-size: 18px;
-      line-height: 1;
-    }
-    .weight-calculator-key[data-calc-action="clear"] {
-      color: var(--soft-danger-text);
-      background: var(--soft-danger-bg);
-    }
     .combo-wrap {
       position: relative;
     }
@@ -2407,7 +2371,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">104</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">105</span></div>
     </div>
   </div>
 
@@ -2495,18 +2459,7 @@
 
       <div class="form-section-title">Окрема вага</div>
       <label>Кілограмів</label>
-      <div class="weight-calculator">
-        <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 199,5 + 200 + 500" />
-        <div class="weight-calculator-result" id="directKgResult" aria-live="polite">Введи числа та обери дію</div>
-        <div class="weight-calculator-keys" aria-label="Дії калькулятора окремої ваги">
-          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="+">+</button>
-          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="−">−</button>
-          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="×">×</button>
-          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="÷">÷</button>
-          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-action="backspace" aria-label="Видалити останній символ">⌫</button>
-          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-action="clear" aria-label="Очистити вираз">C</button>
-        </div>
-      </div>
+      <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
 
       <label>Коментар</label>
       <input id="comment" placeholder="" />
@@ -2799,7 +2752,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">104</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">105</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2817,8 +2770,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">104</span></div>
-        <div class="small">Курсор у всіх полях введення тепер автоматично встановлюється після останнього символу.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">105</span></div>
+        <div class="small">Прибрано громіздку панель математичних операторів. Поле окремої ваги знову стало компактним.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2858,18 +2811,7 @@
       </div>
       <div class="quick-edit-comment">
         <label for="quickEditDirectKg">Окрема вага, кг</label>
-        <div class="weight-calculator">
-          <input id="quickEditDirectKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 199,5 + 200" />
-          <div class="weight-calculator-result" id="quickEditDirectKgResult" aria-live="polite">Введи числа та обери дію</div>
-          <div class="weight-calculator-keys" aria-label="Дії калькулятора окремої ваги">
-            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="+">+</button>
-            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="−">−</button>
-            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="×">×</button>
-            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="÷">÷</button>
-            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-action="backspace" aria-label="Видалити останній символ">⌫</button>
-            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-action="clear" aria-label="Очистити вираз">C</button>
-          </div>
-        </div>
+        <input id="quickEditDirectKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
         <label for="quickEditComment">Коментар</label>
         <input id="quickEditComment" />
       </div>
@@ -2886,7 +2828,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "104";
+  const APP_VERSION = "105";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3580,50 +3522,6 @@
     }
     if (!/[+−×÷()]/.test(normalized)) return formatKg(totalKg);
     return `${normalized} = ${formatKg(totalKg)}`;
-  }
-
-  function updateWeightCalculator(inputId) {
-    const input = document.getElementById(inputId);
-    const result = document.getElementById(inputId + "Result");
-    if (!input || !result) return;
-    const calculation = calculateWeightExpression(input.value);
-    const invalidTotal = calculation.valid && Boolean(input.value.trim()) && calculation.value <= 0;
-    result.classList.toggle("invalid", !calculation.valid || invalidTotal);
-    if (!input.value.trim()) {
-      result.textContent = "Введи числа та обери дію";
-    } else if (!calculation.valid) {
-      result.textContent = "Перевір вираз";
-    } else if (invalidTotal) {
-      result.textContent = "Сума має бути більшою за нуль";
-    } else {
-      result.textContent = `Разом: ${formatKg(calculation.value)}`;
-    }
-  }
-
-  function useWeightCalculatorKey(button) {
-    const input = document.getElementById(button.dataset.calcTarget || "");
-    if (!input) return;
-    const start = input.selectionStart ?? input.value.length;
-    const end = input.selectionEnd ?? start;
-    const action = button.dataset.calcAction;
-
-    if (action === "clear") {
-      input.value = "";
-      input.focus({ preventScroll: true });
-      input.setSelectionRange(0, 0);
-    } else if (action === "backspace") {
-      const removeFrom = start === end ? Math.max(0, start - 1) : start;
-      input.value = input.value.slice(0, removeFrom) + input.value.slice(end);
-      input.focus({ preventScroll: true });
-      input.setSelectionRange(removeFrom, removeFrom);
-    } else {
-      const token = ` ${button.dataset.calcValue || ""} `;
-      input.value = input.value.slice(0, start) + token + input.value.slice(end);
-      const cursor = start + token.length;
-      input.focus({ preventScroll: true });
-      input.setSelectionRange(cursor, cursor);
-    }
-    updateWeightCalculator(input.id);
   }
 
   function toast(text, danger = false) {
@@ -4577,7 +4475,6 @@
     document.getElementById("quickEditPieces").value = entry.pieces || "";
     document.getElementById("quickEditKgPerPiece").value = entry.kgPerPiece || "";
     document.getElementById("quickEditDirectKg").value = entry.directKgExpression || entry.directKg || "";
-    updateWeightCalculator("quickEditDirectKg");
     document.getElementById("quickEditComment").value = entry.comment || "";
   }
 
@@ -4743,7 +4640,6 @@
     document.getElementById("pieces").value = e.pieces || "";
     document.getElementById("kgPerPiece").value = e.kgPerPiece || "";
     document.getElementById("directKg").value = e.directKgExpression || e.directKg || "";
-    updateWeightCalculator("directKg");
     document.getElementById("comment").value = e.comment || "";
     document.getElementById("formTitle").textContent = "Редагувати запис";
     document.getElementById("saveEntryBtn").textContent = "Зберегти зміни";
@@ -4782,7 +4678,6 @@
     document.getElementById("pieces").value = "";
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
-    updateWeightCalculator("directKg");
     document.getElementById("comment").value = "";
     document.getElementById("formTitle").textContent = "Додати до підрахунку";
     document.getElementById("saveEntryBtn").textContent = "Додати";
@@ -5522,13 +5417,6 @@
     if (wasEditing) restoreEditPosition("entry");
   });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
-  ["directKg", "quickEditDirectKg"].forEach(inputId => {
-    document.getElementById(inputId).addEventListener("input", () => updateWeightCalculator(inputId));
-  });
-  document.querySelectorAll(".weight-calculator-key").forEach(button => {
-    button.addEventListener("pointerdown", event => event.preventDefault());
-    button.addEventListener("click", () => useWeightCalculatorKey(button));
-  });
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("blur", () => {
@@ -5658,8 +5546,6 @@
     render();
     updatePageBackButton();
     updateInstallUI();
-    updateWeightCalculator("directKg");
-    updateWeightCalculator("quickEditDirectKg");
   });
 
   renderAppVersion();
