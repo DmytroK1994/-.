@@ -2371,7 +2371,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">105</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">106</span></div>
     </div>
   </div>
 
@@ -2386,7 +2386,7 @@
       <div class="menu-wheel" id="menuWheel">
         <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
         <button class="menu-btn" data-page="history">Історія</button>
-        <button class="menu-btn" data-page="management">Керування</button>
+        <button class="menu-btn" data-page="management">Налаштування</button>
         <button class="menu-btn" data-page="about">Про додаток</button>
       </div>
       <div class="menu-more-indicator hidden" id="menuMoreIndicator"></div>
@@ -2569,11 +2569,14 @@
 
   <div id="pageManagement" class="hidden">
     <div class="card management-card">
-      <h2>Керування</h2>
-      <p class="small">Обери, з чим потрібно працювати.</p>
+      <h2>Налаштування</h2>
+      <p class="small">Обери потрібну категорію.</p>
       <div class="management-options">
         <button class="management-option" id="openProductsBtn">Найменування</button>
-        <button class="management-option" id="openSettingsBtn">Налаштування</button>
+        <button class="management-option" id="openLanguageSettingsBtn">Мова</button>
+        <button class="management-option" id="openThemeSettingsBtn">Теми</button>
+        <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
+        <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
     </div>
     <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування розділом">
@@ -2621,7 +2624,7 @@
   </div>
 
   <div id="pageSettings" class="hidden">
-    <div class="card">
+    <div class="card" id="settingsLanguageSection">
       <h2>Мова застосунку</h2>
       <p class="small">Мова зміниться в усьому інтерфейсі та документах.</p>
       <select id="languageSelect" aria-label="Мова застосунку" data-no-translate>
@@ -2634,7 +2637,7 @@
         <option value="ru">Русский</option>
       </select>
     </div>
-    <div class="card">
+    <div class="card" id="settingsThemeSection">
       <h2>Тема оформлення</h2>
       <p class="small">Вибрана тема збережеться на цьому телефоні.</p>
       <label for="themeSelect">Кольорова тема</label>
@@ -2685,8 +2688,8 @@
       </div>
     </div>
 
-    <div class="card">
-      <h2>Налаштування</h2>
+    <div class="card" id="settingsBackupSection">
+      <h2>Резервна копія</h2>
       <p class="small">
         Дані зберігаються в пам'яті цього браузера. Для надійності періодично роби резервну копію.
       </p>
@@ -2700,8 +2703,8 @@
       <button class="danger" id="resetBtn">Повне очищення програми</button>
     </div>
 
-    <div class="card">
-      <h2>Повернення назад</h2>
+    <div class="card" id="settingsOtherSection">
+      <h2>Інші налаштування</h2>
       <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
       <label for="backNavigationSelect">Спосіб повернення</label>
       <select id="backNavigationSelect">
@@ -2752,7 +2755,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">105</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">106</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2770,8 +2773,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">105</span></div>
-        <div class="small">Прибрано громіздку панель математичних операторів. Поле окремої ваги знову стало компактним.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">106</span></div>
+        <div class="small">Розділ керування перетворено на впорядкований центр налаштувань з окремими категоріями.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2828,7 +2831,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "105";
+  const APP_VERSION = "106";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4266,6 +4269,17 @@
     scrollAppToTop();
   }
 
+  function showSettingsSection(sectionId) {
+    showPage("settings");
+    window.setTimeout(() => {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+      const headerOffset = document.querySelector(".app-header")?.getBoundingClientRect().height || 0;
+      const top = window.scrollY + section.getBoundingClientRect().top - headerOffset - 12;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    }, 90);
+  }
+
   async function createNewDay() {
     const confirmed = await showAppDialog({
       label: "Новий підрахунок",
@@ -5507,7 +5521,10 @@
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
-  document.getElementById("openSettingsBtn").addEventListener("click", () => showPage("settings"));
+  document.getElementById("openLanguageSettingsBtn").addEventListener("click", () => showSettingsSection("settingsLanguageSection"));
+  document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showSettingsSection("settingsThemeSection"));
+  document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showSettingsSection("settingsBackupSection"));
+  document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showSettingsSection("settingsOtherSection"));
   document.getElementById("openInstallFromAboutBtn").addEventListener("click", () => showPage("install"));
   document.getElementById("installAppBtn").addEventListener("click", installApp);
   document.getElementById("shareAppBtn").addEventListener("click", shareApp);
