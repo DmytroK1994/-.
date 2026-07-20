@@ -33,6 +33,18 @@
       --popover-shadow: rgba(0, 0, 0, .45);
       --overlay: rgba(0, 0, 0, .55);
       --page-glow: rgba(37, 99, 235, .14);
+      --soft-action-bg: rgba(148, 163, 184, .14);
+      --soft-action-border: rgba(148, 163, 184, .34);
+      --soft-action-text: #e2e8f0;
+      --soft-success-bg: rgba(34, 197, 94, .16);
+      --soft-success-border: rgba(74, 222, 128, .38);
+      --soft-success-text: #86efac;
+      --soft-warning-bg: rgba(245, 158, 11, .16);
+      --soft-warning-border: rgba(251, 191, 36, .38);
+      --soft-warning-text: #fde68a;
+      --soft-danger-bg: rgba(239, 68, 68, .15);
+      --soft-danger-border: rgba(248, 113, 113, .38);
+      --soft-danger-text: #fca5a5;
     }
     :root[data-theme="beige"] {
       color-scheme: light;
@@ -52,6 +64,18 @@
       --popover-shadow: rgba(75, 57, 34, .25);
       --overlay: rgba(50, 42, 31, .42);
       --page-glow: rgba(180, 125, 55, .13);
+      --soft-action-bg: rgba(120, 108, 90, .1);
+      --soft-action-border: rgba(120, 108, 90, .3);
+      --soft-action-text: #3f372c;
+      --soft-success-bg: rgba(22, 163, 74, .11);
+      --soft-success-border: rgba(22, 163, 74, .3);
+      --soft-success-text: #126235;
+      --soft-warning-bg: rgba(202, 138, 4, .12);
+      --soft-warning-border: rgba(180, 120, 0, .3);
+      --soft-warning-text: #744b00;
+      --soft-danger-bg: rgba(220, 38, 38, .1);
+      --soft-danger-border: rgba(220, 38, 38, .28);
+      --soft-danger-text: #a11d1d;
     }
     :root[data-theme="white"] {
       color-scheme: light;
@@ -71,6 +95,18 @@
       --popover-shadow: rgba(30, 41, 59, .22);
       --overlay: rgba(15, 23, 42, .38);
       --page-glow: rgba(37, 99, 235, .08);
+      --soft-action-bg: rgba(71, 85, 105, .08);
+      --soft-action-border: rgba(71, 85, 105, .24);
+      --soft-action-text: #334155;
+      --soft-success-bg: rgba(22, 163, 74, .09);
+      --soft-success-border: rgba(22, 163, 74, .27);
+      --soft-success-text: #116530;
+      --soft-warning-bg: rgba(202, 138, 4, .1);
+      --soft-warning-border: rgba(202, 138, 4, .28);
+      --soft-warning-text: #795200;
+      --soft-danger-bg: rgba(220, 38, 38, .08);
+      --soft-danger-border: rgba(220, 38, 38, .25);
+      --soft-danger-text: #a51d1d;
     }
     body {
       margin: 0;
@@ -381,6 +417,63 @@
     #todayList .entry-actions button {
       width: 82px;
       margin: 0;
+      box-shadow: none;
+    }
+    #saveEntryBtn {
+      border: 1px solid var(--soft-success-border);
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
+      box-shadow: none;
+    }
+    #previewDocumentBtn,
+    #printBtn {
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    #previewDocumentBtn:hover,
+    #previewDocumentBtn:active,
+    #printBtn:hover,
+    #printBtn:active {
+      border-color: var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--text);
+    }
+    #todayList .entry-actions button.yellow {
+      border: 1px solid var(--soft-warning-border);
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+    }
+    #todayList .entry-actions button.danger {
+      border: 1px solid var(--soft-danger-border);
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+    }
+    #saveProductBtn,
+    #bulkAddProductsBtn {
+      border: 1px solid var(--soft-success-border);
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
+      box-shadow: none;
+    }
+    #cancelProductBtn {
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    #productsList .list-item-actions button.yellow {
+      border: 1px solid var(--soft-warning-border);
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+      box-shadow: none;
+    }
+    #productsList .list-item-actions button.danger {
+      border: 1px solid var(--soft-danger-border);
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+      box-shadow: none;
     }
     .print-only,
     .print-table-header {
@@ -507,10 +600,10 @@
       color: var(--text);
     }
     .menu-btn.gesture-selected {
-      border-color: #60a5fa;
-      outline: 3px solid rgba(96, 165, 250, .28);
-      color: white;
-      background: #2563eb;
+      border-color: var(--border-strong);
+      outline: 2px solid var(--border-strong);
+      color: var(--text);
+      background: var(--surface-strong);
     }
     .drawer-menu-content {
       min-height: 0;
@@ -565,6 +658,45 @@
       color: var(--muted-soft);
       font-size: 11px;
       line-height: 1.3;
+    }
+    .management-options {
+      display: grid;
+      gap: 8px;
+    }
+    .management-option {
+      margin-top: 0;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+    }
+    .management-option:hover,
+    .management-option:active,
+    .management-option.gesture-selected {
+      border-color: var(--border-strong);
+      background: var(--surface-strong);
+      color: var(--text);
+    }
+    .management-option.gesture-selected {
+      outline: 2px solid var(--border-strong);
+    }
+    .management-gesture-pad {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 230px;
+      margin: 14px -14px -14px;
+      padding: 26px 20px calc(env(safe-area-inset-bottom) + 26px);
+      background: transparent;
+      text-align: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .management-gesture-pad.dragging .gesture-pad-handle {
+      transform: scaleX(1.14);
+      background: var(--border-strong);
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       .drawer {
@@ -621,8 +753,8 @@
         text-align: center;
       }
       .menu-wheel .menu-btn.gesture-selected {
-        color: white;
-        background: #2563eb;
+        color: var(--text);
+        background: var(--surface-strong);
       }
       .drawer-gesture-pad {
         position: static;
@@ -640,6 +772,9 @@
         border-radius: 24px 24px 0 0;
       }
       .drawer.open .drawer-gesture-pad {
+        display: flex;
+      }
+      .management-gesture-pad {
         display: flex;
       }
     }
@@ -779,6 +914,73 @@
       font-weight: 800;
       z-index: 40;
       display: none;
+    }
+    .success-check {
+      position: fixed;
+      inset: 0;
+      z-index: 260;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .success-check.hidden {
+      display: none;
+    }
+    .success-check-mark {
+      display: grid;
+      width: 92px;
+      height: 92px;
+      place-items: center;
+      border: 1px solid rgba(74, 222, 128, .48);
+      border-radius: 50%;
+      background: rgba(22, 163, 74, .88);
+      color: white;
+      box-shadow: 0 18px 48px rgba(22, 163, 74, .3);
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1;
+      animation: success-check-in .72s cubic-bezier(.2, .85, .25, 1) both;
+    }
+    @keyframes success-check-in {
+      0% { opacity: 0; transform: scale(.58); }
+      28% { opacity: 1; transform: scale(1.08); }
+      58% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(.96); }
+    }
+
+    #pageHistory button,
+    #pageSettings button,
+    #pageAbout button,
+    #pageInstall button {
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    #pageHistory button.yellow {
+      border-color: var(--soft-warning-border);
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+    }
+    #pageSettings button.yellow {
+      border-color: var(--soft-warning-border);
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+    }
+    #pageHistory button.danger {
+      border-color: var(--soft-danger-border);
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+    }
+    #pageSettings button.danger {
+      border-color: var(--soft-danger-border);
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+    }
+    #pageInstall button.green {
+      border-color: var(--soft-success-border);
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
     }
 
     .form-section-title {
@@ -1768,7 +1970,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">75</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">80</span></div>
     </div>
   </div>
 
@@ -1963,8 +2165,15 @@
     <div class="card">
       <h2>Керування</h2>
       <p class="small">Обери, з чим потрібно працювати.</p>
-      <button id="openProductsBtn">Найменування</button>
-      <button id="openSettingsBtn">Налаштування</button>
+      <div class="management-options">
+        <button class="management-option" id="openProductsBtn">Найменування</button>
+        <button class="management-option" id="openSettingsBtn">Налаштування</button>
+      </div>
+      <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування розділом">
+        <span class="gesture-pad-handle"></span>
+        <span class="gesture-pad-selection" id="managementGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
+        <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
+      </div>
     </div>
   </div>
 
@@ -2073,7 +2282,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">75</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">80</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2091,8 +2300,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">75</span></div>
-        <div class="small">Прибрано дублюючу лінзу застосунку та відновлено нативну системну лінзу, яка з’являється після затискання текстового поля.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">80</span></div>
+        <div class="small">Кнопки попереднього перегляду документа та друку PDF отримали нейтральне оформлення без синьої заливки.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2100,13 +2309,16 @@
   </div>
 
   <div class="toast" id="toast"></div>
+  <div class="success-check hidden" id="successCheck" role="status" aria-label="Позицію додано">
+    <div class="success-check-mark" aria-hidden="true">✓</div>
+  </div>
 
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "75";
+  const APP_VERSION = "80";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2164,6 +2376,7 @@
   let gesturePadAxis = "";
   let gesturePadDragging = false;
   let gesturePadMoved = false;
+  let managementGestureIndex = 0;
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -2173,6 +2386,7 @@
   let keyboardScrollAnimationFrame = 0;
   let appDialogResolver = null;
   let appDialogPreviousFocus = null;
+  let successCheckTimer = 0;
   const editReturnScroll = { entry: null, product: null };
 
   function isAppKeyboardField(element) {
@@ -2460,6 +2674,18 @@
     setTimeout(() => el.style.display = "none", 1800);
   }
 
+  function showSuccessCheck() {
+    const overlay = document.getElementById("successCheck");
+    const mark = overlay?.querySelector(".success-check-mark");
+    if (!overlay || !mark) return;
+    window.clearTimeout(successCheckTimer);
+    overlay.classList.remove("hidden");
+    mark.style.animation = "none";
+    void mark.offsetWidth;
+    mark.style.animation = "";
+    successCheckTimer = window.setTimeout(() => overlay.classList.add("hidden"), 760);
+  }
+
   function showAppDialog({
     label = "Підтвердження",
     title = "Підтвердити дію?",
@@ -2644,6 +2870,79 @@
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         activateGestureMenuSelection();
+      }
+    });
+  }
+
+  function getManagementGestureItems() {
+    return Array.from(document.querySelectorAll("#pageManagement .management-option"));
+  }
+
+  function clearManagementGestureSelection() {
+    getManagementGestureItems().forEach(item => item.classList.remove("gesture-selected"));
+    const label = document.getElementById("managementGestureSelection");
+    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
+  }
+
+  function setManagementGestureSelection(index) {
+    const items = getManagementGestureItems();
+    if (!items.length) return;
+    managementGestureIndex = Math.max(0, Math.min(items.length - 1, index));
+    items.forEach((item, itemIndex) => {
+      item.classList.toggle("gesture-selected", itemIndex === managementGestureIndex);
+    });
+    const label = document.getElementById("managementGestureSelection");
+    if (label) label.textContent = "Вибрано: " + items[managementGestureIndex].textContent.trim();
+  }
+
+  function initManagementGesturePad() {
+    const pad = document.getElementById("managementGesturePad");
+    if (!pad) return;
+    let dragging = false;
+    let moved = false;
+    let startY = 0;
+    let startIndex = 0;
+
+    pad.addEventListener("pointerdown", event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      event.preventDefault();
+      dragging = true;
+      moved = false;
+      startY = event.clientY;
+      startIndex = managementGestureIndex;
+      pad.classList.add("dragging");
+      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    pad.addEventListener("pointermove", event => {
+      if (!dragging) return;
+      event.preventDefault();
+      const distance = event.clientY - startY;
+      if (Math.abs(distance) > 10) moved = true;
+      setManagementGestureSelection(startIndex + Math.round(distance / 42));
+    });
+
+    const finishGesture = event => {
+      if (!dragging) return;
+      dragging = false;
+      pad.classList.remove("dragging");
+      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (event.type === "pointercancel" || moved) return;
+      const item = getManagementGestureItems()[managementGestureIndex];
+      if (item) item.click();
+    };
+
+    pad.addEventListener("pointerup", finishGesture);
+    pad.addEventListener("pointercancel", finishGesture);
+    pad.addEventListener("keydown", event => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        setManagementGestureSelection(managementGestureIndex + (event.key === "ArrowDown" ? 1 : -1));
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        const item = getManagementGestureItems()[managementGestureIndex];
+        if (item) item.click();
       }
     });
   }
@@ -2991,6 +3290,7 @@
       document.getElementById("pageInstall").classList.remove("hidden");
       updateInstallUI();
     }
+    if (page === "management") clearManagementGestureSelection();
 
     const activeMenuPage = ["products", "settings"].includes(page) ? "management" : (page === "install" ? "about" : page);
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
@@ -3238,7 +3538,7 @@
         createdAt: nowText(),
         ...entryData
       });
-      toast("Додано");
+      showSuccessCheck();
     }
 
     clearEntryForm();
@@ -4118,6 +4418,7 @@
   initAppKeyboardScrollRestore();
   initAppTopPosition();
   initGestureMenuPad();
+  initManagementGesturePad();
   initMenuSwipeGestures();
   initDocumentPreviewSwipe();
   updateInstallUI();
