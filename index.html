@@ -973,6 +973,23 @@
     .clear-search-btn:active {
       background: var(--border-strong);
     }
+    #pageToday #clearProductSearchBtn,
+    #pageToday #clearTodayListSearchBtn {
+      inline-size: 22px !important;
+      block-size: 22px !important;
+      width: 22px !important;
+      min-width: 22px !important;
+      max-width: 22px !important;
+      height: 22px !important;
+      min-height: 22px !important;
+      max-height: 22px !important;
+      padding: 0 !important;
+      border-radius: 7px;
+      font-size: 14px;
+      line-height: 1;
+      appearance: none;
+      -webkit-appearance: none;
+    }
     .combo-list {
       position: absolute;
       left: 0;
@@ -2353,7 +2370,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">94</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">95</span></div>
     </div>
   </div>
 
@@ -2719,7 +2736,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">94</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">95</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2737,8 +2754,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">94</span></div>
-        <div class="small">Вікно з пунктами меню піднято майже впритул до верхньої шапки.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">95</span></div>
+        <div class="small">Хрестики очищення у двох пошуках поточного підрахунку примусово зменшено до компактного розміру.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2794,7 +2811,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "94";
+  const APP_VERSION = "95";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
