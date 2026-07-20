@@ -1054,42 +1054,43 @@
     }
     .app-bottom-nav {
       position: fixed;
-      right: 0;
-      bottom: 0;
-      left: 0;
+      right: 16px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      left: 16px;
       z-index: 109;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      width: min(100%, 560px);
+      gap: 6px;
+      width: min(calc(100% - 32px), 330px);
       margin-inline: auto;
-      padding: 6px max(8px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 6px) max(8px, env(safe-area-inset-left));
-      border: 1px solid var(--border);
-      border-bottom: 0;
-      border-radius: 20px 20px 0 0;
+      padding: 6px;
+      border: 1px solid var(--border-strong);
+      border-radius: 24px;
       background: var(--surface);
-      box-shadow: 0 -8px 24px var(--header-shadow);
+      box-shadow: 0 12px 34px var(--header-shadow);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
     .app-bottom-nav button {
       display: grid;
-      min-height: 52px;
+      min-height: 46px;
       margin: 0;
       padding: 5px 8px;
       place-items: center;
       gap: 1px;
-      border: 0;
-      border-radius: 13px;
+      border: 1px solid transparent;
+      border-radius: 18px;
       background: transparent;
       color: var(--text);
       box-shadow: none;
     }
+    .app-bottom-nav button:hover,
     .app-bottom-nav button:active {
+      border-color: var(--border);
       background: var(--surface-strong);
     }
     .bottom-nav-icon {
-      font-size: 23px;
+      font-size: 21px;
       font-weight: 900;
       line-height: 1;
     }
@@ -2434,7 +2435,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">116</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">117</span></div>
     </div>
   </div>
 
@@ -2483,11 +2484,11 @@
       <span class="bottom-nav-label">Назад</span>
     </button>
     <button type="button" id="bottomHomeBtn" aria-label="Головна">
-      <span class="bottom-nav-icon">●</span>
+      <span class="bottom-nav-icon">⌂</span>
       <span class="bottom-nav-label">Головна</span>
     </button>
     <button type="button" id="bottomMenuBtn" aria-label="Відкрити меню">
-      <span class="bottom-nav-icon">≡</span>
+      <span class="bottom-nav-icon">☰</span>
       <span class="bottom-nav-label">Меню</span>
     </button>
   </nav>
@@ -2819,7 +2820,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">116</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">117</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2837,8 +2838,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">116</span></div>
-        <div class="small">Усі компактні шапки отримали такі самі заокруглені нижні краї, як шапка поточного підрахунку.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">117</span></div>
+        <div class="small">Нижня кнопкова навігація стала компактнішою, вужчою та отримала легший плаваючий дизайн.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2894,7 +2895,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "116";
+  const APP_VERSION = "117";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
