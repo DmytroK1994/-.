@@ -33,18 +33,18 @@
       --popover-shadow: rgba(0, 0, 0, .45);
       --overlay: rgba(0, 0, 0, .55);
       --page-glow: rgba(37, 99, 235, .14);
-      --soft-action-bg: #cbd5e1;
-      --soft-action-border: #94a3b8;
-      --soft-action-text: #111827;
-      --soft-success-bg: #86efac;
-      --soft-success-border: #22c55e;
-      --soft-success-text: #111827;
-      --soft-warning-bg: #fde68a;
-      --soft-warning-border: #f59e0b;
-      --soft-warning-text: #111827;
-      --soft-danger-bg: #fca5a5;
-      --soft-danger-border: #ef4444;
-      --soft-danger-text: #111827;
+      --soft-action-bg: #475569;
+      --soft-action-border: #64748b;
+      --soft-action-text: #ffffff;
+      --soft-success-bg: #16a34a;
+      --soft-success-border: #15803d;
+      --soft-success-text: #ffffff;
+      --soft-warning-bg: #ca8a04;
+      --soft-warning-border: #a16207;
+      --soft-warning-text: #ffffff;
+      --soft-danger-bg: #dc2626;
+      --soft-danger-border: #b91c1c;
+      --soft-danger-text: #ffffff;
     }
     :root[data-theme="beige"] {
       color-scheme: light;
@@ -64,18 +64,18 @@
       --popover-shadow: rgba(75, 57, 34, .25);
       --overlay: rgba(50, 42, 31, .42);
       --page-glow: rgba(180, 125, 55, .13);
-      --soft-action-bg: #d8d0c3;
-      --soft-action-border: #aa9677;
-      --soft-action-text: #111111;
-      --soft-success-bg: #86efac;
-      --soft-success-border: #22c55e;
-      --soft-success-text: #111111;
-      --soft-warning-bg: #fde68a;
-      --soft-warning-border: #f59e0b;
-      --soft-warning-text: #111111;
-      --soft-danger-bg: #fca5a5;
-      --soft-danger-border: #ef4444;
-      --soft-danger-text: #111111;
+      --soft-action-bg: #5b6472;
+      --soft-action-border: #475569;
+      --soft-action-text: #ffffff;
+      --soft-success-bg: #16a34a;
+      --soft-success-border: #15803d;
+      --soft-success-text: #ffffff;
+      --soft-warning-bg: #ca8a04;
+      --soft-warning-border: #a16207;
+      --soft-warning-text: #ffffff;
+      --soft-danger-bg: #dc2626;
+      --soft-danger-border: #b91c1c;
+      --soft-danger-text: #ffffff;
     }
     :root[data-theme="white"] {
       color-scheme: light;
@@ -95,18 +95,18 @@
       --popover-shadow: rgba(30, 41, 59, .22);
       --overlay: rgba(15, 23, 42, .38);
       --page-glow: rgba(37, 99, 235, .08);
-      --soft-action-bg: #dbe3ec;
-      --soft-action-border: #9ca9ba;
-      --soft-action-text: #111827;
-      --soft-success-bg: #86efac;
-      --soft-success-border: #22c55e;
-      --soft-success-text: #111827;
-      --soft-warning-bg: #fde68a;
-      --soft-warning-border: #f59e0b;
-      --soft-warning-text: #111827;
-      --soft-danger-bg: #fca5a5;
-      --soft-danger-border: #ef4444;
-      --soft-danger-text: #111827;
+      --soft-action-bg: #526071;
+      --soft-action-border: #3f4b5a;
+      --soft-action-text: #ffffff;
+      --soft-success-bg: #16a34a;
+      --soft-success-border: #15803d;
+      --soft-success-text: #ffffff;
+      --soft-warning-bg: #ca8a04;
+      --soft-warning-border: #a16207;
+      --soft-warning-text: #ffffff;
+      --soft-danger-bg: #dc2626;
+      --soft-danger-border: #b91c1c;
+      --soft-danger-text: #ffffff;
     }
     body {
       margin: 0;
@@ -439,23 +439,23 @@
     }
     #previewDocumentBtn,
     #printBtn {
-      color: #111827;
+      color: #ffffff;
       box-shadow: none;
     }
     #previewDocumentBtn {
-      border: 1px solid #8b5cf6;
-      background: #c4b5fd;
+      border: 1px solid #1d4ed8;
+      background: #2563eb;
     }
     #printBtn {
-      border: 1px solid #06b6d4;
-      background: #67e8f9;
+      border: 1px solid #172554;
+      background: #1e3a8a;
     }
     #previewDocumentBtn:hover,
     #previewDocumentBtn:active,
     #printBtn:hover,
     #printBtn:active {
       border-color: var(--border-strong);
-      color: #111827;
+      color: #ffffff;
       filter: saturate(1.12) brightness(.97);
     }
     #todayList .entry-actions button.yellow {
@@ -618,10 +618,10 @@
       color: var(--text);
     }
     .menu-btn.gesture-selected {
-      border-color: var(--border-strong);
-      outline: 2px solid var(--border-strong);
-      color: var(--text);
-      background: var(--surface-strong);
+      border-color: #b77900;
+      outline: 2px solid #f2c14e;
+      color: #1f1600;
+      background: #d9a514;
     }
     .drawer-menu-content {
       min-height: 0;
@@ -771,8 +771,8 @@
         text-align: center;
       }
       .menu-wheel .menu-btn.gesture-selected {
-        color: var(--text);
-        background: var(--surface-strong);
+        color: #1f1600;
+        background: #d9a514;
       }
       .drawer-gesture-pad {
         position: static;
@@ -1005,14 +1005,14 @@
       color: var(--soft-success-text);
     }
     #historyList button[data-action="preview-day"] {
-      border-color: #8b5cf6;
-      background: #c4b5fd;
-      color: #111827;
+      border-color: #1d4ed8;
+      background: #2563eb;
+      color: #ffffff;
     }
     #printPreviewBtn {
-      border-color: #06b6d4;
-      background: #67e8f9;
-      color: #111827;
+      border-color: #172554;
+      background: #1e3a8a;
+      color: #ffffff;
       box-shadow: none;
     }
     #closeDocumentPreviewBtn {
@@ -2130,7 +2130,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">83</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">84</span></div>
     </div>
   </div>
 
@@ -2442,7 +2442,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">83</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">84</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2460,8 +2460,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">83</span></div>
-        <div class="small">Додано швидке редагування позицій у компактному вікні. Кольори кнопок попереднього перегляду, історії та найменувань узгоджено зі стилем застосунку.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">84</span></div>
+        <div class="small">Повернено звичайні суцільні кольори кнопок без напівпрозорості. Виділення меню стало золотистим, а перегляд і друк PDF — синім та темно-синім.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2518,7 +2518,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "83";
+  const APP_VERSION = "84";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
