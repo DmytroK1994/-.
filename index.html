@@ -787,7 +787,7 @@
       }
       .drawer-menu-content {
         position: relative;
-        z-index: 5;
+        z-index: 7;
         flex: 1 1 auto;
         min-height: 0;
         display: flex;
@@ -819,17 +819,52 @@
       }
       .menu-wheel {
         display: flex;
-        flex: 1 1 auto;
-        min-height: max-content;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: min(calc(100% - 28px), 460px);
+        max-height: 240px;
+        min-height: 0;
+        flex: none;
         flex-direction: column;
-        justify-content: center;
-        padding-top: clamp(36px, 6dvh, 68px);
+        justify-content: flex-start;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 8px 10px 14px;
+        border: 1px solid var(--border-strong);
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow: 0 18px 44px var(--popover-shadow);
+        pointer-events: auto;
+        touch-action: pan-y;
+        scrollbar-width: thin;
+        transform: translate(-50%, -50%);
       }
       .menu-wheel .menu-btn {
         width: min(100%, 440px);
         flex: 0 0 auto;
         align-self: center;
         text-align: center;
+      }
+      .menu-more-indicator {
+        position: absolute;
+        top: calc(50% + 132px);
+        left: 50%;
+        z-index: 8;
+        width: max-content;
+        max-width: calc(100% - 40px);
+        padding: 5px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface-deep);
+        color: var(--muted);
+        box-shadow: 0 5px 14px var(--card-shadow);
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1.2;
+        text-align: center;
+        pointer-events: none;
+        transform: translateX(-50%);
       }
       .menu-wheel .menu-btn.gesture-selected {
         color: var(--selection-text);
@@ -2313,7 +2348,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">91</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">92</span></div>
     </div>
   </div>
 
@@ -2331,6 +2366,7 @@
         <button class="menu-btn" data-page="management">Керування</button>
         <button class="menu-btn" data-page="about">Про додаток</button>
       </div>
+      <div class="menu-more-indicator hidden" id="menuMoreIndicator"></div>
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
@@ -2678,7 +2714,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">91</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">92</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2696,8 +2732,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">91</span></div>
-        <div class="small">Виправлено повернення з підпунктів, додано вибір кнопки або свайпа назад і розтягнуто джойстик головного меню на весь екран.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">92</span></div>
+        <div class="small">Пункти меню оформлено в центральне вікно поверх джойстика: їх можна натискати або прокручувати, а додаткові пункти позначаються підказкою.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2753,7 +2789,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "91";
+  const APP_VERSION = "92";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3374,6 +3410,25 @@
     return Array.from(document.querySelectorAll("#drawer .menu-btn"));
   }
 
+  function updateMenuOverflowIndicator() {
+    const wheel = document.getElementById("menuWheel");
+    const indicator = document.getElementById("menuMoreIndicator");
+    if (!wheel || !indicator || !isMobileDevice || !document.getElementById("drawer").classList.contains("open")) {
+      if (indicator) indicator.classList.add("hidden");
+      return;
+    }
+    const hasOverflow = wheel.scrollHeight > wheel.clientHeight + 2;
+    indicator.classList.toggle("hidden", !hasOverflow);
+    if (!hasOverflow) return;
+    const atTop = wheel.scrollTop <= 2;
+    const atBottom = wheel.scrollTop + wheel.clientHeight >= wheel.scrollHeight - 2;
+    indicator.textContent = atTop
+      ? "Нижче є ще пункти ↓"
+      : atBottom
+        ? "↑ Вище є ще пункти"
+        : "↑ Є інші пункти ↓";
+  }
+
   function setGestureMenuSelection(index) {
     const items = getGestureMenuItems();
     if (!items.length) return;
@@ -3387,6 +3442,7 @@
     const label = document.getElementById("gesturePadSelection");
     if (label) label.textContent = "Вибрано: " + selectedItem.textContent.trim();
     selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    window.setTimeout(updateMenuOverflowIndicator, 180);
   }
 
   function initializeGestureMenuSelection() {
@@ -3396,6 +3452,7 @@
     items.forEach(item => item.classList.remove("gesture-selected"));
     const label = document.getElementById("gesturePadSelection");
     if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
+    requestAnimationFrame(updateMenuOverflowIndicator);
   }
 
   function activateGestureMenuSelection() {
@@ -3476,6 +3533,9 @@
         activateGestureMenuSelection();
       }
     });
+    const wheel = document.getElementById("menuWheel");
+    if (wheel) wheel.addEventListener("scroll", updateMenuOverflowIndicator, { passive: true });
+    window.addEventListener("resize", updateMenuOverflowIndicator);
   }
 
   function getManagementGestureItems() {
@@ -3827,6 +3887,7 @@
     drawer.classList.add("open");
     drawerBg.classList.add("open");
     initializeGestureMenuSelection();
+    requestAnimationFrame(updateMenuOverflowIndicator);
   }
 
   function closeMenu() {
@@ -3841,6 +3902,8 @@
     drawer.classList.remove("open");
     drawerBg.classList.remove("open");
     getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
+    const overflowIndicator = document.getElementById("menuMoreIndicator");
+    if (overflowIndicator) overflowIndicator.classList.add("hidden");
   }
 
   function closeMenuImmediately() {
