@@ -7,7 +7,7 @@
   <script>
     try {
       const savedTheme = localStorage.getItem("warehouseJournalTheme");
-      if (["dark", "beige", "white"].includes(savedTheme)) {
+      if (["dark", "beige", "white", "custom"].includes(savedTheme)) {
         document.documentElement.dataset.theme = savedTheme;
       }
     } catch (e) {}
@@ -34,6 +34,14 @@
       --popover-shadow: rgba(0, 0, 0, .45);
       --overlay: rgba(0, 0, 0, .55);
       --page-glow: rgba(37, 99, 235, .14);
+      --primary-bg: #2563eb;
+      --primary-dark-bg: #1e3a8a;
+      --primary-text: #ffffff;
+      --primary-dark-text: #ffffff;
+      --selection-bg: #d9a514;
+      --selection-border: #b77900;
+      --selection-outline: #f2c14e;
+      --selection-text: #1f1600;
       --soft-action-bg: #475569;
       --soft-action-border: #64748b;
       --soft-action-text: #ffffff;
@@ -65,6 +73,11 @@
       --popover-shadow: rgba(75, 57, 34, .25);
       --overlay: rgba(50, 42, 31, .42);
       --page-glow: rgba(180, 125, 55, .13);
+      --primary-bg: #2563eb;
+      --primary-dark-bg: #1e3a8a;
+      --selection-bg: #d9a514;
+      --selection-border: #b77900;
+      --selection-outline: #f2c14e;
       --soft-action-bg: #5b6472;
       --soft-action-border: #475569;
       --soft-action-text: #ffffff;
@@ -96,6 +109,11 @@
       --popover-shadow: rgba(30, 41, 59, .22);
       --overlay: rgba(15, 23, 42, .38);
       --page-glow: rgba(37, 99, 235, .08);
+      --primary-bg: #2563eb;
+      --primary-dark-bg: #1e3a8a;
+      --selection-bg: #d9a514;
+      --selection-border: #b77900;
+      --selection-outline: #f2c14e;
       --soft-action-bg: #526071;
       --soft-action-border: #3f4b5a;
       --soft-action-text: #ffffff;
@@ -254,7 +272,7 @@
       transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
     }
     input:focus, select:focus, textarea:focus {
-      border-color: #3b82f6;
+      border-color: var(--primary-bg);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, .2);
     }
     input::placeholder, textarea::placeholder { color: var(--muted-soft); opacity: .9; }
@@ -267,8 +285,8 @@
       touch-action: auto;
     }
     button {
-      background: #2563eb;
-      color: white;
+      background: var(--primary-bg);
+      color: var(--primary-text);
       font-weight: 800;
       height: auto;
       text-align: center;
@@ -291,10 +309,26 @@
       filter: grayscale(.25);
     }
     button:disabled:active { transform: none; filter: grayscale(.25); }
-    button.secondary { background: #475569; }
-    button.danger { background: #dc2626; }
-    button.green { background: #16a34a; }
-    button.yellow { background: #ca8a04; }
+    button.secondary {
+      border-color: var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+    }
+    button.danger {
+      border-color: var(--soft-danger-border);
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+    }
+    button.green {
+      border-color: var(--soft-success-border);
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
+    }
+    button.yellow {
+      border-color: var(--soft-warning-border);
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+    }
     button.smallbtn {
       padding: 8px 9px;
       font-size: 13px;
@@ -443,25 +477,23 @@
       color: var(--soft-success-text);
       box-shadow: none;
     }
-    #previewDocumentBtn,
-    #printBtn {
-      color: #ffffff;
+    #previewDocumentBtn {
+      border: 1px solid var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
       box-shadow: none;
     }
-    #previewDocumentBtn {
-      border: 1px solid #1d4ed8;
-      background: #2563eb;
-    }
     #printBtn {
-      border: 1px solid #172554;
-      background: #1e3a8a;
+      border: 1px solid var(--primary-dark-bg);
+      background: var(--primary-dark-bg);
+      color: var(--primary-dark-text);
+      box-shadow: none;
     }
     #previewDocumentBtn:hover,
     #previewDocumentBtn:active,
     #printBtn:hover,
     #printBtn:active {
       border-color: var(--border-strong);
-      color: #ffffff;
       filter: saturate(1.12) brightness(.97);
     }
     #todayList .entry-actions button.yellow {
@@ -627,10 +659,10 @@
       color: var(--text);
     }
     .menu-btn.gesture-selected {
-      border-color: #b77900;
-      outline: 2px solid #f2c14e;
-      color: #1f1600;
-      background: #d9a514;
+      border-color: var(--selection-border);
+      outline: 2px solid var(--selection-outline);
+      color: var(--selection-text);
+      background: var(--selection-bg);
     }
     .drawer-menu-content {
       min-height: 0;
@@ -705,10 +737,10 @@
       color: var(--text);
     }
     .management-option.gesture-selected {
-      border-color: #b77900;
-      outline: 2px solid #f2c14e;
-      background: #d9a514;
-      color: #1f1600;
+      border-color: var(--selection-border);
+      outline: 2px solid var(--selection-outline);
+      background: var(--selection-bg);
+      color: var(--selection-text);
     }
     .management-gesture-pad {
       display: none;
@@ -717,7 +749,9 @@
       min-height: 230px;
       margin: 14px -14px -14px;
       padding: 26px 20px calc(env(safe-area-inset-bottom) + 26px);
-      background: transparent;
+      border: 0;
+      background: var(--bg);
+      box-shadow: none;
       text-align: center;
       touch-action: none;
       user-select: none;
@@ -783,8 +817,8 @@
         text-align: center;
       }
       .menu-wheel .menu-btn.gesture-selected {
-        color: #1f1600;
-        background: #d9a514;
+        color: var(--selection-text);
+        background: var(--selection-bg);
       }
       .drawer-gesture-pad {
         position: static;
@@ -813,10 +847,16 @@
         z-index: 30;
         width: 100vw;
         max-width: none;
-        height: clamp(260px, 38dvh, 380px);
-        min-height: 260px;
+        height: clamp(320px, 48dvh, 480px);
+        min-height: 320px;
         margin: 0;
         transform: none;
+      }
+      #pageManagement h2,
+      #pageManagement p,
+      #pageManagement .management-options {
+        position: relative;
+        z-index: 31;
       }
     }
     .pill {
@@ -978,7 +1018,7 @@
       place-items: center;
       border: 1px solid rgba(74, 222, 128, .48);
       border-radius: 50%;
-      background: rgba(22, 163, 74, .88);
+      background: var(--soft-success-bg);
       color: white;
       box-shadow: 0 18px 48px rgba(22, 163, 74, .3);
       font-size: 54px;
@@ -1030,20 +1070,52 @@
     #pageInstall #installAppBtn,
     #pageAbout #openInstallFromAboutBtn,
     #pageAbout #updateAppBtn {
-      border-color: #1d4ed8;
-      background: #2563eb;
-      color: #ffffff;
+      border-color: var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
       box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
     }
+    #pageSettings #downloadBackupBtn {
+      border-color: var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+    }
+    .custom-theme-panel {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .custom-theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 10px;
+    }
+    .custom-color-field label {
+      min-height: 34px;
+      margin: 0 0 4px;
+      line-height: 1.2;
+    }
+    .custom-color-field input[type="color"] {
+      min-height: 46px;
+      padding: 4px;
+      cursor: pointer;
+    }
+    #resetCustomThemeBtn {
+      border-color: var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
     #historyList button[data-action="preview-day"] {
-      border-color: #1d4ed8;
-      background: #2563eb;
-      color: #ffffff;
+      border-color: var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
     }
     #printPreviewBtn {
-      border-color: #172554;
-      background: #1e3a8a;
-      color: #ffffff;
+      border-color: var(--primary-dark-bg);
+      background: var(--primary-dark-bg);
+      color: var(--primary-dark-text);
       box-shadow: none;
     }
     #closeDocumentPreviewBtn {
@@ -1082,25 +1154,11 @@
       box-shadow: 0 18px 50px rgba(0, 0, 0, .3);
     }
     .quick-edit-header {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 12px;
+      display: block;
       margin-bottom: 12px;
     }
     .quick-edit-header h2 {
       margin: 0;
-    }
-    .quick-edit-close {
-      width: auto;
-      min-width: 76px;
-      min-height: 38px;
-      margin: 0;
-      padding: 7px 12px;
-      border: 1px solid var(--soft-action-border);
-      background: var(--soft-action-bg);
-      color: var(--soft-action-text);
-      box-shadow: none;
     }
     .quick-edit-tabs {
       display: flex;
@@ -1153,7 +1211,7 @@
       color: var(--soft-success-text);
       box-shadow: none;
     }
-    #cancelQuickEditBtn {
+    #closeQuickEditBtn {
       border: 1px solid var(--soft-action-border);
       background: var(--soft-action-bg);
       color: var(--soft-action-text);
@@ -1249,7 +1307,7 @@
       width: 22px;
       height: 22px;
       margin-top: 4px;
-      accent-color: #2563eb;
+      accent-color: var(--primary-bg);
     }
     .history-toolbar {
       display: flex;
@@ -2161,7 +2219,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">87</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">89</span></div>
     </div>
   </div>
 
@@ -2417,7 +2475,27 @@
         <option value="dark">Темна</option>
         <option value="beige">Бежева</option>
         <option value="white">Чисто біла</option>
+        <option value="custom">Власна тема</option>
       </select>
+      <div class="custom-theme-panel hidden" id="customThemePanel">
+        <p class="small">Зміни кольори — результат одразу з’явиться в усьому застосунку.</p>
+        <div class="custom-theme-grid">
+          <div class="custom-color-field"><label for="customBg">Фон сторінки</label><input type="color" id="customBg" /></div>
+          <div class="custom-color-field"><label for="customSurface">Картки</label><input type="color" id="customSurface" /></div>
+          <div class="custom-color-field"><label for="customSurfaceDeep">Поля та панелі</label><input type="color" id="customSurfaceDeep" /></div>
+          <div class="custom-color-field"><label for="customSurfaceStrong">Внутрішні блоки</label><input type="color" id="customSurfaceStrong" /></div>
+          <div class="custom-color-field"><label for="customText">Основний текст</label><input type="color" id="customText" /></div>
+          <div class="custom-color-field"><label for="customMuted">Другорядний текст</label><input type="color" id="customMuted" /></div>
+          <div class="custom-color-field"><label for="customBorder">Рамки</label><input type="color" id="customBorder" /></div>
+          <div class="custom-color-field"><label for="customPrimary">Основні кнопки</label><input type="color" id="customPrimary" /></div>
+          <div class="custom-color-field"><label for="customPrimaryDark">Кнопки PDF</label><input type="color" id="customPrimaryDark" /></div>
+          <div class="custom-color-field"><label for="customSuccess">Додавання</label><input type="color" id="customSuccess" /></div>
+          <div class="custom-color-field"><label for="customWarning">Редагування</label><input type="color" id="customWarning" /></div>
+          <div class="custom-color-field"><label for="customDanger">Видалення</label><input type="color" id="customDanger" /></div>
+          <div class="custom-color-field"><label for="customSelection">Виділення джойстика</label><input type="color" id="customSelection" /></div>
+        </div>
+        <button id="resetCustomThemeBtn">Скинути власну тему</button>
+      </div>
     </div>
 
     <div class="card">
@@ -2476,7 +2554,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">87</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">89</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2494,8 +2572,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">87</span></div>
-        <div class="small">Пошук у поточному підрахунку став липкою панеллю: фіксується під шапкою, поки список позицій прокручується.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">89</span></div>
+        <div class="small">У вікні швидкого редагування прибрано верхню кнопку й замінено нижню дію «Скасувати» на зрозумілу кнопку «Закрити».</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2511,7 +2589,6 @@
     <div class="quick-edit-dialog">
       <div class="quick-edit-header">
         <h2 id="quickEditTitle">Редагування позиції</h2>
-        <button class="quick-edit-close" id="closeQuickEditBtn">Закрити</button>
       </div>
       <div class="quick-edit-tabs" id="quickEditTabs"></div>
       <input type="hidden" id="quickEditProductId" />
@@ -2542,7 +2619,7 @@
       </div>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
-        <button id="cancelQuickEditBtn">Скасувати</button>
+        <button id="closeQuickEditBtn">Закрити</button>
       </div>
     </div>
   </div>
@@ -2552,26 +2629,142 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "87";
+  const APP_VERSION = "89";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
-  const THEMES = ["dark", "beige", "white"];
+  const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
+  const THEMES = ["dark", "beige", "white", "custom"];
+  const CUSTOM_THEME_DEFAULTS = {
+    customBg: "#172033",
+    customSurface: "#243047",
+    customSurfaceDeep: "#101827",
+    customSurfaceStrong: "#1d293d",
+    customText: "#f8fafc",
+    customMuted: "#b9c5d6",
+    customBorder: "#52627a",
+    customPrimary: "#2563eb",
+    customPrimaryDark: "#1e3a8a",
+    customSuccess: "#16a34a",
+    customWarning: "#ca8a04",
+    customDanger: "#dc2626",
+    customSelection: "#d9a514"
+  };
+  const CUSTOM_THEME_IDS = Object.keys(CUSTOM_THEME_DEFAULTS);
+  const CUSTOM_STYLE_PROPERTIES = [
+    "--bg", "--text", "--surface", "--surface-strong", "--surface-deep",
+    "--border", "--border-strong", "--muted", "--muted-soft", "--accent-soft",
+    "--pill-text", "--header-shadow", "--card-shadow", "--popover-shadow", "--overlay",
+    "--page-glow", "--primary-bg", "--primary-dark-bg", "--primary-text", "--primary-dark-text",
+    "--selection-bg", "--selection-border", "--selection-outline", "--selection-text",
+    "--soft-action-bg", "--soft-action-border",
+    "--soft-action-text", "--soft-success-bg", "--soft-success-border", "--soft-success-text",
+    "--soft-warning-bg", "--soft-warning-border", "--soft-warning-text", "--soft-danger-bg",
+    "--soft-danger-border", "--soft-danger-text"
+  ];
   const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
     (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
   document.documentElement.classList.toggle("mobile-device", isMobileDevice);
 
+  function loadCustomTheme() {
+    try {
+      return { ...CUSTOM_THEME_DEFAULTS, ...JSON.parse(localStorage.getItem(CUSTOM_THEME_KEY) || "{}") };
+    } catch (error) {
+      return { ...CUSTOM_THEME_DEFAULTS };
+    }
+  }
+
+  function contrastText(hex) {
+    const value = String(hex || "#000000").replace("#", "");
+    const r = parseInt(value.slice(0, 2), 16) || 0;
+    const g = parseInt(value.slice(2, 4), 16) || 0;
+    const b = parseInt(value.slice(4, 6), 16) || 0;
+    return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? "#111827" : "#ffffff";
+  }
+
+  function colorWithAlpha(hex, alpha) {
+    const value = String(hex || "#000000").replace("#", "");
+    const r = parseInt(value.slice(0, 2), 16) || 0;
+    const g = parseInt(value.slice(2, 4), 16) || 0;
+    const b = parseInt(value.slice(4, 6), 16) || 0;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  function clearCustomThemeStyles() {
+    CUSTOM_STYLE_PROPERTIES.forEach(property => document.documentElement.style.removeProperty(property));
+    document.documentElement.style.removeProperty("color-scheme");
+  }
+
+  function applyCustomTheme(palette) {
+    const root = document.documentElement.style;
+    const actionText = contrastText(palette.customSurfaceStrong);
+    const values = {
+      "--bg": palette.customBg,
+      "--text": palette.customText,
+      "--surface": palette.customSurface,
+      "--surface-strong": palette.customSurfaceStrong,
+      "--surface-deep": palette.customSurfaceDeep,
+      "--border": palette.customBorder,
+      "--border-strong": palette.customBorder,
+      "--muted": palette.customMuted,
+      "--muted-soft": palette.customMuted,
+      "--accent-soft": palette.customPrimary,
+      "--pill-text": palette.customText,
+      "--header-shadow": colorWithAlpha(palette.customBg, .82),
+      "--card-shadow": colorWithAlpha("#000000", .2),
+      "--popover-shadow": colorWithAlpha("#000000", .38),
+      "--overlay": colorWithAlpha("#000000", .56),
+      "--page-glow": colorWithAlpha(palette.customPrimary, .13),
+      "--primary-bg": palette.customPrimary,
+      "--primary-dark-bg": palette.customPrimaryDark,
+      "--primary-text": contrastText(palette.customPrimary),
+      "--primary-dark-text": contrastText(palette.customPrimaryDark),
+      "--selection-bg": palette.customSelection,
+      "--selection-border": palette.customSelection,
+      "--selection-outline": palette.customSelection,
+      "--selection-text": contrastText(palette.customSelection),
+      "--soft-action-bg": palette.customSurfaceStrong,
+      "--soft-action-border": palette.customBorder,
+      "--soft-action-text": actionText,
+      "--soft-success-bg": palette.customSuccess,
+      "--soft-success-border": palette.customSuccess,
+      "--soft-success-text": contrastText(palette.customSuccess),
+      "--soft-warning-bg": palette.customWarning,
+      "--soft-warning-border": palette.customWarning,
+      "--soft-warning-text": contrastText(palette.customWarning),
+      "--soft-danger-bg": palette.customDanger,
+      "--soft-danger-border": palette.customDanger,
+      "--soft-danger-text": contrastText(palette.customDanger)
+    };
+    Object.entries(values).forEach(([property, value]) => root.setProperty(property, value));
+    root.setProperty("color-scheme", contrastText(palette.customBg) === "#111827" ? "light" : "dark");
+  }
+
+  function updateCustomThemeControls(palette, visible) {
+    CUSTOM_THEME_IDS.forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.value = palette[id];
+    });
+    const panel = document.getElementById("customThemePanel");
+    if (panel) panel.classList.toggle("hidden", !visible);
+  }
+
   function applyTheme(theme, persist = true) {
     const selected = THEMES.includes(theme) ? theme : "dark";
+    const customPalette = loadCustomTheme();
+    clearCustomThemeStyles();
     document.documentElement.dataset.theme = selected;
+    if (selected === "custom") applyCustomTheme(customPalette);
 
     const select = document.getElementById("themeSelect");
     if (select) select.value = selected;
+    updateCustomThemeControls(customPalette, selected === "custom");
 
     const themeColors = {
       dark: "#0f172a",
       beige: "#f3ecdf",
-      white: "#ffffff"
+      white: "#ffffff",
+      custom: customPalette.customBg
     };
     const themeMeta = document.getElementById("themeColorMeta");
     if (themeMeta) themeMeta.setAttribute("content", themeColors[selected]);
@@ -2579,6 +2772,25 @@
     if (persist) {
       try { localStorage.setItem(THEME_KEY, selected); } catch (e) {}
     }
+  }
+
+  function saveCustomThemeFromControls() {
+    const palette = { ...CUSTOM_THEME_DEFAULTS };
+    CUSTOM_THEME_IDS.forEach(id => {
+      const input = document.getElementById(id);
+      if (input) palette[id] = input.value;
+    });
+    try {
+      localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(palette));
+      localStorage.setItem(THEME_KEY, "custom");
+    } catch (error) {}
+    applyTheme("custom", false);
+  }
+
+  function resetCustomTheme() {
+    try { localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(CUSTOM_THEME_DEFAULTS)); } catch (error) {}
+    applyTheme("custom");
+    toast("Власну тему скинуто");
   }
 
   function renderAppVersion() {
@@ -2903,7 +3115,7 @@
   function toast(text, danger = false) {
     const el = document.getElementById("toast");
     el.textContent = text;
-    el.style.background = danger ? "#dc2626" : "#16a34a";
+    el.style.background = danger ? "var(--soft-danger-bg)" : "var(--soft-success-bg)";
     el.style.display = "block";
     setTimeout(() => el.style.display = "none", 1800);
   }
@@ -4686,7 +4898,6 @@
   });
   document.getElementById("clearTodayListSearchBtn").addEventListener("click", clearTodayListSearch);
   document.getElementById("saveQuickEditBtn").addEventListener("click", saveQuickEditEntry);
-  document.getElementById("cancelQuickEditBtn").addEventListener("click", closeQuickEdit);
   document.getElementById("closeQuickEditBtn").addEventListener("click", closeQuickEdit);
   document.getElementById("quickEditOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeQuickEdit();
@@ -4722,6 +4933,10 @@
     applyTheme(event.target.value);
     toast("Тему змінено");
   });
+  CUSTOM_THEME_IDS.forEach(id => {
+    document.getElementById(id).addEventListener("input", saveCustomThemeFromControls);
+  });
+  document.getElementById("resetCustomThemeBtn").addEventListener("click", resetCustomTheme);
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openSettingsBtn").addEventListener("click", () => showPage("settings"));
