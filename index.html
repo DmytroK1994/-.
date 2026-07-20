@@ -746,20 +746,6 @@
     .management-options {
       display: grid;
       gap: 8px;
-      max-height: 224px;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      touch-action: pan-y;
-      scrollbar-width: thin;
-    }
-    .management-more-indicator {
-      min-height: 18px;
-      margin: 7px 0 -3px;
-      color: var(--muted-soft);
-      font-size: 11px;
-      font-weight: 750;
-      line-height: 18px;
-      text-align: center;
     }
     .management-option {
       margin-top: 0;
@@ -769,37 +755,10 @@
       box-shadow: none;
     }
     .management-option:hover,
-    .management-option:active,
-    .management-option.gesture-selected {
+    .management-option:active {
       border-color: var(--border-strong);
       background: var(--surface-strong);
       color: var(--text);
-    }
-    .management-option.gesture-selected {
-      border-color: var(--selection-border);
-      outline: 2px solid var(--selection-outline);
-      background: var(--selection-bg);
-      color: var(--selection-text);
-    }
-    .management-gesture-pad {
-      display: none;
-      flex-direction: column;
-      justify-content: flex-end;
-      min-height: 230px;
-      margin: 14px -14px -14px;
-      padding: 26px 20px calc(env(safe-area-inset-bottom) + 34px);
-      border: 0;
-      background: var(--bg);
-      box-shadow: none;
-      text-align: center;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .management-gesture-pad.dragging .gesture-pad-handle {
-      transform: scaleX(1.14);
-      background: var(--border-strong);
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       .drawer {
@@ -916,27 +875,6 @@
       }
       .drawer.open .drawer-gesture-pad {
         display: flex;
-      }
-      .management-gesture-pad {
-        display: flex;
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 10;
-        width: 100vw;
-        max-width: none;
-        height: clamp(320px, 48dvh, 480px);
-        min-height: 320px;
-        margin: 0;
-        transform: none;
-      }
-      #pageManagement {
-        min-height: calc(100dvh - env(safe-area-inset-top) - 122px);
-      }
-      #pageManagement .management-card {
-        position: relative;
-        z-index: 20;
       }
     }
     .pill {
@@ -2390,7 +2328,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">109</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">110</span></div>
     </div>
   </div>
 
@@ -2596,12 +2534,6 @@
         <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
         <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
-      <div class="management-more-indicator hidden" id="managementMoreIndicator" aria-live="polite"></div>
-    </div>
-    <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування розділом">
-      <span class="gesture-pad-handle"></span>
-      <span class="gesture-pad-selection" id="managementGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
-      <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
     </div>
   </div>
 
@@ -2765,7 +2697,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">109</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">110</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2783,8 +2715,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">109</span></div>
-        <div class="small">Застосунок тимчасово залишено лише українською мовою, а зайвий механізм перекладу прибрано.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">110</span></div>
+        <div class="small">У налаштуваннях прибрано джойстик: усі категорії тепер відображаються звичайним зручним списком.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2840,7 +2772,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "109";
+  const APP_VERSION = "110";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3141,7 +3073,6 @@
   let gesturePadAxis = "";
   let gesturePadDragging = false;
   let gesturePadMoved = false;
-  let managementGestureIndex = 0;
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -3786,100 +3717,6 @@
     window.addEventListener("resize", updateMenuOverflowIndicator);
   }
 
-  function getManagementGestureItems() {
-    return Array.from(document.querySelectorAll("#pageManagement .management-option"));
-  }
-
-  function clearManagementGestureSelection() {
-    getManagementGestureItems().forEach(item => item.classList.remove("gesture-selected"));
-    const label = document.getElementById("managementGestureSelection");
-    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
-  }
-
-  function updateManagementOverflowIndicator() {
-    const list = document.querySelector("#pageManagement .management-options");
-    const indicator = document.getElementById("managementMoreIndicator");
-    if (!list || !indicator) return;
-    const canScrollUp = list.scrollTop > 2;
-    const canScrollDown = list.scrollTop + list.clientHeight < list.scrollHeight - 2;
-    indicator.textContent = canScrollUp && canScrollDown
-      ? "↑ Є інші пункти ↓"
-      : canScrollDown
-        ? "Нижче є ще пункти ↓"
-        : canScrollUp
-          ? "↑ Вище є ще пункти"
-          : "";
-    indicator.classList.toggle("hidden", !indicator.textContent);
-  }
-
-  function setManagementGestureSelection(index) {
-    const items = getManagementGestureItems();
-    if (!items.length) return;
-    managementGestureIndex = Math.max(0, Math.min(items.length - 1, index));
-    items.forEach((item, itemIndex) => {
-      item.classList.toggle("gesture-selected", itemIndex === managementGestureIndex);
-    });
-    const label = document.getElementById("managementGestureSelection");
-    if (label) label.textContent = "Вибрано: " + items[managementGestureIndex].textContent.trim();
-    items[managementGestureIndex].scrollIntoView({ block: "nearest", behavior: "smooth" });
-    window.setTimeout(updateManagementOverflowIndicator, 180);
-  }
-
-  function initManagementGesturePad() {
-    const pad = document.getElementById("managementGesturePad");
-    if (!pad) return;
-    let dragging = false;
-    let moved = false;
-    let startY = 0;
-    let startIndex = 0;
-
-    pad.addEventListener("pointerdown", event => {
-      if (event.button !== undefined && event.button !== 0) return;
-      event.preventDefault();
-      dragging = true;
-      moved = false;
-      startY = event.clientY;
-      startIndex = managementGestureIndex;
-      pad.classList.add("dragging");
-      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
-    });
-
-    pad.addEventListener("pointermove", event => {
-      if (!dragging) return;
-      event.preventDefault();
-      const distance = event.clientY - startY;
-      if (Math.abs(distance) > 10) moved = true;
-      setManagementGestureSelection(startIndex + Math.round(distance / 42));
-    });
-
-    const finishGesture = event => {
-      if (!dragging) return;
-      dragging = false;
-      pad.classList.remove("dragging");
-      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
-      if (event.type === "pointercancel" || moved) return;
-      const item = getManagementGestureItems()[managementGestureIndex];
-      if (item) item.click();
-    };
-
-    pad.addEventListener("pointerup", finishGesture);
-    pad.addEventListener("pointercancel", finishGesture);
-    pad.addEventListener("keydown", event => {
-      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-        event.preventDefault();
-        setManagementGestureSelection(managementGestureIndex + (event.key === "ArrowDown" ? 1 : -1));
-      }
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        const item = getManagementGestureItems()[managementGestureIndex];
-        if (item) item.click();
-      }
-    });
-    const list = document.querySelector("#pageManagement .management-options");
-    if (list) list.addEventListener("scroll", updateManagementOverflowIndicator, { passive: true });
-    window.addEventListener("resize", updateManagementOverflowIndicator);
-  }
-
   function initMenuSwipeGestures() {
     let swipeMode = "";
     let swipeStartX = 0;
@@ -4308,11 +4145,6 @@
       document.getElementById("pageInstall").classList.remove("hidden");
       updateInstallUI();
     }
-    if (page === "management") {
-      clearManagementGestureSelection();
-      window.requestAnimationFrame(updateManagementOverflowIndicator);
-    }
-
     const activeMenuPage = ["products", "themes", "backup", "otherSettings"].includes(page)
       ? "management"
       : (page === "install" ? "about" : page);
@@ -5615,7 +5447,6 @@
   initAppKeyboardScrollRestore();
   initAppTopPosition();
   initGestureMenuPad();
-  initManagementGesturePad();
   initMenuSwipeGestures();
   initPageBackSwipe();
   initDocumentPreviewSwipe();
