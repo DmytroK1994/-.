@@ -269,6 +269,11 @@
       background: #2563eb;
       color: white;
       font-weight: 800;
+      height: auto;
+      text-align: center;
+      line-height: 1.15;
+      white-space: normal;
+      overflow-wrap: anywhere;
       border: none;
       margin-top: 8px;
       cursor: pointer;
@@ -322,7 +327,7 @@
     }
     #productsList .list-item-actions {
       display: grid;
-      grid-template-columns: repeat(2, 82px);
+      grid-template-columns: repeat(2, 88px);
       justify-self: end;
       gap: 6px;
       margin: 0;
@@ -330,7 +335,7 @@
       z-index: 3;
     }
     #productsList .list-item-actions button {
-      width: 82px;
+      width: 88px;
       margin: 0;
       display: grid;
       place-items: center;
@@ -417,7 +422,7 @@
     }
     #todayList .entry-actions {
       display: grid;
-      grid-template-columns: repeat(2, 82px);
+      grid-template-columns: repeat(2, 88px);
       justify-self: end;
       gap: 6px;
       margin: 0;
@@ -425,7 +430,7 @@
       z-index: 3;
     }
     #todayList .entry-actions button {
-      width: 82px;
+      width: 88px;
       margin: 0;
       box-shadow: none;
       position: relative;
@@ -696,7 +701,10 @@
       color: var(--text);
     }
     .management-option.gesture-selected {
-      outline: 2px solid var(--border-strong);
+      border-color: #b77900;
+      outline: 2px solid #f2c14e;
+      background: #d9a514;
+      color: #1f1600;
     }
     .management-gesture-pad {
       display: none;
@@ -794,10 +802,14 @@
       }
       .management-gesture-pad {
         display: flex;
+        position: relative;
+        left: 50%;
         width: 100vw;
         max-width: none;
-        margin-right: calc(50% - 50vw);
-        margin-left: calc(50% - 50vw);
+        height: clamp(260px, 38dvh, 380px);
+        min-height: 260px;
+        margin: 0 0 -14px;
+        transform: translateX(-50%);
       }
     }
     .pill {
@@ -1038,9 +1050,6 @@
     }
     .quick-edit-overlay.hidden {
       display: none;
-    }
-    body.quick-edit-open {
-      overflow: hidden;
     }
     .quick-edit-dialog {
       width: min(100%, 620px);
@@ -1298,14 +1307,14 @@
       }
       #todayList .entry-actions {
         display: grid;
-        grid-template-columns: repeat(2, 80px);
+        grid-template-columns: repeat(2, 88px);
         justify-self: end;
         gap: 5px;
         margin: 0;
       }
       #todayList .entry-actions button.smallbtn {
-        width: 80px;
-        min-width: 80px;
+        width: 88px;
+        min-width: 88px;
         margin: 0;
       }
       #todayList button.smallbtn,
@@ -1327,13 +1336,13 @@
       }
       #productsList .list-item-actions {
         display: grid;
-        grid-template-columns: repeat(2, 72px);
+        grid-template-columns: repeat(2, 86px);
         justify-self: end;
         margin-top: 0;
       }
       #productsList .list-item-actions button.smallbtn {
-        width: 72px;
-        min-width: 72px;
+        width: 86px;
+        min-width: 86px;
         margin: 0;
       }
       #productsList .pill {
@@ -2130,7 +2139,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">84</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">85</span></div>
     </div>
   </div>
 
@@ -2442,7 +2451,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">84</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">85</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2460,8 +2469,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">84</span></div>
-        <div class="small">Повернено звичайні суцільні кольори кнопок без напівпрозорості. Виділення меню стало золотистим, а перегляд і друк PDF — синім та темно-синім.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">85</span></div>
+        <div class="small">Золотисте виділення додано в «Керування», сенсорну зону розтягнуто на весь екран, прибрано стрибок нагору при швидкому редагуванні та вирівняно написи кнопок.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2518,7 +2527,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "84";
+  const APP_VERSION = "85";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
