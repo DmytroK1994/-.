@@ -175,35 +175,11 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
-    body.page-today {
-      padding-top: calc(env(safe-area-inset-top) + 142px);
-    }
     body.page-today .app-header {
-      isolation: isolate;
-      overflow: visible;
+      overflow: hidden;
       border-bottom-color: transparent;
-      border-radius: 0;
-      box-shadow: none;
-    }
-    body.page-today .app-header::after {
-      content: "";
-      position: absolute;
-      right: 0;
-      bottom: -22px;
-      left: 0;
-      z-index: -1;
-      height: 34px;
-      background:
-        radial-gradient(ellipse 23% 92% at 0% 0%, var(--surface) 0 97%, transparent 100%),
-        radial-gradient(ellipse 21% 82% at 25% 0%, var(--surface) 0 97%, transparent 100%),
-        radial-gradient(ellipse 24% 100% at 51% 0%, var(--surface) 0 97%, transparent 100%),
-        radial-gradient(ellipse 20% 86% at 77% 0%, var(--surface) 0 97%, transparent 100%),
-        radial-gradient(ellipse 23% 94% at 100% 0%, var(--surface) 0 97%, transparent 100%);
-      filter: drop-shadow(0 9px 9px var(--header-shadow));
-      pointer-events: none;
-    }
-    body.page-today .current-list-search-card {
-      top: calc(env(safe-area-inset-top) + 130px);
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 14px 32px var(--header-shadow);
     }
     .topbar {
       display: grid;
@@ -975,6 +951,42 @@
       font-size: 14px;
       font-weight: 800;
     }
+    .weight-calculator {
+      margin-top: 4px;
+    }
+    .weight-calculator-result {
+      min-height: 20px;
+      margin: 5px 2px 0;
+      color: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .weight-calculator-result.invalid {
+      color: var(--soft-danger-bg);
+    }
+    .weight-calculator-keys {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 5px;
+    }
+    .weight-calculator-key {
+      min-width: 0;
+      min-height: 38px;
+      margin: 0;
+      padding: 6px 3px;
+      border: 1px solid var(--border-strong);
+      border-radius: 11px;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: none;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .weight-calculator-key[data-calc-action="clear"] {
+      color: var(--soft-danger-text);
+      background: var(--soft-danger-bg);
+    }
     .combo-wrap {
       position: relative;
     }
@@ -1276,6 +1288,12 @@
       background: var(--soft-action-bg);
       color: var(--soft-action-text);
       box-shadow: none;
+    }
+    #openCustomThemeEditorBtn,
+    #finishCustomThemeBtn {
+      border-color: var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
     }
     #historyList button[data-action="preview-day"] {
       border-color: var(--primary-bg);
@@ -2389,7 +2407,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">100</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">102</span></div>
     </div>
   </div>
 
@@ -2477,7 +2495,18 @@
 
       <div class="form-section-title">Окрема вага</div>
       <label>Кілограмів</label>
-      <input id="directKg" type="number" inputmode="decimal" placeholder="Наприклад: 200" />
+      <div class="weight-calculator">
+        <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 199,5 + 200 + 500" />
+        <div class="weight-calculator-result" id="directKgResult" aria-live="polite">Введи числа та обери дію</div>
+        <div class="weight-calculator-keys" aria-label="Дії калькулятора окремої ваги">
+          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="+">+</button>
+          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="−">−</button>
+          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="×">×</button>
+          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-value="÷">÷</button>
+          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-action="backspace" aria-label="Видалити останній символ">⌫</button>
+          <button type="button" class="weight-calculator-key" data-calc-target="directKg" data-calc-action="clear" aria-label="Очистити вираз">C</button>
+        </div>
+      </div>
 
       <label>Коментар</label>
       <input id="comment" placeholder="" />
@@ -2649,8 +2678,9 @@
         <option value="white">Чисто біла</option>
         <option value="custom">Власна тема</option>
       </select>
+      <button type="button" class="hidden" id="openCustomThemeEditorBtn">Редагувати власну тему</button>
       <div class="custom-theme-panel hidden" id="customThemePanel">
-        <p class="small">Зміни кольори — результат одразу з’явиться в усьому застосунку.</p>
+        <p class="small">Власна тема починається з попереднього оформлення. Зміни лише потрібні кольори — результат одразу з’явиться в усьому застосунку.</p>
         <div class="custom-theme-preview-title" id="customThemePreviewTitle">Зараз змінюється: фон сторінки</div>
         <div class="custom-theme-preview" data-preview-key="background">
           <div class="custom-preview-card" data-preview-key="surface">
@@ -2684,6 +2714,7 @@
           <div class="custom-color-field"><label for="customDanger">Видалення</label><input type="color" id="customDanger" /></div>
           <div class="custom-color-field"><label for="customSelection">Виділення джойстика</label><input type="color" id="customSelection" /></div>
         </div>
+        <button type="button" id="finishCustomThemeBtn">Готово</button>
         <button id="resetCustomThemeBtn">Скинути власну тему</button>
       </div>
     </div>
@@ -2755,7 +2786,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">100</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">102</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2773,8 +2804,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">100</span></div>
-        <div class="small">Нижню частину шапки поточного підрахунку оформлено як справжній нерівний край хмари без перекриття вмісту.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">102</span></div>
+        <div class="small">Поле окремої ваги отримало калькулятор із діями +, −, × і ÷. Вираз, його складові та сума зберігаються у підрахунку й PDF.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2814,7 +2845,18 @@
       </div>
       <div class="quick-edit-comment">
         <label for="quickEditDirectKg">Окрема вага, кг</label>
-        <input id="quickEditDirectKg" type="number" inputmode="decimal" />
+        <div class="weight-calculator">
+          <input id="quickEditDirectKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 199,5 + 200" />
+          <div class="weight-calculator-result" id="quickEditDirectKgResult" aria-live="polite">Введи числа та обери дію</div>
+          <div class="weight-calculator-keys" aria-label="Дії калькулятора окремої ваги">
+            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="+">+</button>
+            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="−">−</button>
+            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="×">×</button>
+            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-value="÷">÷</button>
+            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-action="backspace" aria-label="Видалити останній символ">⌫</button>
+            <button type="button" class="weight-calculator-key" data-calc-target="quickEditDirectKg" data-calc-action="clear" aria-label="Очистити вираз">C</button>
+          </div>
+        </div>
         <label for="quickEditComment">Коментар</label>
         <input id="quickEditComment" />
       </div>
@@ -2830,7 +2872,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "100";
+  const APP_VERSION = "102";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2869,6 +2911,7 @@
     customSelection: ["selection", "виділення джойстика"]
   };
   let activeCustomPreviewId = "customBg";
+  let customThemeEditorOpen = false;
   const CUSTOM_STYLE_PROPERTIES = [
     "--bg", "--text", "--surface", "--surface-strong", "--surface-deep",
     "--border", "--border-strong", "--muted", "--muted-soft", "--accent-soft",
@@ -2894,6 +2937,43 @@
     } catch (error) {
       return { ...CUSTOM_THEME_DEFAULTS };
     }
+  }
+
+  function normalizeThemeColor(value, fallback) {
+    const color = String(value || "").trim();
+    if (/^#[0-9a-f]{6}$/i.test(color)) return color.toLowerCase();
+    if (/^#[0-9a-f]{3}$/i.test(color)) {
+      return "#" + color.slice(1).split("").map(character => character + character).join("").toLowerCase();
+    }
+    const rgb = color.match(/^rgba?\(\s*(\d+)\D+(\d+)\D+(\d+)/i);
+    if (!rgb) return fallback;
+    return "#" + rgb.slice(1, 4)
+      .map(channel => Math.max(0, Math.min(255, Number(channel))).toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  function captureCurrentThemePalette() {
+    const styles = getComputedStyle(document.documentElement);
+    const read = (property, fallback) => normalizeThemeColor(styles.getPropertyValue(property), fallback);
+    return {
+      customBg: read("--bg", CUSTOM_THEME_DEFAULTS.customBg),
+      customSurface: read("--surface", CUSTOM_THEME_DEFAULTS.customSurface),
+      customSurfaceDeep: read("--surface-deep", CUSTOM_THEME_DEFAULTS.customSurfaceDeep),
+      customSurfaceStrong: read("--surface-strong", CUSTOM_THEME_DEFAULTS.customSurfaceStrong),
+      customText: read("--text", CUSTOM_THEME_DEFAULTS.customText),
+      customMuted: read("--muted", CUSTOM_THEME_DEFAULTS.customMuted),
+      customBorder: read("--border", CUSTOM_THEME_DEFAULTS.customBorder),
+      customPrimary: read("--primary-bg", CUSTOM_THEME_DEFAULTS.customPrimary),
+      customPrimaryDark: read("--primary-dark-bg", CUSTOM_THEME_DEFAULTS.customPrimaryDark),
+      customSuccess: read("--soft-success-bg", CUSTOM_THEME_DEFAULTS.customSuccess),
+      customWarning: read("--soft-warning-bg", CUSTOM_THEME_DEFAULTS.customWarning),
+      customDanger: read("--soft-danger-bg", CUSTOM_THEME_DEFAULTS.customDanger),
+      customSelection: read("--selection-bg", CUSTOM_THEME_DEFAULTS.customSelection)
+    };
+  }
+
+  function saveCustomThemePalette(palette) {
+    try { localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(palette)); } catch (error) {}
   }
 
   function contrastText(hex) {
@@ -2969,6 +3049,9 @@
     });
     const panel = document.getElementById("customThemePanel");
     if (panel) panel.classList.toggle("hidden", !visible);
+    const openButton = document.getElementById("openCustomThemeEditorBtn");
+    const customSelected = document.documentElement.dataset.theme === "custom";
+    if (openButton) openButton.classList.toggle("hidden", !customSelected || visible);
     if (visible) updateCustomThemePreview(activeCustomPreviewId);
   }
 
@@ -2992,7 +3075,7 @@
 
     const select = document.getElementById("themeSelect");
     if (select) select.value = selected;
-    updateCustomThemeControls(customPalette, selected === "custom");
+    updateCustomThemeControls(customPalette, selected === "custom" && customThemeEditorOpen);
 
     const themeColors = {
       dark: "#0f172a",
@@ -3014,12 +3097,25 @@
       const input = document.getElementById(id);
       if (input) palette[id] = input.value;
     });
-    try {
-      localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(palette));
-      localStorage.setItem(THEME_KEY, "custom");
-    } catch (error) {}
+    saveCustomThemePalette(palette);
+    try { localStorage.setItem(THEME_KEY, "custom"); } catch (error) {}
     applyTheme("custom", false);
     updateCustomThemePreview(activeCustomPreviewId);
+  }
+
+  function enterCustomThemeEditor() {
+    const currentTheme = document.documentElement.dataset.theme;
+    const palette = currentTheme === "custom" ? loadCustomTheme() : captureCurrentThemePalette();
+    if (currentTheme !== "custom") saveCustomThemePalette(palette);
+    customThemeEditorOpen = true;
+    applyTheme("custom");
+    updateCustomThemeControls(palette, true);
+  }
+
+  function finishCustomThemeEditor() {
+    customThemeEditorOpen = false;
+    updateCustomThemeControls(loadCustomTheme(), false);
+    toast("Власну тему збережено");
   }
 
   function resetCustomTheme() {
@@ -3345,6 +3441,136 @@
 
   function formatKg(value) {
     return Number(value || 0).toLocaleString("uk-UA", { maximumFractionDigits: 2 }) + " кг";
+  }
+
+  function calculateWeightExpression(rawValue) {
+    const raw = String(rawValue || "").trim();
+    if (!raw) return { valid: true, value: 0, display: "" };
+
+    const source = raw
+      .replace(/[−–—]/g, "-")
+      .replace(/[×xх]/gi, "*")
+      .replace(/[÷:]/g, "/")
+      .replace(/,/g, ".")
+      .replace(/\s+/g, "");
+
+    if (!/^[0-9.+\-*/()]+$/.test(source)) return { valid: false, value: 0, display: raw };
+
+    let index = 0;
+    const parseExpression = () => {
+      let value = parseTerm();
+      while (source[index] === "+" || source[index] === "-") {
+        const operator = source[index++];
+        const next = parseTerm();
+        value = operator === "+" ? value + next : value - next;
+      }
+      return value;
+    };
+    const parseTerm = () => {
+      let value = parseFactor();
+      while (source[index] === "*" || source[index] === "/") {
+        const operator = source[index++];
+        const next = parseFactor();
+        if (operator === "/" && next === 0) throw new Error("division-by-zero");
+        value = operator === "*" ? value * next : value / next;
+      }
+      return value;
+    };
+    const parseFactor = () => {
+      if (source[index] === "+") {
+        index += 1;
+        return parseFactor();
+      }
+      if (source[index] === "-") {
+        index += 1;
+        return -parseFactor();
+      }
+      if (source[index] === "(") {
+        index += 1;
+        const value = parseExpression();
+        if (source[index] !== ")") throw new Error("missing-parenthesis");
+        index += 1;
+        return value;
+      }
+      const match = source.slice(index).match(/^(?:\d+(?:\.\d*)?|\.\d+)/);
+      if (!match) throw new Error("number-expected");
+      index += match[0].length;
+      return Number(match[0]);
+    };
+
+    try {
+      const result = parseExpression();
+      if (index !== source.length || !Number.isFinite(result)) throw new Error("invalid-expression");
+      const rounded = Math.round((result + Number.EPSILON) * 1000000) / 1000000;
+      const display = source
+        .replace(/\*/g, " × ")
+        .replace(/\//g, " ÷ ")
+        .replace(/\+/g, " + ")
+        .replace(/-/g, " − ")
+        .replace(/\./g, ",")
+        .replace(/\s+/g, " ")
+        .trim();
+      return { valid: true, value: rounded, display };
+    } catch (error) {
+      return { valid: false, value: 0, display: raw };
+    }
+  }
+
+  function formatDirectWeightCalculation(expression, totalKg) {
+    const calculation = calculateWeightExpression(expression);
+    if (!calculation.valid || !calculation.display) return formatKg(totalKg);
+
+    const normalized = calculation.display.replace(/\s+/g, " ").trim();
+    if (normalized.includes("+") && !/[−×÷()]/.test(normalized)) {
+      const addends = normalized.split("+").map(value => Number(value.trim().replace(",", ".")));
+      if (addends.every(Number.isFinite)) return addends.map(formatKg).join(" + ");
+    }
+    if (!/[+−×÷()]/.test(normalized)) return formatKg(totalKg);
+    return `${normalized} = ${formatKg(totalKg)}`;
+  }
+
+  function updateWeightCalculator(inputId) {
+    const input = document.getElementById(inputId);
+    const result = document.getElementById(inputId + "Result");
+    if (!input || !result) return;
+    const calculation = calculateWeightExpression(input.value);
+    const invalidTotal = calculation.valid && Boolean(input.value.trim()) && calculation.value <= 0;
+    result.classList.toggle("invalid", !calculation.valid || invalidTotal);
+    if (!input.value.trim()) {
+      result.textContent = "Введи числа та обери дію";
+    } else if (!calculation.valid) {
+      result.textContent = "Перевір вираз";
+    } else if (invalidTotal) {
+      result.textContent = "Сума має бути більшою за нуль";
+    } else {
+      result.textContent = `Разом: ${formatKg(calculation.value)}`;
+    }
+  }
+
+  function useWeightCalculatorKey(button) {
+    const input = document.getElementById(button.dataset.calcTarget || "");
+    if (!input) return;
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    const action = button.dataset.calcAction;
+
+    if (action === "clear") {
+      input.value = "";
+      input.focus({ preventScroll: true });
+      input.setSelectionRange(0, 0);
+    } else if (action === "backspace") {
+      const removeFrom = start === end ? Math.max(0, start - 1) : start;
+      input.value = input.value.slice(0, removeFrom) + input.value.slice(end);
+      input.focus({ preventScroll: true });
+      input.setSelectionRange(removeFrom, removeFrom);
+    } else {
+      const token = ` ${button.dataset.calcValue || ""} `;
+      input.value = input.value.slice(0, start) + token + input.value.slice(end);
+      const cursor = start + token.length;
+      input.focus({ preventScroll: true });
+      input.setSelectionRange(cursor, cursor);
+    }
+    updateWeightCalculator(input.id);
   }
 
   function toast(text, danger = false) {
@@ -4272,9 +4498,17 @@
       e.parts.push(`${e.pieces} шт × ${e.kgPerPiece} кг = ${kg} кг`);
     }
 
-    if (Number(e.directKg) > 0) {
-      e.totalKg += Number(e.directKg);
-      e.parts.push(`${e.directKg} кг окремо`);
+    const directCalculation = calculateWeightExpression(e.directKgExpression || e.directKg || "");
+    if (directCalculation.valid && directCalculation.value > 0) {
+      e.directKg = directCalculation.value;
+      e.directKgExpression = directCalculation.display;
+      e.directKgDetail = `Окремо: ${formatDirectWeightCalculation(directCalculation.display, directCalculation.value)}`;
+      e.totalKg += directCalculation.value;
+      e.parts.push(e.directKgDetail);
+    } else {
+      e.directKg = 0;
+      e.directKgExpression = "";
+      e.directKgDetail = "";
     }
   }
 
@@ -4289,7 +4523,8 @@
     document.getElementById("quickEditKgPerPallet").value = entry.kgPerPallet || "";
     document.getElementById("quickEditPieces").value = entry.pieces || "";
     document.getElementById("quickEditKgPerPiece").value = entry.kgPerPiece || "";
-    document.getElementById("quickEditDirectKg").value = entry.directKg || "";
+    document.getElementById("quickEditDirectKg").value = entry.directKgExpression || entry.directKg || "";
+    updateWeightCalculator("quickEditDirectKg");
     document.getElementById("quickEditComment").value = entry.comment || "";
   }
 
@@ -4348,12 +4583,20 @@
       return;
     }
 
+    const directInput = document.getElementById("quickEditDirectKg").value.trim();
+    const directCalculation = calculateWeightExpression(directInput);
+    if (directInput && (!directCalculation.valid || directCalculation.value <= 0)) {
+      toast("Перевір вираз окремої ваги", true);
+      return;
+    }
+
     const updated = {
       pallets: Number(document.getElementById("quickEditPallets").value || 0),
       kgPerPallet: Number(document.getElementById("quickEditKgPerPallet").value || 0),
       pieces: Number(document.getElementById("quickEditPieces").value || 0),
       kgPerPiece: Number(document.getElementById("quickEditKgPerPiece").value || 0),
-      directKg: Number(document.getElementById("quickEditDirectKg").value || 0),
+      directKg: directCalculation.value,
+      directKgExpression: directCalculation.display,
       comment: document.getElementById("quickEditComment").value.trim()
     };
     recalcEntry(updated);
@@ -4381,6 +4624,13 @@
     const editingId = document.getElementById("editingEntryId").value;
     const wasEditing = Boolean(editingId);
 
+    const directInput = document.getElementById("directKg").value.trim();
+    const directCalculation = calculateWeightExpression(directInput);
+    if (directInput && (!directCalculation.valid || directCalculation.value <= 0)) {
+      toast("Перевір вираз окремої ваги", true);
+      return;
+    }
+
     const entryData = {
       productId,
       productName: product.name,
@@ -4388,7 +4638,8 @@
       kgPerPallet: Number(document.getElementById("kgPerPallet").value || 0),
       pieces: Number(document.getElementById("pieces").value || 0),
       kgPerPiece: Number(document.getElementById("kgPerPiece").value || 0),
-      directKg: Number(document.getElementById("directKg").value || 0),
+      directKg: directCalculation.value,
+      directKgExpression: directCalculation.display,
       comment: document.getElementById("comment").value.trim()
     };
 
@@ -4438,7 +4689,8 @@
     document.getElementById("kgPerPallet").value = e.kgPerPallet || "";
     document.getElementById("pieces").value = e.pieces || "";
     document.getElementById("kgPerPiece").value = e.kgPerPiece || "";
-    document.getElementById("directKg").value = e.directKg || "";
+    document.getElementById("directKg").value = e.directKgExpression || e.directKg || "";
+    updateWeightCalculator("directKg");
     document.getElementById("comment").value = e.comment || "";
     document.getElementById("formTitle").textContent = "Редагувати запис";
     document.getElementById("saveEntryBtn").textContent = "Зберегти зміни";
@@ -4477,6 +4729,7 @@
     document.getElementById("pieces").value = "";
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
+    updateWeightCalculator("directKg");
     document.getElementById("comment").value = "";
     document.getElementById("formTitle").textContent = "Додати до підрахунку";
     document.getElementById("saveEntryBtn").textContent = "Додати";
@@ -4864,14 +5117,19 @@
         const parts = Array.isArray(e.parts) ? e.parts : [];
 
         if (directKg > 0) {
-          let directText = formatKg(directKg);
+          let directText = e.directKgExpression
+            ? formatDirectWeightCalculation(e.directKgExpression, directKg)
+            : formatKg(directKg);
           if (e.comment && parts.length === 1) directText += ` (${e.comment})`;
           directWeights.push(directText);
         }
 
-        const remainingParts = parts.filter(part =>
-          !(directKg > 0 && /кг\s+окремо\s*$/i.test(String(part).trim()))
-        );
+        const remainingParts = parts.filter(part => {
+          const text = String(part).trim();
+          if (directKg <= 0) return true;
+          if (e.directKgDetail && text === String(e.directKgDetail).trim()) return false;
+          return !(/кг\s+окремо\s*$/i.test(text) || /^Окремо:/i.test(text));
+        });
 
         if (remainingParts.length) {
           let detail = remainingParts.join(" + ");
@@ -5211,6 +5469,13 @@
     if (wasEditing) restoreEditPosition("entry");
   });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
+  ["directKg", "quickEditDirectKg"].forEach(inputId => {
+    document.getElementById(inputId).addEventListener("input", () => updateWeightCalculator(inputId));
+  });
+  document.querySelectorAll(".weight-calculator-key").forEach(button => {
+    button.addEventListener("pointerdown", event => event.preventDefault());
+    button.addEventListener("click", () => useWeightCalculatorKey(button));
+  });
   document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("blur", () => {
@@ -5271,9 +5536,17 @@
   });
   document.getElementById("confirmResetBtn").addEventListener("click", confirmResetApp);
   document.getElementById("themeSelect").addEventListener("change", event => {
+    if (event.target.value === "custom") {
+      enterCustomThemeEditor();
+      toast("Можна змінювати вибрані кольори");
+      return;
+    }
+    customThemeEditorOpen = false;
     applyTheme(event.target.value);
     toast("Тему змінено");
   });
+  document.getElementById("openCustomThemeEditorBtn").addEventListener("click", enterCustomThemeEditor);
+  document.getElementById("finishCustomThemeBtn").addEventListener("click", finishCustomThemeEditor);
   CUSTOM_THEME_IDS.forEach(id => {
     const input = document.getElementById(id);
     input.addEventListener("focus", () => updateCustomThemePreview(id));
