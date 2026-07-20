@@ -721,6 +721,11 @@
     .management-options {
       display: grid;
       gap: 8px;
+      max-height: 170px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: thin;
     }
     .management-option {
       margin-top: 0;
@@ -745,10 +750,10 @@
     .management-gesture-pad {
       display: none;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-end;
       min-height: 230px;
       margin: 14px -14px -14px;
-      padding: 26px 20px calc(env(safe-area-inset-bottom) + 26px);
+      padding: 26px 20px calc(env(safe-area-inset-bottom) + 34px);
       border: 0;
       background: var(--bg);
       box-shadow: none;
@@ -844,7 +849,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        z-index: 30;
+        z-index: 10;
         width: 100vw;
         max-width: none;
         height: clamp(320px, 48dvh, 480px);
@@ -852,11 +857,12 @@
         margin: 0;
         transform: none;
       }
-      #pageManagement h2,
-      #pageManagement p,
-      #pageManagement .management-options {
+      #pageManagement {
+        min-height: calc(100dvh - env(safe-area-inset-top) - 122px);
+      }
+      #pageManagement .management-card {
         position: relative;
-        z-index: 31;
+        z-index: 20;
       }
     }
     .pill {
@@ -1085,6 +1091,82 @@
       margin-top: 14px;
       padding-top: 12px;
       border-top: 1px solid var(--border);
+    }
+    .custom-theme-preview-title {
+      margin: 0 0 7px;
+      color: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .custom-theme-preview {
+      margin-bottom: 13px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--bg);
+      transition: background .18s ease;
+    }
+    .custom-preview-card {
+      padding: 11px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+    .custom-preview-heading {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .custom-preview-muted {
+      margin: 3px 0 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .custom-preview-field,
+    .custom-preview-inner {
+      margin-top: 6px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-size: 11px;
+    }
+    .custom-preview-field { background: var(--surface-deep); }
+    .custom-preview-inner { background: var(--surface-strong); }
+    .custom-preview-border {
+      margin-top: 6px;
+      padding: 5px;
+      border: 3px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 10px;
+      text-align: center;
+    }
+    .custom-preview-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 8px;
+    }
+    .custom-preview-button {
+      padding: 7px 3px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 900;
+    }
+    .custom-preview-primary { background: var(--primary-bg); color: var(--primary-text); }
+    .custom-preview-pdf { background: var(--primary-dark-bg); color: var(--primary-dark-text); }
+    .custom-preview-success { background: var(--soft-success-bg); color: var(--soft-success-text); }
+    .custom-preview-warning { background: var(--soft-warning-bg); color: var(--soft-warning-text); }
+    .custom-preview-danger { background: var(--soft-danger-bg); color: var(--soft-danger-text); }
+    .custom-preview-selection { background: var(--selection-bg); color: var(--selection-text); }
+    .custom-preview-target-active {
+      position: relative;
+      z-index: 1;
+      outline: 3px solid var(--primary-bg);
+      outline-offset: 2px;
+      transform: scale(1.015);
     }
     .custom-theme-grid {
       display: grid;
@@ -2219,7 +2301,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">89</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">90</span></div>
     </div>
   </div>
 
@@ -2414,18 +2496,18 @@
   </div>
 
   <div id="pageManagement" class="hidden">
-    <div class="card">
+    <div class="card management-card">
       <h2>Керування</h2>
       <p class="small">Обери, з чим потрібно працювати.</p>
       <div class="management-options">
         <button class="management-option" id="openProductsBtn">Найменування</button>
         <button class="management-option" id="openSettingsBtn">Налаштування</button>
       </div>
-      <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування розділом">
-        <span class="gesture-pad-handle"></span>
-        <span class="gesture-pad-selection" id="managementGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
-        <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
-      </div>
+    </div>
+    <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування розділом">
+      <span class="gesture-pad-handle"></span>
+      <span class="gesture-pad-selection" id="managementGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
+      <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
     </div>
   </div>
 
@@ -2479,6 +2561,24 @@
       </select>
       <div class="custom-theme-panel hidden" id="customThemePanel">
         <p class="small">Зміни кольори — результат одразу з’явиться в усьому застосунку.</p>
+        <div class="custom-theme-preview-title" id="customThemePreviewTitle">Зараз змінюється: фон сторінки</div>
+        <div class="custom-theme-preview" data-preview-key="background">
+          <div class="custom-preview-card" data-preview-key="surface">
+            <div class="custom-preview-heading" data-preview-key="text">Приклад позиції</div>
+            <div class="custom-preview-muted" data-preview-key="muted">Другорядний опис і підказка</div>
+            <div class="custom-preview-field" data-preview-key="surfaceDeep">Поле введення</div>
+            <div class="custom-preview-inner" data-preview-key="surfaceStrong">Внутрішній блок</div>
+            <div class="custom-preview-border" data-preview-key="border">Приклад рамки</div>
+            <div class="custom-preview-buttons">
+              <div class="custom-preview-button custom-preview-primary" data-preview-key="primary">Основна</div>
+              <div class="custom-preview-button custom-preview-pdf" data-preview-key="primaryDark">PDF</div>
+              <div class="custom-preview-button custom-preview-success" data-preview-key="success">Додати</div>
+              <div class="custom-preview-button custom-preview-warning" data-preview-key="warning">Редагувати</div>
+              <div class="custom-preview-button custom-preview-danger" data-preview-key="danger">Видалити</div>
+              <div class="custom-preview-button custom-preview-selection" data-preview-key="selection">Вибрано</div>
+            </div>
+          </div>
+        </div>
         <div class="custom-theme-grid">
           <div class="custom-color-field"><label for="customBg">Фон сторінки</label><input type="color" id="customBg" /></div>
           <div class="custom-color-field"><label for="customSurface">Картки</label><input type="color" id="customSurface" /></div>
@@ -2554,7 +2654,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">89</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">90</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2572,8 +2672,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">89</span></div>
-        <div class="small">У вікні швидкого редагування прибрано верхню кнопку й замінено нижню дію «Скасувати» на зрозумілу кнопку «Закрити».</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">90</span></div>
+        <div class="small">У редакторі власної теми додано живий приклад елементів. Картку «Керування» винесено над джойстиком, а список пунктів підготовлено до прокручування.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2629,7 +2729,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "89";
+  const APP_VERSION = "90";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2651,6 +2751,22 @@
     customSelection: "#d9a514"
   };
   const CUSTOM_THEME_IDS = Object.keys(CUSTOM_THEME_DEFAULTS);
+  const CUSTOM_THEME_PREVIEW = {
+    customBg: ["background", "фон сторінки"],
+    customSurface: ["surface", "картки"],
+    customSurfaceDeep: ["surfaceDeep", "поля та панелі"],
+    customSurfaceStrong: ["surfaceStrong", "внутрішні блоки"],
+    customText: ["text", "основний текст"],
+    customMuted: ["muted", "другорядний текст"],
+    customBorder: ["border", "рамки"],
+    customPrimary: ["primary", "основні кнопки"],
+    customPrimaryDark: ["primaryDark", "кнопки PDF"],
+    customSuccess: ["success", "додавання"],
+    customWarning: ["warning", "редагування"],
+    customDanger: ["danger", "видалення"],
+    customSelection: ["selection", "виділення джойстика"]
+  };
+  let activeCustomPreviewId = "customBg";
   const CUSTOM_STYLE_PROPERTIES = [
     "--bg", "--text", "--surface", "--surface-strong", "--surface-deep",
     "--border", "--border-strong", "--muted", "--muted-soft", "--accent-soft",
@@ -2747,6 +2863,18 @@
     });
     const panel = document.getElementById("customThemePanel");
     if (panel) panel.classList.toggle("hidden", !visible);
+    if (visible) updateCustomThemePreview(activeCustomPreviewId);
+  }
+
+  function updateCustomThemePreview(inputId) {
+    const preview = CUSTOM_THEME_PREVIEW[inputId] || CUSTOM_THEME_PREVIEW.customBg;
+    activeCustomPreviewId = inputId;
+    document.querySelectorAll("#customThemePanel .custom-preview-target-active")
+      .forEach(element => element.classList.remove("custom-preview-target-active"));
+    const target = document.querySelector(`#customThemePanel [data-preview-key="${preview[0]}"]`);
+    if (target) target.classList.add("custom-preview-target-active");
+    const title = document.getElementById("customThemePreviewTitle");
+    if (title) title.textContent = "Зараз змінюється: " + preview[1];
   }
 
   function applyTheme(theme, persist = true) {
@@ -2785,6 +2913,7 @@
       localStorage.setItem(THEME_KEY, "custom");
     } catch (error) {}
     applyTheme("custom", false);
+    updateCustomThemePreview(activeCustomPreviewId);
   }
 
   function resetCustomTheme() {
@@ -3339,6 +3468,7 @@
     });
     const label = document.getElementById("managementGestureSelection");
     if (label) label.textContent = "Вибрано: " + items[managementGestureIndex].textContent.trim();
+    items[managementGestureIndex].scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function initManagementGesturePad() {
@@ -4934,7 +5064,13 @@
     toast("Тему змінено");
   });
   CUSTOM_THEME_IDS.forEach(id => {
-    document.getElementById(id).addEventListener("input", saveCustomThemeFromControls);
+    const input = document.getElementById(id);
+    input.addEventListener("focus", () => updateCustomThemePreview(id));
+    input.addEventListener("click", () => updateCustomThemePreview(id));
+    input.addEventListener("input", () => {
+      updateCustomThemePreview(id);
+      saveCustomThemeFromControls();
+    });
   });
   document.getElementById("resetCustomThemeBtn").addEventListener("click", resetCustomTheme);
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
