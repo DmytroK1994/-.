@@ -193,11 +193,12 @@
       padding-top: calc(env(safe-area-inset-top) + 58px);
     }
     body:not(.page-today) .app-header {
+      overflow: hidden;
       padding: calc(env(safe-area-inset-top) + 7px) max(12px, env(safe-area-inset-right)) 7px max(12px, env(safe-area-inset-left));
       background: var(--surface);
       border: 0;
       border-bottom: 1px solid var(--border);
-      border-radius: 0;
+      border-radius: 0 0 30px 30px;
       box-shadow: 0 7px 18px var(--header-shadow);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -2433,7 +2434,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">115</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">116</span></div>
     </div>
   </div>
 
@@ -2818,7 +2819,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">115</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">116</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2836,8 +2837,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">115</span></div>
-        <div class="small">У кнопковому режимі навігацію перенесено вниз, а пошукові блоки тепер прилягають до шапки без проміжку.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">116</span></div>
+        <div class="small">Усі компактні шапки отримали такі самі заокруглені нижні краї, як шапка поточного підрахунку.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2893,7 +2894,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "115";
+  const APP_VERSION = "116";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
