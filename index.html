@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Облік залишків</title>
   <script>
     try {
@@ -14,7 +14,10 @@
   </script>
   <style>
     * { box-sizing: border-box; }
-    html { background: var(--surface-deep); }
+    html {
+      background: var(--surface-deep);
+      touch-action: pan-x pan-y;
+    }
     :root,
     :root[data-theme="dark"] {
       color-scheme: dark;
@@ -129,6 +132,7 @@
     }
     body {
       margin: 0;
+      touch-action: pan-x pan-y;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
         radial-gradient(circle at 50% -10%, var(--page-glow), transparent 38%),
@@ -153,7 +157,6 @@
     #pageHistory,
     #pageManagement,
     #pageProducts,
-    #pageLanguage,
     #pageThemes,
     #pageBackup,
     #pageOtherSettings,
@@ -2182,7 +2185,6 @@
       .app-splash,
       #pageHistory,
       #pageProducts,
-      #pageLanguage,
       #pageThemes,
       #pageBackup,
       #pageOtherSettings,
@@ -2388,7 +2390,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">107</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">109</span></div>
     </div>
   </div>
 
@@ -2590,7 +2592,6 @@
       <p class="small">Обери потрібну категорію.</p>
       <div class="management-options">
         <button class="management-option" id="openProductsBtn">Найменування</button>
-        <button class="management-option" id="openLanguageSettingsBtn">Мова</button>
         <button class="management-option" id="openThemeSettingsBtn">Теми</button>
         <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
         <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
@@ -2639,22 +2640,6 @@
     </div>
 
     <div id="productsList"></div>
-  </div>
-
-  <div id="pageLanguage" class="hidden">
-    <div class="card" id="settingsLanguageSection">
-      <h2>Мова застосунку</h2>
-      <p class="small">Мова зміниться в усьому інтерфейсі та документах.</p>
-      <select id="languageSelect" aria-label="Мова застосунку" data-no-translate>
-        <option value="uk">Українська</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="zh">简体中文</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="ru">Русский</option>
-      </select>
-    </div>
   </div>
 
   <div id="pageThemes" class="hidden">
@@ -2780,7 +2765,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">107</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">109</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2798,8 +2783,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">107</span></div>
-        <div class="small">Категорії налаштувань розділено на окремі сторінки, а список показує чотири пункти та індикатор продовження.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">109</span></div>
+        <div class="small">Застосунок тимчасово залишено лише українською мовою, а зайвий механізм перекладу прибрано.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2850,13 +2835,12 @@
     </div>
   </div>
 
-<script src="./i18n.js"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "107";
+  const APP_VERSION = "109";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2914,13 +2898,26 @@
   const isAndroidDevice = /Android/i.test(navigator.userAgent);
   const PAGE_PARENTS = {
     products: "management",
-    language: "management",
     themes: "management",
     backup: "management",
     otherSettings: "management",
     install: "about"
   };
   document.documentElement.classList.toggle("mobile-device", isMobileDevice);
+
+  function preventBrowserPageZoom() {
+    ["gesturestart", "gesturechange", "gestureend"].forEach(eventName => {
+      document.addEventListener(eventName, event => event.preventDefault(), { passive: false });
+    });
+    document.addEventListener("touchmove", event => {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { capture: true, passive: false });
+    document.addEventListener("wheel", event => {
+      if (event.ctrlKey) event.preventDefault();
+    }, { passive: false });
+  }
+
+  preventBrowserPageZoom();
 
   function loadCustomTheme() {
     try {
@@ -3455,13 +3452,11 @@
   function niceDate(iso) {
     if (!iso || !iso.includes("-")) return iso || "";
     const [y, m, d] = iso.split("-");
-    const locale = window.AppI18n?.locale || "uk-UA";
-    return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString(locale);
+    return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString("uk-UA");
   }
 
   function formatKg(value) {
-    const locale = window.AppI18n?.locale || "uk-UA";
-    return new Intl.NumberFormat(locale, {
+    return new Intl.NumberFormat("uk-UA", {
       style: "unit",
       unit: "kilogram",
       unitDisplay: "short",
@@ -3470,7 +3465,7 @@
   }
 
   function interfaceText(source) {
-    return window.AppI18n?.t(source) || source;
+    return source;
   }
 
   function calculateWeightExpression(rawValue) {
@@ -4295,7 +4290,6 @@
     document.getElementById("pageHistory").classList.add("hidden");
     document.getElementById("pageManagement").classList.add("hidden");
     document.getElementById("pageProducts").classList.add("hidden");
-    document.getElementById("pageLanguage").classList.add("hidden");
     document.getElementById("pageThemes").classList.add("hidden");
     document.getElementById("pageBackup").classList.add("hidden");
     document.getElementById("pageOtherSettings").classList.add("hidden");
@@ -4306,7 +4300,6 @@
     if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
     if (page === "management") document.getElementById("pageManagement").classList.remove("hidden");
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
-    if (page === "language") document.getElementById("pageLanguage").classList.remove("hidden");
     if (page === "themes") document.getElementById("pageThemes").classList.remove("hidden");
     if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
     if (page === "otherSettings") document.getElementById("pageOtherSettings").classList.remove("hidden");
@@ -4320,7 +4313,7 @@
       window.requestAnimationFrame(updateManagementOverflowIndicator);
     }
 
-    const activeMenuPage = ["products", "language", "themes", "backup", "otherSettings"].includes(page)
+    const activeMenuPage = ["products", "themes", "backup", "otherSettings"].includes(page)
       ? "management"
       : (page === "install" ? "about" : page);
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
@@ -5573,7 +5566,6 @@
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
-  document.getElementById("openLanguageSettingsBtn").addEventListener("click", () => showPage("language"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
   document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showPage("backup"));
   document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showPage("otherSettings"));
