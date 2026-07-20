@@ -153,7 +153,10 @@
     #pageHistory,
     #pageManagement,
     #pageProducts,
-    #pageSettings,
+    #pageLanguage,
+    #pageThemes,
+    #pageBackup,
+    #pageOtherSettings,
     #pageInstall,
     #pageAbout {
       width: min(100%, 720px);
@@ -740,11 +743,20 @@
     .management-options {
       display: grid;
       gap: 8px;
-      max-height: 170px;
+      max-height: 224px;
       overflow-y: auto;
       overscroll-behavior: contain;
       touch-action: pan-y;
       scrollbar-width: thin;
+    }
+    .management-more-indicator {
+      min-height: 18px;
+      margin: 7px 0 -3px;
+      color: var(--muted-soft);
+      font-size: 11px;
+      font-weight: 750;
+      line-height: 18px;
+      text-align: center;
     }
     .management-option {
       margin-top: 0;
@@ -1104,7 +1116,9 @@
     }
 
     #pageHistory button,
-    #pageSettings button,
+    #pageThemes button,
+    #pageBackup button,
+    #pageOtherSettings button,
     #pageAbout button,
     #pageInstall button {
       border: 1px solid var(--soft-action-border);
@@ -1117,7 +1131,7 @@
       background: var(--soft-warning-bg);
       color: var(--soft-warning-text);
     }
-    #pageSettings button.yellow {
+    #pageBackup button.yellow {
       border-color: var(--soft-warning-border);
       background: var(--soft-warning-bg);
       color: var(--soft-warning-text);
@@ -1127,7 +1141,7 @@
       background: var(--soft-danger-bg);
       color: var(--soft-danger-text);
     }
-    #pageSettings button.danger {
+    #pageBackup button.danger {
       border-color: var(--soft-danger-border);
       background: var(--soft-danger-bg);
       color: var(--soft-danger-text);
@@ -1145,7 +1159,7 @@
       color: var(--primary-text);
       box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
     }
-    #pageSettings #downloadBackupBtn {
+    #pageBackup #downloadBackupBtn {
       border-color: var(--primary-bg);
       background: var(--primary-bg);
       color: var(--primary-text);
@@ -2168,7 +2182,10 @@
       .app-splash,
       #pageHistory,
       #pageProducts,
-      #pageSettings,
+      #pageLanguage,
+      #pageThemes,
+      #pageBackup,
+      #pageOtherSettings,
       #pageInstall,
       #pageAbout {
         display: none !important;
@@ -2371,7 +2388,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">106</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">107</span></div>
     </div>
   </div>
 
@@ -2578,6 +2595,7 @@
         <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
         <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
+      <div class="management-more-indicator hidden" id="managementMoreIndicator" aria-live="polite"></div>
     </div>
     <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування розділом">
       <span class="gesture-pad-handle"></span>
@@ -2623,7 +2641,7 @@
     <div id="productsList"></div>
   </div>
 
-  <div id="pageSettings" class="hidden">
+  <div id="pageLanguage" class="hidden">
     <div class="card" id="settingsLanguageSection">
       <h2>Мова застосунку</h2>
       <p class="small">Мова зміниться в усьому інтерфейсі та документах.</p>
@@ -2637,6 +2655,9 @@
         <option value="ru">Русский</option>
       </select>
     </div>
+  </div>
+
+  <div id="pageThemes" class="hidden">
     <div class="card" id="settingsThemeSection">
       <h2>Тема оформлення</h2>
       <p class="small">Вибрана тема збережеться на цьому телефоні.</p>
@@ -2687,7 +2708,9 @@
         <button id="resetCustomThemeBtn">Скинути власну тему</button>
       </div>
     </div>
+  </div>
 
+  <div id="pageBackup" class="hidden">
     <div class="card" id="settingsBackupSection">
       <h2>Резервна копія</h2>
       <p class="small">
@@ -2702,7 +2725,9 @@
       <button class="yellow" id="importBtn">Імпортувати</button>
       <button class="danger" id="resetBtn">Повне очищення програми</button>
     </div>
+  </div>
 
+  <div id="pageOtherSettings" class="hidden">
     <div class="card" id="settingsOtherSection">
       <h2>Інші налаштування</h2>
       <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
@@ -2755,7 +2780,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">106</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">107</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2773,8 +2798,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">106</span></div>
-        <div class="small">Розділ керування перетворено на впорядкований центр налаштувань з окремими категоріями.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">107</span></div>
+        <div class="small">Категорії налаштувань розділено на окремі сторінки, а список показує чотири пункти та індикатор продовження.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2831,7 +2856,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "106";
+  const APP_VERSION = "107";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -2887,7 +2912,14 @@
   const isIOSDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
     (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
   const isAndroidDevice = /Android/i.test(navigator.userAgent);
-  const PAGE_PARENTS = { products: "management", settings: "management", install: "about" };
+  const PAGE_PARENTS = {
+    products: "management",
+    language: "management",
+    themes: "management",
+    backup: "management",
+    otherSettings: "management",
+    install: "about"
+  };
   document.documentElement.classList.toggle("mobile-device", isMobileDevice);
 
   function loadCustomTheme() {
@@ -3769,6 +3801,22 @@
     if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
   }
 
+  function updateManagementOverflowIndicator() {
+    const list = document.querySelector("#pageManagement .management-options");
+    const indicator = document.getElementById("managementMoreIndicator");
+    if (!list || !indicator) return;
+    const canScrollUp = list.scrollTop > 2;
+    const canScrollDown = list.scrollTop + list.clientHeight < list.scrollHeight - 2;
+    indicator.textContent = canScrollUp && canScrollDown
+      ? "↑ Є інші пункти ↓"
+      : canScrollDown
+        ? "Нижче є ще пункти ↓"
+        : canScrollUp
+          ? "↑ Вище є ще пункти"
+          : "";
+    indicator.classList.toggle("hidden", !indicator.textContent);
+  }
+
   function setManagementGestureSelection(index) {
     const items = getManagementGestureItems();
     if (!items.length) return;
@@ -3779,6 +3827,7 @@
     const label = document.getElementById("managementGestureSelection");
     if (label) label.textContent = "Вибрано: " + items[managementGestureIndex].textContent.trim();
     items[managementGestureIndex].scrollIntoView({ block: "nearest", behavior: "smooth" });
+    window.setTimeout(updateManagementOverflowIndicator, 180);
   }
 
   function initManagementGesturePad() {
@@ -3831,6 +3880,9 @@
         if (item) item.click();
       }
     });
+    const list = document.querySelector("#pageManagement .management-options");
+    if (list) list.addEventListener("scroll", updateManagementOverflowIndicator, { passive: true });
+    window.addEventListener("resize", updateManagementOverflowIndicator);
   }
 
   function initMenuSwipeGestures() {
@@ -4243,7 +4295,10 @@
     document.getElementById("pageHistory").classList.add("hidden");
     document.getElementById("pageManagement").classList.add("hidden");
     document.getElementById("pageProducts").classList.add("hidden");
-    document.getElementById("pageSettings").classList.add("hidden");
+    document.getElementById("pageLanguage").classList.add("hidden");
+    document.getElementById("pageThemes").classList.add("hidden");
+    document.getElementById("pageBackup").classList.add("hidden");
+    document.getElementById("pageOtherSettings").classList.add("hidden");
     document.getElementById("pageAbout").classList.add("hidden");
     document.getElementById("pageInstall").classList.add("hidden");
 
@@ -4251,15 +4306,23 @@
     if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
     if (page === "management") document.getElementById("pageManagement").classList.remove("hidden");
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
-    if (page === "settings") document.getElementById("pageSettings").classList.remove("hidden");
+    if (page === "language") document.getElementById("pageLanguage").classList.remove("hidden");
+    if (page === "themes") document.getElementById("pageThemes").classList.remove("hidden");
+    if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
+    if (page === "otherSettings") document.getElementById("pageOtherSettings").classList.remove("hidden");
     if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
     if (page === "install") {
       document.getElementById("pageInstall").classList.remove("hidden");
       updateInstallUI();
     }
-    if (page === "management") clearManagementGestureSelection();
+    if (page === "management") {
+      clearManagementGestureSelection();
+      window.requestAnimationFrame(updateManagementOverflowIndicator);
+    }
 
-    const activeMenuPage = ["products", "settings"].includes(page) ? "management" : (page === "install" ? "about" : page);
+    const activeMenuPage = ["products", "language", "themes", "backup", "otherSettings"].includes(page)
+      ? "management"
+      : (page === "install" ? "about" : page);
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.page === activeMenuPage);
     });
@@ -4267,17 +4330,6 @@
     updatePageBackButton();
     render();
     scrollAppToTop();
-  }
-
-  function showSettingsSection(sectionId) {
-    showPage("settings");
-    window.setTimeout(() => {
-      const section = document.getElementById(sectionId);
-      if (!section) return;
-      const headerOffset = document.querySelector(".app-header")?.getBoundingClientRect().height || 0;
-      const top = window.scrollY + section.getBoundingClientRect().top - headerOffset - 12;
-      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-    }, 90);
   }
 
   async function createNewDay() {
@@ -4840,7 +4892,7 @@
       toast("Звіт скопійовано");
     } catch (err) {
       document.getElementById("importData").value = text;
-      showPage("settings");
+      showPage("backup");
       toast("Скопіюй звіт з поля вручну", true);
     }
   }
@@ -5521,10 +5573,10 @@
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
-  document.getElementById("openLanguageSettingsBtn").addEventListener("click", () => showSettingsSection("settingsLanguageSection"));
-  document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showSettingsSection("settingsThemeSection"));
-  document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showSettingsSection("settingsBackupSection"));
-  document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showSettingsSection("settingsOtherSection"));
+  document.getElementById("openLanguageSettingsBtn").addEventListener("click", () => showPage("language"));
+  document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
+  document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showPage("backup"));
+  document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showPage("otherSettings"));
   document.getElementById("openInstallFromAboutBtn").addEventListener("click", () => showPage("install"));
   document.getElementById("installAppBtn").addEventListener("click", installApp);
   document.getElementById("shareAppBtn").addEventListener("click", shareApp);
