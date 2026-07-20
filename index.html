@@ -2407,7 +2407,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">102</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">103</span></div>
     </div>
   </div>
 
@@ -2669,6 +2669,19 @@
 
   <div id="pageSettings" class="hidden">
     <div class="card">
+      <h2>Мова застосунку</h2>
+      <p class="small">Мова зміниться в усьому інтерфейсі та документах.</p>
+      <select id="languageSelect" aria-label="Мова застосунку" data-no-translate>
+        <option value="uk">Українська</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="zh">简体中文</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">Русский</option>
+      </select>
+    </div>
+    <div class="card">
       <h2>Тема оформлення</h2>
       <p class="small">Вибрана тема збережеться на цьому телефоні.</p>
       <label for="themeSelect">Кольорова тема</label>
@@ -2786,7 +2799,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">102</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">103</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2804,8 +2817,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">102</span></div>
-        <div class="small">Поле окремої ваги отримало калькулятор із діями +, −, × і ÷. Вираз, його складові та сума зберігаються у підрахунку й PDF.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">103</span></div>
+        <div class="small">Додано українську, англійську, японську, китайську, французьку, німецьку та російську мови.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2867,12 +2880,13 @@
     </div>
   </div>
 
+<script src="./i18n.js"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "102";
+  const APP_VERSION = "103";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3436,11 +3450,22 @@
   function niceDate(iso) {
     if (!iso || !iso.includes("-")) return iso || "";
     const [y, m, d] = iso.split("-");
-    return `${d}.${m}.${y}`;
+    const locale = window.AppI18n?.locale || "uk-UA";
+    return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString(locale);
   }
 
   function formatKg(value) {
-    return Number(value || 0).toLocaleString("uk-UA", { maximumFractionDigits: 2 }) + " кг";
+    const locale = window.AppI18n?.locale || "uk-UA";
+    return new Intl.NumberFormat(locale, {
+      style: "unit",
+      unit: "kilogram",
+      unitDisplay: "short",
+      maximumFractionDigits: 2
+    }).format(Number(value || 0));
+  }
+
+  function interfaceText(source) {
+    return window.AppI18n?.t(source) || source;
   }
 
   function calculateWeightExpression(rawValue) {
@@ -4489,20 +4514,20 @@
     if (Number(e.pallets) > 0 && Number(e.kgPerPallet) > 0) {
       const kg = Number(e.pallets) * Number(e.kgPerPallet);
       e.totalKg += kg;
-      e.parts.push(`${e.pallets} підд. × ${e.kgPerPallet} кг = ${kg} кг`);
+      e.parts.push(`${e.pallets} ${interfaceText("підд.")} × ${formatKg(e.kgPerPallet)} = ${formatKg(kg)}`);
     }
 
     if (Number(e.pieces) > 0 && Number(e.kgPerPiece) > 0) {
       const kg = Number(e.pieces) * Number(e.kgPerPiece);
       e.totalKg += kg;
-      e.parts.push(`${e.pieces} шт × ${e.kgPerPiece} кг = ${kg} кг`);
+      e.parts.push(`${e.pieces} ${interfaceText("шт")} × ${formatKg(e.kgPerPiece)} = ${formatKg(kg)}`);
     }
 
     const directCalculation = calculateWeightExpression(e.directKgExpression || e.directKg || "");
     if (directCalculation.valid && directCalculation.value > 0) {
       e.directKg = directCalculation.value;
       e.directKgExpression = directCalculation.display;
-      e.directKgDetail = `Окремо: ${formatDirectWeightCalculation(directCalculation.display, directCalculation.value)}`;
+      e.directKgDetail = `${interfaceText("Окремо: ")}${formatDirectWeightCalculation(directCalculation.display, directCalculation.value)}`;
       e.totalKg += directCalculation.value;
       e.parts.push(e.directKgDetail);
     } else {
@@ -5139,7 +5164,7 @@
       });
 
       const compactDetails = [
-        directWeights.length ? `Окремо: ${directWeights.join(" + ")}` : "",
+        directWeights.length ? `${interfaceText("Окремо: ")}${directWeights.join(" + ")}` : "",
         ...otherDetails
       ].filter(Boolean).map(escapeHtml).join("<br>");
 
@@ -5599,6 +5624,14 @@
       const results = document.getElementById("productSearchResults");
       if (results) results.classList.add("hidden");
     }
+  });
+
+  window.addEventListener("app-language-change", () => {
+    render();
+    updatePageBackButton();
+    updateInstallUI();
+    updateWeightCalculator("directKg");
+    updateWeightCalculator("quickEditDirectKg");
   });
 
   renderAppVersion();
