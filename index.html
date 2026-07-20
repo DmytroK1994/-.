@@ -1103,6 +1103,126 @@
     body.bottom-nav-visible {
       padding-bottom: calc(env(safe-area-inset-bottom) + 94px);
     }
+    .theme-designer-toolbar {
+      position: fixed;
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: 12px;
+      z-index: 108;
+      width: min(calc(100% - 24px), 430px);
+      max-height: 65dvh;
+      margin-inline: auto;
+      padding: 12px;
+      border: 1px solid var(--selection-border);
+      border-radius: 22px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 16px 46px var(--popover-shadow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    body.bottom-nav-visible .theme-designer-toolbar {
+      bottom: calc(max(10px, env(safe-area-inset-bottom)) + 70px);
+    }
+    body.drawer-open .theme-designer-toolbar {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .theme-designer-heading,
+    .theme-designer-actions,
+    .theme-designer-color-grid {
+      display: grid;
+      gap: 8px;
+    }
+    .theme-designer-heading {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+    .theme-designer-heading strong {
+      font-size: 15px;
+    }
+    .theme-designer-toolbar button {
+      min-height: 40px;
+      margin: 0;
+      padding: 8px 12px;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 13px;
+      background: var(--surface-strong) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+    }
+    .theme-designer-toolbar #themeDesignerDoneBtn {
+      min-width: 88px;
+      background: var(--primary-bg) !important;
+      color: var(--primary-text) !important;
+    }
+    .theme-designer-toolbar #themeDesignerPickBtn.is-picking {
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text) !important;
+    }
+    .theme-designer-hint,
+    .theme-designer-selection-name {
+      margin: 7px 0 0;
+      color: var(--muted-soft);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .theme-designer-selection {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .theme-designer-selection-name {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-weight: 850;
+    }
+    .theme-designer-color-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .theme-designer-color-grid label {
+      margin: 0;
+      text-align: center;
+      font-size: 11px;
+    }
+    .theme-designer-color-grid input[type="color"] {
+      min-height: 42px;
+      margin-top: 4px;
+      padding: 3px;
+      border-radius: 11px;
+    }
+    .theme-designer-radius-row {
+      display: grid;
+      grid-template-columns: 1fr 86px;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .theme-designer-radius-row label {
+      margin: 0;
+    }
+    .theme-designer-radius-row input {
+      min-height: 40px;
+    }
+    .theme-designer-scope {
+      margin-top: 8px;
+      min-height: 42px;
+    }
+    .theme-designer-actions {
+      grid-template-columns: 1fr 1fr;
+      margin-top: 8px;
+    }
+    body.theme-designer-picking {
+      cursor: crosshair;
+    }
+    body.theme-designer-picking .theme-designer-selectable:hover,
+    .theme-designer-target {
+      outline: 3px solid var(--selection-outline) !important;
+      outline-offset: 3px;
+    }
     .current-list-search {
       margin: 0;
       padding: 0;
@@ -2435,7 +2555,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">117</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">118</span></div>
     </div>
   </div>
 
@@ -2492,6 +2612,35 @@
       <span class="bottom-nav-label">Меню</span>
     </button>
   </nav>
+
+  <section class="theme-designer-toolbar no-print hidden" id="themeDesignerToolbar" data-theme-designer-ui>
+    <div class="theme-designer-heading">
+      <strong>Конструктор теми</strong>
+      <button type="button" class="theme-designer-control" id="themeDesignerDoneBtn">Готово</button>
+    </div>
+    <p class="theme-designer-hint" id="themeDesignerHint">Переходь між сторінками або натисни «Обрати елемент».</p>
+    <button type="button" class="theme-designer-control" id="themeDesignerPickBtn">Обрати елемент</button>
+    <div class="theme-designer-selection hidden" id="themeDesignerSelection">
+      <div class="theme-designer-selection-name" id="themeDesignerSelectionName"></div>
+      <div class="theme-designer-color-grid">
+        <label>Фон<input class="theme-designer-control" type="color" id="themeDesignerBg" /></label>
+        <label>Текст<input class="theme-designer-control" type="color" id="themeDesignerText" /></label>
+        <label>Рамка<input class="theme-designer-control" type="color" id="themeDesignerBorder" /></label>
+      </div>
+      <div class="theme-designer-radius-row">
+        <label for="themeDesignerRadius">Заокруглення, px</label>
+        <input class="theme-designer-control" type="number" id="themeDesignerRadius" min="0" max="48" inputmode="numeric" />
+      </div>
+      <select class="theme-designer-scope theme-designer-control" id="themeDesignerScope">
+        <option value="type">Усі елементи цього типу</option>
+        <option value="element">Лише цей елемент</option>
+      </select>
+      <div class="theme-designer-actions">
+        <button type="button" class="theme-designer-control" id="themeDesignerApplyBtn">Застосувати</button>
+        <button type="button" class="theme-designer-control" id="themeDesignerResetBtn">Скинути</button>
+      </div>
+    </div>
+  </section>
 
   <div id="pageToday">
 
@@ -2820,7 +2969,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">117</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">118</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2838,8 +2987,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">117</span></div>
-        <div class="small">Нижня кнопкова навігація стала компактнішою, вужчою та отримала легший плаваючий дизайн.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">118</span></div>
+        <div class="small">Додано конструктор власної теми: переходь між сторінками, вибирай елементи та змінюй один елемент або весь його тип.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2895,11 +3044,12 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "117";
+  const APP_VERSION = "118";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
+  const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const THEMES = ["dark", "beige", "white", "custom"];
   const CUSTOM_THEME_DEFAULTS = {
@@ -2933,8 +3083,26 @@
     customDanger: ["danger", "видалення"],
     customSelection: ["selection", "виділення джойстика"]
   };
+  const THEME_DESIGNER_TYPES = [
+    { key: "page", label: "фон сторінки", selector: "body" },
+    { key: "card", label: "картки", selector: ".card" },
+    { key: "field", label: "поля введення", selector: "input:not([type='hidden']):not([type='color']):not(.theme-designer-control), select:not(.theme-designer-control), textarea:not(.theme-designer-control)" },
+    { key: "inner", label: "внутрішні блоки", selector: ".item, .selected-product, .entry-row" },
+    { key: "header", label: "верхні шапки", selector: ".app-header" },
+    { key: "button", label: "звичайні кнопки", selector: "button:not(.theme-designer-control)" },
+    { key: "navigation", label: "кнопки навігації", selector: ".menu-btn, .app-bottom-nav button, .compact-menu-btn" },
+    { key: "success", label: "кнопки додавання", selector: "button.green:not(.theme-designer-control)" },
+    { key: "warning", label: "кнопки редагування", selector: "button.yellow:not(.theme-designer-control), button[data-action^='edit']:not(.theme-designer-control)" },
+    { key: "danger", label: "кнопки видалення", selector: "button.danger:not(.theme-designer-control), button[data-action^='delete']:not(.theme-designer-control)" }
+  ];
   let activeCustomPreviewId = "customBg";
   let customThemeEditorOpen = false;
+  let themeDesignerActive = false;
+  let themeDesignerPicking = false;
+  let themeDesignerTarget = null;
+  let themeDesignerType = null;
+  let themeDesignerElementSelector = "";
+  let themeDesignerPreviewOriginal = null;
   const CUSTOM_STYLE_PROPERTIES = [
     "--bg", "--text", "--surface", "--surface-strong", "--surface-deep",
     "--border", "--border-strong", "--muted", "--muted-soft", "--accent-soft",
@@ -3035,6 +3203,194 @@
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
+  function loadCustomComponentStyles() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CUSTOM_COMPONENT_STYLES_KEY) || "{}");
+      return {
+        types: saved && typeof saved.types === "object" ? saved.types : {},
+        elements: saved && typeof saved.elements === "object" ? saved.elements : {}
+      };
+    } catch (error) {
+      return { types: {}, elements: {} };
+    }
+  }
+
+  function saveCustomComponentStyles(styles) {
+    try { localStorage.setItem(CUSTOM_COMPONENT_STYLES_KEY, JSON.stringify(styles)); } catch (error) {}
+  }
+
+  function normalizedDesignerStyle(style = {}) {
+    return {
+      background: normalizeThemeColor(style.background, "#ffffff"),
+      text: normalizeThemeColor(style.text, "#111827"),
+      border: normalizeThemeColor(style.border, "#64748b"),
+      radius: Math.max(0, Math.min(48, Number(style.radius) || 0))
+    };
+  }
+
+  function designerStyleRule(selector, style) {
+    const value = normalizedDesignerStyle(style);
+    return `${selector}{background:${value.background}!important;color:${value.text}!important;border-color:${value.border}!important;border-radius:${value.radius}px!important;}`;
+  }
+
+  function applyCustomComponentStyles() {
+    let styleElement = document.getElementById("customComponentStyles");
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = "customComponentStyles";
+      document.head.appendChild(styleElement);
+    }
+    if (document.documentElement.dataset.theme !== "custom") {
+      styleElement.textContent = "";
+      return;
+    }
+    const saved = loadCustomComponentStyles();
+    const rules = [];
+    THEME_DESIGNER_TYPES.forEach(type => {
+      if (saved.types[type.key]) rules.push(designerStyleRule(type.selector, saved.types[type.key]));
+    });
+    Object.entries(saved.elements).forEach(([selector, style]) => {
+      if (selector) rules.push(designerStyleRule(selector, style));
+    });
+    styleElement.textContent = rules.join("\n");
+  }
+
+  function escapeDesignerAttribute(value) {
+    return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  }
+
+  function buildDesignerElementSelector(element) {
+    if (element.id) return `[id="${escapeDesignerAttribute(element.id)}"]`;
+    const action = element.getAttribute("data-action");
+    const dataId = element.getAttribute("data-id");
+    if (action && dataId) {
+      return `[data-action="${escapeDesignerAttribute(action)}"][data-id="${escapeDesignerAttribute(dataId)}"]`;
+    }
+    const parts = [];
+    let current = element;
+    while (current && current !== document.body) {
+      if (current.id) {
+        parts.unshift(`[id="${escapeDesignerAttribute(current.id)}"]`);
+        return parts.join(" > ");
+      }
+      const tag = current.tagName.toLowerCase();
+      const siblings = current.parentElement
+        ? Array.from(current.parentElement.children).filter(child => child.tagName === current.tagName)
+        : [];
+      const position = Math.max(1, siblings.indexOf(current) + 1);
+      parts.unshift(`${tag}:nth-of-type(${position})`);
+      current = current.parentElement;
+    }
+    return "";
+  }
+
+  function getThemeDesignerTarget(source) {
+    if (!(source instanceof Element) || source.closest("[data-theme-designer-ui]")) return null;
+    for (let index = THEME_DESIGNER_TYPES.length - 1; index >= 0; index -= 1) {
+      const type = THEME_DESIGNER_TYPES[index];
+      const element = source.closest(type.selector);
+      if (element && !element.closest("[data-theme-designer-ui]")) return { element, type };
+    }
+    return null;
+  }
+
+  function restoreThemeDesignerPreview() {
+    if (!themeDesignerTarget || !themeDesignerPreviewOriginal) return;
+    Object.entries(themeDesignerPreviewOriginal).forEach(([property, value]) => {
+      themeDesignerTarget.style[property] = value;
+    });
+    themeDesignerPreviewOriginal = null;
+  }
+
+  function previewThemeDesignerSelection() {
+    if (!themeDesignerTarget) return;
+    const style = normalizedDesignerStyle({
+      background: document.getElementById("themeDesignerBg").value,
+      text: document.getElementById("themeDesignerText").value,
+      border: document.getElementById("themeDesignerBorder").value,
+      radius: document.getElementById("themeDesignerRadius").value
+    });
+    themeDesignerTarget.style.setProperty("background-color", style.background, "important");
+    themeDesignerTarget.style.setProperty("color", style.text, "important");
+    themeDesignerTarget.style.setProperty("border-color", style.border, "important");
+    themeDesignerTarget.style.setProperty("border-radius", `${style.radius}px`, "important");
+  }
+
+  function setThemeDesignerPicking(active) {
+    themeDesignerPicking = Boolean(active);
+    document.body.classList.toggle("theme-designer-picking", themeDesignerPicking);
+    const button = document.getElementById("themeDesignerPickBtn");
+    if (button) {
+      button.classList.toggle("is-picking", themeDesignerPicking);
+      button.textContent = themeDesignerPicking ? "Натисни потрібний елемент" : "Обрати елемент";
+    }
+    const hint = document.getElementById("themeDesignerHint");
+    if (hint) hint.textContent = themeDesignerPicking
+      ? "Тепер натисни кнопку, картку, поле або шапку, яку хочеш змінити."
+      : "Переходь між сторінками або натисни «Обрати елемент».";
+  }
+
+  function selectThemeDesignerTarget(element, type) {
+    restoreThemeDesignerPreview();
+    if (themeDesignerTarget) themeDesignerTarget.classList.remove("theme-designer-target");
+    themeDesignerTarget = element;
+    themeDesignerType = type;
+    themeDesignerElementSelector = buildDesignerElementSelector(element);
+    themeDesignerTarget.classList.add("theme-designer-target");
+    themeDesignerPreviewOriginal = {
+      backgroundColor: element.style.backgroundColor,
+      color: element.style.color,
+      borderColor: element.style.borderColor,
+      borderRadius: element.style.borderRadius
+    };
+    const styles = getComputedStyle(element);
+    document.getElementById("themeDesignerBg").value = normalizeThemeColor(styles.backgroundColor, loadCustomTheme().customSurface);
+    document.getElementById("themeDesignerText").value = normalizeThemeColor(styles.color, loadCustomTheme().customText);
+    document.getElementById("themeDesignerBorder").value = normalizeThemeColor(styles.borderColor, loadCustomTheme().customBorder);
+    document.getElementById("themeDesignerRadius").value = Math.round(Math.max(0, parseFloat(styles.borderRadius) || 0));
+    document.getElementById("themeDesignerScope").value = "type";
+    const shortText = String(element.textContent || element.getAttribute("aria-label") || "").trim().replace(/\s+/g, " ").slice(0, 38);
+    document.getElementById("themeDesignerSelectionName").textContent = `Вибрано: ${type.label}${shortText ? ` — ${shortText}` : ""}`;
+    document.getElementById("themeDesignerSelection").classList.remove("hidden");
+    setThemeDesignerPicking(false);
+  }
+
+  function currentThemeDesignerStyle() {
+    return normalizedDesignerStyle({
+      background: document.getElementById("themeDesignerBg").value,
+      text: document.getElementById("themeDesignerText").value,
+      border: document.getElementById("themeDesignerBorder").value,
+      radius: document.getElementById("themeDesignerRadius").value
+    });
+  }
+
+  function applyThemeDesignerSelection() {
+    if (!themeDesignerTarget || !themeDesignerType) return;
+    const saved = loadCustomComponentStyles();
+    const scope = document.getElementById("themeDesignerScope").value;
+    if (scope === "element" && themeDesignerElementSelector) {
+      saved.elements[themeDesignerElementSelector] = currentThemeDesignerStyle();
+    } else {
+      saved.types[themeDesignerType.key] = currentThemeDesignerStyle();
+    }
+    restoreThemeDesignerPreview();
+    saveCustomComponentStyles(saved);
+    applyCustomComponentStyles();
+    toast(scope === "element" ? "Змінено вибраний елемент" : "Змінено всі елементи цього типу");
+  }
+
+  function resetThemeDesignerSelection() {
+    if (!themeDesignerTarget || !themeDesignerType) return;
+    const saved = loadCustomComponentStyles();
+    const scope = document.getElementById("themeDesignerScope").value;
+    if (scope === "element" && themeDesignerElementSelector) delete saved.elements[themeDesignerElementSelector];
+    else delete saved.types[themeDesignerType.key];
+    restoreThemeDesignerPreview();
+    saveCustomComponentStyles(saved);
+    applyCustomComponentStyles();
+    toast("Оформлення елемента скинуто");
+  }
+
   function clearCustomThemeStyles() {
     CUSTOM_STYLE_PROPERTIES.forEach(property => document.documentElement.style.removeProperty(property));
     document.documentElement.style.removeProperty("color-scheme");
@@ -3091,11 +3447,10 @@
       if (input) input.value = palette[id];
     });
     const panel = document.getElementById("customThemePanel");
-    if (panel) panel.classList.toggle("hidden", !visible);
+    if (panel) panel.classList.add("hidden");
     const openButton = document.getElementById("openCustomThemeEditorBtn");
     const customSelected = document.documentElement.dataset.theme === "custom";
-    if (openButton) openButton.classList.toggle("hidden", !customSelected || visible);
-    if (visible) updateCustomThemePreview(activeCustomPreviewId);
+    if (openButton) openButton.classList.toggle("hidden", !customSelected || themeDesignerActive);
   }
 
   function updateCustomThemePreview(inputId) {
@@ -3115,6 +3470,7 @@
     clearCustomThemeStyles();
     document.documentElement.dataset.theme = selected;
     if (selected === "custom") applyCustomTheme(customPalette);
+    applyCustomComponentStyles();
 
     const select = document.getElementById("themeSelect");
     if (select) select.value = selected;
@@ -3151,18 +3507,35 @@
     const palette = currentTheme === "custom" ? loadCustomTheme() : captureCurrentThemePalette();
     if (currentTheme !== "custom") saveCustomThemePalette(palette);
     customThemeEditorOpen = true;
+    themeDesignerActive = true;
     applyTheme("custom");
-    updateCustomThemeControls(palette, true);
+    updateCustomThemeControls(palette, false);
+    document.body.classList.add("theme-designer-active");
+    document.getElementById("themeDesignerToolbar").classList.remove("hidden");
+    document.getElementById("themeDesignerSelection").classList.add("hidden");
+    setThemeDesignerPicking(false);
+    toast("Конструктор теми увімкнено");
   }
 
   function finishCustomThemeEditor() {
+    restoreThemeDesignerPreview();
+    if (themeDesignerTarget) themeDesignerTarget.classList.remove("theme-designer-target");
+    themeDesignerTarget = null;
+    themeDesignerType = null;
+    themeDesignerElementSelector = "";
+    themeDesignerActive = false;
     customThemeEditorOpen = false;
+    setThemeDesignerPicking(false);
+    document.body.classList.remove("theme-designer-active");
+    document.getElementById("themeDesignerToolbar").classList.add("hidden");
+    document.getElementById("themeDesignerSelection").classList.add("hidden");
     updateCustomThemeControls(loadCustomTheme(), false);
     toast("Власну тему збережено");
   }
 
   function resetCustomTheme() {
     try { localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(CUSTOM_THEME_DEFAULTS)); } catch (error) {}
+    try { localStorage.removeItem(CUSTOM_COMPONENT_STYLES_KEY); } catch (error) {}
     applyTheme("custom");
     toast("Власну тему скинуто");
   }
@@ -4245,6 +4618,16 @@
   }
 
   function showPage(page, options = {}) {
+    if (themeDesignerActive) {
+      restoreThemeDesignerPreview();
+      if (themeDesignerTarget) themeDesignerTarget.classList.remove("theme-designer-target");
+      themeDesignerTarget = null;
+      themeDesignerType = null;
+      themeDesignerElementSelector = "";
+      const selection = document.getElementById("themeDesignerSelection");
+      if (selection) selection.classList.add("hidden");
+      setThemeDesignerPicking(false);
+    }
     if (page !== currentPage) {
       if (!options.fromBack) {
         pageNavigationHistory.push(currentPage);
@@ -5506,15 +5889,33 @@
   document.getElementById("themeSelect").addEventListener("change", event => {
     if (event.target.value === "custom") {
       enterCustomThemeEditor();
-      toast("Можна змінювати вибрані кольори");
       return;
     }
+    if (themeDesignerActive) finishCustomThemeEditor();
     customThemeEditorOpen = false;
     applyTheme(event.target.value);
     toast("Тему змінено");
   });
   document.getElementById("openCustomThemeEditorBtn").addEventListener("click", enterCustomThemeEditor);
   document.getElementById("finishCustomThemeBtn").addEventListener("click", finishCustomThemeEditor);
+  document.getElementById("themeDesignerDoneBtn").addEventListener("click", finishCustomThemeEditor);
+  document.getElementById("themeDesignerPickBtn").addEventListener("click", () => {
+    document.getElementById("themeDesignerSelection").classList.add("hidden");
+    setThemeDesignerPicking(!themeDesignerPicking);
+  });
+  document.getElementById("themeDesignerApplyBtn").addEventListener("click", applyThemeDesignerSelection);
+  document.getElementById("themeDesignerResetBtn").addEventListener("click", resetThemeDesignerSelection);
+  ["themeDesignerBg", "themeDesignerText", "themeDesignerBorder", "themeDesignerRadius"].forEach(id => {
+    document.getElementById(id).addEventListener("input", previewThemeDesignerSelection);
+  });
+  document.addEventListener("click", event => {
+    if (!themeDesignerActive || !themeDesignerPicking) return;
+    const selected = getThemeDesignerTarget(event.target);
+    if (!selected) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    selectThemeDesignerTarget(selected.element, selected.type);
+  }, true);
   CUSTOM_THEME_IDS.forEach(id => {
     const input = document.getElementById(id);
     input.addEventListener("focus", () => updateCustomThemePreview(id));
