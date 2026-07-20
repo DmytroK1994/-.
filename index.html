@@ -749,6 +749,16 @@
       display: grid;
       gap: 8px;
     }
+    #pageManagement {
+      display: flex;
+      min-height: calc(100dvh - env(safe-area-inset-top) - 212px);
+      align-items: center;
+      justify-content: center;
+    }
+    #pageManagement .management-card {
+      width: 100%;
+      margin: 0;
+    }
     .management-option {
       margin-top: 0;
       border: 1px solid var(--border);
@@ -761,6 +771,11 @@
       border-color: var(--border-strong);
       background: var(--surface-strong);
       color: var(--text);
+    }
+    @media (max-height: 560px) {
+      #pageManagement {
+        align-items: flex-start;
+      }
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       .drawer {
@@ -2330,7 +2345,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">111</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">112</span></div>
     </div>
   </div>
 
@@ -2699,7 +2714,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">111</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">112</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2717,8 +2732,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">111</span></div>
-        <div class="small">Прибрано сіру область унизу коротких сторінок: основний фон тепер заповнює весь екран.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">112</span></div>
+        <div class="small">Блок категорій налаштувань вирівняно чітко по центру доступної частини екрана.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2774,7 +2789,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "111";
+  const APP_VERSION = "112";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
