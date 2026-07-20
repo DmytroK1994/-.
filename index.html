@@ -2407,7 +2407,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">103</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">104</span></div>
     </div>
   </div>
 
@@ -2799,7 +2799,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">103</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">104</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2817,8 +2817,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">103</span></div>
-        <div class="small">Додано українську, англійську, японську, китайську, французьку, німецьку та російську мови.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">104</span></div>
+        <div class="small">Курсор у всіх полях введення тепер автоматично встановлюється після останнього символу.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2886,7 +2886,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "103";
+  const APP_VERSION = "104";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3186,6 +3186,29 @@
     ));
   }
 
+  function isCursorInputField(element) {
+    if (element instanceof HTMLTextAreaElement) return !element.disabled && !element.readOnly;
+    if (!(element instanceof HTMLInputElement) || element.disabled || element.readOnly) return false;
+    return !["hidden", "checkbox", "radio", "range", "color", "file", "date", "time", "button", "submit", "reset"].includes(element.type);
+  }
+
+  function moveInputCursorToEnd(element) {
+    if (!isCursorInputField(element)) return;
+    const placeCursor = () => {
+      if (document.activeElement !== element) return;
+      const end = String(element.value || "").length;
+      try {
+        element.setSelectionRange(end, end);
+      } catch (error) {
+        const value = element.value;
+        element.value = "";
+        element.value = value;
+      }
+    };
+    requestAnimationFrame(placeCursor);
+    setTimeout(placeCursor, 30);
+  }
+
   function isVirtualKeyboardVisible() {
     if (!window.visualViewport) return keyboardWasDetected && isAppKeyboardField(document.activeElement);
     const baselineHeight = keyboardViewportHeight || window.innerHeight;
@@ -3264,7 +3287,12 @@
     document.addEventListener("focusin", event => {
       if (!isAppKeyboardField(event.target)) return;
       rememberKeyboardScrollPosition();
+      moveInputCursorToEnd(event.target);
     });
+
+    document.addEventListener("pointerup", event => {
+      if (isCursorInputField(event.target)) moveInputCursorToEnd(event.target);
+    }, { capture: true, passive: true });
 
     document.addEventListener("focusout", event => {
       if (!isAppKeyboardField(event.target)) return;
