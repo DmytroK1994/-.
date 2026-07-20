@@ -201,6 +201,13 @@
     .page-back-bar {
       margin: 0 0 12px;
     }
+    .page-back-swipe-hint {
+      margin: 0 0 12px;
+      color: var(--muted-soft);
+      font-size: 12px;
+      line-height: 1.35;
+      text-align: center;
+    }
     .page-back-btn {
       width: auto;
       min-width: 120px;
@@ -779,6 +786,8 @@
         box-shadow: none;
       }
       .drawer-menu-content {
+        position: relative;
+        z-index: 5;
         flex: 1 1 auto;
         min-height: 0;
         display: flex;
@@ -786,6 +795,7 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         padding-bottom: 12px;
+        pointer-events: none;
       }
       .menu-header {
         position: sticky;
@@ -826,19 +836,21 @@
         background: var(--selection-bg);
       }
       .drawer-gesture-pad {
-        position: static;
+        position: absolute;
+        inset: 0;
+        z-index: 6;
         flex-direction: column;
-        justify-content: center;
-        width: calc(100% + 28px);
-        height: clamp(260px, 38dvh, 380px);
-        min-height: 260px;
-        flex: 0 0 clamp(260px, 38dvh, 380px);
-        margin: 0 -14px;
-        padding: 28px 20px calc(env(safe-area-inset-bottom) + 28px);
+        justify-content: flex-end;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        flex: none;
+        margin: 0;
+        padding: 28px 20px calc(env(safe-area-inset-bottom) + 34px);
         border-right: 0;
         border-bottom: 0;
         border-left: 0;
-        border-radius: 24px 24px 0 0;
+        border-radius: 0;
       }
       .drawer.open .drawer-gesture-pad {
         display: flex;
@@ -2301,7 +2313,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">90</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">91</span></div>
     </div>
   </div>
 
@@ -2340,6 +2352,7 @@
   <div class="page-back-bar no-print hidden" id="pageBackBar">
     <button class="page-back-btn" id="pageBackBtn">Назад</button>
   </div>
+  <div class="page-back-swipe-hint no-print hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
 
   <div id="pageToday">
 
@@ -2612,6 +2625,17 @@
       <button class="yellow" id="importBtn">Імпортувати</button>
       <button class="danger" id="resetBtn">Повне очищення програми</button>
     </div>
+
+    <div class="card">
+      <h2>Повернення назад</h2>
+      <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
+      <label for="backNavigationSelect">Спосіб повернення</label>
+      <select id="backNavigationSelect">
+        <option value="auto">Автоматично</option>
+        <option value="button">Кнопка «Назад»</option>
+        <option value="swipe">Свайп справа наліво</option>
+      </select>
+    </div>
   </div>
 
 
@@ -2654,7 +2678,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">90</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">91</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2672,8 +2696,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">90</span></div>
-        <div class="small">У редакторі власної теми додано живий приклад елементів. Картку «Керування» винесено над джойстиком, а список пунктів підготовлено до прокручування.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">91</span></div>
+        <div class="small">Виправлено повернення з підпунктів, додано вибір кнопки або свайпа назад і розтягнуто джойстик головного меню на весь екран.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2729,11 +2753,12 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "90";
+  const APP_VERSION = "91";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
+  const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const THEMES = ["dark", "beige", "white", "custom"];
   const CUSTOM_THEME_DEFAULTS = {
     customBg: "#172033",
@@ -2780,6 +2805,10 @@
   ];
   const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
     (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const isIOSDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const isAndroidDevice = /Android/i.test(navigator.userAgent);
+  const PAGE_PARENTS = { products: "management", settings: "management", install: "about" };
   document.documentElement.classList.toggle("mobile-device", isMobileDevice);
 
   function loadCustomTheme() {
@@ -3531,7 +3560,6 @@
     let horizontalSwipe = false;
     let closeSwipeDirection = "";
     let drawerWasOpen = false;
-    const isAndroid = /Android/i.test(navigator.userAgent);
     const settleDuration = 360;
     const drawer = document.getElementById("drawer");
     const drawerBg = document.getElementById("drawerBg");
@@ -3591,8 +3619,8 @@
       const startedAtRightEdge = touch.clientX > window.innerWidth - 28;
       const keyboardIsVisible = isVirtualKeyboardVisible();
 
-      if (!drawerIsOpen && startedAtRightEdge && !isAndroid) {
-        swipeMode = "block-forward";
+      if (!drawerIsOpen && startedAtRightEdge && !isAndroidDevice) {
+        swipeMode = canUsePageBackSwipe() ? "" : "block-forward";
       } else if (!drawerIsOpen && keyboardIsVisible) {
         swipeMode = "";
       } else if (!drawerIsOpen && startedInsideScreen) {
@@ -3830,12 +3858,88 @@
 
   function updatePageBackButton() {
     const backBar = document.getElementById("pageBackBar");
-    if (backBar) backBar.classList.toggle("hidden", currentPage === "today");
+    const swipeHint = document.getElementById("pageBackSwipeHint");
+    const hasParent = Boolean(PAGE_PARENTS[currentPage]);
+    const swipeMode = isMobileDevice && getResolvedBackNavigationMode() === "swipe";
+    if (backBar) backBar.classList.toggle("hidden", !hasParent || swipeMode);
+    if (swipeHint) swipeHint.classList.toggle("hidden", !hasParent || !swipeMode);
   }
 
   function navigateBack() {
-    const previousPage = pageNavigationHistory.pop() || "today";
-    showPage(previousPage, { fromBack: true });
+    const parentPage = PAGE_PARENTS[currentPage];
+    if (!parentPage) return;
+    pageNavigationHistory = [];
+    showPage(parentPage, { fromBack: true });
+  }
+
+  function getBackNavigationPreference() {
+    try {
+      const saved = localStorage.getItem(BACK_NAV_KEY) || "auto";
+      return ["auto", "button", "swipe"].includes(saved) ? saved : "auto";
+    } catch (error) {
+      return "auto";
+    }
+  }
+
+  function getResolvedBackNavigationMode() {
+    if (!isMobileDevice) return "button";
+    const preference = getBackNavigationPreference();
+    if (preference !== "auto") return preference;
+    return isIOSDevice ? "swipe" : "button";
+  }
+
+  function canUsePageBackSwipe() {
+    if (!PAGE_PARENTS[currentPage] || getResolvedBackNavigationMode() !== "swipe") return false;
+    if (document.getElementById("drawer").classList.contains("open")) return false;
+    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay"]
+      .some(id => !document.getElementById(id).classList.contains("hidden"));
+  }
+
+  function initPageBackSwipe() {
+    let tracking = false;
+    let horizontal = false;
+    let startX = 0;
+    let startY = 0;
+    let distanceX = 0;
+
+    document.addEventListener("touchstart", event => {
+      tracking = false;
+      horizontal = false;
+      distanceX = 0;
+      if (event.touches.length !== 1 || !canUsePageBackSwipe() || isVirtualKeyboardVisible()) return;
+      const touch = event.touches[0];
+      if (touch.clientX < window.innerWidth - 36) return;
+      tracking = true;
+      startX = touch.clientX;
+      startY = touch.clientY;
+    }, { capture: true, passive: true });
+
+    document.addEventListener("touchmove", event => {
+      if (!tracking || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      if (!horizontal) {
+        if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX) || deltaX >= 0) {
+          tracking = false;
+          return;
+        }
+        horizontal = true;
+      }
+      distanceX = Math.abs(deltaX);
+      event.preventDefault();
+    }, { capture: true, passive: false });
+
+    const finishSwipe = event => {
+      if (!tracking) return;
+      const shouldGoBack = event.type !== "touchcancel" && horizontal && distanceX >= Math.min(90, window.innerWidth * .2);
+      tracking = false;
+      horizontal = false;
+      if (shouldGoBack) navigateBack();
+    };
+    document.addEventListener("touchend", finishSwipe, { capture: true, passive: true });
+    document.addEventListener("touchcancel", finishSwipe, { capture: true, passive: true });
   }
 
   function showPage(page, options = {}) {
@@ -5073,6 +5177,13 @@
     });
   });
   document.getElementById("resetCustomThemeBtn").addEventListener("click", resetCustomTheme);
+  const backNavigationSelect = document.getElementById("backNavigationSelect");
+  backNavigationSelect.value = getBackNavigationPreference();
+  backNavigationSelect.addEventListener("change", event => {
+    try { localStorage.setItem(BACK_NAV_KEY, event.target.value); } catch (error) {}
+    updatePageBackButton();
+    toast("Спосіб повернення змінено");
+  });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openSettingsBtn").addEventListener("click", () => showPage("settings"));
@@ -5118,6 +5229,7 @@
   initGestureMenuPad();
   initManagementGesturePad();
   initMenuSwipeGestures();
+  initPageBackSwipe();
   initDocumentPreviewSwipe();
   updateInstallUI();
   registerServiceWorker();
