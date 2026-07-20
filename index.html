@@ -189,6 +189,23 @@
       border-radius: 0 0 30px 30px;
       box-shadow: 0 14px 32px var(--header-shadow);
     }
+    body:not(.page-today) {
+      padding-top: calc(env(safe-area-inset-top) + 54px);
+    }
+    body:not(.page-today) .app-header {
+      padding-bottom: 6px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      pointer-events: none;
+    }
+    body:not(.page-today) .app-header .topbar,
+    body:not(.page-today) .app-header .date-line {
+      display: none;
+    }
     .topbar {
       display: grid;
       grid-template-columns: 46px 1fr 46px;
@@ -223,10 +240,10 @@
       text-align: center;
     }
     body.subpage-swipe-back {
-      padding-top: calc(env(safe-area-inset-top) + 142px);
+      padding-top: calc(env(safe-area-inset-top) + 76px);
     }
     body.subpage-swipe-back .product-list-search-card {
-      top: calc(env(safe-area-inset-top) + 126px);
+      top: calc(env(safe-area-inset-top) + 62px);
     }
     .page-back-btn {
       width: auto;
@@ -751,7 +768,7 @@
     }
     #pageManagement {
       display: flex;
-      min-height: calc(100dvh - env(safe-area-inset-top) - 212px);
+      min-height: calc(100dvh - env(safe-area-inset-top) - 144px);
       align-items: center;
       justify-content: center;
     }
@@ -1009,6 +1026,9 @@
       position: sticky;
       top: calc(env(safe-area-inset-top) + 105px);
       z-index: 9;
+    }
+    body:not(.page-today):not(.subpage-swipe-back) .product-list-search-card {
+      top: calc(env(safe-area-inset-top) + 40px);
     }
     .current-list-search-card {
       border-top: 2px solid var(--border-strong);
@@ -2345,7 +2365,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">112</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">113</span></div>
     </div>
   </div>
 
@@ -2714,7 +2734,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">112</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">113</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2732,8 +2752,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">112</span></div>
-        <div class="small">Блок категорій налаштувань вирівняно чітко по центру доступної частини екрана.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">113</span></div>
+        <div class="small">Повна шапка залишається лише в поточному підрахунку; на інших сторінках показуються тільки підказки жестів.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2789,7 +2809,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "112";
+  const APP_VERSION = "113";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
