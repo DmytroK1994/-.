@@ -820,7 +820,7 @@
       .menu-wheel {
         display: flex;
         position: absolute;
-        top: 50%;
+        top: calc(env(safe-area-inset-top) + 92px);
         left: 50%;
         width: min(calc(100% - 28px), 460px);
         max-height: 240px;
@@ -838,7 +838,7 @@
         pointer-events: auto;
         touch-action: pan-y;
         scrollbar-width: thin;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
       }
       .menu-wheel .menu-btn {
         width: min(100%, 440px);
@@ -848,7 +848,7 @@
       }
       .menu-more-indicator {
         position: absolute;
-        top: calc(50% + 132px);
+        top: calc(env(safe-area-inset-top) + 340px);
         left: 50%;
         z-index: 8;
         width: max-content;
@@ -2353,7 +2353,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">93</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">94</span></div>
     </div>
   </div>
 
@@ -2719,7 +2719,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">93</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">94</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2737,8 +2737,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">93</span></div>
-        <div class="small">Зменшено кнопки очищення в полях пошуку: хрестик тепер повністю розміщується всередині текстового поля.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">94</span></div>
+        <div class="small">Вікно з пунктами меню піднято майже впритул до верхньої шапки.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2794,7 +2794,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "93";
+  const APP_VERSION = "94";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
