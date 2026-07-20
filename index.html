@@ -1154,9 +1154,18 @@
       box-shadow: none !important;
     }
     .theme-designer-toolbar #themeDesignerDoneBtn {
-      min-width: 88px;
+      min-width: 146px;
+      white-space: nowrap;
       background: var(--primary-bg) !important;
       color: var(--primary-text) !important;
+    }
+    @media (max-width: 360px) {
+      .theme-designer-heading {
+        grid-template-columns: 1fr;
+      }
+      .theme-designer-toolbar #themeDesignerDoneBtn {
+        width: 100%;
+      }
     }
     .theme-designer-toolbar #themeDesignerPickBtn.is-picking {
       border-color: var(--selection-border) !important;
@@ -1214,6 +1223,9 @@
     .theme-designer-actions {
       grid-template-columns: 1fr 1fr;
       margin-top: 8px;
+    }
+    .theme-designer-actions #themeDesignerResetBtn {
+      grid-column: 1 / -1;
     }
     body.theme-designer-picking {
       cursor: crosshair;
@@ -2555,7 +2567,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">118</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">119</span></div>
     </div>
   </div>
 
@@ -2616,7 +2628,7 @@
   <section class="theme-designer-toolbar no-print hidden" id="themeDesignerToolbar" data-theme-designer-ui>
     <div class="theme-designer-heading">
       <strong>Конструктор теми</strong>
-      <button type="button" class="theme-designer-control" id="themeDesignerDoneBtn">Готово</button>
+      <button type="button" class="theme-designer-control" id="themeDesignerDoneBtn">Вийти з конструктора</button>
     </div>
     <p class="theme-designer-hint" id="themeDesignerHint">Переходь між сторінками або натисни «Обрати елемент».</p>
     <button type="button" class="theme-designer-control" id="themeDesignerPickBtn">Обрати елемент</button>
@@ -2637,7 +2649,8 @@
       </select>
       <div class="theme-designer-actions">
         <button type="button" class="theme-designer-control" id="themeDesignerApplyBtn">Застосувати</button>
-        <button type="button" class="theme-designer-control" id="themeDesignerResetBtn">Скинути</button>
+        <button type="button" class="theme-designer-control" id="themeDesignerCloseSelectionBtn">Закрити елемент</button>
+        <button type="button" class="theme-designer-control" id="themeDesignerResetBtn">Скинути оформлення елемента</button>
       </div>
     </div>
   </section>
@@ -2969,7 +2982,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">118</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">119</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2987,8 +3000,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">118</span></div>
-        <div class="small">Додано конструктор власної теми: переходь між сторінками, вибирай елементи та змінюй один елемент або весь його тип.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">119</span></div>
+        <div class="small">Редагування одного елемента тепер закривається окремо, тому можна послідовно налаштовувати багато елементів без виходу з конструктора.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3044,7 +3057,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "118";
+  const APP_VERSION = "119";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3364,6 +3377,17 @@
     });
   }
 
+  function closeThemeDesignerSelection(restorePreview = true) {
+    if (restorePreview) restoreThemeDesignerPreview();
+    if (themeDesignerTarget) themeDesignerTarget.classList.remove("theme-designer-target");
+    themeDesignerTarget = null;
+    themeDesignerType = null;
+    themeDesignerElementSelector = "";
+    themeDesignerPreviewOriginal = null;
+    document.getElementById("themeDesignerSelection").classList.add("hidden");
+    setThemeDesignerPicking(false);
+  }
+
   function applyThemeDesignerSelection() {
     if (!themeDesignerTarget || !themeDesignerType) return;
     const saved = loadCustomComponentStyles();
@@ -3376,6 +3400,7 @@
     restoreThemeDesignerPreview();
     saveCustomComponentStyles(saved);
     applyCustomComponentStyles();
+    closeThemeDesignerSelection(false);
     toast(scope === "element" ? "Змінено вибраний елемент" : "Змінено всі елементи цього типу");
   }
 
@@ -3388,6 +3413,7 @@
     restoreThemeDesignerPreview();
     saveCustomComponentStyles(saved);
     applyCustomComponentStyles();
+    closeThemeDesignerSelection(false);
     toast("Оформлення елемента скинуто");
   }
 
@@ -5900,10 +5926,12 @@
   document.getElementById("finishCustomThemeBtn").addEventListener("click", finishCustomThemeEditor);
   document.getElementById("themeDesignerDoneBtn").addEventListener("click", finishCustomThemeEditor);
   document.getElementById("themeDesignerPickBtn").addEventListener("click", () => {
-    document.getElementById("themeDesignerSelection").classList.add("hidden");
-    setThemeDesignerPicking(!themeDesignerPicking);
+    const shouldStartPicking = !themeDesignerPicking;
+    closeThemeDesignerSelection(true);
+    setThemeDesignerPicking(shouldStartPicking);
   });
   document.getElementById("themeDesignerApplyBtn").addEventListener("click", applyThemeDesignerSelection);
+  document.getElementById("themeDesignerCloseSelectionBtn").addEventListener("click", () => closeThemeDesignerSelection(true));
   document.getElementById("themeDesignerResetBtn").addEventListener("click", resetThemeDesignerSelection);
   ["themeDesignerBg", "themeDesignerText", "themeDesignerBorder", "themeDesignerRadius"].forEach(id => {
     document.getElementById(id).addEventListener("input", previewThemeDesignerSelection);
