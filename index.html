@@ -805,6 +805,10 @@
         padding-bottom: 12px;
         pointer-events: none;
       }
+      body.theme-designer-active .drawer-menu-content,
+      body.theme-designer-active .menu-header {
+        pointer-events: auto;
+      }
       .menu-header {
         position: sticky;
         top: 0;
@@ -1108,13 +1112,13 @@
       right: 12px;
       bottom: max(12px, env(safe-area-inset-bottom));
       left: 12px;
-      z-index: 108;
-      width: min(calc(100% - 24px), 430px);
-      max-height: 65dvh;
+      z-index: 112;
+      width: min(calc(100% - 24px), 360px);
+      max-height: 52dvh;
       margin-inline: auto;
-      padding: 12px;
+      padding: 8px;
       border: 1px solid var(--selection-border);
-      border-radius: 22px;
+      border-radius: 18px;
       background: var(--surface);
       color: var(--text);
       box-shadow: 0 16px 46px var(--popover-shadow);
@@ -1126,10 +1130,6 @@
     body.bottom-nav-visible .theme-designer-toolbar {
       bottom: calc(max(10px, env(safe-area-inset-bottom)) + 70px);
     }
-    body.drawer-open .theme-designer-toolbar {
-      opacity: 0;
-      pointer-events: none;
-    }
     .theme-designer-heading,
     .theme-designer-actions,
     .theme-designer-color-grid {
@@ -1137,16 +1137,18 @@
       gap: 8px;
     }
     .theme-designer-heading {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
+      gap: 6px;
     }
     .theme-designer-heading strong {
-      font-size: 15px;
+      font-size: 13px;
+      line-height: 1.15;
     }
     .theme-designer-toolbar button {
-      min-height: 40px;
+      min-height: 36px;
       margin: 0;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border: 1px solid var(--border-strong) !important;
       border-radius: 13px;
       background: var(--surface-strong) !important;
@@ -1154,18 +1156,10 @@
       box-shadow: none !important;
     }
     .theme-designer-toolbar #themeDesignerDoneBtn {
-      min-width: 146px;
+      min-width: 64px;
       white-space: nowrap;
       background: var(--primary-bg) !important;
       color: var(--primary-text) !important;
-    }
-    @media (max-width: 360px) {
-      .theme-designer-heading {
-        grid-template-columns: 1fr;
-      }
-      .theme-designer-toolbar #themeDesignerDoneBtn {
-        width: 100%;
-      }
     }
     .theme-designer-toolbar #themeDesignerPickBtn.is-picking {
       border-color: var(--selection-border) !important;
@@ -1179,9 +1173,15 @@
       font-size: 12px;
       line-height: 1.35;
     }
+    .theme-designer-hint {
+      display: none;
+    }
+    body.theme-designer-picking .theme-designer-hint {
+      display: block;
+    }
     .theme-designer-selection {
-      margin-top: 10px;
-      padding-top: 10px;
+      margin-top: 7px;
+      padding-top: 7px;
       border-top: 1px solid var(--border);
     }
     .theme-designer-selection-name {
@@ -1198,7 +1198,7 @@
       font-size: 11px;
     }
     .theme-designer-color-grid input[type="color"] {
-      min-height: 42px;
+      min-height: 36px;
       margin-top: 4px;
       padding: 3px;
       border-radius: 11px;
@@ -2567,7 +2567,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">120</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">121</span></div>
     </div>
   </div>
 
@@ -2628,10 +2628,10 @@
   <section class="theme-designer-toolbar no-print hidden" id="themeDesignerToolbar" data-theme-designer-ui>
     <div class="theme-designer-heading">
       <strong>Конструктор теми</strong>
-      <button type="button" class="theme-designer-control" id="themeDesignerDoneBtn">Вийти з конструктора</button>
+      <button type="button" class="theme-designer-control" id="themeDesignerPickBtn">Обрати</button>
+      <button type="button" class="theme-designer-control" id="themeDesignerDoneBtn" aria-label="Вийти з конструктора">Вийти</button>
     </div>
     <p class="theme-designer-hint" id="themeDesignerHint">Переходь між сторінками або натисни «Обрати елемент».</p>
-    <button type="button" class="theme-designer-control" id="themeDesignerPickBtn">Обрати елемент</button>
     <div class="theme-designer-selection hidden" id="themeDesignerSelection">
       <div class="theme-designer-selection-name" id="themeDesignerSelectionName"></div>
       <div class="theme-designer-color-grid">
@@ -2982,7 +2982,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">120</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">121</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3000,8 +3000,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">120</span></div>
-        <div class="small">Конструктор за замовчуванням змінює лише вибраний елемент і підтримує оформлення випадаючого списку та його рядків.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">121</span></div>
+        <div class="small">Конструктор став компактним і тепер дозволяє змінювати шапки, фон і списки меню, сенсорну зону та підсвітку вибраного пункту.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3057,7 +3057,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "120";
+  const APP_VERSION = "121";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3101,9 +3101,14 @@
     { key: "card", label: "картки", selector: ".card" },
     { key: "field", label: "поля введення", selector: "input:not([type='hidden']):not([type='color']):not(.theme-designer-control), select:not(.theme-designer-control), textarea:not(.theme-designer-control)" },
     { key: "inner", label: "внутрішні блоки", selector: ".item, .selected-product, .entry-row" },
+    { key: "list", label: "контейнери списків", selector: "#todayList, #productsList, #historyList, .menu-wheel" },
     { key: "header", label: "верхні шапки", selector: ".app-header" },
+    { key: "menuSurface", label: "фон бокового меню", selector: ".drawer, .drawer-menu-content" },
+    { key: "menuHeader", label: "шапка бокового меню", selector: ".menu-header" },
+    { key: "menuController", label: "сенсорна зона меню", selector: ".drawer-gesture-pad" },
     { key: "button", label: "звичайні кнопки", selector: "button:not(.theme-designer-control)" },
     { key: "navigation", label: "кнопки навігації", selector: ".menu-btn, .app-bottom-nav button, .compact-menu-btn" },
+    { key: "menuSelection", label: "підсвітка вибраного пункту меню", selector: ".menu-btn.gesture-selected", targetSelector: ".menu-btn.active, .menu-btn.gesture-selected" },
     { key: "dropdown", label: "випадаючі списки", selector: ".combo-list" },
     { key: "dropdownOption", label: "рядки випадаючого списку", selector: ".combo-option" },
     { key: "success", label: "кнопки додавання", selector: "button.green:not(.theme-designer-control)" },
@@ -3303,7 +3308,7 @@
     if (!(source instanceof Element) || source.closest("[data-theme-designer-ui]")) return null;
     for (let index = THEME_DESIGNER_TYPES.length - 1; index >= 0; index -= 1) {
       const type = THEME_DESIGNER_TYPES[index];
-      const element = source.closest(type.selector);
+      const element = source.closest(type.targetSelector || type.selector);
       if (element && !element.closest("[data-theme-designer-ui]")) return { element, type };
     }
     return null;
@@ -3337,7 +3342,7 @@
     const button = document.getElementById("themeDesignerPickBtn");
     if (button) {
       button.classList.toggle("is-picking", themeDesignerPicking);
-      button.textContent = themeDesignerPicking ? "Натисни потрібний елемент" : "Обрати елемент";
+      button.textContent = themeDesignerPicking ? "Вибери на екрані" : "Обрати";
     }
     const hint = document.getElementById("themeDesignerHint");
     if (hint) hint.textContent = themeDesignerPicking
@@ -3351,6 +3356,10 @@
     themeDesignerTarget = element;
     themeDesignerType = type;
     themeDesignerElementSelector = buildDesignerElementSelector(element);
+    if (type.key === "menuSelection" && themeDesignerElementSelector) {
+      const baseSelector = themeDesignerElementSelector;
+      themeDesignerElementSelector = `${baseSelector}.gesture-selected`;
+    }
     themeDesignerTarget.classList.add("theme-designer-target");
     themeDesignerPreviewOriginal = {
       backgroundColor: element.style.backgroundColor,
