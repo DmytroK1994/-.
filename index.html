@@ -175,6 +175,12 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
+    body.page-today .app-header {
+      overflow: hidden;
+      border-bottom-color: transparent;
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 14px 32px var(--header-shadow);
+    }
     .topbar {
       display: grid;
       grid-template-columns: 46px 1fr 46px;
@@ -826,7 +832,7 @@
       .menu-wheel {
         display: flex;
         position: absolute;
-        top: 76px;
+        top: calc(env(safe-area-inset-top) + 92px);
         left: 50%;
         width: min(calc(100% - 28px), 460px);
         max-height: 240px;
@@ -854,7 +860,7 @@
       }
       .menu-more-indicator {
         position: absolute;
-        top: 324px;
+        top: calc(env(safe-area-inset-top) + 340px);
         left: 50%;
         z-index: 8;
         width: max-content;
@@ -2365,7 +2371,7 @@
 <meta name="twitter:image" content="https://dmytrok1994.github.io/-./banner.png">
 
 </head>
-<body class="splash-active">
+<body class="splash-active page-today">
   <div class="app-splash" id="appSplash" aria-label="Запуск Обліку залишків">
     <div class="splash-content">
       <div class="splash-mark" aria-hidden="true">
@@ -2376,7 +2382,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">96</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">98</span></div>
     </div>
   </div>
 
@@ -2742,7 +2748,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">96</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">98</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -2760,8 +2766,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">96</span></div>
-        <div class="small">Список меню піднято впритул до верхньої підказки, а підказку повернення свайпом перенесено безпосередньо в шапку.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">98</span></div>
+        <div class="small">Блок із пунктами меню повернено до положення версії 95 — трохи вище середини екрана.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -2817,7 +2823,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "96";
+  const APP_VERSION = "98";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4042,6 +4048,8 @@
       }
       currentPage = page;
     }
+
+    document.body.classList.toggle("page-today", page === "today");
 
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
