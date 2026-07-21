@@ -1465,6 +1465,35 @@
       border-radius: 8px;
       box-shadow: 5px 5px 0 var(--border);
     }
+    #pageThemes.theme-category-root .theme-category-button.menu-btn.nav-choice {
+      justify-content: center;
+      margin: 0;
+      border: var(--mirrored-menu-border, 1px solid var(--border)) !important;
+      border-radius: var(--mirrored-menu-radius, 8px) !important;
+      background: var(--mirrored-menu-bg, var(--surface-strong)) !important;
+      color: var(--mirrored-menu-text, var(--text)) !important;
+      box-shadow: var(--mirrored-menu-shadow, 5px 5px 0 var(--border)) !important;
+      text-align: center;
+      font-family: var(--mirrored-menu-font-family, inherit);
+      font-size: var(--mirrored-menu-font-size, 15px);
+      font-weight: var(--mirrored-menu-font-weight, 750);
+      letter-spacing: var(--mirrored-menu-letter-spacing, normal);
+    }
+    #pageThemes.theme-category-root .theme-category-button.menu-btn.nav-choice:not(.gesture-selected)::after {
+      display: none;
+    }
+    #pageThemes.theme-category-root .theme-category-button.menu-btn.nav-choice.gesture-selected {
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text) !important;
+      box-shadow: 5px 5px 0 var(--selection-border) !important;
+    }
+    html.menu-style-game #pageThemes.theme-category-root .theme-category-button .theme-category-count {
+      right: 12px;
+    }
+    html.menu-style-game #pageThemes.theme-category-root .theme-category-button.gesture-selected .theme-category-count {
+      right: 38px;
+    }
     .drawer-menu-content {
       min-height: 0;
     }
@@ -3628,7 +3657,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.50</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.51</span></div>
     </div>
   </div>
 
@@ -4230,7 +4259,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.50</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.51</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4250,8 +4279,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.50</span></div>
-        <div class="small">Головне меню, налаштування, категорії та назви тем об’єднано одним стилем об’ємних кнопок.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.51</span></div>
+        <div class="small">Категорії тем тепер точно копіюють фактичний вигляд кнопок головного меню та більше не успадковують бокову темну смугу.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4322,7 +4351,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.50";
+  const APP_VERSION = "1.51";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5120,6 +5149,22 @@
     toast(isFavorite ? "Тему вилучено з улюблених" : "Тему додано до улюблених");
   }
 
+  function mirrorMainMenuButtonAppearance() {
+    const source = document.querySelector("#menuWheel .menu-btn[data-page]");
+    const target = document.getElementById("settingsThemeSection");
+    if (!source || !target) return;
+    const style = getComputedStyle(source);
+    target.style.setProperty("--mirrored-menu-bg", style.backgroundColor);
+    target.style.setProperty("--mirrored-menu-text", style.color);
+    target.style.setProperty("--mirrored-menu-border", `${style.borderTopWidth} ${style.borderTopStyle} ${style.borderTopColor}`);
+    target.style.setProperty("--mirrored-menu-radius", style.borderRadius);
+    target.style.setProperty("--mirrored-menu-shadow", style.boxShadow);
+    target.style.setProperty("--mirrored-menu-font-family", style.fontFamily);
+    target.style.setProperty("--mirrored-menu-font-size", style.fontSize);
+    target.style.setProperty("--mirrored-menu-font-weight", style.fontWeight);
+    target.style.setProperty("--mirrored-menu-letter-spacing", style.letterSpacing);
+  }
+
   function renderThemeCategories() {
     const categoryList = document.getElementById("themeCategoryList");
     const categoryView = document.getElementById("themeCategoryView");
@@ -5146,7 +5191,10 @@
         </button>
       `).join("");
       optionsList.innerHTML = "";
-      requestAnimationFrame(initializeThemeGestureSelection);
+      requestAnimationFrame(() => {
+        mirrorMainMenuButtonAppearance();
+        initializeThemeGestureSelection();
+      });
       return;
     }
 
