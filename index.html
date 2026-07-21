@@ -36,6 +36,12 @@
       --surface: #1e293b;
       --surface-strong: #111827;
       --surface-deep: #020617;
+      --field-bg: #202733;
+      --field-text: #f8fafc;
+      --field-border: #475569;
+      --field-placeholder: #94a3b8;
+      --field-hover: #303948;
+      --field-focus-ring: rgba(59, 130, 246, .22);
       --border: #334155;
       --border-strong: #475569;
       --muted: #cbd5e1;
@@ -139,6 +145,28 @@
       --soft-danger-bg: #dc2626;
       --soft-danger-border: #b91c1c;
       --soft-danger-text: #ffffff;
+    }
+    :root[data-theme="beige"],
+    :root[data-theme="white"],
+    :root[data-theme="stone"],
+    :root[data-theme="lavender"],
+    :root[data-theme="mint"] {
+      --field-bg: #ffffff;
+      --field-text: #172033;
+      --field-border: #c7d0dc;
+      --field-placeholder: #68778a;
+      --field-hover: #f1f5f9;
+      --field-focus-ring: rgba(37, 99, 235, .18);
+    }
+    :root[data-theme="graphite"],
+    :root[data-theme="aurora"],
+    :root[data-theme="copper"] {
+      --field-bg: #232a35;
+      --field-text: #f8fafc;
+      --field-border: #4b5563;
+      --field-placeholder: #a3adba;
+      --field-hover: #313a47;
+      --field-focus-ring: rgba(96, 165, 250, .22);
     }
     :root[data-theme="graphite"] {
       color-scheme: dark;
@@ -542,17 +570,18 @@
       font-size: 16px;
     }
     input, select, textarea {
-      background: var(--surface-deep);
-      color: var(--text);
+      background: var(--field-bg);
+      color: var(--field-text);
+      border-color: var(--field-border);
       min-height: 48px;
       outline: none;
       transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
     }
     input:focus, select:focus, textarea:focus {
       border-color: var(--primary-bg);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, .2);
+      box-shadow: 0 0 0 3px var(--field-focus-ring);
     }
-    input::placeholder, textarea::placeholder { color: var(--muted-soft); opacity: .9; }
+    input::placeholder, textarea::placeholder { color: var(--field-placeholder); opacity: 1; }
     input:not([type="hidden"]),
     textarea,
     [contenteditable="true"] {
@@ -1674,8 +1703,8 @@
       top: calc(100% + 6px);
       max-height: 230px;
       overflow-y: auto;
-      background: var(--surface-deep);
-      border: 1px solid var(--border-strong);
+      background: var(--field-bg);
+      border: 1px solid var(--field-border);
       border-radius: 12px;
       z-index: 30;
       box-shadow: 0 12px 28px var(--popover-shadow);
@@ -1687,7 +1716,7 @@
       padding: 10px;
       border-radius: 9px;
       background: transparent;
-      color: var(--text);
+      color: var(--field-text);
       border: none;
       font-size: 15px;
       font-weight: 750;
@@ -1695,7 +1724,7 @@
     }
     .combo-option:active,
     .combo-option:hover {
-      background: var(--border);
+      background: var(--field-hover);
     }
     .date-line {
       text-align: center;
@@ -2138,7 +2167,7 @@
       color: var(--text);
       font-size: 11px;
     }
-    .custom-preview-field { background: var(--surface-deep); }
+    .custom-preview-field { background: var(--field-bg); color: var(--field-text); }
     .custom-preview-inner { background: var(--surface-strong); }
     .custom-preview-border {
       margin-top: 6px;
@@ -3404,7 +3433,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.41</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.42</span></div>
     </div>
   </div>
 
@@ -4007,7 +4036,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.41</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.42</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4027,8 +4056,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.41</span></div>
-        <div class="small">Додано строге бокове меню, джойстик у каталозі тем і збереження власних тем із назвами.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.42</span></div>
+        <div class="small">Поля введення в усіх темах стали нейтральними й комфортнішими: світлими у світлих темах та графітовими у темних.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4099,7 +4128,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.41";
+  const APP_VERSION = "1.42";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4261,6 +4290,7 @@
   let themeDesignerPreviewOriginal = null;
   const CUSTOM_STYLE_PROPERTIES = [
     "--bg", "--text", "--surface", "--surface-strong", "--surface-deep",
+    "--field-bg", "--field-text", "--field-border", "--field-placeholder", "--field-hover", "--field-focus-ring",
     "--border", "--border-strong", "--muted", "--muted-soft", "--accent-soft",
     "--pill-text", "--header-shadow", "--card-shadow", "--popover-shadow", "--overlay",
     "--page-glow", "--primary-bg", "--primary-dark-bg", "--primary-text", "--primary-dark-text",
@@ -4727,12 +4757,19 @@
   function applyExtraTheme(palette) {
     if (!palette) return;
     const root = document.documentElement.style;
+    const darkFields = palette.scheme === "dark";
     const values = {
       "--bg": palette.bg,
       "--text": palette.text,
       "--surface": palette.surface,
       "--surface-strong": palette.strong,
       "--surface-deep": palette.deep,
+      "--field-bg": darkFields ? "#232a35" : "#ffffff",
+      "--field-text": darkFields ? "#f8fafc" : "#172033",
+      "--field-border": darkFields ? "#4b5563" : "#c7d0dc",
+      "--field-placeholder": darkFields ? "#a3adba" : "#68778a",
+      "--field-hover": darkFields ? "#313a47" : "#f1f5f9",
+      "--field-focus-ring": colorWithAlpha(palette.primary, .2),
       "--border": palette.border,
       "--border-strong": palette.borderStrong,
       "--muted": palette.muted,
@@ -4772,12 +4809,19 @@
   function applyCustomTheme(palette) {
     const root = document.documentElement.style;
     const actionText = contrastText(palette.customSurfaceStrong);
+    const darkFields = contrastText(palette.customBg) === "#ffffff";
     const values = {
       "--bg": palette.customBg,
       "--text": palette.customText,
       "--surface": palette.customSurface,
       "--surface-strong": palette.customSurfaceStrong,
       "--surface-deep": palette.customSurfaceDeep,
+      "--field-bg": darkFields ? "#232a35" : "#ffffff",
+      "--field-text": darkFields ? "#f8fafc" : "#172033",
+      "--field-border": darkFields ? "#4b5563" : "#c7d0dc",
+      "--field-placeholder": darkFields ? "#a3adba" : "#68778a",
+      "--field-hover": darkFields ? "#313a47" : "#f1f5f9",
+      "--field-focus-ring": colorWithAlpha(palette.customPrimary, .2),
       "--border": palette.customBorder,
       "--border-strong": palette.customBorder,
       "--muted": palette.customMuted,
