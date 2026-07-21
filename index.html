@@ -2911,7 +2911,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.29</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.32</span></div>
     </div>
   </div>
 
@@ -3024,19 +3024,21 @@
       <select id="productSelect" class="hidden-select"></select>
       <div id="selectedProductLabel" class="selected-product">Позицію не вибрано</div>
 
-      <label for="entryUnit">Одиниця виміру</label>
-      <select id="entryUnit">
-        <option value="kg">Кілограми (кг)</option>
-        <option value="g">Грами (г)</option>
-        <option value="t">Тонни (т)</option>
-        <option value="pcs">Штуки (шт)</option>
-        <option value="boxes">Коробки (кор.)</option>
-        <option value="bags">Мішки (міш.)</option>
-        <option value="pallets">Піддони (підд.)</option>
-        <option value="l">Літри (л)</option>
-        <option value="m">Метри (м)</option>
-        <option value="packs">Упаковки (уп.)</option>
-      </select>
+      <div id="entryUnitControl" class="hidden">
+        <label for="entryUnit">Одиниця виміру</label>
+        <select id="entryUnit">
+          <option value="kg">Кілограми (кг)</option>
+          <option value="g">Грами (г)</option>
+          <option value="t">Тонни (т)</option>
+          <option value="pcs">Штуки (шт)</option>
+          <option value="boxes">Коробки (кор.)</option>
+          <option value="bags">Мішки (міш.)</option>
+          <option value="pallets">Піддони (підд.)</option>
+          <option value="l">Літри (л)</option>
+          <option value="m">Метри (м)</option>
+          <option value="packs">Упаковки (уп.)</option>
+        </select>
+      </div>
 
       <div class="row">
         <div>
@@ -3363,6 +3365,12 @@
         <option value="disabled">Вимкнено — звичайний список</option>
       </select>
       <p class="small">Коли джойстик вимкнено, пункти меню та налаштувань показуються звичайним списком по центру екрана.</p>
+      <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
+      <select id="entryUnitVisibilitySelect">
+        <option value="hidden">Приховано</option>
+        <option value="visible">Показувати</option>
+      </select>
+      <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
     </div>
   </div>
 
@@ -3403,7 +3411,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.29</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.32</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3417,13 +3425,16 @@
         <li>історія підрахунків за датами;</li>
         <li>шість готових тем оформлення та власний конструктор;</li>
         <li>попередній перегляд і компактний PDF формату A4;</li>
-        <li>резервне копіювання та відновлення даних.</li>
+        <li>резервне копіювання та відновлення даних;</li>
+        <li>безпечний демонстраційний режим без доступу до власних списків.</li>
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.29</span></div>
-        <div class="small">Додано вибір і автоматичне збереження одиниць виміру для кожного найменування. Підсумки, історія та PDF тепер враховують одиниці окремо.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.32</span></div>
+        <div class="small">Оновлено довідник демонстраційного режиму: додано повний нейтральний перелік із 50 найменувань.</div>
       </div>
+      <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
+      <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
     </div>
@@ -3491,7 +3502,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.29";
+  const APP_VERSION = "1.32";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3500,6 +3511,11 @@
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
+  const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
+  const DEMO_MODE_KEY = "warehouseJournalDemoMode";
+  const DEMO_STATE_KEY = "warehouseJournalDemoState";
+  const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
+  const DEMO_DATA_VERSION = "2";
   const THEMES = ["dark", "beige", "white", "graphite", "aurora", "stone", "custom"];
   const MEASUREMENT_UNITS = {
     kg: { short: "кг", amount: "Кілограмів" },
@@ -4095,6 +4111,61 @@
     });
   }
 
+  function updateDemoModeUI() {
+    const button = document.getElementById("toggleDemoModeBtn");
+    const status = document.getElementById("demoModeStatus");
+    document.body.classList.toggle("demo-mode", demoModeActive);
+    if (button) {
+      button.textContent = demoModeActive
+        ? "Вийти з демонстраційного режиму"
+        : "Увійти в демонстраційний режим";
+    }
+    if (status) {
+      status.textContent = demoModeActive
+        ? "Демонстраційний режим активний. Усі зміни виконуються лише з тестовими даними."
+        : "Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.";
+    }
+  }
+
+  async function toggleDemoMode() {
+    if (!demoModeActive) {
+      const confirmed = await showAppDialog({
+        label: "Демонстрація",
+        title: "Увійти в демонстраційний режим?",
+        message: "Застосунок покаже нейтральні тестові найменування та підрахунки. Твої власні дані залишаться без змін.",
+        confirmText: "Увійти"
+      });
+      if (!confirmed) return;
+
+      demoModeActive = true;
+      state = createDemoState();
+      try {
+        localStorage.setItem(DEMO_MODE_KEY, "enabled");
+        localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(state));
+        localStorage.setItem(DEMO_DATA_VERSION_KEY, DEMO_DATA_VERSION);
+      } catch (error) {}
+      toast("Демонстраційний режим увімкнено");
+    } else {
+      demoModeActive = false;
+      try {
+        localStorage.removeItem(DEMO_MODE_KEY);
+        localStorage.removeItem(DEMO_STATE_KEY);
+        localStorage.removeItem(DEMO_DATA_VERSION_KEY);
+      } catch (error) {}
+      state = loadState();
+      toast("Повернено твої дані");
+    }
+
+    historySelectMode = false;
+    selectedHistoryIds.clear();
+    document.getElementById("productSearch").value = "";
+    document.getElementById("todayListSearch").value = "";
+    document.getElementById("productListSearch").value = "";
+    render();
+    updateDemoModeUI();
+    showPage("today");
+  }
+
   function finishSplashScreen() {
     document.body.classList.remove("splash-active");
     const splash = document.getElementById("appSplash");
@@ -4106,7 +4177,8 @@
   try { savedTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (e) {}
   applyTheme(savedTheme, false);
 
-  let state = loadState();
+  let demoModeActive = getDemoModePreference();
+  let state = demoModeActive ? loadDemoState() : loadState();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
   let deferredInstallPrompt = null;
@@ -4410,13 +4482,154 @@
     return { products: [], days: [], activeDayId: null };
   }
 
+  function getDemoModePreference() {
+    try {
+      return localStorage.getItem(DEMO_MODE_KEY) === "enabled";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function demoDateISO(daysAgo = 0) {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString().slice(0, 10);
+  }
+
+  function createDemoEntry(id, product, values) {
+    const entry = {
+      id,
+      productId: product.id,
+      productName: product.name,
+      unit: product.defaultUnit,
+      pallets: 0,
+      kgPerPallet: 0,
+      pieces: 0,
+      kgPerPiece: 0,
+      directKg: 0,
+      directKgExpression: "",
+      comment: "",
+      createdAt: nowText(),
+      ...values
+    };
+    recalcEntry(entry);
+    return entry;
+  }
+
+  function createDemoState() {
+    const names = [
+      "Борошно пшеничне вищого ґатунку",
+      "Борошно житнє",
+      "Цукор-пісок",
+      "Сіль харчова",
+      "Крохмаль кукурудзяний",
+      "Крохмаль картопляний",
+      "Какао-порошок",
+      "Сухе молоко",
+      "Суха сироватка",
+      "Масло вершкове",
+      "Маргарин",
+      "Олія соняшникова",
+      "Патока",
+      "Мед натуральний",
+      "Дріжджі пресовані",
+      "Дріжджі сухі",
+      "Родзинки",
+      "Курага",
+      "Чорнослив",
+      "Волоський горіх",
+      "Фундук",
+      "Мигдаль",
+      "Арахіс",
+      "Кеш'ю",
+      "Кокосова стружка",
+      "Мак харчовий",
+      "Кунжут",
+      "Кориця мелена",
+      "Ванілін",
+      "Розпушувач тіста",
+      "Лимонна кислота",
+      "Желатин",
+      "Пектин",
+      "Яблучне пюре",
+      "Полуничне пюре",
+      "Абрикосове пюре",
+      "Шоколад темний",
+      "Шоколад молочний",
+      "Шоколад білий",
+      "Глазур темна",
+      "Глазур молочна",
+      "Глазур біла",
+      "Карамельна маса",
+      "Фруктова начинка",
+      "Ванільна начинка",
+      "Полунична начинка",
+      "Абрикосова начинка",
+      "Яблучна начинка",
+      "Згущене молоко",
+      "Вафельна крихта"
+    ];
+    const products = names.map((name, index) => ({
+      id: `demo-product-${index + 1}`,
+      name,
+      defaultUnit: name === "Олія соняшникова" ? "l" : "kg",
+      defaultPalletKg: name === "Олія соняшникова" ? 1000 : 500,
+      defaultPieceKg: 25
+    }));
+    const currentDayId = "demo-current-day";
+    const previousDayId = "demo-previous-day";
+    return {
+      products,
+      activeDayId: currentDayId,
+      days: [
+        {
+          id: currentDayId,
+          date: demoDateISO(0),
+          createdAt: nowText(),
+          entries: [
+            createDemoEntry("demo-entry-1", products[0], { pallets: 4, kgPerPallet: 500 }),
+            createDemoEntry("demo-entry-2", products[2], { directKgExpression: "600+250" }),
+            createDemoEntry("demo-entry-3", products[4], { pallets: 2, kgPerPallet: 500 }),
+            createDemoEntry("demo-entry-4", products[11], { directKgExpression: "320" }),
+            createDemoEntry("demo-entry-5", products[36], { directKgExpression: "150+75" })
+          ]
+        },
+        {
+          id: previousDayId,
+          date: demoDateISO(1),
+          createdAt: nowText(),
+          entries: [
+            createDemoEntry("demo-entry-6", products[7], { pallets: 2, kgPerPallet: 400 }),
+            createDemoEntry("demo-entry-7", products[9], { pallets: 3, kgPerPallet: 200 }),
+            createDemoEntry("demo-entry-8", products[24], { directKgExpression: "180" })
+          ]
+        }
+      ]
+    };
+  }
+
+  function loadDemoState() {
+    try {
+      const saved = localStorage.getItem(DEMO_STATE_KEY);
+      const version = localStorage.getItem(DEMO_DATA_VERSION_KEY);
+      if (saved && version === DEMO_DATA_VERSION) return normalizeState(JSON.parse(saved));
+    } catch (error) {}
+    return createDemoState();
+  }
+
+  function persistState() {
+    const key = demoModeActive ? DEMO_STATE_KEY : STORAGE_KEY;
+    localStorage.setItem(key, JSON.stringify(state));
+    if (demoModeActive) localStorage.setItem(DEMO_DATA_VERSION_KEY, DEMO_DATA_VERSION);
+  }
+
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    persistState();
     render();
   }
 
   function saveOnly() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    persistState();
   }
 
   function uid() {
@@ -5303,6 +5516,22 @@
       getManagementGestureItems().forEach(item => item.classList.remove("gesture-selected"));
     }
     requestAnimationFrame(updateMenuOverflowIndicator);
+  }
+
+  function getEntryUnitVisibility() {
+    try {
+      return localStorage.getItem(ENTRY_UNIT_VISIBILITY_KEY) === "visible" ? "visible" : "hidden";
+    } catch (error) {
+      return "hidden";
+    }
+  }
+
+  function applyEntryUnitVisibility(mode = getEntryUnitVisibility()) {
+    const normalizedMode = mode === "visible" ? "visible" : "hidden";
+    const control = document.getElementById("entryUnitControl");
+    const select = document.getElementById("entryUnitVisibilitySelect");
+    if (control) control.classList.toggle("hidden", normalizedMode === "hidden");
+    if (select) select.value = normalizedMode;
   }
 
   function canUsePageBackSwipe() {
@@ -6211,9 +6440,20 @@
 
   function resetApp() {
     closeResetConfirmation();
+    if (demoModeActive) {
+      state = { products: [], days: [], activeDayId: null };
+      save();
+      clearEntryForm();
+      clearProductForm();
+      toast("Демонстраційні дані очищено");
+      showPage("today");
+      return;
+    }
     state = { products: [], days: [], activeDayId: null };
     localStorage.removeItem("warehouseJournalV2");
     localStorage.removeItem(LAST_ENTRY_UNIT_KEY);
+    localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
+    applyEntryUnitVisibility("hidden");
     save();
     clearEntryForm();
     clearProductForm();
@@ -6433,7 +6673,7 @@
 
   function renderToday() {
     const day = getActiveDay();
-    document.getElementById("activeDateLabel").textContent = `Поточний підрахунок: ${niceDate(day.date)}`;
+    document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}Поточний підрахунок: ${niceDate(day.date)}`;
     document.getElementById("printReportTitle").textContent = `Залишки на ${niceDate(day.date)}`;
 
     const list = document.getElementById("todayList");
@@ -6903,11 +7143,20 @@
     applyJoystickMode(mode);
     toast(mode === "enabled" ? "Джойстик увімкнено" : "Увімкнено звичайний список");
   });
+  const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
+  entryUnitVisibilitySelect.value = getEntryUnitVisibility();
+  entryUnitVisibilitySelect.addEventListener("change", event => {
+    const mode = event.target.value === "visible" ? "visible" : "hidden";
+    try { localStorage.setItem(ENTRY_UNIT_VISIBILITY_KEY, mode); } catch (error) {}
+    applyEntryUnitVisibility(mode);
+    toast(mode === "visible" ? "Вибір одиниці показано" : "Вибір одиниці приховано");
+  });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
   document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showPage("backup"));
   document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showPage("otherSettings"));
+  document.getElementById("toggleDemoModeBtn").addEventListener("click", toggleDemoMode);
   document.getElementById("openInstallFromAboutBtn").addEventListener("click", () => showPage("install"));
   document.getElementById("installAppBtn").addEventListener("click", installApp);
   document.getElementById("shareAppBtn").addEventListener("click", shareApp);
@@ -6956,6 +7205,8 @@
 
   renderAppVersion();
   applyJoystickMode();
+  applyEntryUnitVisibility();
+  updateDemoModeUI();
   render();
   updatePageBackButton();
   initAppKeyboardScrollRestore();
