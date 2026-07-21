@@ -1041,13 +1041,12 @@
       z-index: 7;
     }
     #pageThemes.theme-category-root #settingsThemeSection {
+      position: sticky;
+      top: calc(env(safe-area-inset-top) + 72px);
       padding: 0;
       border: 0;
       background: transparent;
       box-shadow: none;
-    }
-    #pageThemes.theme-category-root #settingsThemeSection > .small {
-      text-align: center;
     }
     #pageThemes.theme-category-open .theme-gesture-pad {
       display: none !important;
@@ -1095,19 +1094,36 @@
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       #pageThemes.theme-category-root {
-        padding-bottom: 150px;
+        min-height: calc(100dvh - env(safe-area-inset-top) - 82px);
+        padding-bottom: 0;
+        overflow: hidden;
+      }
+      #pageThemes.theme-category-root #settingsThemeSection {
+        position: fixed;
+        top: calc(env(safe-area-inset-top) + 70px);
+        right: max(14px, env(safe-area-inset-right));
+        left: max(14px, env(safe-area-inset-left));
+        z-index: 7;
+        width: auto;
+        max-height: calc(100dvh - env(safe-area-inset-top) - 160px);
+        overflow: hidden;
+        pointer-events: none;
+      }
+      #pageThemes.theme-category-root .theme-category-button {
+        pointer-events: auto;
       }
       .theme-gesture-pad {
         position: fixed;
+        top: calc(env(safe-area-inset-top) + 62px);
         right: 0;
         bottom: max(10px, env(safe-area-inset-bottom));
         left: 0;
-        z-index: 108;
+        z-index: 6;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         width: 100%;
-        height: 128px;
+        height: auto;
         min-height: 0;
         padding: 20px 20px 18px;
         border: 0;
@@ -1302,6 +1318,56 @@
     html.menu-style-game .menu-btn.gesture-selected::after {
       background: var(--selection-border);
       opacity: 1;
+    }
+    .menu-btn.gesture-selected,
+    .management-option.gesture-selected,
+    .theme-category-button.gesture-selected,
+    .theme-option-button.gesture-selected {
+      position: relative;
+      padding-right: 38px;
+      padding-left: 38px;
+    }
+    .menu-btn.gesture-selected::before,
+    .management-option.gesture-selected::before,
+    .theme-category-button.gesture-selected::before,
+    .theme-option-button.gesture-selected::before,
+    .menu-btn.gesture-selected::after,
+    .management-option.gesture-selected::after,
+    .theme-category-button.gesture-selected::after,
+    .theme-option-button.gesture-selected::after,
+    html.menu-style-game .menu-btn.gesture-selected::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      z-index: 3;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      opacity: 1;
+      filter: drop-shadow(0 0 2px var(--surface));
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .menu-btn.gesture-selected::before,
+    .management-option.gesture-selected::before,
+    .theme-category-button.gesture-selected::before,
+    .theme-option-button.gesture-selected::before {
+      left: 11px;
+      border-right: 0;
+      border-left: 10px solid var(--selection-text);
+    }
+    .menu-btn.gesture-selected::after,
+    .management-option.gesture-selected::after,
+    .theme-category-button.gesture-selected::after,
+    .theme-option-button.gesture-selected::after,
+    html.menu-style-game .menu-btn.gesture-selected::after {
+      right: 11px;
+      bottom: auto;
+      border-right: 10px solid var(--selection-text);
+      border-left: 0;
     }
     .drawer-menu-content {
       min-height: 0;
@@ -3466,7 +3532,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.43</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.44</span></div>
     </div>
   </div>
 
@@ -3841,7 +3907,6 @@
 
   <div id="pageThemes" class="hidden">
     <div class="card" id="settingsThemeSection">
-      <p class="small">Вибрана тема збережеться на цьому телефоні.</p>
       <div class="theme-category-list" id="themeCategoryList"></div>
       <div class="theme-category-view hidden" id="themeCategoryView">
         <button type="button" class="secondary theme-category-back" id="closeThemeCategoryBtn">Назад до категорій</button>
@@ -4069,7 +4134,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.43</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.44</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4089,8 +4154,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.43</span></div>
-        <div class="small">Оновлено звичайне й бокове меню, перебудовано каталог тем і виправлено повернення з підкатегорій.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.44</span></div>
+        <div class="small">Категорії тем зафіксовано біля верхньої шапки, розширено сенсорну область і додано контрастні покажчики вибраного пункту.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4161,7 +4226,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.43";
+  const APP_VERSION = "1.44";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6314,7 +6379,6 @@
     const selected = items[themeGestureIndex];
     const label = document.getElementById("themeGestureSelection");
     if (label) label.textContent = "Вибрано: " + selected.textContent.trim();
-    selected.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function initializeThemeGestureSelection() {
@@ -6765,6 +6829,7 @@
     if (normalizedMode === "disabled") {
       getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
       getManagementGestureItems().forEach(item => item.classList.remove("gesture-selected"));
+      getThemeGestureItems().forEach(item => item.classList.remove("gesture-selected"));
     }
     requestAnimationFrame(updateMenuOverflowIndicator);
   }
