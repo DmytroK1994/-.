@@ -1,4 +1,4 @@
-const CACHE_NAME = "oblik-zalyshkiv-v1-37";
+const CACHE_NAME = "oblik-zalyshkiv-v1-38";
 const APP_ASSETS = [
   "./",
   "./index.html",
