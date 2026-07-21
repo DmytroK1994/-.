@@ -1439,6 +1439,11 @@
       background: var(--soft-danger-bg);
       color: var(--soft-danger-text);
     }
+    #pageHistory .clear-search-btn {
+      border-color: var(--border-strong);
+      background: var(--border);
+      color: var(--text);
+    }
     #pageBackup button.danger {
       border-color: var(--soft-danger-border);
       background: var(--soft-danger-bg);
@@ -1778,13 +1783,26 @@
       margin-top: 4px;
       accent-color: var(--primary-bg);
     }
+    .history-sticky-panel {
+      position: sticky;
+      top: calc(env(safe-area-inset-top) + 52px);
+      z-index: 10;
+      margin: -2px 0 12px;
+      padding: 2px 0 9px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: 0 9px 14px -13px var(--header-shadow);
+    }
+    .history-search label {
+      margin-top: 0;
+    }
     .history-toolbar {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       align-items: stretch;
       gap: 6px;
-      margin: 6px 0 16px;
+      margin: 8px 0 0;
     }
     .history-toolbar button {
       width: auto;
@@ -1806,6 +1824,11 @@
     }
     #historyList {
       margin-top: 4px;
+    }
+    @media (min-width: 901px) {
+      .history-sticky-panel {
+        top: 58px;
+      }
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       #todayList .item,
@@ -2690,7 +2713,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">124</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">125</span></div>
     </div>
   </div>
 
@@ -2921,15 +2944,24 @@
 
   <div id="pageHistory" class="hidden">
     <div class="card">
-      <div class="actions3 history-toolbar no-print" id="historyNormalActions">
-        <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
-        <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
-        <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
-      </div>
-      <div class="actions history-toolbar no-print hidden" id="historySelectActions">
-        <button id="selectAllHistoryBtn">Вибрати все</button>
-        <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
-        <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
+      <div class="history-sticky-panel no-print">
+        <div class="history-search">
+          <label for="historyDateSearch">Пошук за датою</label>
+          <div class="combo-wrap">
+            <input id="historyDateSearch" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 17, 17.07 або 17.07.2026" />
+            <button type="button" id="clearHistoryDateSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
+          </div>
+        </div>
+        <div class="actions3 history-toolbar" id="historyNormalActions">
+          <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
+          <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
+          <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
+        </div>
+        <div class="actions history-toolbar hidden" id="historySelectActions">
+          <button id="selectAllHistoryBtn">Вибрати все</button>
+          <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
+          <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
+        </div>
       </div>
       <div id="historyList"></div>
     </div>
@@ -3119,7 +3151,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">124</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">125</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3137,8 +3169,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">124</span></div>
-        <div class="small">Назва поточного розділу тепер відображається у верхній шапці, а дублікати назв усередині сторінок прибрано.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">125</span></div>
+        <div class="small">В історії додано закріплену панель керування та пошук підрахунків за повною або частковою датою.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3194,7 +3226,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "124";
+  const APP_VERSION = "125";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5066,8 +5098,57 @@
     renderHistory();
   }
 
+  function normalizeHistoryDateSearch(value) {
+    return String(value || "")
+      .trim()
+      .replace(/[\/,\-\s]+/g, ".")
+      .replace(/\.{2,}/g, ".")
+      .replace(/^\.|\.$/g, "");
+  }
+
+  function getFilteredHistoryDays() {
+    const rawQuery = document.getElementById("historyDateSearch")?.value || "";
+    const query = normalizeHistoryDateSearch(rawQuery);
+    if (!query) return state.days;
+
+    const queryDigits = query.replace(/\D/g, "");
+    return state.days.filter(day => {
+      const isoDate = String(day.date || "");
+      const displayDate = niceDate(isoDate);
+      const normalizedIso = normalizeHistoryDateSearch(isoDate);
+      const normalizedDisplay = normalizeHistoryDateSearch(displayDate);
+      const displayDigits = normalizedDisplay.replace(/\D/g, "");
+      const [year = "", month = "", date = ""] = isoDate.split("-");
+      const localParts = [date, month, year].map(part => String(Number(part)));
+      const queryParts = query.split(".").map(part => String(Number(part)));
+      const matchesLocalParts = queryParts.length > 1
+        && queryParts.every((part, index) => localParts[index] === part);
+      return normalizedDisplay.includes(query)
+        || normalizedIso.includes(query)
+        || matchesLocalParts
+        || (queryDigits && displayDigits.includes(queryDigits));
+    });
+  }
+
+  function updateHistoryDateSearchClearButton() {
+    const input = document.getElementById("historyDateSearch");
+    const button = document.getElementById("clearHistoryDateSearchBtn");
+    if (input && button) button.classList.toggle("hidden", !input.value);
+  }
+
+  function clearHistoryDateSearch() {
+    const input = document.getElementById("historyDateSearch");
+    if (!input) return;
+    input.value = "";
+    if (historySelectMode) selectedHistoryIds.clear();
+    updateHistoryDateSearchClearButton();
+    renderHistory();
+    input.focus();
+  }
+
   function allHistoryDaysSelected() {
-    return state.days.length > 0 && state.days.every(day => selectedHistoryIds.has(day.id));
+    const visibleDays = getFilteredHistoryDays();
+    return visibleDays.length > 0 && visibleDays.every(day => selectedHistoryIds.has(day.id));
   }
 
   function updateSelectAllHistoryButton() {
@@ -5080,10 +5161,11 @@
   }
 
   function toggleSelectAllHistory() {
+    const visibleDays = getFilteredHistoryDays();
     if (allHistoryDaysSelected()) {
-      selectedHistoryIds.clear();
+      visibleDays.forEach(day => selectedHistoryIds.delete(day.id));
     } else {
-      state.days.forEach(day => selectedHistoryIds.add(day.id));
+      visibleDays.forEach(day => selectedHistoryIds.add(day.id));
     }
     renderHistory();
   }
@@ -6038,8 +6120,10 @@
     const list = document.getElementById("historyList");
     const normalActions = document.getElementById("historyNormalActions");
     const selectActions = document.getElementById("historySelectActions");
+    const filteredDays = getFilteredHistoryDays();
 
     list.innerHTML = "";
+    updateHistoryDateSearchClearButton();
 
     if (normalActions && selectActions) {
       normalActions.classList.toggle("hidden", historySelectMode);
@@ -6052,7 +6136,12 @@
       return;
     }
 
-    state.days.forEach(day => {
+    if (!filteredDays.length) {
+      list.innerHTML = `<div class="empty">За цією датою підрахунків не знайдено.</div>`;
+      return;
+    }
+
+    filteredDays.forEach(day => {
       const div = document.createElement("div");
       div.className = "item";
 
@@ -6191,6 +6280,12 @@
   document.getElementById("deleteSelectedHistoryBtn").addEventListener("click", deleteSelectedHistory);
   document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
   document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
+  document.getElementById("historyDateSearch").addEventListener("input", () => {
+    if (historySelectMode) selectedHistoryIds.clear();
+    updateHistoryDateSearchClearButton();
+    renderHistory();
+  });
+  document.getElementById("clearHistoryDateSearchBtn").addEventListener("click", clearHistoryDateSearch);
 
   document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
     btn.addEventListener("click", () => showPage(btn.dataset.page));
