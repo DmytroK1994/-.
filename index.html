@@ -10,6 +10,10 @@
       if (["dark", "beige", "white", "custom"].includes(savedTheme)) {
         document.documentElement.dataset.theme = savedTheme;
       }
+      document.documentElement.classList.toggle(
+        "joystick-disabled",
+        localStorage.getItem("warehouseJournalJoystickMode") === "disabled"
+      );
     } catch (e) {}
   </script>
   <style>
@@ -190,7 +194,7 @@
       box-shadow: 0 14px 32px var(--header-shadow);
     }
     body:not(.page-today) {
-      padding-top: calc(env(safe-area-inset-top) + 58px);
+      padding-top: calc(env(safe-area-inset-top) + 82px);
     }
     body:not(.page-today) .app-header {
       overflow: hidden;
@@ -238,10 +242,10 @@
       text-align: center;
     }
     body.subpage-swipe-back {
-      padding-top: calc(env(safe-area-inset-top) + 78px);
+      padding-top: calc(env(safe-area-inset-top) + 100px);
     }
     body.subpage-swipe-back .product-list-search-card {
-      top: calc(env(safe-area-inset-top) + 45px);
+      top: calc(env(safe-area-inset-top) + 68px);
     }
     .hamburger-icon,
     .hamburger-icon::before,
@@ -751,17 +755,36 @@
       line-height: 1.3;
     }
     .management-options {
+      position: relative;
+      z-index: 7;
       display: grid;
       gap: 8px;
+      width: min(100%, 460px);
+      margin-inline: auto;
     }
     #pageManagement {
+      position: relative;
       display: flex;
       min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
-    #pageManagement .management-card {
+    #pageManagement .management-shell {
+      position: relative;
       width: 100%;
+      min-height: inherit;
+      margin: 0;
+    }
+    .management-heading {
+      position: relative;
+      z-index: 8;
+      text-align: center;
+    }
+    .management-heading h2 {
+      margin-bottom: 5px;
+    }
+    .management-heading p {
       margin: 0;
     }
     .management-option {
@@ -776,6 +799,15 @@
       border-color: var(--border-strong);
       background: var(--surface-strong);
       color: var(--text);
+    }
+    .management-option.gesture-selected {
+      border-color: var(--selection-border);
+      outline: 2px solid var(--selection-outline);
+      color: var(--selection-text);
+      background: var(--selection-bg);
+    }
+    .management-gesture-pad {
+      display: none;
     }
     @media (max-height: 560px) {
       #pageManagement {
@@ -843,10 +875,10 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         padding: 8px 10px 14px;
-        border: 1px solid var(--border-strong);
-        border-radius: 20px;
-        background: var(--surface);
-        box-shadow: 0 18px 44px var(--popover-shadow);
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
         pointer-events: auto;
         touch-action: pan-y;
         scrollbar-width: thin;
@@ -901,6 +933,69 @@
       }
       .drawer.open .drawer-gesture-pad {
         display: flex;
+      }
+      #pageManagement .management-shell {
+        min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
+      }
+      #pageManagement {
+        align-items: flex-start;
+      }
+      .management-heading {
+        padding-top: 2px;
+      }
+      .management-options {
+        position: absolute;
+        top: 42px;
+        left: 50%;
+        width: min(calc(100% - 28px), 460px);
+        max-height: 264px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 8px 10px 14px;
+        pointer-events: auto;
+        touch-action: pan-y;
+        scrollbar-width: thin;
+        transform: translateX(-50%);
+      }
+      .management-option {
+        text-align: center;
+      }
+      .management-gesture-pad {
+        position: absolute;
+        inset: 0;
+        z-index: 6;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 28px 20px calc(env(safe-area-inset-bottom) + 34px);
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        text-align: center;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .management-gesture-pad.dragging .gesture-pad-handle {
+        transform: scaleX(1.14);
+        background: #60a5fa;
+      }
+      html.joystick-disabled .drawer-gesture-pad,
+      html.joystick-disabled .management-gesture-pad {
+        display: none !important;
+      }
+      html.joystick-disabled .menu-wheel {
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      html.joystick-disabled .management-options {
+        top: 50%;
+        transform: translate(-50%, -50%);
       }
     }
     .pill {
@@ -1011,6 +1106,25 @@
     .compact-header-row {
       display: block;
     }
+    .compact-header-content {
+      min-width: 0;
+      text-align: center;
+    }
+    .section-header-title {
+      display: none;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -.2px;
+      text-align: center;
+    }
+    body:not(.page-today) .section-header-title {
+      display: block;
+    }
+    .compact-header-spacer {
+      display: none;
+    }
     .compact-menu-btn {
       display: none;
       width: auto;
@@ -1026,11 +1140,15 @@
     }
     @media (min-width: 901px) {
       body:not(.page-today) .compact-header-row {
-        display: flex;
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr) 110px;
         align-items: center;
-        justify-content: flex-start;
+        gap: 10px;
       }
       body:not(.page-today) .compact-menu-btn {
+        display: block;
+      }
+      body:not(.page-today) .compact-header-spacer {
         display: block;
       }
     }
@@ -1046,11 +1164,11 @@
       z-index: 9;
     }
     body:not(.page-today):not(.subpage-swipe-back) .product-list-search-card {
-      top: calc(env(safe-area-inset-top) + 28px);
+      top: calc(env(safe-area-inset-top) + 52px);
     }
     @media (min-width: 901px) {
       body:not(.page-today):not(.subpage-swipe-back) .product-list-search-card {
-        top: 48px;
+        top: 58px;
       }
     }
     .current-list-search-card {
@@ -2572,7 +2690,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">122</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">124</span></div>
     </div>
   </div>
 
@@ -2608,10 +2726,14 @@
     <div class="date-line" id="activeDateLabel"></div>
     <div class="compact-header-row">
       <button class="compact-menu-btn" id="compactMenuBtn">Меню</button>
-      <div class="compact-header-hints">
-        <div class="menu-open-swipe-hint">Свайпни вправо, щоб відкрити меню</div>
-        <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
+      <div class="compact-header-content">
+        <div class="section-header-title" id="sectionHeaderTitle"></div>
+        <div class="compact-header-hints">
+          <div class="menu-open-swipe-hint">Свайпни вправо, щоб відкрити меню</div>
+          <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
+        </div>
       </div>
+      <div class="compact-header-spacer" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -2799,7 +2921,6 @@
 
   <div id="pageHistory" class="hidden">
     <div class="card">
-      <h2>Історія підрахунків</h2>
       <div class="actions3 history-toolbar no-print" id="historyNormalActions">
         <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
         <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
@@ -2815,21 +2936,27 @@
   </div>
 
   <div id="pageManagement" class="hidden">
-    <div class="card management-card">
-      <h2>Налаштування</h2>
-      <p class="small">Обери потрібну категорію.</p>
-      <div class="management-options">
+    <div class="management-shell">
+      <div class="management-heading">
+        <p class="small">Обери потрібну категорію.</p>
+      </div>
+      <div class="management-options" id="managementWheel">
         <button class="management-option" id="openProductsBtn">Найменування</button>
         <button class="management-option" id="openThemeSettingsBtn">Теми</button>
         <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
         <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
+      </div>
+      <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування налаштуваннями">
+        <span class="gesture-pad-handle"></span>
+        <span class="gesture-pad-selection" id="managementGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
+        <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
       </div>
     </div>
   </div>
 
   <div id="pageProducts" class="hidden">
     <div class="card">
-      <h2 id="productFormTitle">Найменування</h2>
+      <h2 id="productFormTitle">Додати найменування</h2>
       <input type="hidden" id="editingProductId" />
 
       <label>Назва</label>
@@ -2866,7 +2993,6 @@
 
   <div id="pageThemes" class="hidden">
     <div class="card" id="settingsThemeSection">
-      <h2>Тема оформлення</h2>
       <p class="small">Вибрана тема збережеться на цьому телефоні.</p>
       <label for="themeSelect">Кольорова тема</label>
       <select id="themeSelect">
@@ -2919,7 +3045,6 @@
 
   <div id="pageBackup" class="hidden">
     <div class="card" id="settingsBackupSection">
-      <h2>Резервна копія</h2>
       <p class="small">
         Дані зберігаються в пам'яті цього браузера. Для надійності періодично роби резервну копію.
       </p>
@@ -2941,7 +3066,6 @@
 
   <div id="pageOtherSettings" class="hidden">
     <div class="card" id="settingsOtherSection">
-      <h2>Інші налаштування</h2>
       <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
       <label for="backNavigationSelect">Спосіб повернення</label>
       <select id="backNavigationSelect">
@@ -2949,14 +3073,18 @@
         <option value="button">Кнопка «Назад»</option>
         <option value="swipe">Свайп справа наліво</option>
       </select>
+      <label for="joystickModeSelect">Джойстик меню та налаштувань</label>
+      <select id="joystickModeSelect">
+        <option value="enabled">Увімкнено</option>
+        <option value="disabled">Вимкнено — звичайний список</option>
+      </select>
+      <p class="small">Коли джойстик вимкнено, пункти меню та налаштувань показуються звичайним списком по центру екрана.</p>
     </div>
   </div>
 
 
   <div id="pageInstall" class="hidden">
     <div class="card">
-      <h2>Інструкція встановлення</h2>
-
       <div class="install-action-card">
         <p class="install-status" id="installStatus">Перевіряю можливість встановлення на цьому пристрої…</p>
         <button class="green hidden" id="installAppBtn">Встановити застосунок</button>
@@ -2991,8 +3119,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">122</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">124</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3010,8 +3137,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">122</span></div>
-        <div class="small">Додано відновлення всіх даних безпосередньо з файлу резервної копії через системний вибір файлів.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">124</span></div>
+        <div class="small">Назва поточного розділу тепер відображається у верхній шапці, а дублікати назв усередині сторінок прибрано.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3067,13 +3194,14 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "122";
+  const APP_VERSION = "124";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
   const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
+  const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
   const THEMES = ["dark", "beige", "white", "custom"];
   const CUSTOM_THEME_DEFAULTS = {
     customBg: "#172033",
@@ -3155,6 +3283,17 @@
     backup: "management",
     otherSettings: "management",
     install: "about"
+  };
+  const PAGE_TITLES = {
+    today: "Поточний підрахунок",
+    history: "Історія підрахунків",
+    management: "Налаштування",
+    products: "Найменування",
+    themes: "Теми оформлення",
+    backup: "Резервна копія",
+    otherSettings: "Інші налаштування",
+    about: "Про додаток",
+    install: "Встановлення та поширення"
   };
   document.documentElement.classList.toggle("mobile-device", isMobileDevice);
 
@@ -3616,6 +3755,13 @@
   let gesturePadAxis = "";
   let gesturePadDragging = false;
   let gesturePadMoved = false;
+  let managementGestureIndex = 0;
+  let managementGestureDragStartX = 0;
+  let managementGestureDragStartY = 0;
+  let managementGestureDragStartIndex = 0;
+  let managementGestureAxis = "";
+  let managementGestureDragging = false;
+  let managementGestureMoved = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -4260,6 +4406,118 @@
     window.addEventListener("resize", updateMenuOverflowIndicator);
   }
 
+  function getManagementGestureItems() {
+    return Array.from(document.querySelectorAll("#managementWheel .management-option"));
+  }
+
+  function setManagementGestureSelection(index) {
+    const items = getManagementGestureItems();
+    if (!items.length) return;
+
+    managementGestureIndex = Math.max(0, Math.min(items.length - 1, index));
+    items.forEach((item, itemIndex) => {
+      item.classList.toggle("gesture-selected", itemIndex === managementGestureIndex);
+    });
+
+    const selectedItem = items[managementGestureIndex];
+    const label = document.getElementById("managementGestureSelection");
+    if (label) label.textContent = "Вибрано: " + selectedItem.textContent.trim();
+
+    const wheel = document.getElementById("managementWheel");
+    if (wheel) {
+      const itemTop = selectedItem.offsetTop;
+      const itemBottom = itemTop + selectedItem.offsetHeight;
+      if (itemTop < wheel.scrollTop) wheel.scrollTo({ top: itemTop, behavior: "smooth" });
+      if (itemBottom > wheel.scrollTop + wheel.clientHeight) {
+        wheel.scrollTo({ top: itemBottom - wheel.clientHeight, behavior: "smooth" });
+      }
+    }
+  }
+
+  function initializeManagementGestureSelection() {
+    const items = getManagementGestureItems();
+    managementGestureIndex = 0;
+    items.forEach(item => item.classList.remove("gesture-selected"));
+    const label = document.getElementById("managementGestureSelection");
+    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
+  }
+
+  function activateManagementGestureSelection() {
+    const item = getManagementGestureItems()[managementGestureIndex];
+    if (item) item.click();
+  }
+
+  function initManagementGesturePad() {
+    const pad = document.getElementById("managementGesturePad");
+    if (!pad) return;
+
+    pad.addEventListener("pointerdown", event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      event.preventDefault();
+      managementGestureDragging = true;
+      managementGestureMoved = false;
+      managementGestureAxis = "";
+      managementGestureDragStartX = event.clientX;
+      managementGestureDragStartY = event.clientY;
+      managementGestureDragStartIndex = managementGestureIndex;
+      pad.classList.add("dragging");
+      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    pad.addEventListener("pointermove", event => {
+      if (!managementGestureDragging) return;
+      const horizontalDistance = event.clientX - managementGestureDragStartX;
+      const verticalDistance = event.clientY - managementGestureDragStartY;
+
+      if (!managementGestureAxis && Math.max(Math.abs(horizontalDistance), Math.abs(verticalDistance)) > 10) {
+        managementGestureAxis = Math.abs(horizontalDistance) > Math.abs(verticalDistance) ? "horizontal" : "vertical";
+      }
+      if (managementGestureAxis === "horizontal") {
+        managementGestureDragging = false;
+        managementGestureMoved = false;
+        managementGestureAxis = "";
+        pad.classList.remove("dragging");
+        try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+        return;
+      }
+      if (managementGestureAxis !== "vertical") return;
+
+      event.preventDefault();
+      const distance = event.clientY - managementGestureDragStartY;
+      if (Math.abs(distance) > 10) managementGestureMoved = true;
+      const rawIndex = managementGestureDragStartIndex + Math.round(distance / 42);
+      const itemCount = getManagementGestureItems().length;
+      const nextIndex = Math.max(0, Math.min(itemCount - 1, rawIndex));
+      const currentItem = getManagementGestureItems()[nextIndex];
+      if (nextIndex !== managementGestureIndex || (managementGestureMoved && !currentItem?.classList.contains("gesture-selected"))) {
+        setManagementGestureSelection(nextIndex);
+      }
+    });
+
+    const finishGesture = event => {
+      if (!managementGestureDragging) return;
+      managementGestureDragging = false;
+      managementGestureAxis = "";
+      pad.classList.remove("dragging");
+      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (event.type === "pointercancel" || managementGestureMoved) return;
+      activateManagementGestureSelection();
+    };
+
+    pad.addEventListener("pointerup", finishGesture);
+    pad.addEventListener("pointercancel", finishGesture);
+    pad.addEventListener("keydown", event => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        setManagementGestureSelection(managementGestureIndex + (event.key === "ArrowDown" ? 1 : -1));
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activateManagementGestureSelection();
+      }
+    });
+  }
+
   function initMenuSwipeGestures() {
     let swipeMode = "";
     let swipeStartX = 0;
@@ -4610,6 +4868,27 @@
     return isIOSDevice ? "swipe" : "button";
   }
 
+  function getJoystickMode() {
+    try {
+      return localStorage.getItem(JOYSTICK_MODE_KEY) === "disabled" ? "disabled" : "enabled";
+    } catch (error) {
+      return "enabled";
+    }
+  }
+
+  function applyJoystickMode(mode = getJoystickMode()) {
+    const normalizedMode = mode === "disabled" ? "disabled" : "enabled";
+    document.documentElement.classList.toggle("joystick-disabled", normalizedMode === "disabled");
+    const select = document.getElementById("joystickModeSelect");
+    if (select) select.value = normalizedMode;
+
+    if (normalizedMode === "disabled") {
+      getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
+      getManagementGestureItems().forEach(item => item.classList.remove("gesture-selected"));
+    }
+    requestAnimationFrame(updateMenuOverflowIndicator);
+  }
+
   function canUsePageBackSwipe() {
     if (!PAGE_PARENTS[currentPage] || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
@@ -4684,6 +4963,9 @@
     }
 
     document.body.classList.toggle("page-today", page === "today");
+    const sectionTitle = PAGE_TITLES[page] || "Облік залишків";
+    document.getElementById("sectionHeaderTitle").textContent = sectionTitle;
+    document.title = page === "today" ? "Облік залишків" : `${sectionTitle} — Облік залишків`;
 
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
@@ -4698,7 +4980,10 @@
 
     if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
     if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
-    if (page === "management") document.getElementById("pageManagement").classList.remove("hidden");
+    if (page === "management") {
+      document.getElementById("pageManagement").classList.remove("hidden");
+      initializeManagementGestureSelection();
+    }
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
     if (page === "themes") document.getElementById("pageThemes").classList.remove("hidden");
     if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
@@ -5237,7 +5522,7 @@
     document.getElementById("newProductName").value = "";
     document.getElementById("newDefaultPalletKg").value = "";
     document.getElementById("newDefaultPieceKg").value = "";
-    document.getElementById("productFormTitle").textContent = "Найменування";
+    document.getElementById("productFormTitle").textContent = "Додати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти найменування";
   }
 
@@ -6039,6 +6324,14 @@
     updatePageBackButton();
     toast("Спосіб повернення змінено");
   });
+  const joystickModeSelect = document.getElementById("joystickModeSelect");
+  joystickModeSelect.value = getJoystickMode();
+  joystickModeSelect.addEventListener("change", event => {
+    const mode = event.target.value === "disabled" ? "disabled" : "enabled";
+    try { localStorage.setItem(JOYSTICK_MODE_KEY, mode); } catch (error) {}
+    applyJoystickMode(mode);
+    toast(mode === "enabled" ? "Джойстик увімкнено" : "Увімкнено звичайний список");
+  });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
@@ -6086,11 +6379,13 @@
   });
 
   renderAppVersion();
+  applyJoystickMode();
   render();
   updatePageBackButton();
   initAppKeyboardScrollRestore();
   initAppTopPosition();
   initGestureMenuPad();
+  initManagementGesturePad();
   initMenuSwipeGestures();
   initPageBackSwipe();
   initDocumentPreviewSwipe();
