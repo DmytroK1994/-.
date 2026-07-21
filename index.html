@@ -634,7 +634,7 @@
     }
     #productsList .list-item-actions {
       display: grid;
-      grid-template-columns: repeat(2, 88px);
+      grid-template-columns: 96px;
       justify-self: end;
       gap: 6px;
       margin: 0;
@@ -642,7 +642,7 @@
       z-index: 3;
     }
     #productsList .list-item-actions button {
-      width: 88px;
+      width: 96px;
       margin: 0;
       display: grid;
       place-items: center;
@@ -812,6 +812,69 @@
       background: var(--soft-danger-bg);
       color: var(--soft-danger-text);
       box-shadow: none;
+    }
+    #productsList .item {
+      padding: 9px 11px;
+      margin-bottom: 7px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px var(--card-shadow);
+    }
+    .product-checkline {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: center;
+      gap: 7px;
+    }
+    .product-checkline.selecting {
+      grid-template-columns: 28px minmax(0, 1fr);
+    }
+    .product-checkbox {
+      width: 21px;
+      height: 21px;
+      margin: 0;
+      accent-color: var(--primary-bg);
+    }
+    #productsList .product-unit {
+      margin-top: 2px;
+      color: var(--muted-soft);
+      font-size: 11px;
+      font-weight: 750;
+      line-height: 1.15;
+    }
+    .product-selection-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .product-selection-toolbar button {
+      width: auto;
+      min-width: 0;
+      min-height: 36px;
+      flex: 1 1 120px;
+      margin: 0;
+      padding: 7px 9px;
+      border-radius: 11px;
+      font-size: 12px;
+      line-height: 1.15;
+    }
+    .product-editor-delete {
+      width: auto;
+      min-height: 34px;
+      margin: 14px auto 0;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted-soft);
+      font-size: 12px;
+      box-shadow: none;
+    }
+    .product-editor-delete:hover,
+    .product-editor-delete:active {
+      border-color: var(--soft-danger-border);
+      color: var(--soft-danger-bg);
+      background: transparent;
     }
     .print-only,
     .print-table-header {
@@ -2150,13 +2213,13 @@
       }
       #productsList .list-item-actions {
         display: grid;
-        grid-template-columns: repeat(2, 86px);
+        grid-template-columns: 94px;
         justify-self: end;
         margin-top: 0;
       }
       #productsList .list-item-actions button.smallbtn {
-        width: 86px;
-        min-width: 86px;
+        width: 94px;
+        min-width: 94px;
         margin: 0;
       }
       #productsList .pill {
@@ -3028,7 +3091,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.33</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.34</span></div>
     </div>
   </div>
 
@@ -3324,10 +3387,18 @@
 
     <div class="card product-list-search-card">
       <h2>Пошук у найменуваннях</h2>
-      <p class="small">Швидко знайди позицію, щоб відредагувати або видалити її.</p>
+      <p class="small">Швидко знайди потрібну позицію.</p>
       <div class="combo-wrap">
         <input id="productListSearch" placeholder="Введи назву для пошуку..." autocomplete="off" />
         <button type="button" id="clearProductListSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
+      </div>
+      <div class="product-selection-toolbar" id="productNormalActions">
+        <button class="yellow" id="toggleProductSelectBtn">Вибрати для видалення</button>
+      </div>
+      <div class="product-selection-toolbar hidden" id="productSelectActions">
+        <button id="selectAllProductsBtn">Вибрати все</button>
+        <button class="danger" id="deleteSelectedProductsBtn">Видалити вибране</button>
+        <button class="secondary" id="cancelProductSelectBtn">Скасувати</button>
       </div>
     </div>
 
@@ -3377,6 +3448,7 @@
           <button class="green" id="saveProductBtn">Зберегти найменування</button>
           <button class="secondary" id="cancelProductBtn">Закрити</button>
         </div>
+        <button type="button" class="product-editor-delete hidden" id="deleteProductFromEditorBtn">Видалити це найменування</button>
       </div>
 
       <div class="hidden" id="bulkProductsForm">
@@ -3531,7 +3603,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.33</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.34</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3550,8 +3622,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.33</span></div>
-        <div class="small">Додано три сучасні теми: «Цифрова лаванда», «М’ятний мінімалізм» та «Опівнічна мідь». Загалом доступно 10 варіантів оформлення.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.34</span></div>
+        <div class="small">Список найменувань став компактнішим. Додано вибір галочками та безпечне масове видалення позицій.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3622,7 +3694,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.33";
+  const APP_VERSION = "1.34";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4281,6 +4353,8 @@
 
     historySelectMode = false;
     selectedHistoryIds.clear();
+    productSelectMode = false;
+    selectedProductIds.clear();
     document.getElementById("productSearch").value = "";
     document.getElementById("todayListSearch").value = "";
     document.getElementById("productListSearch").value = "";
@@ -4304,6 +4378,8 @@
   let state = demoModeActive ? loadDemoState() : loadState();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
+  let productSelectMode = false;
+  let selectedProductIds = new Set();
   let deferredInstallPrompt = null;
   let gestureMenuIndex = 0;
   let gestureDragStartX = 0;
@@ -6380,6 +6456,7 @@
     document.getElementById("newDefaultPieceKg").value = p.defaultPieceKg || "";
     document.getElementById("productFormTitle").textContent = "Редагувати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти зміни";
+    document.getElementById("deleteProductFromEditorBtn").classList.remove("hidden");
     openProductAddModal("single");
   }
 
@@ -6398,9 +6475,12 @@
       danger: true
     });
     if (!confirmed) return;
+    const deletingFromEditor = document.getElementById("editingProductId").value === id;
     state.products = state.products.filter(p => p.id !== id);
-    if (document.getElementById("editingProductId").value === id) clearProductForm();
+    selectedProductIds.delete(id);
+    if (deletingFromEditor) clearProductForm();
     save();
+    if (deletingFromEditor) closeProductAddModal({ resetForms: false });
     toast("Найменування видалено");
   }
 
@@ -6412,6 +6492,7 @@
     document.getElementById("newDefaultPieceKg").value = "";
     document.getElementById("productFormTitle").textContent = "Додати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти найменування";
+    document.getElementById("deleteProductFromEditorBtn").classList.add("hidden");
   }
 
   function groupEntries(day) {
@@ -6563,6 +6644,8 @@
 
   function resetApp() {
     closeResetConfirmation();
+    productSelectMode = false;
+    selectedProductIds.clear();
     if (demoModeActive) {
       state = { products: [], days: [], activeDayId: null };
       save();
@@ -6894,19 +6977,88 @@
     toast(`Додано: ${added}. Пропущено: ${skipped}`);
   }
 
+  function getFilteredProducts() {
+    const query = (document.getElementById("productListSearch")?.value || "").trim().toLowerCase();
+    return sortedProducts().filter(product =>
+      !query || String(product.name || "").toLowerCase().includes(query)
+    );
+  }
+
+  function toggleProductSelectMode(enabled) {
+    productSelectMode = enabled;
+    selectedProductIds.clear();
+    renderProducts();
+  }
+
+  function allVisibleProductsSelected() {
+    const visibleProducts = getFilteredProducts();
+    return visibleProducts.length > 0 && visibleProducts.every(product => selectedProductIds.has(product.id));
+  }
+
+  function updateSelectAllProductsButton() {
+    const button = document.getElementById("selectAllProductsBtn");
+    if (!button) return;
+    const allSelected = allVisibleProductsSelected();
+    button.textContent = allSelected ? "Зняти все" : "Вибрати все";
+    button.classList.toggle("yellow", allSelected);
+    button.setAttribute("aria-pressed", String(allSelected));
+  }
+
+  function toggleSelectAllProducts() {
+    const visibleProducts = getFilteredProducts();
+    if (allVisibleProductsSelected()) {
+      visibleProducts.forEach(product => selectedProductIds.delete(product.id));
+    } else {
+      visibleProducts.forEach(product => selectedProductIds.add(product.id));
+    }
+    renderProducts();
+  }
+
+  function toggleProductSelected(id, checked) {
+    if (checked) selectedProductIds.add(id);
+    else selectedProductIds.delete(id);
+    updateSelectAllProductsButton();
+  }
+
+  async function deleteSelectedProducts() {
+    const ids = Array.from(selectedProductIds);
+    if (!ids.length) {
+      toast("Нічого не вибрано", true);
+      return;
+    }
+
+    const confirmed = await showAppDialog({
+      label: "Видалення",
+      title: "Видалити вибрані найменування?",
+      message: `З довідника буде видалено найменувань: ${ids.length}. Записи у збережених підрахунках залишаться.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
+
+    state.products = state.products.filter(product => !selectedProductIds.has(product.id));
+    selectedProductIds.clear();
+    productSelectMode = false;
+    save();
+    toast(`Видалено найменувань: ${ids.length}`);
+  }
+
   function renderProducts() {
     const list = document.getElementById("productsList");
+    const normalActions = document.getElementById("productNormalActions");
+    const selectActions = document.getElementById("productSelectActions");
     list.innerHTML = "";
+
+    normalActions.classList.toggle("hidden", productSelectMode);
+    selectActions.classList.toggle("hidden", !productSelectMode);
+    updateSelectAllProductsButton();
 
     if (!state.products.length) {
       list.innerHTML = `<div class="card empty">Найменувань ще немає.</div>`;
       return;
     }
 
-    const query = (document.getElementById("productListSearch")?.value || "").trim().toLowerCase();
-    const productsToRender = sortedProducts().filter(p =>
-      !query || String(p.name || "").toLowerCase().includes(query)
-    );
+    const productsToRender = getFilteredProducts();
 
     if (!productsToRender.length) {
       list.innerHTML = `<div class="card empty">Нічого не знайдено.</div>`;
@@ -6919,19 +7071,18 @@
     productsToRender.forEach(p => {
       const div = document.createElement("div");
       div.className = "item";
+      const unit = MEASUREMENT_UNITS[normalizeMeasurementUnit(p.defaultUnit)].short;
       div.innerHTML = `
-        <div class="item-top">
-          <div>
-            <div class="name">${escapeHtml(p.name)}</div>
-            <div class="small">
-              <span class="pill">${MEASUREMENT_UNITS[normalizeMeasurementUnit(p.defaultUnit)].short}</span>
-              ${p.defaultPalletKg ? `<span class="pill">піддон ${formatQuantity(p.defaultPalletKg, p.defaultUnit)}</span>` : ""}
-              ${p.defaultPieceKg ? `<span class="pill">одиниця ${formatQuantity(p.defaultPieceKg, p.defaultUnit)}</span>` : ""}
+        <div class="product-checkline${productSelectMode ? " selecting" : ""}">
+          ${productSelectMode ? `<input class="product-checkbox" type="checkbox" data-action="toggle-product" data-id="${p.id}" ${selectedProductIds.has(p.id) ? "checked" : ""} aria-label="Вибрати ${escapeHtml(p.name)}" />` : ""}
+          <div class="item-top">
+            <div>
+              <div class="name">${escapeHtml(p.name)}</div>
+              <div class="product-unit">Одиниця виміру: ${unit}</div>
             </div>
-          </div>
-          <div class="actions list-item-actions">
-            <button class="smallbtn yellow" data-action="edit-product" data-id="${p.id}">Редагувати</button>
-            <button class="smallbtn danger" data-action="delete-product" data-id="${p.id}">Видалити</button>
+            ${productSelectMode ? "" : `<div class="actions list-item-actions">
+              <button class="smallbtn yellow" data-action="edit-product" data-id="${p.id}">Редагувати</button>
+            </div>`}
           </div>
         </div>
       `;
@@ -7084,9 +7235,13 @@
   });
 
   document.addEventListener("change", function (event) {
-    const el = event.target.closest("[data-action='toggle-history-day']");
-    if (!el) return;
-    toggleHistorySelected(el.dataset.id, el.checked);
+    const productCheckbox = event.target.closest("[data-action='toggle-product']");
+    if (productCheckbox) {
+      toggleProductSelected(productCheckbox.dataset.id, productCheckbox.checked);
+      return;
+    }
+    const historyCheckbox = event.target.closest("[data-action='toggle-history-day']");
+    if (historyCheckbox) toggleHistorySelected(historyCheckbox.dataset.id, historyCheckbox.checked);
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
@@ -7103,6 +7258,10 @@
   document.getElementById("deleteSelectedHistoryBtn").addEventListener("click", deleteSelectedHistory);
   document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
   document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
+  document.getElementById("toggleProductSelectBtn").addEventListener("click", () => toggleProductSelectMode(true));
+  document.getElementById("selectAllProductsBtn").addEventListener("click", toggleSelectAllProducts);
+  document.getElementById("deleteSelectedProductsBtn").addEventListener("click", deleteSelectedProducts);
+  document.getElementById("cancelProductSelectBtn").addEventListener("click", () => toggleProductSelectMode(false));
   document.getElementById("historyDateSearch").addEventListener("input", () => {
     if (historySelectMode) selectedHistoryIds.clear();
     updateHistoryDateSearchClearButton();
@@ -7182,6 +7341,10 @@
     if (event.target === event.currentTarget) dismissProductAddModal();
   });
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
+  document.getElementById("deleteProductFromEditorBtn").addEventListener("click", () => {
+    const id = document.getElementById("editingProductId").value;
+    if (id) deleteProduct(id);
+  });
   document.getElementById("cancelProductBtn").addEventListener("click", () => {
     dismissProductAddModal();
   });
