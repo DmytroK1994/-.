@@ -1109,6 +1109,12 @@
         overflow: hidden;
         pointer-events: none;
       }
+      #pageThemes.theme-category-root .theme-category-list {
+        width: 100%;
+        max-width: 560px;
+        margin-right: auto;
+        margin-left: auto;
+      }
       #pageThemes.theme-category-root .theme-category-button {
         pointer-events: auto;
       }
@@ -1565,14 +1571,14 @@
         position: absolute;
         top: calc(env(safe-area-inset-top) + 92px);
         left: 50%;
-        width: max-content;
-        max-width: min(calc(100% - 28px), 460px);
+        width: calc(100% - 20px);
+        max-width: 560px;
         max-height: 340px;
         min-height: 0;
         align-content: start;
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding: 8px 10px 14px;
+        padding: 8px 4px 14px;
         border: 0;
         border-radius: 0;
         background: transparent;
@@ -1613,11 +1619,11 @@
         background: var(--selection-bg);
       }
       html.menu-style-game .menu-wheel {
-        left: 0;
-        width: max-content;
-        max-width: min(91%, 460px);
-        padding-left: 0;
-        padding-right: 18px;
+        left: 10px;
+        width: calc(100% - 20px);
+        max-width: 560px;
+        padding-right: 4px;
+        padding-left: 4px;
         transform: none;
       }
       html.menu-style-game .menu-wheel .menu-btn {
@@ -1629,15 +1635,15 @@
         text-align: left;
       }
       html.menu-style-game.joystick-disabled .menu-wheel {
-        left: 0;
+        left: 10px;
         transform: translateY(-50%);
       }
       html.menu-style-game .management-options {
-        left: 0;
-        width: max-content;
-        max-width: min(91%, 460px);
-        padding-left: 0;
-        padding-right: 18px;
+        left: 10px;
+        width: calc(100% - 20px);
+        max-width: 560px;
+        padding-right: 4px;
+        padding-left: 4px;
         transform: none;
       }
       html.menu-style-game .management-option {
@@ -1677,12 +1683,12 @@
         position: absolute;
         top: 42px;
         left: 50%;
-        width: max-content;
-        max-width: min(calc(100% - 28px), 460px);
+        width: calc(100% - 20px);
+        max-width: 560px;
         max-height: 340px;
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding: 8px 10px 14px;
+        padding: 8px 4px 14px;
         pointer-events: auto;
         touch-action: pan-y;
         scrollbar-width: thin;
@@ -1730,7 +1736,7 @@
         transform: translate(-50%, -50%);
       }
       html.menu-style-game.joystick-disabled .management-options {
-        left: 0;
+        left: 10px;
         transform: translateY(-50%);
       }
     }
@@ -3532,7 +3538,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.44</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.45</span></div>
     </div>
   </div>
 
@@ -4134,7 +4140,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.44</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.45</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4154,8 +4160,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.44</span></div>
-        <div class="small">Категорії тем зафіксовано біля верхньої шапки, розширено сенсорну область і додано контрастні покажчики вибраного пункту.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.45</span></div>
+        <div class="small">Пункти головного меню, налаштувань і категорій тем вирівняно та розтягнуто майже на всю ширину екрана.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4226,7 +4232,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.44";
+  const APP_VERSION = "1.45";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
