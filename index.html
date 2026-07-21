@@ -21,7 +21,8 @@
     html {
       min-height: 100%;
       background: var(--bg);
-      touch-action: pan-x pan-y;
+      touch-action: pan-y;
+      overscroll-behavior-x: none;
     }
     :root,
     :root[data-theme="dark"] {
@@ -138,7 +139,8 @@
     body {
       margin: 0;
       min-height: 100dvh;
-      touch-action: pan-x pan-y;
+      touch-action: pan-y;
+      overscroll-behavior-x: none;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
         radial-gradient(circle at 50% -10%, var(--page-glow), transparent 38%),
@@ -2792,7 +2794,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.26</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.27</span></div>
     </div>
   </div>
 
@@ -3253,7 +3255,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.26</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.27</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3271,8 +3273,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.26</span></div>
-        <div class="small">Одиничне й масове додавання найменувань перенесено в компактне вікно з вибором потрібного способу.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.27</span></div>
+        <div class="small">Заблоковано випадкові переходи браузера при свайпах від країв екрана, зі збереженням внутрішньої навігації застосунку.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3328,7 +3330,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.26";
+  const APP_VERSION = "1.27";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3444,6 +3446,55 @@
   }
 
   preventBrowserPageZoom();
+
+  function preventBrowserEdgeNavigation() {
+    let edgeGestureActive = false;
+    const edgeWidth = 42;
+
+    document.addEventListener("touchstart", event => {
+      edgeGestureActive = false;
+      if (isAndroidDevice || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const viewportWidth = window.visualViewport?.width || window.innerWidth;
+      edgeGestureActive = touch.clientX <= edgeWidth || touch.clientX >= viewportWidth - edgeWidth;
+      const interactiveTarget = event.target instanceof Element
+        && event.target.closest("button, input, textarea, select, a, label, [contenteditable='true']");
+      if (edgeGestureActive && !interactiveTarget) event.preventDefault();
+    }, { capture: true, passive: false });
+
+    document.addEventListener("touchmove", event => {
+      if (edgeGestureActive && event.touches.length === 1) event.preventDefault();
+    }, { capture: true, passive: false });
+
+    const finishEdgeGesture = () => {
+      edgeGestureActive = false;
+    };
+    document.addEventListener("touchend", finishEdgeGesture, { capture: true, passive: true });
+    document.addEventListener("touchcancel", finishEdgeGesture, { capture: true, passive: true });
+  }
+
+  preventBrowserEdgeNavigation();
+
+  function initIOSBrowserHistoryGuard() {
+    const standalone = window.matchMedia("(display-mode: standalone)").matches
+      || window.navigator.standalone === true;
+    if (!isIOSDevice || standalone) return;
+
+    const guardKey = "warehouseJournalEdgeGuard";
+    try {
+      if (!history.state?.[guardKey]) {
+        history.replaceState({ ...(history.state || {}), warehouseJournalEdgeBase: true }, "", location.href);
+        history.pushState({ [guardKey]: true }, "", location.href);
+      }
+      window.addEventListener("popstate", () => {
+        if (!history.state?.[guardKey]) history.go(1);
+      });
+    } catch (error) {
+      // CSS and touch guards remain active when History API is unavailable (for example in some file viewers).
+    }
+  }
+
+  initIOSBrowserHistoryGuard();
 
   function loadCustomTheme() {
     try {
