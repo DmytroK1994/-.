@@ -7,7 +7,7 @@
   <script>
     try {
       const savedTheme = localStorage.getItem("warehouseJournalTheme");
-      if (["dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper", "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta", "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave", "slate", "obsidian", "custom"].includes(savedTheme)) {
+      if (["dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper", "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta", "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave", "slate", "obsidian", "paper", "sage", "dusk", "nightblue", "latte", "mist", "calmsea", "olive", "sepia", "moonstone", "custom"].includes(savedTheme)) {
         document.documentElement.dataset.theme = savedTheme;
       }
       document.documentElement.classList.toggle(
@@ -3129,7 +3129,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.36</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.37</span></div>
     </div>
   </div>
 
@@ -3536,6 +3536,16 @@
         <option value="vaporwave">Вейпорвейв</option>
         <option value="slate">Блакитний сланець</option>
         <option value="obsidian">Обсидіан і золото</option>
+        <option value="paper">Екранний папір</option>
+        <option value="sage">Тиха шавлія</option>
+        <option value="dusk">Вечірній графіт</option>
+        <option value="nightblue">М’яка синя ніч</option>
+        <option value="latte">Кремова кава</option>
+        <option value="mist">Туманний бузок</option>
+        <option value="calmsea">Спокійний океан</option>
+        <option value="olive">Оливковий затишок</option>
+        <option value="sepia">М’яка сепія</option>
+        <option value="moonstone">Місячний камінь</option>
         <option value="custom">Власна тема</option>
       </select>
       <button type="button" class="hidden" id="openCustomThemeEditorBtn">Редагувати власну тему</button>
@@ -3670,7 +3680,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.36</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.37</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3682,7 +3692,7 @@
         <li>довідник найменувань і швидкий пошук;</li>
         <li>підрахунок піддонів, штук та окремої кількості в різних одиницях;</li>
         <li>історія підрахунків за датами;</li>
-        <li>30 тем оформлення, включно з власним конструктором;</li>
+        <li>40 тем оформлення, включно з власним конструктором;</li>
         <li>попередній перегляд і компактний PDF формату A4;</li>
         <li>резервне копіювання та відновлення даних;</li>
         <li>кошик із можливістю відновлення видаленого протягом 24 годин;</li>
@@ -3690,8 +3700,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.36</span></div>
-        <div class="small">Додано кошик на 24 години для найменувань, позицій, історії та повного стану програми. Виправлено підтвердження видалення з редактора.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.37</span></div>
+        <div class="small">Додано 10 приглушених тем для тривалої комфортної роботи. Загалом доступно 40 варіантів оформлення.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3762,7 +3772,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.36";
+  const APP_VERSION = "1.37";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3783,7 +3793,8 @@
     "dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper",
     "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta",
     "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave",
-    "slate", "obsidian", "custom"
+    "slate", "obsidian", "paper", "sage", "dusk", "nightblue", "latte", "mist", "calmsea",
+    "olive", "sepia", "moonstone", "custom"
   ];
   const EXTRA_THEME_PALETTES = {
     citrus: { scheme: "light", bg: "#fff8d8", surface: "#fffdf1", strong: "#ffffff", deep: "#f4e8ad", text: "#30270d", muted: "#76662d", border: "#dfcb75", borderStrong: "#aa8c28", primary: "#e87516", primaryDark: "#a84608", selection: "#58b88d", action: "#78652c", success: "#228657", warning: "#c56d13", danger: "#c94c3e" },
@@ -3805,7 +3816,17 @@
     sandsea: { scheme: "light", bg: "#f3edda", surface: "#fffaf0", strong: "#ffffff", deep: "#dfdfca", text: "#253536", muted: "#657674", border: "#c4c7ae", borderStrong: "#819b91", primary: "#278a8b", primaryDark: "#185a60", selection: "#e59743", action: "#657873", success: "#3b8562", warning: "#b97824", danger: "#bf4e4e" },
     vaporwave: { scheme: "dark", bg: "#130b2b", surface: "#251344", strong: "#3a1c61", deep: "#080414", text: "#fff2ff", muted: "#cbb3e9", border: "#623d88", borderStrong: "#8e5fba", primary: "#ff58b0", primaryDark: "#a82f7d", selection: "#49dbe6", action: "#62497e", success: "#31a77d", warning: "#da8a28", danger: "#e14f74" },
     slate: { scheme: "light", bg: "#e9eef3", surface: "#f8fafc", strong: "#ffffff", deep: "#d8e1e9", text: "#24303d", muted: "#637383", border: "#bdcad5", borderStrong: "#8195a7", primary: "#527da3", primaryDark: "#34536f", selection: "#c9855b", action: "#667789", success: "#398164", warning: "#b8762a", danger: "#bd4c58" },
-    obsidian: { scheme: "dark", bg: "#080808", surface: "#161513", strong: "#25221c", deep: "#020202", text: "#fff8e5", muted: "#c9bea2", border: "#4d4635", borderStrong: "#776944", primary: "#d5ad45", primaryDark: "#80641e", selection: "#ece4c8", action: "#514b3d", success: "#47845f", warning: "#c28b2f", danger: "#c54c4c" }
+    obsidian: { scheme: "dark", bg: "#080808", surface: "#161513", strong: "#25221c", deep: "#020202", text: "#fff8e5", muted: "#c9bea2", border: "#4d4635", borderStrong: "#776944", primary: "#d5ad45", primaryDark: "#80641e", selection: "#ece4c8", action: "#514b3d", success: "#47845f", warning: "#c28b2f", danger: "#c54c4c" },
+    paper: { scheme: "light", bg: "#f3f0e8", surface: "#faf8f2", strong: "#fefdf9", deep: "#e7e3da", text: "#30332f", muted: "#696d66", border: "#cbc8be", borderStrong: "#969991", primary: "#58756c", primaryDark: "#3c544e", selection: "#c8a66a", action: "#6d716b", success: "#4f7b61", warning: "#9d7132", danger: "#a95252" },
+    sage: { scheme: "light", bg: "#e7ece5", surface: "#f2f5f0", strong: "#fafcf8", deep: "#d9e0d6", text: "#2b352d", muted: "#657168", border: "#bdc9bc", borderStrong: "#899b89", primary: "#5f7f69", primaryDark: "#405d49", selection: "#b79b72", action: "#69766d", success: "#4f7d60", warning: "#9d7135", danger: "#a65357" },
+    dusk: { scheme: "dark", bg: "#17191d", surface: "#202329", strong: "#292d34", deep: "#111317", text: "#e0e4e8", muted: "#a7adb4", border: "#3b4048", borderStrong: "#59616c", primary: "#73889d", primaryDark: "#4c5e70", selection: "#b99b72", action: "#4c535c", success: "#56806a", warning: "#a7773a", danger: "#aa5b63" },
+    nightblue: { scheme: "dark", bg: "#111923", surface: "#192431", strong: "#223140", deep: "#0c1219", text: "#dce6ee", muted: "#9eb0bf", border: "#344657", borderStrong: "#526b7e", primary: "#5e819b", primaryDark: "#3b5c75", selection: "#b69b78", action: "#435c6d", success: "#4d806a", warning: "#a7793a", danger: "#ad5962" },
+    latte: { scheme: "light", bg: "#eee5da", surface: "#f7f0e7", strong: "#fdf9f3", deep: "#dfd3c5", text: "#3b3129", muted: "#74685e", border: "#cbbdad", borderStrong: "#9c8978", primary: "#8a6e59", primaryDark: "#604b3c", selection: "#79958b", action: "#786c63", success: "#577d64", warning: "#9d7034", danger: "#aa5454" },
+    mist: { scheme: "light", bg: "#eceaf1", surface: "#f5f3f8", strong: "#fcfbfd", deep: "#dedbe5", text: "#36313d", muted: "#706a78", border: "#c8c3d0", borderStrong: "#958da1", primary: "#756d89", primaryDark: "#514a63", selection: "#ad9071", action: "#736e7b", success: "#557b65", warning: "#9c7138", danger: "#a85560" },
+    calmsea: { scheme: "light", bg: "#e4eded", surface: "#eff5f4", strong: "#f9fbfa", deep: "#d4e0df", text: "#293738", muted: "#647476", border: "#b8c9c9", borderStrong: "#82999b", primary: "#567d80", primaryDark: "#395a5e", selection: "#b39870", action: "#667778", success: "#4c7c64", warning: "#9d7337", danger: "#a85359" },
+    olive: { scheme: "dark", bg: "#1a1d16", surface: "#24281e", strong: "#30352a", deep: "#11130e", text: "#e1e5d8", muted: "#abb29e", border: "#444b3b", borderStrong: "#656e58", primary: "#7f906b", primaryDark: "#566447", selection: "#b49a6e", action: "#535b49", success: "#5b8063", warning: "#a47a3c", danger: "#a95b5e" },
+    sepia: { scheme: "light", bg: "#eee5d4", surface: "#f7f0e3", strong: "#fcf8ef", deep: "#dfd3bd", text: "#3c3429", muted: "#766b5c", border: "#cabda6", borderStrong: "#9c8a70", primary: "#806f57", primaryDark: "#584a39", selection: "#78918a", action: "#756c60", success: "#567c62", warning: "#9b7136", danger: "#a65352" },
+    moonstone: { scheme: "light", bg: "#e7ebed", surface: "#f1f4f5", strong: "#fafbfb", deep: "#d8dfe2", text: "#2c353a", muted: "#69757b", border: "#bec9ce", borderStrong: "#8899a1", primary: "#607d8a", primaryDark: "#405b67", selection: "#aa9274", action: "#6a777d", success: "#507c65", warning: "#9d7438", danger: "#a6535c" }
   };
   const MEASUREMENT_UNITS = {
     kg: { short: "кг", amount: "Кілограмів" },
