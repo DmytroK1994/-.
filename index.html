@@ -992,6 +992,77 @@
       display: block;
       min-width: 0;
     }
+    #pageThemes {
+      position: relative;
+      min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
+    }
+    #settingsThemeSection {
+      position: relative;
+      z-index: 7;
+    }
+    .theme-category-button.gesture-selected,
+    .theme-option-button.gesture-selected {
+      border-color: var(--selection-border);
+      outline: 2px solid var(--selection-outline);
+      color: var(--selection-text);
+      background: var(--selection-bg);
+    }
+    .theme-gesture-pad {
+      display: none;
+    }
+    .saved-custom-theme-panel {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .saved-custom-theme-panel h3 {
+      margin: 0;
+    }
+    .saved-custom-theme-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+    .saved-custom-theme-row button {
+      margin: 0;
+    }
+    .saved-custom-theme-delete {
+      width: 42px;
+      padding: 7px;
+    }
+    @media (hover: none), (pointer: coarse), (max-width: 900px) {
+      #pageThemes {
+        padding-bottom: 150px;
+      }
+      .theme-gesture-pad {
+        position: fixed;
+        right: 0;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        left: 0;
+        z-index: 108;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        width: 100%;
+        height: 128px;
+        min-height: 0;
+        padding: 20px 20px 18px;
+        border: 0;
+        background: transparent;
+        text-align: center;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      body.theme-designer-active .theme-gesture-pad {
+        display: none;
+      }
+      body.bottom-nav-visible .theme-gesture-pad {
+        bottom: calc(max(10px, env(safe-area-inset-bottom)) + 68px);
+      }
+    }
     .print-only,
     .print-table-header {
       display: none;
@@ -1137,22 +1208,19 @@
       padding: 13px 38px 13px 28px;
       overflow: hidden;
       border-left: 0;
-      border-radius: 0 30px 13px 0 / 0 22px 32px 0;
-      background:
-        linear-gradient(100deg, var(--surface-strong) 0 78%, var(--surface) 100%);
+      border-radius: 0 8px 8px 0;
+      background: var(--surface-strong);
       text-align: left;
       letter-spacing: .15px;
-      box-shadow: 7px 7px 0 color-mix(in srgb, var(--border) 48%, transparent);
+      box-shadow: 5px 5px 0 var(--border);
       transform-origin: left center;
       white-space: nowrap;
     }
     html.menu-style-game .menu-btn:nth-child(even) {
-      padding-right: 46px;
-      border-radius: 0 15px 34px 0 / 0 28px 18px 0;
+      padding-right: 42px;
     }
     html.menu-style-game .menu-btn:nth-child(3n) {
-      padding-right: 42px;
-      border-radius: 0 36px 20px 0 / 0 16px 34px 0;
+      padding-right: 38px;
     }
     html.menu-style-game .menu-btn::after {
       content: "";
@@ -1164,17 +1232,17 @@
       border-radius: 999px;
       background: var(--border-strong);
       opacity: .7;
-      transform: rotate(7deg);
+      transform: none;
     }
     html.menu-style-game .menu-btn:hover,
     html.menu-style-game .menu-btn:active {
-      background: linear-gradient(100deg, var(--surface) 0 78%, var(--surface-strong) 100%);
-      transform: translateX(5px);
+      background: var(--surface);
+      transform: translateX(4px);
     }
     html.menu-style-game .menu-btn.gesture-selected {
       color: var(--selection-text);
-      background: linear-gradient(100deg, var(--selection-bg) 0 82%, var(--surface-strong) 100%);
-      box-shadow: 8px 8px 0 color-mix(in srgb, var(--selection-border) 42%, transparent);
+      background: var(--selection-bg);
+      box-shadow: 5px 5px 0 var(--selection-border);
     }
     html.menu-style-game .menu-btn.gesture-selected::after {
       background: var(--selection-border);
@@ -1217,6 +1285,10 @@
       transition: transform .14s ease, background .14s ease;
     }
     .drawer-gesture-pad.dragging .gesture-pad-handle {
+      transform: scaleX(1.14);
+      background: var(--selection-bg);
+    }
+    .theme-gesture-pad.dragging .gesture-pad-handle {
       transform: scaleX(1.14);
       background: var(--selection-bg);
     }
@@ -1289,6 +1361,27 @@
     .management-gesture-pad {
       display: none;
     }
+    html.menu-style-game .management-options {
+      justify-items: start;
+      margin-left: 0;
+      margin-right: auto;
+    }
+    html.menu-style-game .management-option {
+      width: fit-content;
+      max-width: 100%;
+      min-height: 52px;
+      padding: 12px 38px 12px 24px;
+      border-left: 0;
+      border-radius: 0 8px 8px 0;
+      background: var(--surface-strong);
+      text-align: left;
+      white-space: nowrap;
+      box-shadow: 5px 5px 0 var(--border);
+    }
+    html.menu-style-game .management-option.gesture-selected {
+      background: var(--selection-bg);
+      box-shadow: 5px 5px 0 var(--selection-border);
+    }
     @media (max-height: 560px) {
       #pageManagement {
         align-items: flex-start;
@@ -1347,7 +1440,7 @@
         top: calc(env(safe-area-inset-top) + 92px);
         left: 50%;
         width: min(calc(100% - 28px), 460px);
-        max-height: 240px;
+        max-height: 340px;
         min-height: 0;
         flex: none;
         flex-direction: column;
@@ -1372,7 +1465,7 @@
       }
       .menu-more-indicator {
         position: absolute;
-        top: calc(env(safe-area-inset-top) + 340px);
+        top: calc(env(safe-area-inset-top) + 440px);
         left: 50%;
         z-index: 8;
         width: max-content;
@@ -1413,6 +1506,17 @@
         left: 0;
         transform: translateY(-50%);
       }
+      html.menu-style-game .management-options {
+        left: 0;
+        width: min(91%, 460px);
+        padding-left: 0;
+        padding-right: 18px;
+        transform: none;
+      }
+      html.menu-style-game .management-option {
+        margin-left: 0;
+        padding-left: max(24px, env(safe-area-inset-left));
+      }
       .drawer-gesture-pad {
         position: absolute;
         inset: 0;
@@ -1447,7 +1551,7 @@
         top: 42px;
         left: 50%;
         width: min(calc(100% - 28px), 460px);
-        max-height: 264px;
+        max-height: 340px;
         overflow-y: auto;
         overscroll-behavior: contain;
         padding: 8px 10px 14px;
@@ -1485,7 +1589,8 @@
         background: var(--selection-bg);
       }
       html.joystick-disabled .drawer-gesture-pad,
-      html.joystick-disabled .management-gesture-pad {
+      html.joystick-disabled .management-gesture-pad,
+      html.joystick-disabled .theme-gesture-pad {
         display: none !important;
       }
       html.joystick-disabled .menu-wheel {
@@ -1495,6 +1600,10 @@
       html.joystick-disabled .management-options {
         top: 50%;
         transform: translate(-50%, -50%);
+      }
+      html.menu-style-game.joystick-disabled .management-options {
+        left: 0;
+        transform: translateY(-50%);
       }
     }
     .pill {
@@ -3295,7 +3404,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.40</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.41</span></div>
     </div>
   </div>
 
@@ -3676,6 +3785,13 @@
         <button type="button" class="secondary theme-category-back" id="closeThemeCategoryBtn">Назад до категорій</button>
         <h2 id="themeCategoryTitle"></h2>
         <div class="theme-options-list" id="themeOptionsList"></div>
+        <div class="saved-custom-theme-panel hidden" id="savedCustomThemePanel">
+          <h3>Збережені власні теми</h3>
+          <p class="small">Введи назву, щоб зберегти поточне власне оформлення окремим варіантом.</p>
+          <input id="savedCustomThemeName" maxlength="40" placeholder="Наприклад: Моя робоча тема" />
+          <button type="button" id="saveNamedCustomThemeBtn">Зберегти поточну тему</button>
+          <div id="savedCustomThemesList"></div>
+        </div>
       </div>
       <select id="themeSelect" class="hidden" aria-hidden="true" tabindex="-1">
         <option value="dark">Темна</option>
@@ -3769,6 +3885,11 @@
         <button id="resetCustomThemeBtn">Скинути власну тему</button>
       </div>
     </div>
+    <div class="theme-gesture-pad" id="themeGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування темами">
+      <span class="gesture-pad-handle"></span>
+      <span class="gesture-pad-selection" id="themeGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
+      <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
+    </div>
   </div>
 
   <div id="pageBackup" class="hidden">
@@ -3831,9 +3952,9 @@
         <label for="menuStyleSelect">Стиль бокового меню</label>
         <select id="menuStyleSelect">
           <option value="standard">Звичайний</option>
-          <option value="game">Асиметричний зліва</option>
+          <option value="game">Бокове строге</option>
         </select>
-        <p class="small">Асиметричний стиль притискає список до лівого краю, а ширина кожного пункту підлаштовується під його текст.</p>
+        <p class="small">Строгий стиль притискає прямі пункти до лівого краю, а їхня ширина підлаштовується під текст.</p>
       </section>
 
       <section class="card other-settings-group">
@@ -3886,7 +4007,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.40</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.41</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3906,8 +4027,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.40</span></div>
-        <div class="small">Удосконалено асиметричний стиль бокового меню: ширина пунктів тепер підлаштовується під текст.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.41</span></div>
+        <div class="small">Додано строге бокове меню, джойстик у каталозі тем і збереження власних тем із назвами.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3978,12 +4099,13 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.40";
+  const APP_VERSION = "1.41";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
   const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
+  const CUSTOM_THEME_LIBRARY_KEY = "warehouseJournalCustomThemeLibrary";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
   const MENU_STYLE_KEY = "warehouseJournalMenuStyle";
@@ -4281,6 +4403,99 @@
 
   function saveCustomThemePalette(palette) {
     try { localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(palette)); } catch (error) {}
+  }
+
+  function loadNamedCustomThemes() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CUSTOM_THEME_LIBRARY_KEY) || "[]");
+      if (!Array.isArray(saved)) return [];
+      return saved.filter(item => item && item.id && item.name && item.palette);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveNamedCustomThemes(themes) {
+    try { localStorage.setItem(CUSTOM_THEME_LIBRARY_KEY, JSON.stringify(themes)); } catch (error) {}
+  }
+
+  function renderNamedCustomThemes() {
+    const list = document.getElementById("savedCustomThemesList");
+    if (!list) return;
+    const themes = loadNamedCustomThemes();
+    if (!themes.length) {
+      list.innerHTML = '<p class="small">Збережених варіантів поки немає.</p>';
+      return;
+    }
+    list.innerHTML = themes.map(theme => {
+      const palette = { ...CUSTOM_THEME_DEFAULTS, ...theme.palette };
+      const swatches = [palette.customBg, palette.customPrimary, palette.customSelection]
+        .map(color => `<span class="theme-palette-swatch" style="background:${color}"></span>`)
+        .join("");
+      return `
+        <div class="saved-custom-theme-row">
+          <button type="button" class="theme-option-button" data-action="choose-saved-custom-theme" data-id="${theme.id}">
+            <span class="theme-palette" aria-hidden="true">${swatches}</span>
+            <span>${escapeHtml(theme.name)}</span>
+            <span></span>
+          </button>
+          <button type="button" class="saved-custom-theme-delete" data-action="delete-saved-custom-theme" data-id="${theme.id}" aria-label="Видалити тему ${escapeHtml(theme.name)}">×</button>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function saveCurrentThemeWithName() {
+    const input = document.getElementById("savedCustomThemeName");
+    const name = (input?.value || "").trim();
+    if (!name) {
+      toast("Введи назву теми", true);
+      input?.focus();
+      return;
+    }
+    const isCustom = document.documentElement.dataset.theme === "custom";
+    const themes = loadNamedCustomThemes();
+    themes.push({
+      id: "custom-theme-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+      name,
+      palette: isCustom ? loadCustomTheme() : captureCurrentThemePalette(),
+      componentStyles: isCustom ? loadCustomComponentStyles() : { types: {}, elements: {} },
+      createdAt: new Date().toISOString()
+    });
+    saveNamedCustomThemes(themes);
+    if (input) input.value = "";
+    renderNamedCustomThemes();
+    initializeThemeGestureSelection();
+    toast("Власну тему збережено");
+  }
+
+  function applyNamedCustomTheme(id) {
+    const theme = loadNamedCustomThemes().find(item => item.id === id);
+    if (!theme) return;
+    saveCustomThemePalette({ ...CUSTOM_THEME_DEFAULTS, ...theme.palette });
+    saveCustomComponentStyles(theme.componentStyles || { types: {}, elements: {} });
+    customThemeEditorOpen = false;
+    applyTheme("custom");
+    renderThemeCategories();
+    toast("Застосовано тему «" + theme.name + "»");
+  }
+
+  async function deleteNamedCustomTheme(id) {
+    const themes = loadNamedCustomThemes();
+    const theme = themes.find(item => item.id === id);
+    if (!theme) return;
+    const confirmed = await showAppDialog({
+      label: "Власна тема",
+      title: "Видалити збережену тему?",
+      message: `Тему «${theme.name}» буде видалено зі списку.`,
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
+    saveNamedCustomThemes(themes.filter(item => item.id !== id));
+    renderNamedCustomThemes();
+    initializeThemeGestureSelection();
+    toast("Тему видалено");
   }
 
   function contrastText(hex) {
@@ -4644,20 +4859,23 @@
     const categoryView = document.getElementById("themeCategoryView");
     const optionsList = document.getElementById("themeOptionsList");
     const title = document.getElementById("themeCategoryTitle");
+    const savedPanel = document.getElementById("savedCustomThemePanel");
     if (!categoryList || !categoryView || !optionsList || !title) return;
 
     const category = THEME_CATEGORIES.find(item => item.key === activeThemeCategory);
     categoryList.classList.toggle("hidden", Boolean(category));
     categoryView.classList.toggle("hidden", !category);
+    if (savedPanel) savedPanel.classList.toggle("hidden", category?.key !== "custom");
 
     if (!category) {
       categoryList.innerHTML = THEME_CATEGORIES.map(item => `
         <button type="button" class="theme-category-button" data-action="open-theme-category" data-id="${item.key}">
           <span>${item.label}</span>
-          <span class="theme-category-count">${item.themes.length}</span>
+          <span class="theme-category-count">${item.themes.length + (item.key === "custom" ? loadNamedCustomThemes().length : 0)}</span>
         </button>
       `).join("");
       optionsList.innerHTML = "";
+      requestAnimationFrame(initializeThemeGestureSelection);
       return;
     }
 
@@ -4676,6 +4894,8 @@
         </button>
       `;
     }).join("");
+    if (category.key === "custom") renderNamedCustomThemes();
+    requestAnimationFrame(initializeThemeGestureSelection);
   }
 
   function openThemeCategory(categoryKey) {
@@ -4884,6 +5104,13 @@
   let managementGestureAxis = "";
   let managementGestureDragging = false;
   let managementGestureMoved = false;
+  let themeGestureIndex = 0;
+  let themeGestureDragStartX = 0;
+  let themeGestureDragStartY = 0;
+  let themeGestureDragStartIndex = 0;
+  let themeGestureAxis = "";
+  let themeGestureDragging = false;
+  let themeGestureMoved = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -5986,6 +6213,101 @@
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         activateManagementGestureSelection();
+      }
+    });
+  }
+
+  function getThemeGestureItems() {
+    const selector = activeThemeCategory
+      ? "#themeOptionsList .theme-option-button, #savedCustomThemesList [data-action='choose-saved-custom-theme']"
+      : "#themeCategoryList .theme-category-button";
+    return Array.from(document.querySelectorAll(selector)).filter(item => !item.classList.contains("hidden"));
+  }
+
+  function setThemeGestureSelection(index) {
+    const items = getThemeGestureItems();
+    if (!items.length) return;
+    themeGestureIndex = Math.max(0, Math.min(items.length - 1, index));
+    items.forEach((item, itemIndex) => item.classList.toggle("gesture-selected", itemIndex === themeGestureIndex));
+    const selected = items[themeGestureIndex];
+    const label = document.getElementById("themeGestureSelection");
+    if (label) label.textContent = "Вибрано: " + selected.textContent.trim();
+    selected.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function initializeThemeGestureSelection() {
+    const items = getThemeGestureItems();
+    themeGestureIndex = 0;
+    items.forEach(item => item.classList.remove("gesture-selected"));
+    const label = document.getElementById("themeGestureSelection");
+    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
+  }
+
+  function activateThemeGestureSelection() {
+    const item = getThemeGestureItems()[themeGestureIndex];
+    if (item) item.click();
+  }
+
+  function initThemeGesturePad() {
+    const pad = document.getElementById("themeGesturePad");
+    if (!pad) return;
+
+    pad.addEventListener("pointerdown", event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      event.preventDefault();
+      themeGestureDragging = true;
+      themeGestureMoved = false;
+      themeGestureAxis = "";
+      themeGestureDragStartX = event.clientX;
+      themeGestureDragStartY = event.clientY;
+      themeGestureDragStartIndex = themeGestureIndex;
+      pad.classList.add("dragging");
+      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    pad.addEventListener("pointermove", event => {
+      if (!themeGestureDragging) return;
+      const horizontalDistance = event.clientX - themeGestureDragStartX;
+      const verticalDistance = event.clientY - themeGestureDragStartY;
+      if (!themeGestureAxis && Math.max(Math.abs(horizontalDistance), Math.abs(verticalDistance)) > 10) {
+        themeGestureAxis = Math.abs(horizontalDistance) > Math.abs(verticalDistance) ? "horizontal" : "vertical";
+      }
+      if (themeGestureAxis === "horizontal") {
+        themeGestureDragging = false;
+        themeGestureMoved = false;
+        themeGestureAxis = "";
+        pad.classList.remove("dragging");
+        try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+        return;
+      }
+      if (themeGestureAxis !== "vertical") return;
+      event.preventDefault();
+      const distance = event.clientY - themeGestureDragStartY;
+      if (Math.abs(distance) > 10) themeGestureMoved = true;
+      const nextIndex = Math.max(0, Math.min(getThemeGestureItems().length - 1,
+        themeGestureDragStartIndex + Math.round(distance / 42)));
+      if (nextIndex !== themeGestureIndex) setThemeGestureSelection(nextIndex);
+    });
+
+    const finishGesture = event => {
+      if (!themeGestureDragging) return;
+      themeGestureDragging = false;
+      themeGestureAxis = "";
+      pad.classList.remove("dragging");
+      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (event.type === "pointercancel" || themeGestureMoved) return;
+      activateThemeGestureSelection();
+    };
+    pad.addEventListener("pointerup", finishGesture);
+    pad.addEventListener("pointercancel", finishGesture);
+    pad.addEventListener("keydown", event => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        setThemeGestureSelection(themeGestureIndex + (event.key === "ArrowDown" ? 1 : -1));
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activateThemeGestureSelection();
       }
     });
   }
@@ -7928,6 +8250,8 @@
     if (action === "select-quick-edit-entry") selectQuickEditEntry(id);
     if (action === "open-theme-category") openThemeCategory(id);
     if (action === "choose-theme") chooseTheme(id);
+    if (action === "choose-saved-custom-theme") applyNamedCustomTheme(id);
+    if (action === "delete-saved-custom-theme") deleteNamedCustomTheme(id);
   });
 
   document.addEventListener("change", function (event) {
@@ -8073,6 +8397,7 @@
     chooseTheme(event.target.value);
   });
   document.getElementById("closeThemeCategoryBtn").addEventListener("click", closeThemeCategory);
+  document.getElementById("saveNamedCustomThemeBtn").addEventListener("click", saveCurrentThemeWithName);
   document.getElementById("openCustomThemeEditorBtn").addEventListener("click", enterCustomThemeEditor);
   document.getElementById("finishCustomThemeBtn").addEventListener("click", finishCustomThemeEditor);
   document.getElementById("themeDesignerDoneBtn").addEventListener("click", finishCustomThemeEditor);
@@ -8126,7 +8451,7 @@
     const style = event.target.value === "game" ? "game" : "standard";
     try { localStorage.setItem(MENU_STYLE_KEY, style); } catch (error) {}
     applyMenuStyle(style);
-    toast(style === "game" ? "Увімкнено асиметричний стиль меню" : "Повернено звичайний стиль меню");
+    toast(style === "game" ? "Увімкнено строге бокове меню" : "Повернено звичайний стиль меню");
   });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
@@ -8201,6 +8526,7 @@
   initAppTopPosition();
   initGestureMenuPad();
   initManagementGesturePad();
+  initThemeGesturePad();
   initMenuSwipeGestures();
   initPageBackSwipe();
   initDocumentPreviewSwipe();
