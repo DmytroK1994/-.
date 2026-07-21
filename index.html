@@ -1503,6 +1503,30 @@
     html.menu-style-game #pageThemes.theme-category-root .theme-category-button.gesture-selected .theme-category-count {
       right: 38px;
     }
+    #pageThemes.theme-category-open .theme-option-button.nav-choice {
+      border: var(--mirrored-menu-border, 1px solid var(--border)) !important;
+      border-radius: var(--mirrored-menu-radius, 8px) !important;
+      background: var(--mirrored-menu-bg, var(--surface-strong)) !important;
+      color: var(--mirrored-menu-text, var(--text)) !important;
+      box-shadow: var(--mirrored-menu-shadow, 5px 5px 0 var(--border)) !important;
+      text-align: center;
+      font-family: var(--mirrored-menu-font-family, inherit);
+      font-size: var(--mirrored-menu-font-size, 15px);
+      font-weight: var(--mirrored-menu-font-weight, 750);
+      letter-spacing: var(--mirrored-menu-letter-spacing, normal);
+    }
+    #pageThemes.theme-category-open .theme-option-button.nav-choice.selected {
+      border-color: var(--selection-border) !important;
+      outline-color: var(--selection-outline);
+      box-shadow: 5px 5px 0 var(--selection-border) !important;
+    }
+    #pageThemes.theme-category-open .favorite-theme-button:not(.is-favorite) {
+      border: var(--mirrored-menu-border, 1px solid var(--border)) !important;
+      border-radius: var(--mirrored-menu-radius, 8px) !important;
+      background: var(--mirrored-menu-bg, var(--surface-strong)) !important;
+      color: var(--mirrored-menu-text, var(--text)) !important;
+      box-shadow: var(--mirrored-menu-shadow, 5px 5px 0 var(--border)) !important;
+    }
     .drawer-menu-content {
       min-height: 0;
     }
@@ -3666,7 +3690,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.52</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.53</span></div>
     </div>
   </div>
 
@@ -4268,7 +4292,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.52</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.53</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4288,8 +4312,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.52</span></div>
-        <div class="small">Активна зірочка улюбленої теми тепер має помітне золотисте підсвічування, контрастну рамку й тінь.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.53</span></div>
+        <div class="small">Підпункти конкретних тем і кнопки-зірочки приведено до єдиного об’ємного стилю головного меню.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4360,7 +4384,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.52";
+  const APP_VERSION = "1.53";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5229,7 +5253,10 @@
       `;
     }).join("") : '<p class="small empty-theme-category">Улюблених тем поки немає. Додай їх кнопкою ★ біля потрібної теми.</p>';
     if (category.key === "custom") renderNamedCustomThemes();
-    requestAnimationFrame(initializeThemeGestureSelection);
+    requestAnimationFrame(() => {
+      mirrorMainMenuButtonAppearance();
+      initializeThemeGestureSelection();
+    });
   }
 
   function openThemeCategory(categoryKey) {
