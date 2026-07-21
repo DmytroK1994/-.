@@ -14,6 +14,10 @@
         "joystick-disabled",
         localStorage.getItem("warehouseJournalJoystickMode") === "disabled"
       );
+      document.documentElement.classList.toggle(
+        "menu-style-game",
+        localStorage.getItem("warehouseJournalMenuStyle") === "game"
+      );
     } catch (e) {}
   </script>
   <style>
@@ -1121,6 +1125,59 @@
       color: var(--selection-text);
       background: var(--selection-bg);
     }
+    html.menu-style-game .menu-wheel {
+      align-items: flex-start;
+    }
+    html.menu-style-game .menu-btn {
+      position: relative;
+      width: calc(100% + 14px);
+      min-height: 54px;
+      margin: 8px 0 0 -14px;
+      padding: 13px 38px 13px 28px;
+      overflow: hidden;
+      border-left: 0;
+      border-radius: 0 30px 13px 0 / 0 22px 32px 0;
+      background:
+        linear-gradient(100deg, var(--surface-strong) 0 78%, var(--surface) 100%);
+      text-align: left;
+      letter-spacing: .15px;
+      box-shadow: 7px 7px 0 color-mix(in srgb, var(--border) 48%, transparent);
+      transform-origin: left center;
+    }
+    html.menu-style-game .menu-btn:nth-child(even) {
+      width: calc(92% + 14px);
+      border-radius: 0 15px 34px 0 / 0 28px 18px 0;
+    }
+    html.menu-style-game .menu-btn:nth-child(3n) {
+      width: calc(97% + 14px);
+      border-radius: 0 36px 20px 0 / 0 16px 34px 0;
+    }
+    html.menu-style-game .menu-btn::after {
+      content: "";
+      position: absolute;
+      top: 9px;
+      right: 10px;
+      width: 7px;
+      height: calc(100% - 18px);
+      border-radius: 999px;
+      background: var(--border-strong);
+      opacity: .7;
+      transform: rotate(7deg);
+    }
+    html.menu-style-game .menu-btn:hover,
+    html.menu-style-game .menu-btn:active {
+      background: linear-gradient(100deg, var(--surface) 0 78%, var(--surface-strong) 100%);
+      transform: translateX(5px);
+    }
+    html.menu-style-game .menu-btn.gesture-selected {
+      color: var(--selection-text);
+      background: linear-gradient(100deg, var(--selection-bg) 0 82%, var(--surface-strong) 100%);
+      box-shadow: 8px 8px 0 color-mix(in srgb, var(--selection-border) 42%, transparent);
+    }
+    html.menu-style-game .menu-btn.gesture-selected::after {
+      background: var(--selection-border);
+      opacity: 1;
+    }
     .drawer-menu-content {
       min-height: 0;
     }
@@ -1334,6 +1391,30 @@
       .menu-wheel .menu-btn.gesture-selected {
         color: var(--selection-text);
         background: var(--selection-bg);
+      }
+      html.menu-style-game .menu-wheel {
+        left: 0;
+        width: min(91%, 460px);
+        padding-left: 0;
+        padding-right: 18px;
+        transform: none;
+      }
+      html.menu-style-game .menu-wheel .menu-btn {
+        align-self: flex-start;
+        width: 100%;
+        margin-left: 0;
+        padding-left: max(24px, env(safe-area-inset-left));
+        text-align: left;
+      }
+      html.menu-style-game .menu-wheel .menu-btn:nth-child(even) {
+        width: 88%;
+      }
+      html.menu-style-game .menu-wheel .menu-btn:nth-child(3n) {
+        width: 95%;
+      }
+      html.menu-style-game.joystick-disabled .menu-wheel {
+        left: 0;
+        transform: translateY(-50%);
       }
       .drawer-gesture-pad {
         position: absolute;
@@ -1844,6 +1925,19 @@
       background: var(--soft-action-bg);
       color: var(--soft-action-text);
       box-shadow: none;
+    }
+    .other-settings-stack {
+      display: grid;
+      gap: 12px;
+    }
+    .other-settings-group {
+      margin: 0;
+    }
+    .other-settings-group h2 {
+      margin-bottom: 4px;
+    }
+    .other-settings-group .settings-group-description {
+      margin: 0 0 12px;
     }
     #pageHistory button.yellow {
       border-color: var(--soft-warning-border);
@@ -3204,7 +3298,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.38</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.39</span></div>
     </div>
   </div>
 
@@ -3710,26 +3804,51 @@
   </div>
 
   <div id="pageOtherSettings" class="hidden">
-    <div class="card" id="settingsOtherSection">
-      <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
-      <label for="backNavigationSelect">Спосіб повернення</label>
-      <select id="backNavigationSelect">
-        <option value="auto">Автоматично</option>
-        <option value="button">Кнопка «Назад»</option>
-        <option value="swipe">Свайп справа наліво</option>
-      </select>
-      <label for="joystickModeSelect">Джойстик меню та налаштувань</label>
-      <select id="joystickModeSelect">
-        <option value="enabled">Увімкнено</option>
-        <option value="disabled">Вимкнено — звичайний список</option>
-      </select>
-      <p class="small">Коли джойстик вимкнено, пункти меню та налаштувань показуються звичайним списком по центру екрана.</p>
-      <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
-      <select id="entryUnitVisibilitySelect">
-        <option value="hidden">Приховано</option>
-        <option value="visible">Показувати</option>
-      </select>
-      <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
+    <div class="other-settings-stack" id="settingsOtherSection">
+      <section class="card other-settings-group">
+        <h2>Навігація</h2>
+        <p class="small settings-group-description">Вибери, як повертатися з вкладених сторінок застосунку.</p>
+        <label for="backNavigationSelect">Спосіб повернення</label>
+        <select id="backNavigationSelect">
+          <option value="auto">Автоматично</option>
+          <option value="button">Кнопка «Назад»</option>
+          <option value="swipe">Свайп справа наліво</option>
+        </select>
+        <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
+      </section>
+
+      <section class="card other-settings-group">
+        <h2>Керування меню</h2>
+        <p class="small settings-group-description">Джойстик дозволяє вибирати пункти рухом пальця вгору або вниз.</p>
+        <label for="joystickModeSelect">Джойстик меню та налаштувань</label>
+        <select id="joystickModeSelect">
+          <option value="enabled">Увімкнено</option>
+          <option value="disabled">Вимкнено — звичайний список</option>
+        </select>
+        <p class="small">Коли джойстик вимкнено, пункти показуються звичайним списком.</p>
+      </section>
+
+      <section class="card other-settings-group">
+        <h2>Вигляд меню</h2>
+        <p class="small settings-group-description">Зміни форму й розташування пунктів бокового меню.</p>
+        <label for="menuStyleSelect">Стиль бокового меню</label>
+        <select id="menuStyleSelect">
+          <option value="standard">Звичайний</option>
+          <option value="game">Ігровий — асиметричний зліва</option>
+        </select>
+        <p class="small">Ігровий стиль притискає список до лівого краю та використовує м’які нестандартні форми.</p>
+      </section>
+
+      <section class="card other-settings-group">
+        <h2>Введення даних</h2>
+        <p class="small settings-group-description">Налаштування полів на екрані поточного підрахунку.</p>
+        <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
+        <select id="entryUnitVisibilitySelect">
+          <option value="hidden">Приховано</option>
+          <option value="visible">Показувати</option>
+        </select>
+        <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
+      </section>
     </div>
   </div>
 
@@ -3770,7 +3889,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.38</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.39</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3790,8 +3909,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.38</span></div>
-        <div class="small">Додано 10 яскравих молодіжних тем. Усі 50 варіантів оформлення розподілено за зручними категоріями.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.39</span></div>
+        <div class="small">Додано перемикний ігровий стиль бокового меню. Інші налаштування розподілено за зрозумілими категоріями.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3862,7 +3981,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.38";
+  const APP_VERSION = "1.39";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3870,6 +3989,7 @@
   const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
+  const MENU_STYLE_KEY = "warehouseJournalMenuStyle";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -6244,6 +6364,22 @@
     requestAnimationFrame(updateMenuOverflowIndicator);
   }
 
+  function getMenuStyle() {
+    try {
+      return localStorage.getItem(MENU_STYLE_KEY) === "game" ? "game" : "standard";
+    } catch (error) {
+      return "standard";
+    }
+  }
+
+  function applyMenuStyle(style = getMenuStyle()) {
+    const normalizedStyle = style === "game" ? "game" : "standard";
+    document.documentElement.classList.toggle("menu-style-game", normalizedStyle === "game");
+    const select = document.getElementById("menuStyleSelect");
+    if (select) select.value = normalizedStyle;
+    requestAnimationFrame(updateMenuOverflowIndicator);
+  }
+
   function getEntryUnitVisibility() {
     try {
       return localStorage.getItem(ENTRY_UNIT_VISIBILITY_KEY) === "visible" ? "visible" : "hidden";
@@ -7987,6 +8123,14 @@
     applyJoystickMode(mode);
     toast(mode === "enabled" ? "Джойстик увімкнено" : "Увімкнено звичайний список");
   });
+  const menuStyleSelect = document.getElementById("menuStyleSelect");
+  menuStyleSelect.value = getMenuStyle();
+  menuStyleSelect.addEventListener("change", event => {
+    const style = event.target.value === "game" ? "game" : "standard";
+    try { localStorage.setItem(MENU_STYLE_KEY, style); } catch (error) {}
+    applyMenuStyle(style);
+    toast(style === "game" ? "Увімкнено ігровий стиль меню" : "Повернено звичайний стиль меню");
+  });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
   entryUnitVisibilitySelect.addEventListener("change", event => {
@@ -8050,6 +8194,7 @@
 
   renderAppVersion();
   applyJoystickMode();
+  applyMenuStyle();
   applyEntryUnitVisibility();
   updateDemoModeUI();
   renderThemeCategories();
