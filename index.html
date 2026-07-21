@@ -970,19 +970,25 @@
       box-shadow: none;
     }
     .theme-category-button {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      position: relative;
+      display: flex;
       align-items: center;
-      gap: 10px;
-      text-align: left;
-      font-weight: 850;
+      justify-content: center;
       width: 100%;
-      min-height: 52px;
+      min-height: 54px;
+      padding: 13px 48px;
       border-radius: 8px;
       background: var(--surface-strong);
+      color: var(--text);
       box-shadow: 5px 5px 0 var(--border);
+      text-align: center;
+      font-size: 15px;
+      font-weight: 750;
     }
     .theme-category-count {
+      position: absolute;
+      top: 50%;
+      right: 12px;
       min-width: 28px;
       padding: 3px 7px;
       border-radius: 999px;
@@ -990,6 +996,10 @@
       color: var(--muted);
       text-align: center;
       font-size: 11px;
+      transform: translateY(-50%);
+    }
+    .theme-category-button.gesture-selected .theme-category-count {
+      right: 38px;
     }
     .theme-category-view h2 {
       margin: 12px 0 4px;
@@ -1056,6 +1066,8 @@
       margin-right: auto;
     }
     html.menu-style-game #pageThemes.theme-category-root .theme-category-button {
+      justify-content: flex-start;
+      padding-left: max(24px, env(safe-area-inset-left));
       border-left: 0;
       border-radius: 0 8px 8px 0;
       text-align: left;
@@ -3538,7 +3550,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.45</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.46</span></div>
     </div>
   </div>
 
@@ -4140,7 +4152,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.45</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.46</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4160,8 +4172,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.45</span></div>
-        <div class="small">Пункти головного меню, налаштувань і категорій тем вирівняно та розтягнуто майже на всю ширину екрана.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.46</span></div>
+        <div class="small">Категорії тем оформлення приведено до стилю головного меню та налаштувань, а назви вирівняно по центру.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4232,7 +4244,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.45";
+  const APP_VERSION = "1.46";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
