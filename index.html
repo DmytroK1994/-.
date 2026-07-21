@@ -952,6 +952,12 @@
       gap: 7px;
       margin-top: 10px;
     }
+    .theme-category-list {
+      width: max-content;
+      max-width: 100%;
+      margin-inline: auto;
+      align-items: stretch;
+    }
     .theme-category-button,
     .theme-option-button {
       min-height: 48px;
@@ -970,6 +976,11 @@
       gap: 10px;
       text-align: left;
       font-weight: 850;
+      width: 100%;
+      min-height: 52px;
+      border-radius: 8px;
+      background: var(--surface-strong);
+      box-shadow: 5px 5px 0 var(--border);
     }
     .theme-category-count {
       min-width: 28px;
@@ -1029,6 +1040,27 @@
       position: relative;
       z-index: 7;
     }
+    #pageThemes.theme-category-root #settingsThemeSection {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    #pageThemes.theme-category-root #settingsThemeSection > .small {
+      text-align: center;
+    }
+    #pageThemes.theme-category-open .theme-gesture-pad {
+      display: none !important;
+    }
+    html.menu-style-game #pageThemes.theme-category-root .theme-category-list {
+      margin-left: 0;
+      margin-right: auto;
+    }
+    html.menu-style-game #pageThemes.theme-category-root .theme-category-button {
+      border-left: 0;
+      border-radius: 0 8px 8px 0;
+      text-align: left;
+    }
     .theme-category-button.gesture-selected,
     .theme-option-button.gesture-selected {
       border-color: var(--selection-border);
@@ -1062,7 +1094,7 @@
       padding: 7px;
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
-      #pageThemes {
+      #pageThemes.theme-category-root {
         padding-bottom: 150px;
       }
       .theme-gesture-pad {
@@ -1199,14 +1231,14 @@
       display: none;
     }
     .menu-btn {
-      background: transparent;
+      background: var(--surface-strong);
       color: var(--text);
-      text-align: left;
+      text-align: center;
       margin-top: 7px;
       padding: 13px 14px;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: none;
+      border-radius: 8px;
+      box-shadow: 5px 5px 0 var(--border);
       font-size: 15px;
       font-weight: 750;
     }
@@ -1215,7 +1247,7 @@
       background: var(--surface);
     }
     .menu-btn.active {
-      background: transparent;
+      background: var(--surface-strong);
       border-color: var(--border);
       color: var(--text);
     }
@@ -1230,8 +1262,8 @@
     }
     html.menu-style-game .menu-btn {
       position: relative;
-      width: fit-content;
-      max-width: calc(100% + 14px);
+      width: 100%;
+      max-width: 100%;
       min-height: 54px;
       margin: 8px 0 0 -14px;
       padding: 13px 38px 13px 28px;
@@ -1244,12 +1276,6 @@
       box-shadow: 5px 5px 0 var(--border);
       transform-origin: left center;
       white-space: nowrap;
-    }
-    html.menu-style-game .menu-btn:nth-child(even) {
-      padding-right: 42px;
-    }
-    html.menu-style-game .menu-btn:nth-child(3n) {
-      padding-right: 38px;
     }
     html.menu-style-game .menu-btn::after {
       content: "";
@@ -1340,7 +1366,8 @@
       z-index: 7;
       display: grid;
       gap: 8px;
-      width: min(100%, 460px);
+      width: max-content;
+      max-width: 100%;
       margin-inline: auto;
     }
     #pageManagement {
@@ -1369,11 +1396,15 @@
       margin: 0;
     }
     .management-option {
+      width: 100%;
       margin-top: 0;
       border: 1px solid var(--border);
       background: transparent;
       color: var(--text);
       box-shadow: none;
+      border-radius: 8px;
+      background: var(--surface-strong);
+      box-shadow: 5px 5px 0 var(--border);
     }
     .management-option:hover,
     .management-option:active {
@@ -1396,7 +1427,7 @@
       margin-right: auto;
     }
     html.menu-style-game .management-option {
-      width: fit-content;
+      width: 100%;
       max-width: 100%;
       min-height: 52px;
       padding: 12px 38px 12px 24px;
@@ -1464,16 +1495,15 @@
         text-align: center;
       }
       .menu-wheel {
-        display: flex;
+        display: grid;
         position: absolute;
         top: calc(env(safe-area-inset-top) + 92px);
         left: 50%;
-        width: min(calc(100% - 28px), 460px);
+        width: max-content;
+        max-width: min(calc(100% - 28px), 460px);
         max-height: 340px;
         min-height: 0;
-        flex: none;
-        flex-direction: column;
-        justify-content: flex-start;
+        align-content: start;
         overflow-y: auto;
         overscroll-behavior: contain;
         padding: 8px 10px 14px;
@@ -1487,9 +1517,9 @@
         transform: translateX(-50%);
       }
       .menu-wheel .menu-btn {
-        width: min(100%, 440px);
+        width: 100%;
         flex: 0 0 auto;
-        align-self: center;
+        align-self: stretch;
         text-align: center;
       }
       .menu-more-indicator {
@@ -1518,14 +1548,15 @@
       }
       html.menu-style-game .menu-wheel {
         left: 0;
-        width: min(91%, 460px);
+        width: max-content;
+        max-width: min(91%, 460px);
         padding-left: 0;
         padding-right: 18px;
         transform: none;
       }
       html.menu-style-game .menu-wheel .menu-btn {
         align-self: flex-start;
-        width: fit-content;
+        width: 100%;
         max-width: 100%;
         margin-left: 0;
         padding-left: max(24px, env(safe-area-inset-left));
@@ -1537,7 +1568,8 @@
       }
       html.menu-style-game .management-options {
         left: 0;
-        width: min(91%, 460px);
+        width: max-content;
+        max-width: min(91%, 460px);
         padding-left: 0;
         padding-right: 18px;
         transform: none;
@@ -1579,7 +1611,8 @@
         position: absolute;
         top: 42px;
         left: 50%;
-        width: min(calc(100% - 28px), 460px);
+        width: max-content;
+        max-width: min(calc(100% - 28px), 460px);
         max-height: 340px;
         overflow-y: auto;
         overscroll-behavior: contain;
@@ -3433,7 +3466,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.42</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.43</span></div>
     </div>
   </div>
 
@@ -3977,13 +4010,13 @@
 
       <section class="card other-settings-group">
         <h2>Вигляд меню</h2>
-        <p class="small settings-group-description">Зміни форму й розташування пунктів бокового меню.</p>
-        <label for="menuStyleSelect">Стиль бокового меню</label>
+        <p class="small settings-group-description">Зміни розташування пунктів основного меню.</p>
+        <label for="menuStyleSelect">Вигляд основного меню</label>
         <select id="menuStyleSelect">
-          <option value="standard">Звичайний</option>
-          <option value="game">Бокове строге</option>
+          <option value="standard">Звичайне меню</option>
+          <option value="game">Бокове меню</option>
         </select>
-        <p class="small">Строгий стиль притискає прямі пункти до лівого краю, а їхня ширина підлаштовується під текст.</p>
+        <p class="small" id="menuStyleDescription"></p>
       </section>
 
       <section class="card other-settings-group">
@@ -4036,7 +4069,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.42</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.43</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4056,8 +4089,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.42</span></div>
-        <div class="small">Поля введення в усіх темах стали нейтральними й комфортнішими: світлими у світлих темах та графітовими у темних.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.43</span></div>
+        <div class="small">Оновлено звичайне й бокове меню, перебудовано каталог тем і виправлено повернення з підкатегорій.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4128,7 +4161,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.42";
+  const APP_VERSION = "1.43";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4904,9 +4937,14 @@
     const optionsList = document.getElementById("themeOptionsList");
     const title = document.getElementById("themeCategoryTitle");
     const savedPanel = document.getElementById("savedCustomThemePanel");
+    const themesPage = document.getElementById("pageThemes");
     if (!categoryList || !categoryView || !optionsList || !title) return;
 
     const category = THEME_CATEGORIES.find(item => item.key === activeThemeCategory);
+    if (themesPage) {
+      themesPage.classList.toggle("theme-category-root", !category);
+      themesPage.classList.toggle("theme-category-open", Boolean(category));
+    }
     categoryList.classList.toggle("hidden", Boolean(category));
     categoryView.classList.toggle("hidden", !category);
     if (savedPanel) savedPanel.classList.toggle("hidden", category?.key !== "custom");
@@ -6676,6 +6714,10 @@
   }
 
   function navigateBack() {
+    if (currentPage === "themes" && activeThemeCategory) {
+      closeThemeCategory();
+      return;
+    }
     const parentPage = PAGE_PARENTS[currentPage];
     if (!parentPage) return;
     pageNavigationHistory = [];
@@ -6740,6 +6782,12 @@
     document.documentElement.classList.toggle("menu-style-game", normalizedStyle === "game");
     const select = document.getElementById("menuStyleSelect");
     if (select) select.value = normalizedStyle;
+    const description = document.getElementById("menuStyleDescription");
+    if (description) {
+      description.textContent = normalizedStyle === "game"
+        ? "Бокове меню розташовує однакові прямі пункти біля лівого краю."
+        : "Звичайне меню розташовує однакові прямі пункти по центру екрана.";
+    }
     requestAnimationFrame(updateMenuOverflowIndicator);
   }
 
@@ -8495,7 +8543,7 @@
     const style = event.target.value === "game" ? "game" : "standard";
     try { localStorage.setItem(MENU_STYLE_KEY, style); } catch (error) {}
     applyMenuStyle(style);
-    toast(style === "game" ? "Увімкнено строге бокове меню" : "Повернено звичайний стиль меню");
+    toast(style === "game" ? "Увімкнено бокове меню" : "Увімкнено звичайне меню");
   });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
