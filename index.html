@@ -555,6 +555,16 @@
       color: var(--soft-action-text);
       box-shadow: none;
     }
+    .product-add-launcher {
+      margin-bottom: 12px;
+    }
+    #openProductAddBtn {
+      margin: 0;
+      border: 1px solid var(--soft-success-border);
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
+      box-shadow: none;
+    }
     #productsList .list-item-actions button.yellow {
       border: 1px solid var(--soft-warning-border);
       background: var(--soft-warning-bg);
@@ -2224,6 +2234,75 @@
     body.app-dialog-open {
       overflow: hidden;
     }
+    .product-add-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 240;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: calc(env(safe-area-inset-top) + 16px) 12px calc(env(safe-area-inset-bottom) + 16px);
+      background: rgba(2, 6, 23, .76);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .product-add-overlay.hidden {
+      display: none;
+    }
+    body.product-add-open {
+      overflow: hidden;
+    }
+    .product-add-dialog {
+      width: min(100%, 540px);
+      max-height: min(88dvh, 760px);
+      overflow-y: auto;
+      padding: 18px 16px;
+      border: 1px solid var(--border-strong);
+      border-radius: 24px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+      animation: app-dialog-in .2s cubic-bezier(.2, .75, .25, 1) both;
+    }
+    .product-add-dialog h2 {
+      margin-bottom: 7px;
+      text-align: center;
+    }
+    .product-add-choice-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .product-add-choice-actions button,
+    .product-add-form-actions button {
+      margin: 0;
+    }
+    .product-add-form-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    #chooseSingleProductBtn,
+    #chooseBulkProductsBtn {
+      border: 1px solid var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      box-shadow: none;
+    }
+    #closeProductAddChoiceBtn,
+    #closeBulkProductsBtn {
+      border: 1px solid var(--soft-action-border);
+      background: var(--soft-action-bg);
+      color: var(--soft-action-text);
+      box-shadow: none;
+    }
+    @media (max-width: 390px) {
+      .product-add-choice-actions {
+        grid-template-columns: 1fr;
+      }
+    }
     .app-dialog {
       width: min(100%, 440px);
       padding: 20px;
@@ -2713,7 +2792,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">125</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.26</span></div>
     </div>
   </div>
 
@@ -2987,28 +3066,8 @@
   </div>
 
   <div id="pageProducts" class="hidden">
-    <div class="card">
-      <h2 id="productFormTitle">Додати найменування</h2>
-      <input type="hidden" id="editingProductId" />
-
-      <label>Назва</label>
-      <input id="newProductName" placeholder="Наприклад: Молоко 26%" />
-
-      <label>Типова вага піддона, кг</label>
-      <input id="newDefaultPalletKg" type="number" inputmode="decimal" placeholder="" />
-
-      <label>Типова вага штуки/мішка, кг</label>
-      <input id="newDefaultPieceKg" type="number" inputmode="decimal" placeholder="" />
-
-      <button class="green" id="saveProductBtn">Зберегти найменування</button>
-      <button class="secondary" id="cancelProductBtn">Очистити / скасувати</button>
-    </div>
-
-    <div class="card">
-      <h2>Масове додавання</h2>
-      <p class="small">Один рядок = одне найменування. Дублікати буде пропущено.</p>
-      <textarea id="bulkProductsText" rows="7" placeholder="Молоко 26%&#10;Молоко 0%&#10;Какао&#10;Арахіс"></textarea>
-      <button class="green" id="bulkAddProductsBtn">Додати список</button>
+    <div class="product-add-launcher no-print">
+      <button class="green" id="openProductAddBtn">Додати найменування</button>
     </div>
 
     <div class="card product-list-search-card">
@@ -3021,6 +3080,49 @@
     </div>
 
     <div id="productsList"></div>
+  </div>
+
+  <div class="product-add-overlay hidden" id="productAddOverlay" role="dialog" aria-modal="true" aria-label="Керування найменуваннями">
+    <div class="product-add-dialog">
+      <div id="productAddChoice">
+        <h2 id="productAddDialogTitle">Додати найменування</h2>
+        <p class="small">Обери, як саме потрібно додати найменування.</p>
+        <div class="product-add-choice-actions">
+          <button type="button" id="chooseSingleProductBtn">Одне найменування</button>
+          <button type="button" id="chooseBulkProductsBtn">Список найменувань</button>
+        </div>
+        <button type="button" class="secondary" id="closeProductAddChoiceBtn">Закрити</button>
+      </div>
+
+      <div class="hidden" id="singleProductForm">
+        <h2 id="productFormTitle">Додати найменування</h2>
+        <input type="hidden" id="editingProductId" />
+
+        <label for="newProductName">Назва</label>
+        <input id="newProductName" placeholder="Наприклад: Молоко 26%" />
+
+        <label for="newDefaultPalletKg">Типова вага піддона, кг</label>
+        <input id="newDefaultPalletKg" type="number" inputmode="decimal" placeholder="" />
+
+        <label for="newDefaultPieceKg">Типова вага штуки/мішка, кг</label>
+        <input id="newDefaultPieceKg" type="number" inputmode="decimal" placeholder="" />
+
+        <div class="product-add-form-actions">
+          <button class="green" id="saveProductBtn">Зберегти найменування</button>
+          <button class="secondary" id="cancelProductBtn">Закрити</button>
+        </div>
+      </div>
+
+      <div class="hidden" id="bulkProductsForm">
+        <h2>Масове додавання</h2>
+        <p class="small">Один рядок = одне найменування. Дублікати буде пропущено.</p>
+        <textarea id="bulkProductsText" rows="7" placeholder="Молоко 26%&#10;Молоко 0%&#10;Какао&#10;Арахіс"></textarea>
+        <div class="product-add-form-actions">
+          <button class="green" id="bulkAddProductsBtn">Додати список</button>
+          <button type="button" id="closeBulkProductsBtn">Закрити</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="pageThemes" class="hidden">
@@ -3151,7 +3253,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">125</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.26</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3169,8 +3271,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">125</span></div>
-        <div class="small">В історії додано закріплену панель керування та пошук підрахунків за повною або частковою датою.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.26</span></div>
+        <div class="small">Одиничне й масове додавання найменувань перенесено в компактне вікно з вибором потрібного способу.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3226,7 +3328,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "125";
+  const APP_VERSION = "1.26";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4605,7 +4707,7 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
-      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay"]
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
         swipeMode = "";
@@ -4924,7 +5026,7 @@
   function canUsePageBackSwipe() {
     if (!PAGE_PARENTS[currentPage] || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
-    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay"]
+    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay"]
       .some(id => !document.getElementById(id).classList.contains("hidden"));
   }
 
@@ -5520,6 +5622,47 @@
     toast("Поточний день очищено");
   }
 
+  function showProductAddView(view) {
+    document.getElementById("productAddChoice").classList.toggle("hidden", view !== "choice");
+    document.getElementById("singleProductForm").classList.toggle("hidden", view !== "single");
+    document.getElementById("bulkProductsForm").classList.toggle("hidden", view !== "bulk");
+  }
+
+  function openProductAddModal(view = "choice") {
+    document.getElementById("productAddOverlay").classList.remove("hidden");
+    document.body.classList.add("product-add-open");
+    showProductAddView(view);
+    window.setTimeout(() => {
+      if (document.getElementById("productAddOverlay").classList.contains("hidden")) return;
+      if (view === "single") document.getElementById("newProductName").focus();
+      else if (view === "bulk") document.getElementById("bulkProductsText").focus();
+      else document.getElementById("chooseSingleProductBtn").focus();
+    }, 80);
+  }
+
+  function openProductAddChoice() {
+    clearProductForm();
+    document.getElementById("bulkProductsText").value = "";
+    openProductAddModal("choice");
+  }
+
+  function closeProductAddModal({ resetForms = true } = {}) {
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    document.getElementById("productAddOverlay").classList.add("hidden");
+    document.body.classList.remove("product-add-open");
+    if (resetForms) {
+      clearProductForm();
+      document.getElementById("bulkProductsText").value = "";
+    }
+    scheduleKeyboardScrollRestore();
+  }
+
+  function dismissProductAddModal() {
+    const wasEditing = Boolean(document.getElementById("editingProductId").value);
+    closeProductAddModal();
+    if (wasEditing) restoreEditPosition("product");
+  }
+
   function saveProduct() {
     const editingId = document.getElementById("editingProductId").value;
     const wasEditing = Boolean(editingId);
@@ -5560,6 +5703,7 @@
     state.products = sortedProducts();
     clearProductForm();
     save();
+    closeProductAddModal({ resetForms: false });
     if (wasEditing) restoreEditPosition("product");
   }
 
@@ -5575,7 +5719,7 @@
     document.getElementById("newDefaultPieceKg").value = p.defaultPieceKg || "";
     document.getElementById("productFormTitle").textContent = "Редагувати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти зміни";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    openProductAddModal("single");
   }
 
   async function deleteProduct(id) {
@@ -6069,6 +6213,7 @@
     state.products = sortedProducts();
     textarea.value = "";
     save();
+    closeProductAddModal({ resetForms: false });
     toast(`Додано: ${added}. Пропущено: ${skipped}`);
   }
 
@@ -6338,13 +6483,25 @@
     if (event.target === event.currentTarget) closeQuickEdit();
   });
 
+  document.getElementById("openProductAddBtn").addEventListener("click", openProductAddChoice);
+  document.getElementById("chooseSingleProductBtn").addEventListener("click", () => {
+    clearProductForm();
+    showProductAddView("single");
+    document.getElementById("newProductName").focus();
+  });
+  document.getElementById("chooseBulkProductsBtn").addEventListener("click", () => {
+    document.getElementById("bulkProductsText").value = "";
+    showProductAddView("bulk");
+    document.getElementById("bulkProductsText").focus();
+  });
+  document.getElementById("closeProductAddChoiceBtn").addEventListener("click", dismissProductAddModal);
+  document.getElementById("closeBulkProductsBtn").addEventListener("click", dismissProductAddModal);
+  document.getElementById("productAddOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) dismissProductAddModal();
+  });
   document.getElementById("saveProductBtn").addEventListener("click", saveProduct);
   document.getElementById("cancelProductBtn").addEventListener("click", () => {
-    const wasEditing = Boolean(document.getElementById("editingProductId").value);
-    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
-    clearProductForm();
-    scheduleKeyboardScrollRestore();
-    if (wasEditing) restoreEditPosition("product");
+    dismissProductAddModal();
   });
   document.getElementById("bulkAddProductsBtn").addEventListener("click", bulkAddProducts);
   document.getElementById("productListSearch").addEventListener("input", () => { updateProductListSearchClearButton(); renderProducts(); });
@@ -6451,6 +6608,11 @@
 
     if (!document.getElementById("quickEditOverlay").classList.contains("hidden")) {
       closeQuickEdit();
+      return;
+    }
+
+    if (!document.getElementById("productAddOverlay").classList.contains("hidden")) {
+      dismissProductAddModal();
       return;
     }
 
