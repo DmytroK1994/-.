@@ -7,7 +7,7 @@
   <script>
     try {
       const savedTheme = localStorage.getItem("warehouseJournalTheme");
-      if (["dark", "beige", "white", "custom"].includes(savedTheme)) {
+      if (["dark", "beige", "white", "graphite", "aurora", "stone", "custom"].includes(savedTheme)) {
         document.documentElement.dataset.theme = savedTheme;
       }
       document.documentElement.classList.toggle(
@@ -134,6 +134,123 @@
       --soft-warning-text: #ffffff;
       --soft-danger-bg: #dc2626;
       --soft-danger-border: #b91c1c;
+      --soft-danger-text: #ffffff;
+    }
+    :root[data-theme="graphite"] {
+      color-scheme: dark;
+      --bg: #0b0d12;
+      --text: #f5f7fa;
+      --surface: #171a21;
+      --surface-strong: #20242d;
+      --surface-deep: #0f1117;
+      --border: #343a46;
+      --border-strong: #586170;
+      --muted: #bcc4d0;
+      --muted-soft: #929caa;
+      --accent-soft: #b8ccff;
+      --pill-text: #eef2f7;
+      --header-shadow: rgba(0, 0, 0, .72);
+      --card-shadow: rgba(0, 0, 0, .28);
+      --popover-shadow: rgba(0, 0, 0, .58);
+      --overlay: rgba(0, 0, 0, .64);
+      --page-glow: rgba(109, 140, 255, .13);
+      --primary-bg: #6d8cff;
+      --primary-dark-bg: #4057b8;
+      --primary-text: #0b1020;
+      --primary-dark-text: #ffffff;
+      --selection-bg: #d6ad72;
+      --selection-border: #a97838;
+      --selection-outline: #f0cc94;
+      --selection-text: #24190c;
+      --soft-action-bg: #39404c;
+      --soft-action-border: #596372;
+      --soft-action-text: #ffffff;
+      --soft-success-bg: #198f6a;
+      --soft-success-border: #137052;
+      --soft-success-text: #ffffff;
+      --soft-warning-bg: #bc842b;
+      --soft-warning-border: #94671f;
+      --soft-warning-text: #ffffff;
+      --soft-danger-bg: #c84f5c;
+      --soft-danger-border: #9f3945;
+      --soft-danger-text: #ffffff;
+    }
+    :root[data-theme="aurora"] {
+      color-scheme: dark;
+      --bg: #06131e;
+      --text: #effdff;
+      --surface: #0d2432;
+      --surface-strong: #123444;
+      --surface-deep: #061019;
+      --border: #285263;
+      --border-strong: #477687;
+      --muted: #b8d8dc;
+      --muted-soft: #83adb4;
+      --accent-soft: #76ead4;
+      --pill-text: #dcfbf7;
+      --header-shadow: rgba(1, 12, 20, .82);
+      --card-shadow: rgba(0, 8, 15, .3);
+      --popover-shadow: rgba(0, 5, 12, .58);
+      --overlay: rgba(1, 10, 18, .67);
+      --page-glow: rgba(31, 214, 181, .15);
+      --primary-bg: #20b8ae;
+      --primary-dark-bg: #176b83;
+      --primary-text: #031817;
+      --primary-dark-text: #ffffff;
+      --selection-bg: #9b87f5;
+      --selection-border: #7158db;
+      --selection-outline: #c4b8ff;
+      --selection-text: #100c2b;
+      --soft-action-bg: #315766;
+      --soft-action-border: #4f7b89;
+      --soft-action-text: #ffffff;
+      --soft-success-bg: #18a879;
+      --soft-success-border: #11815d;
+      --soft-success-text: #ffffff;
+      --soft-warning-bg: #c78d24;
+      --soft-warning-border: #9c6c18;
+      --soft-warning-text: #ffffff;
+      --soft-danger-bg: #cf5968;
+      --soft-danger-border: #a83e4c;
+      --soft-danger-text: #ffffff;
+    }
+    :root[data-theme="stone"] {
+      color-scheme: light;
+      --bg: #e8e4dc;
+      --text: #292722;
+      --surface: #f6f3ed;
+      --surface-strong: #fffdf8;
+      --surface-deep: #ddd7cc;
+      --border: #c9c0b3;
+      --border-strong: #9e9180;
+      --muted: #625e56;
+      --muted-soft: #7c756b;
+      --accent-soft: #3e6672;
+      --pill-text: #35312b;
+      --header-shadow: rgba(75, 67, 55, .24);
+      --card-shadow: rgba(70, 60, 45, .13);
+      --popover-shadow: rgba(62, 52, 40, .25);
+      --overlay: rgba(43, 38, 31, .46);
+      --page-glow: rgba(167, 126, 66, .13);
+      --primary-bg: #55717d;
+      --primary-dark-bg: #354d59;
+      --primary-text: #ffffff;
+      --primary-dark-text: #ffffff;
+      --selection-bg: #ca984d;
+      --selection-border: #9e6e2b;
+      --selection-outline: #e3bd80;
+      --selection-text: #2d1d08;
+      --soft-action-bg: #69645d;
+      --soft-action-border: #514d47;
+      --soft-action-text: #ffffff;
+      --soft-success-bg: #487d62;
+      --soft-success-border: #356149;
+      --soft-success-text: #ffffff;
+      --soft-warning-bg: #b27a2c;
+      --soft-warning-border: #895b1d;
+      --soft-warning-text: #ffffff;
+      --soft-danger-bg: #b64f4f;
+      --soft-danger-border: #8f3939;
       --soft-danger-text: #ffffff;
     }
     body {
@@ -750,7 +867,7 @@
     }
     .drawer-gesture-pad.dragging .gesture-pad-handle {
       transform: scaleX(1.14);
-      background: #60a5fa;
+      background: var(--selection-bg);
     }
     .gesture-pad-selection {
       display: block;
@@ -995,7 +1112,7 @@
       }
       .management-gesture-pad.dragging .gesture-pad-handle {
         transform: scaleX(1.14);
-        background: #60a5fa;
+        background: var(--selection-bg);
       }
       html.joystick-disabled .drawer-gesture-pad,
       html.joystick-disabled .management-gesture-pad {
@@ -2794,7 +2911,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.27</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.28</span></div>
     </div>
   </div>
 
@@ -3135,6 +3252,9 @@
         <option value="dark">Темна</option>
         <option value="beige">Бежева</option>
         <option value="white">Чисто біла</option>
+        <option value="graphite">Графітове скло</option>
+        <option value="aurora">Полярне сяйво</option>
+        <option value="stone">Теплий камінь</option>
         <option value="custom">Власна тема</option>
       </select>
       <button type="button" class="hidden" id="openCustomThemeEditorBtn">Редагувати власну тему</button>
@@ -3255,7 +3375,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.27</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.28</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3267,14 +3387,14 @@
         <li>довідник найменувань і швидкий пошук;</li>
         <li>підрахунок піддонів, штук та окремої ваги;</li>
         <li>історія підрахунків за датами;</li>
-        <li>три теми оформлення;</li>
+        <li>шість готових тем оформлення та власний конструктор;</li>
         <li>попередній перегляд і компактний PDF формату A4;</li>
         <li>резервне копіювання та відновлення даних.</li>
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.27</span></div>
-        <div class="small">Заблоковано випадкові переходи браузера при свайпах від країв екрана, зі збереженням внутрішньої навігації застосунку.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.28</span></div>
+        <div class="small">Додано три преміальні теми 2026 року: «Графітове скло», «Полярне сяйво» та «Теплий камінь».</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3330,7 +3450,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.27";
+  const APP_VERSION = "1.28";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3338,7 +3458,7 @@
   const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
-  const THEMES = ["dark", "beige", "white", "custom"];
+  const THEMES = ["dark", "beige", "white", "graphite", "aurora", "stone", "custom"];
   const CUSTOM_THEME_DEFAULTS = {
     customBg: "#172033",
     customSurface: "#243047",
@@ -3851,6 +3971,9 @@
       dark: "#0f172a",
       beige: "#f3ecdf",
       white: "#ffffff",
+      graphite: "#0b0d12",
+      aurora: "#06131e",
+      stone: "#e8e4dc",
       custom: customPalette.customBg
     };
     const themeMeta = document.getElementById("themeColorMeta");
