@@ -1465,6 +1465,15 @@
       border-radius: 8px;
       box-shadow: 5px 5px 0 var(--border);
     }
+    .favorite-theme-button.is-favorite,
+    .favorite-theme-button[aria-pressed="true"] {
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text) !important;
+      box-shadow: 4px 4px 0 var(--selection-border) !important;
+      filter: saturate(1.12);
+      transform: scale(1.04);
+    }
     #pageThemes.theme-category-root .theme-category-button.menu-btn.nav-choice {
       justify-content: center;
       margin: 0;
@@ -3657,7 +3666,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.51</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.52</span></div>
     </div>
   </div>
 
@@ -4259,7 +4268,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.51</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.52</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4279,8 +4288,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.51</span></div>
-        <div class="small">Категорії тем тепер точно копіюють фактичний вигляд кнопок головного меню та більше не успадковують бокову темну смугу.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.52</span></div>
+        <div class="small">Активна зірочка улюбленої теми тепер має помітне золотисте підсвічування, контрастну рамку й тінь.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4351,7 +4360,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.51";
+  const APP_VERSION = "1.52";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5215,7 +5224,7 @@
             <span>${getThemeLabel(theme)}</span>
             <span class="theme-option-selected">${selected ? "Вибрано" : ""}</span>
           </button>
-          <button type="button" class="favorite-theme-button${isFavorite ? " is-favorite" : ""}" data-action="toggle-favorite-theme" data-id="${theme}" aria-label="${isFavorite ? "Вилучити тему з улюблених" : "Додати тему до улюблених"}" aria-pressed="${isFavorite}">★</button>
+          <button type="button" class="favorite-theme-button${isFavorite ? " is-favorite" : ""}" data-action="toggle-favorite-theme" data-id="${theme}" aria-label="${isFavorite ? "Вилучити тему з улюблених" : "Додати тему до улюблених"}" aria-pressed="${isFavorite}">${isFavorite ? "★" : "☆"}</button>
         </div>
       `;
     }).join("") : '<p class="small empty-theme-category">Улюблених тем поки немає. Додай їх кнопкою ★ біля потрібної теми.</p>';
