@@ -7,7 +7,7 @@
   <script>
     try {
       const savedTheme = localStorage.getItem("warehouseJournalTheme");
-      if (["dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper", "custom"].includes(savedTheme)) {
+      if (["dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper", "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta", "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave", "slate", "obsidian", "custom"].includes(savedTheme)) {
         document.documentElement.dataset.theme = savedTheme;
       }
       document.documentElement.classList.toggle(
@@ -3091,7 +3091,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.34</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.35</span></div>
     </div>
   </div>
 
@@ -3477,6 +3477,26 @@
         <option value="lavender">Цифрова лаванда</option>
         <option value="mint">М’ятний мінімалізм</option>
         <option value="copper">Опівнічна мідь</option>
+        <option value="citrus">Сонячний цитрус</option>
+        <option value="sakura">Сакура</option>
+        <option value="atlantic">Атлантичний бриз</option>
+        <option value="forest">Темний ліс</option>
+        <option value="cyber">Кібернеон</option>
+        <option value="ruby">Рубінова ніч</option>
+        <option value="arctic">Арктичне небо</option>
+        <option value="matcha">Матча</option>
+        <option value="terracotta">Теракота</option>
+        <option value="indigo">Глибокий індиго</option>
+        <option value="mono">Контрастний монохром</option>
+        <option value="peach">Персиковий крем</option>
+        <option value="cobalt">Електричний кобальт</option>
+        <option value="emerald">Смарагдова ніч</option>
+        <option value="coral">Кораловий ранок</option>
+        <option value="plum">Сливова ніч</option>
+        <option value="sandsea">Пісок і море</option>
+        <option value="vaporwave">Вейпорвейв</option>
+        <option value="slate">Блакитний сланець</option>
+        <option value="obsidian">Обсидіан і золото</option>
         <option value="custom">Власна тема</option>
       </select>
       <button type="button" class="hidden" id="openCustomThemeEditorBtn">Редагувати власну тему</button>
@@ -3603,7 +3623,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.34</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.35</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3615,15 +3635,15 @@
         <li>довідник найменувань і швидкий пошук;</li>
         <li>підрахунок піддонів, штук та окремої кількості в різних одиницях;</li>
         <li>історія підрахунків за датами;</li>
-        <li>десять тем оформлення, включно з власним конструктором;</li>
+        <li>30 тем оформлення, включно з власним конструктором;</li>
         <li>попередній перегляд і компактний PDF формату A4;</li>
         <li>резервне копіювання та відновлення даних;</li>
         <li>безпечний демонстраційний режим без доступу до власних списків.</li>
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.34</span></div>
-        <div class="small">Список найменувань став компактнішим. Додано вибір галочками та безпечне масове видалення позицій.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.35</span></div>
+        <div class="small">Колекцію розширено до 30 різних тем: світлих, темних, природних, неонових, пастельних і контрастних.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3694,7 +3714,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.34";
+  const APP_VERSION = "1.35";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3708,7 +3728,34 @@
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
   const DEMO_DATA_VERSION = "2";
-  const THEMES = ["dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper", "custom"];
+  const THEMES = [
+    "dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper",
+    "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta",
+    "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave",
+    "slate", "obsidian", "custom"
+  ];
+  const EXTRA_THEME_PALETTES = {
+    citrus: { scheme: "light", bg: "#fff8d8", surface: "#fffdf1", strong: "#ffffff", deep: "#f4e8ad", text: "#30270d", muted: "#76662d", border: "#dfcb75", borderStrong: "#aa8c28", primary: "#e87516", primaryDark: "#a84608", selection: "#58b88d", action: "#78652c", success: "#228657", warning: "#c56d13", danger: "#c94c3e" },
+    sakura: { scheme: "light", bg: "#fff0f5", surface: "#fffafd", strong: "#ffffff", deep: "#f8dce7", text: "#3b2030", muted: "#815a6d", border: "#e9b9cc", borderStrong: "#bc7795", primary: "#d34f87", primaryDark: "#8f2d59", selection: "#8d78d6", action: "#806272", success: "#348467", warning: "#b87828", danger: "#c84462" },
+    atlantic: { scheme: "light", bg: "#e7f5fb", surface: "#f7fcff", strong: "#ffffff", deep: "#d3eaf4", text: "#102c3a", muted: "#4e7080", border: "#a9cfde", borderStrong: "#5d9bb3", primary: "#147ea8", primaryDark: "#0b506f", selection: "#f0a44d", action: "#4e7484", success: "#23836b", warning: "#b87324", danger: "#c34d55" },
+    forest: { scheme: "dark", bg: "#07140d", surface: "#10241a", strong: "#193326", deep: "#030b07", text: "#eef9f1", muted: "#a4c4ad", border: "#2e5a3d", borderStrong: "#4c7c5d", primary: "#4db36e", primaryDark: "#256b3c", selection: "#d4a84f", action: "#375b43", success: "#3ba968", warning: "#c28a32", danger: "#cf5860" },
+    cyber: { scheme: "dark", bg: "#10071d", surface: "#201132", strong: "#31164a", deep: "#07020d", text: "#fbf3ff", muted: "#c7aad8", border: "#593178", borderStrong: "#8650aa", primary: "#00d9d0", primaryDark: "#087f91", selection: "#ff4fc8", action: "#5c3a70", success: "#19b879", warning: "#df8f27", danger: "#e24771" },
+    ruby: { scheme: "dark", bg: "#19070b", surface: "#2b1017", strong: "#401923", deep: "#0c0204", text: "#fff1f3", muted: "#d6abb2", border: "#66303b", borderStrong: "#955063", primary: "#d73c5d", primaryDark: "#841f38", selection: "#e3ae45", action: "#66404a", success: "#358b68", warning: "#c1852c", danger: "#e04c58" },
+    arctic: { scheme: "light", bg: "#f0f8ff", surface: "#fbfdff", strong: "#ffffff", deep: "#dfeef9", text: "#172a3a", muted: "#60798d", border: "#bfd8e9", borderStrong: "#7ea9c5", primary: "#3b82c4", primaryDark: "#245486", selection: "#8c7bd8", action: "#617b8e", success: "#27866c", warning: "#b97a28", danger: "#c94f60" },
+    matcha: { scheme: "light", bg: "#eef4df", surface: "#f9fced", strong: "#ffffff", deep: "#dde7c5", text: "#29321c", muted: "#697451", border: "#c2d09d", borderStrong: "#879d59", primary: "#6d8f36", primaryDark: "#435e20", selection: "#d48a62", action: "#6a7554", success: "#478441", warning: "#b8782c", danger: "#bb5151" },
+    terracotta: { scheme: "light", bg: "#f7e9df", surface: "#fff8f2", strong: "#ffffff", deep: "#ead3c4", text: "#39261d", muted: "#806555", border: "#d5af99", borderStrong: "#a8755a", primary: "#bd603d", primaryDark: "#783823", selection: "#3f9a97", action: "#7b6255", success: "#47805f", warning: "#b66d2b", danger: "#bd4b47" },
+    indigo: { scheme: "dark", bg: "#090b22", surface: "#15183b", strong: "#202552", deep: "#040511", text: "#f0f2ff", muted: "#aeb4dc", border: "#3a4279", borderStrong: "#5b66a5", primary: "#6978e8", primaryDark: "#3745a4", selection: "#f29f5c", action: "#444c7a", success: "#328970", warning: "#c17e2d", danger: "#cc4e67" },
+    mono: { scheme: "light", bg: "#f2f2f2", surface: "#ffffff", strong: "#e5e5e5", deep: "#d7d7d7", text: "#090909", muted: "#525252", border: "#b8b8b8", borderStrong: "#707070", primary: "#111111", primaryDark: "#000000", selection: "#d7ff38", action: "#4b4b4b", success: "#16724d", warning: "#9a6500", danger: "#b92323" },
+    peach: { scheme: "light", bg: "#fff1e8", surface: "#fffaf6", strong: "#ffffff", deep: "#f8dfd0", text: "#3e2922", muted: "#84665b", border: "#e6baa6", borderStrong: "#b77f68", primary: "#ee7f5f", primaryDark: "#a64731", selection: "#72a8d8", action: "#81665d", success: "#3b8665", warning: "#b9782b", danger: "#c64c50" },
+    cobalt: { scheme: "dark", bg: "#020b25", surface: "#071944", strong: "#102967", deep: "#010514", text: "#eef4ff", muted: "#a5b8e5", border: "#23488f", borderStrong: "#3d68b8", primary: "#2d7dff", primaryDark: "#1745a5", selection: "#ffcf3f", action: "#31538b", success: "#258e6d", warning: "#cf8524", danger: "#d34c61" },
+    emerald: { scheme: "dark", bg: "#031410", surface: "#082a21", strong: "#0f3d31", deep: "#010a08", text: "#eafff8", muted: "#a1d2c2", border: "#1d614e", borderStrong: "#358873", primary: "#22c58b", primaryDark: "#147356", selection: "#c990f5", action: "#2e6958", success: "#20a878", warning: "#c88729", danger: "#d04e63" },
+    coral: { scheme: "light", bg: "#fff0ed", surface: "#fffafa", strong: "#ffffff", deep: "#f8d9d4", text: "#3e2524", muted: "#865f5c", border: "#e7b3ae", borderStrong: "#bb746d", primary: "#e55f5f", primaryDark: "#9a3538", selection: "#42a7a1", action: "#80625f", success: "#338461", warning: "#bd7928", danger: "#ce434b" },
+    plum: { scheme: "dark", bg: "#170c18", surface: "#2b162c", strong: "#412043", deep: "#0b050c", text: "#fff2ff", muted: "#d0add0", border: "#613663", borderStrong: "#8c548e", primary: "#b35ab5", primaryDark: "#703273", selection: "#75c99b", action: "#644267", success: "#3e966d", warning: "#c4862b", danger: "#d05167" },
+    sandsea: { scheme: "light", bg: "#f3edda", surface: "#fffaf0", strong: "#ffffff", deep: "#dfdfca", text: "#253536", muted: "#657674", border: "#c4c7ae", borderStrong: "#819b91", primary: "#278a8b", primaryDark: "#185a60", selection: "#e59743", action: "#657873", success: "#3b8562", warning: "#b97824", danger: "#bf4e4e" },
+    vaporwave: { scheme: "dark", bg: "#130b2b", surface: "#251344", strong: "#3a1c61", deep: "#080414", text: "#fff2ff", muted: "#cbb3e9", border: "#623d88", borderStrong: "#8e5fba", primary: "#ff58b0", primaryDark: "#a82f7d", selection: "#49dbe6", action: "#62497e", success: "#31a77d", warning: "#da8a28", danger: "#e14f74" },
+    slate: { scheme: "light", bg: "#e9eef3", surface: "#f8fafc", strong: "#ffffff", deep: "#d8e1e9", text: "#24303d", muted: "#637383", border: "#bdcad5", borderStrong: "#8195a7", primary: "#527da3", primaryDark: "#34536f", selection: "#c9855b", action: "#667789", success: "#398164", warning: "#b8762a", danger: "#bd4c58" },
+    obsidian: { scheme: "dark", bg: "#080808", surface: "#161513", strong: "#25221c", deep: "#020202", text: "#fff8e5", muted: "#c9bea2", border: "#4d4635", borderStrong: "#776944", primary: "#d5ad45", primaryDark: "#80641e", selection: "#ece4c8", action: "#514b3d", success: "#47845f", warning: "#c28b2f", danger: "#c54c4c" }
+  };
   const MEASUREMENT_UNITS = {
     kg: { short: "кг", amount: "Кілограмів" },
     g: { short: "г", amount: "Грамів" },
@@ -4149,6 +4196,51 @@
     document.documentElement.style.removeProperty("color-scheme");
   }
 
+  function applyExtraTheme(palette) {
+    if (!palette) return;
+    const root = document.documentElement.style;
+    const values = {
+      "--bg": palette.bg,
+      "--text": palette.text,
+      "--surface": palette.surface,
+      "--surface-strong": palette.strong,
+      "--surface-deep": palette.deep,
+      "--border": palette.border,
+      "--border-strong": palette.borderStrong,
+      "--muted": palette.muted,
+      "--muted-soft": palette.muted,
+      "--accent-soft": palette.primary,
+      "--pill-text": palette.text,
+      "--header-shadow": colorWithAlpha("#000000", palette.scheme === "dark" ? .72 : .2),
+      "--card-shadow": colorWithAlpha("#000000", palette.scheme === "dark" ? .28 : .11),
+      "--popover-shadow": colorWithAlpha("#000000", palette.scheme === "dark" ? .58 : .24),
+      "--overlay": colorWithAlpha("#000000", palette.scheme === "dark" ? .66 : .42),
+      "--page-glow": colorWithAlpha(palette.primary, .16),
+      "--primary-bg": palette.primary,
+      "--primary-dark-bg": palette.primaryDark,
+      "--primary-text": contrastText(palette.primary),
+      "--primary-dark-text": contrastText(palette.primaryDark),
+      "--selection-bg": palette.selection,
+      "--selection-border": palette.selection,
+      "--selection-outline": palette.selection,
+      "--selection-text": contrastText(palette.selection),
+      "--soft-action-bg": palette.action,
+      "--soft-action-border": palette.action,
+      "--soft-action-text": contrastText(palette.action),
+      "--soft-success-bg": palette.success,
+      "--soft-success-border": palette.success,
+      "--soft-success-text": contrastText(palette.success),
+      "--soft-warning-bg": palette.warning,
+      "--soft-warning-border": palette.warning,
+      "--soft-warning-text": contrastText(palette.warning),
+      "--soft-danger-bg": palette.danger,
+      "--soft-danger-border": palette.danger,
+      "--soft-danger-text": contrastText(palette.danger)
+    };
+    Object.entries(values).forEach(([property, value]) => root.setProperty(property, value));
+    root.setProperty("color-scheme", palette.scheme);
+  }
+
   function applyCustomTheme(palette) {
     const root = document.documentElement.style;
     const actionText = contrastText(palette.customSurfaceStrong);
@@ -4222,6 +4314,7 @@
     const customPalette = loadCustomTheme();
     clearCustomThemeStyles();
     document.documentElement.dataset.theme = selected;
+    if (EXTRA_THEME_PALETTES[selected]) applyExtraTheme(EXTRA_THEME_PALETTES[selected]);
     if (selected === "custom") applyCustomTheme(customPalette);
     applyCustomComponentStyles();
 
@@ -4242,7 +4335,7 @@
       custom: customPalette.customBg
     };
     const themeMeta = document.getElementById("themeColorMeta");
-    if (themeMeta) themeMeta.setAttribute("content", themeColors[selected]);
+    if (themeMeta) themeMeta.setAttribute("content", EXTRA_THEME_PALETTES[selected]?.bg || themeColors[selected]);
 
     if (persist) {
       try { localStorage.setItem(THEME_KEY, selected); } catch (e) {}
