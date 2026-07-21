@@ -1130,7 +1130,8 @@
     }
     html.menu-style-game .menu-btn {
       position: relative;
-      width: calc(100% + 14px);
+      width: fit-content;
+      max-width: calc(100% + 14px);
       min-height: 54px;
       margin: 8px 0 0 -14px;
       padding: 13px 38px 13px 28px;
@@ -1143,13 +1144,14 @@
       letter-spacing: .15px;
       box-shadow: 7px 7px 0 color-mix(in srgb, var(--border) 48%, transparent);
       transform-origin: left center;
+      white-space: nowrap;
     }
     html.menu-style-game .menu-btn:nth-child(even) {
-      width: calc(92% + 14px);
+      padding-right: 46px;
       border-radius: 0 15px 34px 0 / 0 28px 18px 0;
     }
     html.menu-style-game .menu-btn:nth-child(3n) {
-      width: calc(97% + 14px);
+      padding-right: 42px;
       border-radius: 0 36px 20px 0 / 0 16px 34px 0;
     }
     html.menu-style-game .menu-btn::after {
@@ -1401,16 +1403,11 @@
       }
       html.menu-style-game .menu-wheel .menu-btn {
         align-self: flex-start;
-        width: 100%;
+        width: fit-content;
+        max-width: 100%;
         margin-left: 0;
         padding-left: max(24px, env(safe-area-inset-left));
         text-align: left;
-      }
-      html.menu-style-game .menu-wheel .menu-btn:nth-child(even) {
-        width: 88%;
-      }
-      html.menu-style-game .menu-wheel .menu-btn:nth-child(3n) {
-        width: 95%;
       }
       html.menu-style-game.joystick-disabled .menu-wheel {
         left: 0;
@@ -3298,7 +3295,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.39</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.40</span></div>
     </div>
   </div>
 
@@ -3834,9 +3831,9 @@
         <label for="menuStyleSelect">Стиль бокового меню</label>
         <select id="menuStyleSelect">
           <option value="standard">Звичайний</option>
-          <option value="game">Ігровий — асиметричний зліва</option>
+          <option value="game">Асиметричний зліва</option>
         </select>
-        <p class="small">Ігровий стиль притискає список до лівого краю та використовує м’які нестандартні форми.</p>
+        <p class="small">Асиметричний стиль притискає список до лівого краю, а ширина кожного пункту підлаштовується під його текст.</p>
       </section>
 
       <section class="card other-settings-group">
@@ -3889,7 +3886,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.39</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.40</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3909,8 +3906,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.39</span></div>
-        <div class="small">Додано перемикний ігровий стиль бокового меню. Інші налаштування розподілено за зрозумілими категоріями.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.40</span></div>
+        <div class="small">Удосконалено асиметричний стиль бокового меню: ширина пунктів тепер підлаштовується під текст.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3981,7 +3978,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.39";
+  const APP_VERSION = "1.40";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8129,7 +8126,7 @@
     const style = event.target.value === "game" ? "game" : "standard";
     try { localStorage.setItem(MENU_STYLE_KEY, style); } catch (error) {}
     applyMenuStyle(style);
-    toast(style === "game" ? "Увімкнено ігровий стиль меню" : "Повернено звичайний стиль меню");
+    toast(style === "game" ? "Увімкнено асиметричний стиль меню" : "Повернено звичайний стиль меню");
   });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
