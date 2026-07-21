@@ -1434,6 +1434,37 @@
     html.menu-style-game .theme-category-button:not(.gesture-selected) .theme-category-count {
       right: 30px;
     }
+    .nav-choice {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: 5px 5px 0 var(--border);
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .nav-choice:hover,
+    .nav-choice:active {
+      background: var(--surface);
+    }
+    .theme-category-button.nav-choice {
+      min-height: 39px;
+      padding-top: 7px;
+      padding-bottom: 7px;
+    }
+    html.menu-style-game .theme-category-button.menu-btn.nav-choice {
+      min-height: 39px;
+      padding-top: 7px;
+      padding-bottom: 7px;
+    }
+    .theme-option-button.nav-choice {
+      border-radius: 8px;
+      box-shadow: 5px 5px 0 var(--border);
+    }
+    .favorite-theme-button {
+      border-radius: 8px;
+      box-shadow: 5px 5px 0 var(--border);
+    }
     .drawer-menu-content {
       min-height: 0;
     }
@@ -3597,7 +3628,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.49</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.50</span></div>
     </div>
   </div>
 
@@ -3610,10 +3641,10 @@
       </div>
       <p class="menu-swipe-hint">Свайпни вліво або вправо, щоб закрити меню</p>
       <div class="menu-wheel" id="menuWheel">
-        <button class="menu-btn active" data-page="today">Поточний підрахунок</button>
-        <button class="menu-btn" data-page="history">Історія</button>
-        <button class="menu-btn" data-page="management">Налаштування</button>
-        <button class="menu-btn" data-page="about">Про додаток</button>
+        <button class="menu-btn nav-choice active" data-page="today">Поточний підрахунок</button>
+        <button class="menu-btn nav-choice" data-page="history">Історія</button>
+        <button class="menu-btn nav-choice" data-page="management">Налаштування</button>
+        <button class="menu-btn nav-choice" data-page="about">Про додаток</button>
       </div>
       <div class="menu-more-indicator hidden" id="menuMoreIndicator"></div>
     </div>
@@ -3873,11 +3904,11 @@
         <p class="small">Обери потрібну категорію.</p>
       </div>
       <div class="management-options" id="managementWheel">
-        <button class="management-option" id="openProductsBtn">Найменування</button>
-        <button class="management-option" id="openThemeSettingsBtn">Теми</button>
-        <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
-        <button class="management-option" id="openTrashSettingsBtn">Кошик</button>
-        <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
+        <button class="management-option nav-choice" id="openProductsBtn">Найменування</button>
+        <button class="management-option nav-choice" id="openThemeSettingsBtn">Теми</button>
+        <button class="management-option nav-choice" id="openBackupSettingsBtn">Резервна копія</button>
+        <button class="management-option nav-choice" id="openTrashSettingsBtn">Кошик</button>
+        <button class="management-option nav-choice" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
       <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування налаштуваннями">
         <span class="gesture-pad-handle"></span>
@@ -4199,7 +4230,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.49</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.50</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4219,8 +4250,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.49</span></div>
-        <div class="small">Категорії тем тепер використовують той самий стиль кнопок, що й головне меню, зі збільшеною на 10% компактною висотою.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.50</span></div>
+        <div class="small">Головне меню, налаштування, категорії та назви тем об’єднано одним стилем об’ємних кнопок.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4291,7 +4322,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.49";
+  const APP_VERSION = "1.50";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4436,7 +4467,7 @@
     { key: "menuHeader", label: "шапка бокового меню", selector: ".menu-header" },
     { key: "menuController", label: "сенсорна зона меню", selector: ".drawer-gesture-pad" },
     { key: "button", label: "звичайні кнопки", selector: "button:not(.theme-designer-control)" },
-    { key: "navigation", label: "кнопки навігації", selector: ".menu-btn, .app-bottom-nav button, .compact-menu-btn" },
+    { key: "navigation", label: "кнопки навігації", selector: ".nav-choice, .app-bottom-nav button, .compact-menu-btn" },
     { key: "menuSelection", label: "підсвітка вибраного пункту меню", selector: ".menu-btn.gesture-selected", targetSelector: ".menu-btn.active, .menu-btn.gesture-selected" },
     { key: "dropdown", label: "випадаючі списки", selector: ".combo-list" },
     { key: "dropdownOption", label: "рядки випадаючого списку", selector: ".combo-option" },
@@ -4629,7 +4660,7 @@
         .join("");
       return `
         <div class="saved-custom-theme-row">
-          <button type="button" class="theme-option-button" data-action="choose-saved-custom-theme" data-id="${theme.id}">
+          <button type="button" class="theme-option-button nav-choice" data-action="choose-saved-custom-theme" data-id="${theme.id}">
             <span class="theme-palette" aria-hidden="true">${swatches}</span>
             <span>${escapeHtml(theme.name)}</span>
             <span></span>
@@ -5109,7 +5140,7 @@
 
     if (!category) {
       categoryList.innerHTML = THEME_CATEGORIES.map(item => `
-        <button type="button" class="theme-category-button menu-btn" data-action="open-theme-category" data-id="${item.key}">
+        <button type="button" class="theme-category-button menu-btn nav-choice" data-action="open-theme-category" data-id="${item.key}">
           <span>${item.label}</span>
           <span class="theme-category-count">${getThemeCategoryThemes(item).length + (item.key === "custom" ? loadNamedCustomThemes().length : 0)}</span>
         </button>
@@ -5131,7 +5162,7 @@
         .join("");
       return `
         <div class="theme-option-row">
-          <button type="button" class="theme-option-button${selected ? " selected" : ""}" data-action="choose-theme" data-id="${theme}" aria-pressed="${selected}">
+          <button type="button" class="theme-option-button nav-choice${selected ? " selected" : ""}" data-action="choose-theme" data-id="${theme}" aria-pressed="${selected}">
             <span class="theme-palette" aria-hidden="true">${swatches}</span>
             <span>${getThemeLabel(theme)}</span>
             <span class="theme-option-selected">${selected ? "Вибрано" : ""}</span>
