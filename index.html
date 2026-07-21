@@ -401,6 +401,7 @@
     #pageProducts,
     #pageThemes,
     #pageBackup,
+    #pageTrash,
     #pageOtherSettings,
     #pageInstall,
     #pageAbout {
@@ -875,6 +876,42 @@
       border-color: var(--soft-danger-border);
       color: var(--soft-danger-bg);
       background: transparent;
+    }
+    .trash-item {
+      padding: 10px 11px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-strong);
+    }
+    .trash-item-title {
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+    .trash-item-expiry {
+      margin-top: 3px;
+      color: var(--muted-soft);
+      font-size: 11px;
+    }
+    .trash-item-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .trash-item-actions button {
+      min-height: 36px;
+      margin: 0;
+      padding: 7px 9px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    .trash-item-actions .trash-delete-forever {
+      width: auto;
+      border-color: var(--border);
+      background: transparent;
+      color: var(--muted-soft);
     }
     .print-only,
     .print-table-header {
@@ -2888,6 +2925,7 @@
       #pageProducts,
       #pageThemes,
       #pageBackup,
+      #pageTrash,
       #pageOtherSettings,
       #pageInstall,
       #pageAbout {
@@ -3091,7 +3129,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.35</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.36</span></div>
     </div>
   </div>
 
@@ -3318,7 +3356,7 @@
     <div class="reset-confirmation-dialog">
       <div class="reset-warning-label">Увага</div>
       <h2 id="resetConfirmationTitle">Повністю очистити програму?</h2>
-      <p>Після підтвердження з цього пристрою буде назавжди видалено:</p>
+      <p>Після підтвердження дані зникнуть із програми, але їх можна буде відновити з кошика протягом 24 годин:</p>
       <ul class="reset-data-list">
         <li>усі найменування, одиниці виміру та типові кількості;</li>
         <li>поточний підрахунок;</li>
@@ -3331,7 +3369,7 @@
       </div>
       <div class="reset-confirmation-actions">
         <button class="secondary" id="cancelResetBtn">Скасувати</button>
-        <button class="danger" id="confirmResetBtn" disabled>Стерти всі дані безповоротно</button>
+        <button class="danger" id="confirmResetBtn" disabled>Очистити програму</button>
       </div>
     </div>
   </div>
@@ -3370,6 +3408,7 @@
         <button class="management-option" id="openProductsBtn">Найменування</button>
         <button class="management-option" id="openThemeSettingsBtn">Теми</button>
         <button class="management-option" id="openBackupSettingsBtn">Резервна копія</button>
+        <button class="management-option" id="openTrashSettingsBtn">Кошик</button>
         <button class="management-option" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
       <div class="management-gesture-pad" id="managementGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування налаштуваннями">
@@ -3562,6 +3601,14 @@
     </div>
   </div>
 
+  <div id="pageTrash" class="hidden">
+    <div class="card" id="settingsTrashSection">
+      <p class="small">Видалені дані зберігаються тут 24 години, після чого автоматично стираються.</p>
+      <div id="trashList"></div>
+      <button class="danger hidden" id="emptyTrashBtn">Очистити кошик зараз</button>
+    </div>
+  </div>
+
   <div id="pageOtherSettings" class="hidden">
     <div class="card" id="settingsOtherSection">
       <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
@@ -3623,7 +3670,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.35</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.36</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3638,12 +3685,13 @@
         <li>30 тем оформлення, включно з власним конструктором;</li>
         <li>попередній перегляд і компактний PDF формату A4;</li>
         <li>резервне копіювання та відновлення даних;</li>
+        <li>кошик із можливістю відновлення видаленого протягом 24 годин;</li>
         <li>безпечний демонстраційний режим без доступу до власних списків.</li>
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.35</span></div>
-        <div class="small">Колекцію розширено до 30 різних тем: світлих, темних, природних, неонових, пастельних і контрастних.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.36</span></div>
+        <div class="small">Додано кошик на 24 години для найменувань, позицій, історії та повного стану програми. Виправлено підтвердження видалення з редактора.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -3714,7 +3762,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.35";
+  const APP_VERSION = "1.36";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -3728,6 +3776,9 @@
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
   const DEMO_DATA_VERSION = "2";
+  const TRASH_KEY = "warehouseJournalTrashV1";
+  const DEMO_TRASH_KEY = "warehouseJournalDemoTrashV1";
+  const TRASH_RETENTION_MS = 24 * 60 * 60 * 1000;
   const THEMES = [
     "dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper",
     "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta",
@@ -3846,6 +3897,7 @@
     products: "management",
     themes: "management",
     backup: "management",
+    trash: "management",
     otherSettings: "management",
     install: "about"
   };
@@ -3856,6 +3908,7 @@
     products: "Найменування",
     themes: "Теми оформлення",
     backup: "Резервна копія",
+    trash: "Кошик",
     otherSettings: "Інші налаштування",
     about: "Про додаток",
     install: "Встановлення та поширення"
@@ -4924,6 +4977,161 @@
     persistState();
   }
 
+  function currentTrashKey() {
+    return demoModeActive ? DEMO_TRASH_KEY : TRASH_KEY;
+  }
+
+  function cloneData(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function saveTrashItems(items) {
+    try {
+      localStorage.setItem(currentTrashKey(), JSON.stringify(items.slice(0, 30)));
+      return true;
+    } catch (error) {
+      toast("Не вдалося зберегти дані в кошику", true);
+      return false;
+    }
+  }
+
+  function loadTrashItems() {
+    try {
+      const now = Date.now();
+      const parsed = JSON.parse(localStorage.getItem(currentTrashKey()) || "[]");
+      const items = Array.isArray(parsed) ? parsed.filter(item => Number(item.expiresAt) > now) : [];
+      if (items.length !== parsed.length) saveTrashItems(items);
+      return items;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function putInTrash(type, label, payload) {
+    const items = loadTrashItems();
+    items.unshift({
+      id: uid(),
+      type,
+      label,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + TRASH_RETENTION_MS,
+      payload: cloneData(payload)
+    });
+    return saveTrashItems(items);
+  }
+
+  function trashRemainingText(expiresAt) {
+    const remaining = Math.max(0, Number(expiresAt) - Date.now());
+    const hours = Math.floor(remaining / 3600000);
+    const minutes = Math.max(1, Math.ceil((remaining % 3600000) / 60000));
+    return hours > 0 ? `Залишилось: ${hours} год ${minutes} хв` : `Залишилось: ${minutes} хв`;
+  }
+
+  async function restoreTrashItem(id) {
+    const items = loadTrashItems();
+    const item = items.find(entry => entry.id === id);
+    if (!item) {
+      renderTrash();
+      toast("Цей запис уже видалено з кошика", true);
+      return;
+    }
+
+    const confirmed = await showAppDialog({
+      label: "Кошик",
+      title: "Відновити дані?",
+      message: `Буде відновлено: ${item.label}.`,
+      confirmText: "Відновити"
+    });
+    if (!confirmed) return;
+
+    if (item.type === "products") {
+      const products = Array.isArray(item.payload?.products) ? item.payload.products : [];
+      products.forEach(product => {
+        const exists = state.products.some(existing => existing.id === product.id || existing.name.toLowerCase() === String(product.name).toLowerCase());
+        if (!exists) state.products.push(product);
+      });
+      state.products = sortedProducts();
+    } else if (item.type === "entries") {
+      const dayData = item.payload?.day || {};
+      let day = state.days.find(existing => existing.id === dayData.id);
+      if (!day) {
+        day = { id: dayData.id || uid(), date: dayData.date || todayISO(), createdAt: dayData.createdAt || nowText(), entries: [] };
+        state.days.unshift(day);
+      }
+      const entries = Array.isArray(item.payload?.entries) ? item.payload.entries : [];
+      entries.forEach(entry => {
+        if (!day.entries.some(existing => existing.id === entry.id)) day.entries.push(entry);
+      });
+    } else if (item.type === "days") {
+      const days = Array.isArray(item.payload?.days) ? item.payload.days : [];
+      days.slice().reverse().forEach(day => {
+        if (!state.days.some(existing => existing.id === day.id)) state.days.unshift(day);
+      });
+    } else if (item.type === "full-state" && item.payload?.state) {
+      state = normalizeState(cloneData(item.payload.state));
+    }
+
+    saveTrashItems(items.filter(entry => entry.id !== id));
+    save();
+    renderTrash();
+    toast("Дані відновлено");
+  }
+
+  async function deleteTrashItemPermanently(id) {
+    const items = loadTrashItems();
+    const item = items.find(entry => entry.id === id);
+    if (!item) return;
+    const confirmed = await showAppDialog({
+      label: "Остаточне видалення",
+      title: "Видалити без можливості відновлення?",
+      message: item.label,
+      confirmText: "Видалити назавжди",
+      danger: true
+    });
+    if (!confirmed) return;
+    saveTrashItems(items.filter(entry => entry.id !== id));
+    renderTrash();
+    toast("Видалено назавжди");
+  }
+
+  async function emptyTrash() {
+    const items = loadTrashItems();
+    if (!items.length) return;
+    const confirmed = await showAppDialog({
+      label: "Остаточне видалення",
+      title: "Очистити кошик?",
+      message: `Усі записи в кошику (${items.length}) буде видалено без можливості відновлення.`,
+      confirmText: "Очистити кошик",
+      danger: true
+    });
+    if (!confirmed) return;
+    saveTrashItems([]);
+    renderTrash();
+    toast("Кошик очищено");
+  }
+
+  function renderTrash() {
+    const list = document.getElementById("trashList");
+    const emptyButton = document.getElementById("emptyTrashBtn");
+    if (!list || !emptyButton) return;
+    const items = loadTrashItems();
+    emptyButton.classList.toggle("hidden", !items.length);
+    if (!items.length) {
+      list.innerHTML = `<div class="empty">Кошик порожній.</div>`;
+      return;
+    }
+    list.innerHTML = items.map(item => `
+      <div class="trash-item">
+        <div class="trash-item-title">${escapeHtml(item.label)}</div>
+        <div class="trash-item-expiry">${trashRemainingText(item.expiresAt)}</div>
+        <div class="trash-item-actions">
+          <button data-action="restore-trash" data-id="${item.id}">Відновити</button>
+          <button class="trash-delete-forever" data-action="delete-trash" data-id="${item.id}" aria-label="Видалити назавжди">×</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
@@ -5911,6 +6119,7 @@
     document.getElementById("pageProducts").classList.add("hidden");
     document.getElementById("pageThemes").classList.add("hidden");
     document.getElementById("pageBackup").classList.add("hidden");
+    document.getElementById("pageTrash").classList.add("hidden");
     document.getElementById("pageOtherSettings").classList.add("hidden");
     document.getElementById("pageAbout").classList.add("hidden");
     document.getElementById("pageInstall").classList.add("hidden");
@@ -5924,13 +6133,14 @@
     if (page === "products") document.getElementById("pageProducts").classList.remove("hidden");
     if (page === "themes") document.getElementById("pageThemes").classList.remove("hidden");
     if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
+    if (page === "trash") document.getElementById("pageTrash").classList.remove("hidden");
     if (page === "otherSettings") document.getElementById("pageOtherSettings").classList.remove("hidden");
     if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
     if (page === "install") {
       document.getElementById("pageInstall").classList.remove("hidden");
       updateInstallUI();
     }
-    const activeMenuPage = ["products", "themes", "backup", "otherSettings"].includes(page)
+    const activeMenuPage = ["products", "themes", "backup", "trash", "otherSettings"].includes(page)
       ? "management"
       : (page === "install" ? "about" : page);
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
@@ -5979,12 +6189,13 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити підрахунок?",
-      message: `Підрахунок від ${niceDate(day.date)} буде видалено безповоротно.`,
+      message: `Підрахунок від ${niceDate(day.date)} переміститься в кошик на 24 години.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
+    if (!putInTrash("days", `Підрахунок від ${niceDate(day.date)}`, { days: [day] })) return;
     state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
 
@@ -6091,12 +6302,14 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити вибрані підрахунки?",
-      message: `Буде безповоротно видалено: ${ids.length}.`,
+      message: `Буде переміщено в кошик на 24 години: ${ids.length}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
+    const deletedDays = state.days.filter(day => selectedHistoryIds.has(day.id));
+    if (!putInTrash("days", `Вибрані підрахунки (${deletedDays.length})`, { days: deletedDays })) return;
     state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
     if (!state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
@@ -6119,12 +6332,14 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити порожні підрахунки?",
-      message: `Буде безповоротно видалено порожніх підрахунків: ${count}.`,
+      message: `У кошик на 24 години буде переміщено порожніх підрахунків: ${count}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
+    const deletedDays = state.days.filter(day => !day.entries.length);
+    if (!putInTrash("days", `Порожні підрахунки (${deletedDays.length})`, { days: deletedDays })) return;
     state.days = state.days.filter(d => d.entries.length > 0);
     if (!state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
@@ -6144,12 +6359,13 @@
     const confirmed = await showAppDialog({
       label: "Увага",
       title: "Очистити всю історію?",
-      message: "Усі збережені підрахунки буде видалено безповоротно.",
+      message: "Усі збережені підрахунки буде переміщено в кошик на 24 години.",
       confirmText: "Очистити історію",
       danger: true
     });
     if (!confirmed) return;
 
+    if (!putInTrash("days", `Уся історія підрахунків (${state.days.length})`, { days: state.days })) return;
     state.days = [];
     state.activeDayId = null;
     selectedHistoryIds.clear();
@@ -6400,6 +6616,10 @@
       danger: true
     });
     if (!confirmed) return;
+    if (!putInTrash("entries", `Позиція «${entry.productName}»`, {
+      day: { id: day.id, date: day.date, createdAt: day.createdAt },
+      entries: [entry]
+    })) return;
     day.entries = day.entries.filter(e => e.id !== id);
 
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
@@ -6560,15 +6780,26 @@
       return;
     }
 
+    const deletingFromEditor = document.getElementById("editingProductId").value === id;
+    const editorOverlay = document.getElementById("productAddOverlay");
+    const editorWasVisible = deletingFromEditor && !editorOverlay.classList.contains("hidden");
+    if (editorWasVisible) editorOverlay.classList.add("hidden");
+
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити найменування?",
-      message: `Найменування «${product.name}» буде видалено зі списку. Записи в уже збережених підрахунках залишаться.`,
+      message: `Найменування «${product.name}» переміститься в кошик на 24 години. Записи в уже збережених підрахунках залишаться.`,
       confirmText: "Видалити",
       danger: true
     });
-    if (!confirmed) return;
-    const deletingFromEditor = document.getElementById("editingProductId").value === id;
+    if (!confirmed) {
+      if (editorWasVisible) editorOverlay.classList.remove("hidden");
+      return;
+    }
+    if (!putInTrash("products", `Найменування «${product.name}»`, { products: [product] })) {
+      if (editorWasVisible) editorOverlay.classList.remove("hidden");
+      return;
+    }
     state.products = state.products.filter(p => p.id !== id);
     selectedProductIds.delete(id);
     if (deletingFromEditor) clearProductForm();
@@ -6681,12 +6912,13 @@
     const confirmed = await showAppDialog({
       label: "Відновлення даних",
       title: "Відновити резервну копію?",
-      message: `Поточні дані буде замінено даними з ${sourceName}. Цю дію не можна скасувати.`,
+      message: `Поточні дані буде замінено даними з ${sourceName}. Попередній стан збережеться в кошику на 24 години.`,
       confirmText: "Відновити",
       danger: true
     });
     if (!confirmed) return false;
 
+    if (!putInTrash("full-state", "Дані до відновлення резервної копії", { state })) return false;
     state = normalizeState(data);
     ensureActiveDay();
     save();
@@ -6739,6 +6971,7 @@
     closeResetConfirmation();
     productSelectMode = false;
     selectedProductIds.clear();
+    if (!putInTrash("full-state", "Дані до повного очищення програми", { state })) return;
     if (demoModeActive) {
       state = { products: [], days: [], activeDayId: null };
       save();
@@ -7129,6 +7362,8 @@
     });
     if (!confirmed) return;
 
+    const deletedProducts = state.products.filter(product => selectedProductIds.has(product.id));
+    if (!putInTrash("products", `Вибрані найменування (${deletedProducts.length})`, { products: deletedProducts })) return;
     state.products = state.products.filter(product => !selectedProductIds.has(product.id));
     selectedProductIds.clear();
     productSelectMode = false;
@@ -7247,6 +7482,7 @@
     renderToday();
     renderProducts();
     renderHistory();
+    renderTrash();
   }
 
   function openDocumentPreview(dayId = null) {
@@ -7323,6 +7559,8 @@
     if (action === "select-day") selectDay(id);
     if (action === "preview-day") openDocumentPreview(id);
     if (action === "delete-day") deleteDay(id);
+    if (action === "restore-trash") restoreTrashItem(id);
+    if (action === "delete-trash") deleteTrashItemPermanently(id);
     if (action === "select-product") selectProduct(id);
     if (action === "select-quick-edit-entry") selectQuickEditEntry(id);
   });
@@ -7351,6 +7589,7 @@
   document.getElementById("deleteSelectedHistoryBtn").addEventListener("click", deleteSelectedHistory);
   document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
   document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
+  document.getElementById("emptyTrashBtn").addEventListener("click", emptyTrash);
   document.getElementById("toggleProductSelectBtn").addEventListener("click", () => toggleProductSelectMode(true));
   document.getElementById("selectAllProductsBtn").addEventListener("click", toggleSelectAllProducts);
   document.getElementById("deleteSelectedProductsBtn").addEventListener("click", deleteSelectedProducts);
@@ -7534,6 +7773,7 @@
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
   document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showPage("backup"));
+  document.getElementById("openTrashSettingsBtn").addEventListener("click", () => showPage("trash"));
   document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showPage("otherSettings"));
   document.getElementById("toggleDemoModeBtn").addEventListener("click", toggleDemoMode);
   document.getElementById("openInstallFromAboutBtn").addEventListener("click", () => showPage("install"));
