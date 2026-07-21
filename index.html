@@ -1339,11 +1339,16 @@
       color: var(--primary-text);
       box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
     }
-    #pageBackup #downloadBackupBtn {
+    #pageBackup #downloadBackupBtn,
+    #pageBackup #selectBackupFileBtn {
       border-color: var(--primary-bg);
       background: var(--primary-bg);
       color: var(--primary-text);
       box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+    }
+    .backup-file-name {
+      margin: -2px 0 10px;
+      overflow-wrap: anywhere;
     }
     .custom-theme-panel {
       margin-top: 14px;
@@ -2567,7 +2572,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">121</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">122</span></div>
     </div>
   </div>
 
@@ -2922,7 +2927,12 @@
       <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
       <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
 
-      <label>Імпорт резервної копії</label>
+      <label>Відновлення з файлу</label>
+      <input class="hidden" id="backupFileInput" type="file" accept=".json,application/json,text/json" />
+      <button type="button" id="selectBackupFileBtn">Вибрати файл резервної копії</button>
+      <p class="small backup-file-name hidden" id="selectedBackupFileName"></p>
+
+      <label for="importData">Або встав текст резервної копії</label>
       <textarea id="importData" rows="5" placeholder="Встав сюди JSON"></textarea>
       <button class="yellow" id="importBtn">Імпортувати</button>
       <button class="danger" id="resetBtn">Повне очищення програми</button>
@@ -2982,7 +2992,7 @@
       <div class="about-heading-row">
         <div>
           <h2>Облік залишків</h2>
-          <div class="about-version">Версія <span id="aboutVersionLabel">121</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">122</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -3000,8 +3010,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">121</span></div>
-        <div class="small">Конструктор став компактним і тепер дозволяє змінювати шапки, фон і списки меню, сенсорну зону та підсвітку вибраного пункту.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">122</span></div>
+        <div class="small">Додано відновлення всіх даних безпосередньо з файлу резервної копії через системний вибір файлів.</div>
       </div>
       <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
       <button id="updateAppBtn">Перевірити оновлення</button>
@@ -3057,7 +3067,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "121";
+  const APP_VERSION = "122";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5307,22 +5317,72 @@
     toast("Файл резервної копії створено");
   }
 
-  function importBackup() {
+  async function restoreBackup(raw, sourceName = "резервної копії") {
+    let data;
+    try {
+      data = JSON.parse(raw);
+      if (!data || typeof data !== "object" || !Array.isArray(data.products) || !Array.isArray(data.days)) {
+        throw new Error("bad-backup");
+      }
+    } catch (error) {
+      toast("Це не дійсний файл резервної копії", true);
+      return false;
+    }
+
+    const confirmed = await showAppDialog({
+      label: "Відновлення даних",
+      title: "Відновити резервну копію?",
+      message: `Поточні дані буде замінено даними з ${sourceName}. Цю дію не можна скасувати.`,
+      confirmText: "Відновити",
+      danger: true
+    });
+    if (!confirmed) return false;
+
+    state = data;
+    ensureActiveDay();
+    save();
+    document.getElementById("importData").value = "";
+    showSuccessCheck();
+    toast("Дані з резервної копії відновлено");
+    showPage("today");
+    return true;
+  }
+
+  async function importBackup() {
     const raw = document.getElementById("importData").value.trim();
     if (!raw) {
-      toast("Встав JSON", true);
+      toast("Встав текст резервної копії", true);
       return;
     }
+
+    await restoreBackup(raw, "вставленого тексту");
+  }
+
+  async function importBackupFile(event) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const fileName = document.getElementById("selectedBackupFileName");
+    fileName.textContent = `Вибрано: ${file.name}`;
+    fileName.classList.remove("hidden");
+
+    if (file.size > 20 * 1024 * 1024) {
+      toast("Файл завеликий для резервної копії", true);
+      input.value = "";
+      return;
+    }
+
     try {
-      const data = JSON.parse(raw);
-      if (!Array.isArray(data.products) || !Array.isArray(data.days)) throw new Error("bad");
-      state = data;
-      ensureActiveDay();
-      save();
-      toast("Імпортовано");
-      showPage("today");
-    } catch (e) {
-      toast("Помилка імпорту JSON", true);
+      const raw = await file.text();
+      const restored = await restoreBackup(raw, `файлу «${file.name}»`);
+      if (restored) {
+        fileName.textContent = `Відновлено з файлу: ${file.name}`;
+      }
+    } catch (error) {
+      toast("Не вдалося прочитати файл резервної копії", true);
+    } finally {
+      input.value = "";
     }
   }
 
@@ -5912,6 +5972,12 @@
 
   document.getElementById("copyBackupBtn").addEventListener("click", copyBackup);
   document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
+  document.getElementById("selectBackupFileBtn").addEventListener("click", () => {
+    const input = document.getElementById("backupFileInput");
+    input.value = "";
+    input.click();
+  });
+  document.getElementById("backupFileInput").addEventListener("change", importBackupFile);
   document.getElementById("importBtn").addEventListener("click", importBackup);
   document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
   document.getElementById("appDialogCancelBtn").addEventListener("click", () => closeAppDialog(false));
