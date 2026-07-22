@@ -18,6 +18,9 @@
         "menu-style-game",
         localStorage.getItem("warehouseJournalMenuStyle") === "game"
       );
+      const savedMenuSide = localStorage.getItem("warehouseJournalMenuSide") === "right" ? "right" : "left";
+      document.documentElement.classList.toggle("menu-side-left", savedMenuSide === "left");
+      document.documentElement.classList.toggle("menu-side-right", savedMenuSide === "right");
     } catch (e) {}
   </script>
   <style>
@@ -1430,6 +1433,24 @@
       background: var(--selection-border);
       opacity: 1;
     }
+    html.menu-style-game.menu-side-left .menu-btn {
+      margin-left: 0;
+    }
+    html.menu-style-game.menu-side-right .menu-btn {
+      margin-right: 0;
+      margin-left: 0;
+      padding-right: 28px;
+      padding-left: 38px;
+      border-right: 0;
+      border-left: 1px solid var(--border);
+      border-radius: 8px 0 0 8px;
+      text-align: right;
+      transform-origin: right center;
+    }
+    html.menu-style-game.menu-side-right .menu-btn::after {
+      right: auto;
+      left: 10px;
+    }
     .menu-btn.gesture-selected,
     .management-option.gesture-selected,
     .theme-category-button.gesture-selected,
@@ -1479,6 +1500,10 @@
       bottom: auto;
       border-right: 10px solid var(--selection-text);
       border-left: 0;
+    }
+    html.menu-style-game.menu-side-right .menu-btn.gesture-selected::after {
+      right: 11px;
+      left: auto;
     }
     .theme-category-button.menu-btn {
       min-height: 35px;
@@ -1738,6 +1763,12 @@
       background: var(--selection-bg);
       box-shadow: 5px 5px 0 var(--selection-border);
     }
+    html.menu-style-game.menu-side-right .management-option {
+      border-right: 0;
+      border-left: 1px solid var(--border);
+      border-radius: 8px 0 0 8px;
+      text-align: right;
+    }
     @media (max-height: 560px) {
       #pageManagement {
         align-items: flex-start;
@@ -1962,6 +1993,61 @@
       html.menu-style-game.joystick-disabled .management-options {
         left: 50%;
         transform: translate(-50%, -50%);
+      }
+      html.menu-style-game.menu-side-left .menu-wheel {
+        right: auto;
+        left: max(8px, env(safe-area-inset-left));
+        transform: none;
+      }
+      html.menu-style-game.menu-side-right .menu-wheel {
+        right: max(8px, env(safe-area-inset-right));
+        left: auto;
+        transform: none;
+      }
+      html.menu-style-game.menu-side-left .management-options {
+        right: auto;
+        left: 0;
+        transform: none;
+      }
+      html.menu-style-game.menu-side-right .management-options {
+        right: 0;
+        left: auto;
+        transform: none;
+      }
+      html.menu-style-game.menu-side-left #pageThemes.theme-category-root .theme-category-list,
+      html.menu-style-game.menu-side-left #pageThemes.theme-category-open .theme-category-view {
+        margin-right: auto;
+        margin-left: 0;
+      }
+      html.menu-style-game.menu-side-right #pageThemes.theme-category-root .theme-category-list,
+      html.menu-style-game.menu-side-right #pageThemes.theme-category-open .theme-category-view {
+        margin-right: 0;
+        margin-left: auto;
+      }
+      html.menu-style-game.menu-side-right .menu-wheel .menu-btn,
+      html.menu-style-game.menu-side-right .management-option {
+        margin-right: 0;
+        padding-right: max(24px, env(safe-area-inset-right));
+        padding-left: 38px;
+        text-align: right;
+      }
+      html.menu-style-game.menu-side-left.joystick-disabled .menu-wheel,
+      html.menu-style-game.menu-side-left.joystick-disabled .management-options {
+        right: auto;
+        left: 0;
+        transform: translateY(-50%);
+      }
+      html.menu-style-game.menu-side-left.joystick-disabled .menu-wheel {
+        left: max(8px, env(safe-area-inset-left));
+      }
+      html.menu-style-game.menu-side-right.joystick-disabled .menu-wheel,
+      html.menu-style-game.menu-side-right.joystick-disabled .management-options {
+        right: 0;
+        left: auto;
+        transform: translateY(-50%);
+      }
+      html.menu-style-game.menu-side-right.joystick-disabled .menu-wheel {
+        right: max(8px, env(safe-area-inset-right));
       }
     }
     .pill {
@@ -3762,7 +3848,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.58</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.59</span></div>
     </div>
   </div>
 
@@ -4311,6 +4397,13 @@
           <option value="standard">Звичайне меню</option>
           <option value="game">Бокове меню</option>
         </select>
+        <div id="menuSideSettings">
+          <label for="menuSideSelect">Розташування бокового меню</label>
+          <select id="menuSideSelect">
+            <option value="left">Зліва</option>
+            <option value="right">Справа</option>
+          </select>
+        </div>
         <p class="small" id="menuStyleDescription"></p>
       </section>
 
@@ -4364,7 +4457,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.58</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.59</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4384,8 +4477,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.58</span></div>
-        <div class="small">Списки меню, налаштувань і тем звужено, щоб джойстиком можна було керувати вздовж лівого або правого краю екрана.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.59</span></div>
+        <div class="small">Для бокового меню додано вибір лівого або правого розташування з повністю видимими пунктами біля вибраного краю.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4456,7 +4549,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.58";
+  const APP_VERSION = "1.59";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4467,6 +4560,7 @@
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
   const MENU_STYLE_KEY = "warehouseJournalMenuStyle";
+  const MENU_SIDE_KEY = "warehouseJournalMenuSide";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -7140,15 +7234,30 @@
     }
   }
 
+  function getMenuSide() {
+    try {
+      return localStorage.getItem(MENU_SIDE_KEY) === "right" ? "right" : "left";
+    } catch (error) {
+      return "left";
+    }
+  }
+
   function applyMenuStyle(style = getMenuStyle()) {
     const normalizedStyle = style === "game" ? "game" : "standard";
+    const menuSide = getMenuSide();
     document.documentElement.classList.toggle("menu-style-game", normalizedStyle === "game");
+    document.documentElement.classList.toggle("menu-side-left", menuSide === "left");
+    document.documentElement.classList.toggle("menu-side-right", menuSide === "right");
     const select = document.getElementById("menuStyleSelect");
     if (select) select.value = normalizedStyle;
+    const sideSelect = document.getElementById("menuSideSelect");
+    if (sideSelect) sideSelect.value = menuSide;
+    const sideSettings = document.getElementById("menuSideSettings");
+    if (sideSettings) sideSettings.classList.toggle("hidden", normalizedStyle !== "game");
     const description = document.getElementById("menuStyleDescription");
     if (description) {
       description.textContent = normalizedStyle === "game"
-        ? "Бокове меню розташовує однакові прямі пункти біля лівого краю."
+        ? `Бокове меню розташовує повністю видимі пункти біля ${menuSide === "right" ? "правого" : "лівого"} краю.`
         : "Звичайне меню розташовує однакові прямі пункти по центру екрана.";
     }
     requestAnimationFrame(updateMenuOverflowIndicator);
@@ -8908,6 +9017,14 @@
     try { localStorage.setItem(MENU_STYLE_KEY, style); } catch (error) {}
     applyMenuStyle(style);
     toast(style === "game" ? "Увімкнено бокове меню" : "Увімкнено звичайне меню");
+  });
+  const menuSideSelect = document.getElementById("menuSideSelect");
+  menuSideSelect.value = getMenuSide();
+  menuSideSelect.addEventListener("change", event => {
+    const side = event.target.value === "right" ? "right" : "left";
+    try { localStorage.setItem(MENU_SIDE_KEY, side); } catch (error) {}
+    applyMenuStyle(getMenuStyle());
+    toast(side === "right" ? "Бокове меню переміщено вправо" : "Бокове меню переміщено вліво");
   });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
