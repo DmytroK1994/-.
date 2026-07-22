@@ -1191,6 +1191,7 @@
       text-align: left;
       font-weight: 800;
       width: 100%;
+      touch-action: manipulation;
     }
     .theme-option-row {
       display: grid;
@@ -1212,6 +1213,7 @@
       box-shadow: none;
       font-size: 20px;
       line-height: 1;
+      touch-action: manipulation;
     }
     .favorite-theme-button.is-favorite {
       border-color: var(--selection-border);
@@ -4612,7 +4614,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.87</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.88</span></div>
     </div>
   </div>
 
@@ -5352,7 +5354,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.87</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.88</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5382,8 +5384,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.87</span></div>
-            <div class="small">Прибрано екранний відступ шапки з режиму друку — PDF тепер починається від верхнього поля першої сторінки.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.88</span></div>
+            <div class="small">Виправлено вибір тем на Android: список більше не зміщується під пальцем до завершення прямого натискання.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5454,7 +5456,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.87";
+  const APP_VERSION = "1.88";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7980,7 +7982,12 @@
       if (event.pointerType === "mouse") selectNavigationItemFromPointer(event.target);
     });
     document.addEventListener("pointerdown", event => {
-      if (event.pointerType !== "mouse") selectNavigationItemFromPointer(event.target);
+      if (event.pointerType === "mouse") return;
+      const directThemeButton = event.target instanceof Element
+        ? event.target.closest("#pageThemes .theme-option-button")
+        : null;
+      if (directThemeButton) return;
+      selectNavigationItemFromPointer(event.target);
     }, true);
   }
 
