@@ -2742,7 +2742,7 @@
     .button-layout-grid label {
       margin-top: 4px;
     }
-    @media (max-width: 520px) {
+    @media (max-width: 350px) {
       .button-layout-grid { grid-template-columns: 1fr; }
     }
 
@@ -3700,8 +3700,8 @@
       overflow: hidden;
     }
     .about-deck {
-      display: grid;
-      grid-template-rows: 28px minmax(0, 1fr) 28px;
+      position: relative;
+      display: block;
       width: min(100%, 640px);
       height: 100%;
       margin-inline: auto;
@@ -3712,6 +3712,7 @@
     }
     .about-card-viewport {
       position: relative;
+      height: 100%;
       min-height: 0;
       overflow: hidden;
     }
@@ -3744,6 +3745,9 @@
       transform: translateY(108%) scale(.96);
     }
     .about-deck.no-transition .about-card {
+      transition: none;
+    }
+    .about-deck.is-dragging .about-card {
       transition: none;
     }
     .about-card .about-heading-row {
@@ -3808,12 +3812,26 @@
       border-top: 2px solid currentColor;
       border-left: 2px solid currentColor;
     }
-    #aboutPrevCardBtn::before {
+    #aboutPrevCardBtn::before,
+    #otherSettingsPrevCardBtn::before {
       transform: translateY(4px) rotate(45deg);
     }
-    #aboutNextCardBtn::before {
+    #aboutNextCardBtn::before,
+    #otherSettingsNextCardBtn::before {
       transform: translateY(-4px) rotate(225deg);
     }
+    #aboutPrevCardBtn,
+    #otherSettingsPrevCardBtn,
+    #aboutNextCardBtn,
+    #otherSettingsNextCardBtn {
+      position: absolute;
+      right: 0;
+      left: 0;
+    }
+    #aboutPrevCardBtn,
+    #otherSettingsPrevCardBtn { top: 0; }
+    #aboutNextCardBtn,
+    #otherSettingsNextCardBtn { bottom: 0; }
     .about-card-position {
       position: absolute;
       right: 10px;
@@ -3826,13 +3844,106 @@
     }
     @media (max-height: 620px) {
       #pageAbout { --about-edge-gap: 9px; }
-      .about-deck { grid-template-rows: 22px minmax(0, 1fr) 22px; }
       .about-card-nav { min-height: 22px !important; height: 22px; }
       .about-card { padding: 11px 13px; }
       .about-card .about-lead,
       .about-card #demoModeStatus { font-size: 11px; line-height: 1.28; }
       .about-card-actions { gap: 4px; margin-top: 5px; }
       .about-card-actions button { min-height: 34px; padding: 6px 8px; font-size: 12px; }
+    }
+    #pageOtherSettings {
+      --other-settings-edge-gap: 14px;
+      position: fixed;
+      top: calc(var(--app-header-bottom, 68px) + var(--other-settings-edge-gap));
+      right: 0;
+      bottom: calc(var(--app-bottom-obstruction, env(safe-area-inset-bottom)) + var(--other-settings-edge-gap));
+      left: 0;
+      width: 100%;
+      min-height: 0;
+      padding-inline: var(--other-settings-edge-gap);
+      overflow: hidden;
+    }
+    .other-settings-deck {
+      position: relative;
+      display: block;
+      width: min(100%, 640px);
+      height: 100%;
+      margin-inline: auto;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .other-settings-card-viewport {
+      position: relative;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+    #settingsOtherSection {
+      position: absolute;
+      inset: 0;
+      display: block;
+      margin: 0;
+      overflow: hidden;
+    }
+    #pageOtherSettings .other-settings-group {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: clamp(13px, 2.6dvh, 20px);
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(108%) scale(.96);
+      transition: transform .36s cubic-bezier(.2, .78, .24, 1), opacity .24s ease;
+    }
+    #pageOtherSettings .other-settings-group.is-before {
+      transform: translateY(-108%) scale(.96);
+    }
+    #pageOtherSettings .other-settings-group.is-active {
+      z-index: 2;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    #pageOtherSettings .other-settings-group.is-after {
+      transform: translateY(108%) scale(.96);
+    }
+    .other-settings-deck.no-transition .other-settings-group,
+    .other-settings-deck.is-dragging .other-settings-group {
+      transition: none !important;
+    }
+    #pageOtherSettings .button-layout-preview {
+      min-height: 76px;
+      margin-bottom: 7px;
+      padding: 8px;
+    }
+    #pageOtherSettings .button-layout-grid {
+      gap: 3px 8px;
+    }
+    #pageOtherSettings .button-layout-grid label {
+      margin: 2px 0 3px;
+      font-size: 11px;
+    }
+    #pageOtherSettings .button-layout-grid select {
+      min-height: 39px;
+      padding: 7px 9px;
+      font-size: 13px;
+    }
+    @media (max-height: 620px) {
+      #pageOtherSettings { --other-settings-edge-gap: 9px; }
+      #pageOtherSettings .other-settings-group { padding: 10px 12px; }
+      #pageOtherSettings .other-settings-group h2 { margin-bottom: 5px; font-size: 16px; }
+      #pageOtherSettings .other-settings-group .small { font-size: 10px; line-height: 1.2; }
+      #pageOtherSettings .other-settings-group label { margin: 4px 0 3px; font-size: 10px; }
+      #pageOtherSettings .other-settings-group select { min-height: 34px; padding: 5px 7px; font-size: 12px; }
+      #pageOtherSettings .button-layout-preview { min-height: 56px; margin-bottom: 4px; }
     }
     .install-action-card {
       margin-bottom: 18px;
@@ -4437,7 +4548,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.77</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.78</span></div>
     </div>
   </div>
 
@@ -5021,8 +5132,11 @@
   </div>
 
   <div id="pageOtherSettings" class="hidden">
-    <div class="other-settings-stack" id="settingsOtherSection">
-      <section class="card other-settings-group">
+    <div class="other-settings-deck" id="otherSettingsDeck" tabindex="0" aria-label="Картки інших налаштувань">
+      <button type="button" class="about-card-nav" id="otherSettingsPrevCardBtn" aria-label="Попередня картка налаштувань"></button>
+      <div class="other-settings-card-viewport">
+        <div class="other-settings-stack" id="settingsOtherSection">
+      <section class="card other-settings-group is-active" data-other-settings-card>
         <h2>Навігація</h2>
         <p class="small settings-group-description">Вибери, як повертатися з вкладених сторінок застосунку.</p>
         <label for="backNavigationSelect">Спосіб повернення</label>
@@ -5034,7 +5148,7 @@
         <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
       </section>
 
-      <section class="card other-settings-group">
+      <section class="card other-settings-group is-after" data-other-settings-card>
         <h2>Керування меню</h2>
         <p class="small settings-group-description">Джойстик дозволяє вибирати пункти рухом пальця вгору або вниз.</p>
         <label for="joystickModeSelect">Джойстик меню та налаштувань</label>
@@ -5045,7 +5159,7 @@
         <p class="small">Коли джойстик вимкнено, пункти показуються звичайним списком.</p>
       </section>
 
-      <section class="card other-settings-group">
+      <section class="card other-settings-group is-after" data-other-settings-card>
         <h2>Вигляд меню</h2>
         <p class="small settings-group-description">Зміни розташування пунктів основного меню.</p>
         <label for="menuStyleSelect">Вигляд основного меню</label>
@@ -5063,7 +5177,7 @@
         <p class="small" id="menuStyleDescription"></p>
       </section>
 
-      <section class="card other-settings-group">
+      <section class="card other-settings-group is-after" data-other-settings-card>
         <h2>Розмір кнопок навігації</h2>
         <p class="small settings-group-description">Налаштуй однакову основу для кнопок меню, налаштувань і тем або задай окремий розмір для кожного розділу.</p>
         <div class="button-layout-preview" id="buttonLayoutPreview" data-width="current" data-size="standard" aria-label="Приклад вигляду кнопки">
@@ -5116,7 +5230,7 @@
         <p class="small">Зміни застосовуються одразу. Окремий розмір має перевагу над загальним.</p>
       </section>
 
-      <section class="card other-settings-group">
+      <section class="card other-settings-group is-after" data-other-settings-card>
         <h2>Введення даних</h2>
         <p class="small settings-group-description">Налаштування полів на екрані поточного підрахунку.</p>
         <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
@@ -5126,6 +5240,10 @@
         </select>
         <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
       </section>
+        </div>
+        <div class="about-card-position" id="otherSettingsCardPosition" aria-live="polite">1 із 5</div>
+      </div>
+      <button type="button" class="about-card-nav" id="otherSettingsNextCardBtn" aria-label="Наступна картка налаштувань"></button>
     </div>
   </div>
 
@@ -5168,7 +5286,7 @@
       <div class="about-card-viewport">
         <section class="card about-card is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.77</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.78</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-actions">
@@ -5195,8 +5313,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.77</span></div>
-            <div class="small">В «Інших налаштуваннях» додано ширину й розміри навігаційних кнопок із живим прикладом та окремими параметрами для меню, налаштувань і тем.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.78</span></div>
+            <div class="small">Картки в розділах «Про додаток» та «Інші налаштування» тепер рухаються разом із пальцем і перегортаються після короткого вертикального свайпа.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5267,7 +5385,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.77";
+  const APP_VERSION = "1.78";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8292,6 +8410,85 @@
 
   let aboutCardIndex = 0;
   let aboutWheelLocked = false;
+  function attachInteractiveVerticalDeck(deck, cards, getIndex, showIndex) {
+    let tracking = false;
+    let vertical = false;
+    let startX = 0;
+    let startY = 0;
+    let dragY = 0;
+
+    const clearInlineStyles = () => {
+      cards.forEach(card => {
+        card.style.transform = "";
+        card.style.opacity = "";
+      });
+    };
+
+    deck.addEventListener("touchstart", event => {
+      if (event.touches.length !== 1) return;
+      tracking = true;
+      vertical = false;
+      dragY = 0;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }, { passive: true });
+
+    deck.addEventListener("touchmove", event => {
+      if (!tracking || event.touches.length !== 1) return;
+      const deltaX = event.touches[0].clientX - startX;
+      const deltaY = event.touches[0].clientY - startY;
+      if (!vertical) {
+        if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
+        if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+          tracking = false;
+          return;
+        }
+        vertical = true;
+        deck.classList.add("is-dragging");
+      }
+
+      const currentIndex = getIndex();
+      const direction = deltaY < 0 ? 1 : -1;
+      const candidateIndex = currentIndex + direction;
+      const hasCandidate = candidateIndex >= 0 && candidateIndex < cards.length;
+      dragY = hasCandidate ? deltaY : deltaY * .22;
+      const activeCard = cards[currentIndex];
+      const candidateCard = hasCandidate ? cards[candidateIndex] : null;
+      const viewportHeight = Math.max(1, deck.clientHeight);
+      activeCard.style.transform = `translate3d(0, ${dragY}px, 0) scale(${Math.max(.96, 1 - Math.abs(dragY) / viewportHeight * .04)})`;
+      activeCard.style.opacity = String(Math.max(.58, 1 - Math.abs(dragY) / viewportHeight * .52));
+      if (candidateCard) {
+        const startPosition = direction > 0 ? "100%" : "-100%";
+        candidateCard.style.transform = `translate3d(0, calc(${startPosition} + ${dragY}px), 0) scale(.98)`;
+        candidateCard.style.opacity = String(Math.min(1, .38 + Math.abs(dragY) / viewportHeight * 1.8));
+      }
+      event.preventDefault();
+    }, { passive: false });
+
+    const finishDrag = event => {
+      if (!tracking && !vertical) return;
+      const wasVertical = vertical;
+      tracking = false;
+      vertical = false;
+      deck.classList.remove("is-dragging");
+      if (!wasVertical || event.type === "touchcancel") {
+        requestAnimationFrame(clearInlineStyles);
+        return;
+      }
+      const currentIndex = getIndex();
+      const direction = dragY < 0 ? 1 : -1;
+      const candidateIndex = currentIndex + direction;
+      const threshold = Math.max(38, Math.min(58, deck.clientHeight * .12));
+      const shouldChange = Math.abs(dragY) >= threshold && candidateIndex >= 0 && candidateIndex < cards.length;
+      if (shouldChange) showIndex(candidateIndex);
+      requestAnimationFrame(clearInlineStyles);
+      dragY = 0;
+    };
+
+    deck.addEventListener("touchend", finishDrag, { passive: true });
+    deck.addEventListener("touchcancel", finishDrag, { passive: true });
+  }
+
   function showAboutCard(nextIndex, animate = true) {
     const deck = document.getElementById("aboutDeck");
     const cards = Array.from(document.querySelectorAll("[data-about-card]"));
@@ -8319,9 +8516,7 @@
   function initAboutCardDeck() {
     const deck = document.getElementById("aboutDeck");
     if (!deck) return;
-    let tracking = false;
-    let startX = 0;
-    let startY = 0;
+    const cards = Array.from(document.querySelectorAll("[data-about-card]"));
 
     document.getElementById("aboutPrevCardBtn").addEventListener("click", () => {
       showAboutCard(aboutCardIndex - 1);
@@ -8330,31 +8525,7 @@
       showAboutCard(aboutCardIndex + 1);
     });
 
-    deck.addEventListener("touchstart", event => {
-      if (event.touches.length !== 1) return;
-      tracking = true;
-      startX = event.touches[0].clientX;
-      startY = event.touches[0].clientY;
-    }, { passive: true });
-
-    deck.addEventListener("touchmove", event => {
-      if (!tracking || event.touches.length !== 1) return;
-      const deltaX = event.touches[0].clientX - startX;
-      const deltaY = event.touches[0].clientY - startY;
-      if (Math.abs(deltaY) > 8 && Math.abs(deltaY) > Math.abs(deltaX)) event.preventDefault();
-    }, { passive: false });
-
-    deck.addEventListener("touchend", event => {
-      if (!tracking) return;
-      tracking = false;
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - startX;
-      const deltaY = touch.clientY - startY;
-      if (Math.abs(deltaY) < 44 || Math.abs(deltaY) <= Math.abs(deltaX) * 1.15) return;
-      showAboutCard(aboutCardIndex + (deltaY < 0 ? 1 : -1));
-    }, { passive: true });
-
-    deck.addEventListener("touchcancel", () => { tracking = false; }, { passive: true });
+    attachInteractiveVerticalDeck(deck, cards, () => aboutCardIndex, index => showAboutCard(index));
     deck.addEventListener("wheel", event => {
       if (Math.abs(event.deltaY) < 12 || aboutWheelLocked) return;
       event.preventDefault();
@@ -8369,6 +8540,57 @@
       showAboutCard(aboutCardIndex + (moveForward ? 1 : -1));
     });
     showAboutCard(0, false);
+  }
+
+  let otherSettingsCardIndex = 0;
+  let otherSettingsWheelLocked = false;
+  function showOtherSettingsCard(nextIndex, animate = true) {
+    const deck = document.getElementById("otherSettingsDeck");
+    const cards = Array.from(document.querySelectorAll("[data-other-settings-card]"));
+    if (!deck || !cards.length) return;
+    otherSettingsCardIndex = Math.max(0, Math.min(cards.length - 1, nextIndex));
+    if (!animate) deck.classList.add("no-transition");
+    cards.forEach((card, index) => {
+      card.classList.toggle("is-before", index < otherSettingsCardIndex);
+      card.classList.toggle("is-active", index === otherSettingsCardIndex);
+      card.classList.toggle("is-after", index > otherSettingsCardIndex);
+      card.setAttribute("aria-hidden", String(index !== otherSettingsCardIndex));
+      card.inert = index !== otherSettingsCardIndex;
+    });
+    const previousButton = document.getElementById("otherSettingsPrevCardBtn");
+    const nextButton = document.getElementById("otherSettingsNextCardBtn");
+    const position = document.getElementById("otherSettingsCardPosition");
+    if (previousButton) previousButton.disabled = otherSettingsCardIndex === 0;
+    if (nextButton) nextButton.disabled = otherSettingsCardIndex === cards.length - 1;
+    if (position) position.textContent = `${otherSettingsCardIndex + 1} із ${cards.length}`;
+    if (!animate) requestAnimationFrame(() => requestAnimationFrame(() => deck.classList.remove("no-transition")));
+  }
+
+  function initOtherSettingsCardDeck() {
+    const deck = document.getElementById("otherSettingsDeck");
+    if (!deck) return;
+    const cards = Array.from(document.querySelectorAll("[data-other-settings-card]"));
+    document.getElementById("otherSettingsPrevCardBtn").addEventListener("click", () => {
+      showOtherSettingsCard(otherSettingsCardIndex - 1);
+    });
+    document.getElementById("otherSettingsNextCardBtn").addEventListener("click", () => {
+      showOtherSettingsCard(otherSettingsCardIndex + 1);
+    });
+    attachInteractiveVerticalDeck(deck, cards, () => otherSettingsCardIndex, index => showOtherSettingsCard(index));
+    deck.addEventListener("wheel", event => {
+      if (Math.abs(event.deltaY) < 12 || otherSettingsWheelLocked) return;
+      event.preventDefault();
+      otherSettingsWheelLocked = true;
+      showOtherSettingsCard(otherSettingsCardIndex + (event.deltaY > 0 ? 1 : -1));
+      setTimeout(() => { otherSettingsWheelLocked = false; }, 420);
+    }, { passive: false });
+    deck.addEventListener("keydown", event => {
+      if (!["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) return;
+      event.preventDefault();
+      const moveForward = event.key === "ArrowDown" || event.key === "PageDown";
+      showOtherSettingsCard(otherSettingsCardIndex + (moveForward ? 1 : -1));
+    });
+    showOtherSettingsCard(0, false);
   }
 
   function canUsePageBackSwipe() {
@@ -8476,7 +8698,10 @@
     if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
     if (page === "backup") fitBackupSection();
     if (page === "trash") document.getElementById("pageTrash").classList.remove("hidden");
-    if (page === "otherSettings") document.getElementById("pageOtherSettings").classList.remove("hidden");
+    if (page === "otherSettings") {
+      document.getElementById("pageOtherSettings").classList.remove("hidden");
+      showOtherSettingsCard(0, false);
+    }
     if (page === "about") {
       document.getElementById("pageAbout").classList.remove("hidden");
       showAboutCard(0, false);
@@ -10279,6 +10504,7 @@
   initAppHeaderBottomMetric();
   initBackupSectionFit();
   initAboutCardDeck();
+  initOtherSettingsCardDeck();
   initAppKeyboardScrollRestore();
   initAppTopPosition();
   initGestureMenuPad();
