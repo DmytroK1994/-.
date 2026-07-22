@@ -3768,6 +3768,16 @@
     .about-card .whats-new-card {
       margin: 0;
     }
+    .about-card-primary {
+      justify-content: flex-start;
+    }
+    .about-card-primary .about-heading-row {
+      margin-bottom: 8px;
+    }
+    .about-card-primary .about-card-actions {
+      margin-top: auto;
+      padding-bottom: 20px;
+    }
     .about-card-actions {
       display: grid;
       gap: 7px;
@@ -3849,6 +3859,7 @@
       .about-card .about-lead,
       .about-card #demoModeStatus { font-size: 11px; line-height: 1.28; }
       .about-card-actions { gap: 4px; margin-top: 5px; }
+      .about-card-primary .about-card-actions { margin-top: auto; padding-bottom: 14px; }
       .about-card-actions button { min-height: 34px; padding: 6px 8px; font-size: 12px; }
     }
     #pageOtherSettings {
@@ -4548,7 +4559,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.79</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.80</span></div>
     </div>
   </div>
 
@@ -5284,9 +5295,9 @@
     <div class="about-deck" id="aboutDeck" tabindex="0" aria-label="Картки інформації про додаток">
       <button type="button" class="about-card-nav" id="aboutPrevCardBtn" aria-label="Попередня картка"></button>
       <div class="about-card-viewport">
-        <section class="card about-card is-active" data-about-card aria-label="Додаток і дії">
+        <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.79</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.80</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-actions">
@@ -5313,8 +5324,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.79</span></div>
-            <div class="small">Перед застосуванням іншої теми тепер обов’язково показується підтвердження з назвами поточної та обраної тем.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.80</span></div>
+            <div class="small">На першій картці розділу «Про додаток» версію й опис закріплено зверху, а основні дії перенесено до нижньої частини.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5385,7 +5396,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.79";
+  const APP_VERSION = "1.80";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
