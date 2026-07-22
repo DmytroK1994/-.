@@ -4627,7 +4627,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.91</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.92</span></div>
     </div>
   </div>
 
@@ -5367,7 +5367,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.91</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.92</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5397,8 +5397,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.91</span></div>
-            <div class="small">Усі короткі спливаючі повідомлення перенесено в центр екрана для кращої видимості.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.92</span></div>
+            <div class="small">Посилено сенсорне керування темами на Android: короткий дотик джойстика обробляється без затримки.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5469,7 +5469,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.91";
+  const APP_VERSION = "1.92";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6715,6 +6715,7 @@
   let themeGestureAxis = "";
   let themeGestureDragging = false;
   let themeGestureMoved = false;
+  let themeGestureLastActivation = 0;
   let androidThemeTouch = null;
   let androidThemeClickBlockId = "";
   let androidThemeClickBlockUntil = 0;
@@ -7985,6 +7986,13 @@
     else item.click();
   }
 
+  function activateThemeGestureSelectionOnce() {
+    const now = Date.now();
+    if (now - themeGestureLastActivation < 500) return;
+    themeGestureLastActivation = now;
+    activateThemeGestureSelection();
+  }
+
   function selectNavigationItemFromPointer(target) {
     if (!(target instanceof Element)) return;
     const item = target.closest(".menu-btn, .management-option, .theme-option-button");
@@ -8070,6 +8078,7 @@
   function initThemeGesturePad() {
     const pad = document.getElementById("themeGesturePad");
     if (!pad) return;
+    let androidTouch = null;
 
     pad.addEventListener("pointerdown", event => {
       if (event.button !== undefined && event.button !== 0) return;
@@ -8117,10 +8126,52 @@
       pad.classList.remove("dragging");
       try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
       if (event.type === "pointercancel" || themeGestureMoved) return;
-      activateThemeGestureSelection();
+      activateThemeGestureSelectionOnce();
     };
     pad.addEventListener("pointerup", finishGesture);
     pad.addEventListener("pointercancel", finishGesture);
+    if (isAndroidDevice) {
+      pad.addEventListener("touchstart", event => {
+        if (event.touches.length !== 1) {
+          androidTouch = null;
+          return;
+        }
+        const touch = event.touches[0];
+        androidTouch = {
+          identifier: touch.identifier,
+          startX: touch.clientX,
+          startY: touch.clientY,
+          moved: false
+        };
+      }, { passive: true });
+
+      pad.addEventListener("touchmove", event => {
+        if (!androidTouch) return;
+        const touch = Array.from(event.touches).find(item => item.identifier === androidTouch.identifier);
+        if (!touch) return;
+        if (Math.hypot(touch.clientX - androidTouch.startX, touch.clientY - androidTouch.startY) > 10) {
+          androidTouch.moved = true;
+        }
+      }, { passive: true });
+
+      pad.addEventListener("touchend", event => {
+        if (!androidTouch) return;
+        const finishedTouch = Array.from(event.changedTouches)
+          .some(item => item.identifier === androidTouch.identifier);
+        const shouldActivate = finishedTouch && !androidTouch.moved && !themeGestureMoved;
+        androidTouch = null;
+        if (shouldActivate) activateThemeGestureSelectionOnce();
+      }, { passive: true });
+
+      pad.addEventListener("touchcancel", () => {
+        androidTouch = null;
+      }, { passive: true });
+
+      pad.addEventListener("click", event => {
+        if (event.detail === 0) return;
+        activateThemeGestureSelectionOnce();
+      });
+    }
     pad.addEventListener("keydown", event => {
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         event.preventDefault();
@@ -8128,7 +8179,7 @@
       }
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        activateThemeGestureSelection();
+        activateThemeGestureSelectionOnce();
       }
     });
   }
