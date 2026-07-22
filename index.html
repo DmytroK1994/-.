@@ -461,9 +461,13 @@
     }
     body.page-today .app-header {
       overflow: hidden;
+      padding: calc(env(safe-area-inset-top) + 6px) max(10px, env(safe-area-inset-right)) 8px max(10px, env(safe-area-inset-left));
       border-bottom-color: transparent;
       border-radius: 0 0 30px 30px;
       box-shadow: 0 14px 32px var(--header-shadow);
+    }
+    body.page-today {
+      padding-top: calc(var(--app-header-bottom, 98px) + 10px);
     }
     body:not(.page-today) {
       padding-top: calc(env(safe-area-inset-top) + 82px);
@@ -491,6 +495,20 @@
       margin-bottom: 10px;
       background: transparent;
       padding: 0;
+    }
+    body.page-today .topbar {
+      grid-template-columns: 40px 1fr 40px;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    body.page-today .topbar h1 {
+      font-size: 20px;
+      line-height: 1.12;
+    }
+    body.page-today .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
     }
     .icon-btn {
       width: 44px;
@@ -2298,6 +2316,10 @@
       margin: 0;
       font-size: 14px;
     }
+    body.page-today .date-line {
+      font-size: 12px;
+      line-height: 1.2;
+    }
     .menu-open-swipe-hint {
       display: none;
       margin: 4px 0 0;
@@ -2305,6 +2327,11 @@
       font-size: 11px;
       line-height: 1.3;
       text-align: center;
+    }
+    body.page-today .menu-open-swipe-hint {
+      margin-top: 2px;
+      font-size: 10px;
+      line-height: 1.15;
     }
     .compact-header-row {
       display: block;
@@ -2376,6 +2403,9 @@
     }
     .current-list-search-card {
       border-top: 2px solid var(--border-strong);
+    }
+    body.page-today .current-list-search-card {
+      top: calc(var(--app-header-bottom, 98px) + 4px);
     }
     .app-bottom-nav {
       position: fixed;
@@ -4246,7 +4276,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.75</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.76</span></div>
     </div>
   </div>
 
@@ -4924,7 +4954,7 @@
       <div class="about-card-viewport">
         <section class="card about-card is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.75</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.76</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-actions">
@@ -4951,8 +4981,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.75</span></div>
-            <div class="small">Розділ «Про додаток» став компактною колодою карток: інформація перемикається вертикальним свайпом і завжди залишається в межах екрана.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.76</span></div>
+            <div class="small">З головного екрана прибрано зайву підказку повернення, а шапку поточного підрахунку зроблено нижчою та щільнішою.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5023,7 +5053,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.75";
+  const APP_VERSION = "1.76";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7754,8 +7784,9 @@
     const swipeMode = isMobileDevice && getResolvedBackNavigationMode() === "swipe";
     const showBottomNav = currentPage !== "today" && !swipeMode;
     if (bottomNav) bottomNav.classList.toggle("hidden", !showBottomNav);
-    if (swipeHint) swipeHint.classList.toggle("hidden", !hasParent || !swipeMode);
-    document.body.classList.toggle("subpage-swipe-back", hasParent && swipeMode);
+    const showSwipeBackHint = hasParent && swipeMode && currentPage !== "today";
+    if (swipeHint) swipeHint.classList.toggle("hidden", !showSwipeBackHint);
+    document.body.classList.toggle("subpage-swipe-back", showSwipeBackHint);
     document.body.classList.toggle("bottom-nav-visible", showBottomNav);
     updateAppBottomObstructionMetric();
   }
