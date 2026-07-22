@@ -2491,13 +2491,27 @@
       gap: 8px;
     }
     .theme-designer-heading {
-      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
       align-items: center;
       gap: 6px;
     }
     .theme-designer-heading strong {
       font-size: 13px;
       line-height: 1.15;
+    }
+    @media (max-width: 350px) {
+      .theme-designer-heading {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .theme-designer-heading strong {
+        grid-column: 1 / -1;
+        text-align: center;
+      }
+      .theme-designer-heading button {
+        width: 100%;
+        padding-inline: 5px;
+        font-size: 11px;
+      }
     }
     .theme-designer-toolbar button {
       min-height: 36px;
@@ -4138,6 +4152,10 @@
       line-height: 1.5;
       white-space: pre-line;
     }
+    .app-dialog-input {
+      min-height: 46px;
+      margin: 14px 0 0;
+    }
     .app-dialog-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -4583,7 +4601,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.83</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.84</span></div>
     </div>
   </div>
 
@@ -4649,6 +4667,7 @@
     <div class="theme-designer-heading">
       <strong>Конструктор теми</strong>
       <button type="button" class="theme-designer-control" id="themeDesignerPickBtn">Обрати</button>
+      <button type="button" class="theme-designer-control" id="themeDesignerSaveAsBtn">Зберегти як…</button>
       <button type="button" class="theme-designer-control" id="themeDesignerDoneBtn" aria-label="Вийти з конструктора">Вийти</button>
     </div>
     <p class="theme-designer-hint" id="themeDesignerHint">Переходь між сторінками або натисни «Обрати елемент».</p>
@@ -4829,6 +4848,7 @@
       <div class="app-dialog-label" id="appDialogLabel">Підтвердження</div>
       <h2 id="appDialogTitle">Підтвердити дію?</h2>
       <p class="app-dialog-message" id="appDialogMessage"></p>
+      <input class="app-dialog-input hidden" id="appDialogInput" maxlength="40" autocomplete="off" />
       <div class="app-dialog-actions">
         <button class="secondary" id="appDialogCancelBtn">Скасувати</button>
         <button id="appDialogConfirmBtn">Підтвердити</button>
@@ -5321,7 +5341,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.83</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.84</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5351,8 +5371,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.83</span></div>
-            <div class="small">Уточнено розташування тексту в шапці поточного підрахунку та легке заходження пошуку під її нижній край.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.84</span></div>
+            <div class="small">Конструктор тепер створює чисту копію поточної теми та дозволяє зберегти її під новою назвою у «Власному оформленні».</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5423,7 +5443,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.83";
+  const APP_VERSION = "1.84";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5589,6 +5609,8 @@
   let activeThemeCategory = "";
   let customThemeEditorOpen = false;
   let themeDesignerActive = false;
+  let themeDesignerBaseTheme = "custom";
+  let themeDesignerBaseLabel = "Власна тема";
   let themeDesignerPicking = false;
   let themeDesignerTarget = null;
   let themeDesignerType = null;
@@ -5756,6 +5778,23 @@
     try { localStorage.setItem(CUSTOM_THEME_LIBRARY_KEY, JSON.stringify(themes)); } catch (error) {}
   }
 
+  function addNamedCustomTheme(name, baseTheme = "custom") {
+    const themes = loadNamedCustomThemes();
+    const theme = {
+      id: "custom-theme-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+      name,
+      palette: loadCustomTheme(),
+      componentStyles: loadCustomComponentStyles(),
+      baseTheme,
+      createdAt: new Date().toISOString()
+    };
+    themes.push(theme);
+    saveNamedCustomThemes(themes);
+    renderNamedCustomThemes();
+    renderThemeCategories();
+    return theme;
+  }
+
   function renderNamedCustomThemes() {
     const list = document.getElementById("savedCustomThemesList");
     if (!list) return;
@@ -5791,17 +5830,12 @@
       return;
     }
     const isCustom = document.documentElement.dataset.theme === "custom";
-    const themes = loadNamedCustomThemes();
-    themes.push({
-      id: "custom-theme-" + Date.now() + "-" + Math.random().toString(16).slice(2),
-      name,
-      palette: isCustom ? loadCustomTheme() : captureCurrentThemePalette(),
-      componentStyles: isCustom ? loadCustomComponentStyles() : { types: {}, elements: {} },
-      createdAt: new Date().toISOString()
-    });
-    saveNamedCustomThemes(themes);
+    if (!isCustom) {
+      saveCustomThemePalette(captureCurrentThemePalette());
+      saveCustomComponentStyles({ types: {}, elements: {} });
+    }
+    addNamedCustomTheme(name, isCustom ? "custom" : document.documentElement.dataset.theme);
     if (input) input.value = "";
-    renderNamedCustomThemes();
     initializeThemeGestureSelection();
     toast("Власну тему збережено");
   }
@@ -6422,7 +6456,12 @@
   function enterCustomThemeEditor() {
     const currentTheme = document.documentElement.dataset.theme;
     const palette = currentTheme === "custom" ? loadCustomTheme() : captureCurrentThemePalette();
-    if (currentTheme !== "custom") saveCustomThemePalette(palette);
+    themeDesignerBaseTheme = currentTheme || "dark";
+    themeDesignerBaseLabel = currentTheme === "custom" ? "Власна тема" : getThemeLabel(currentTheme);
+    if (currentTheme !== "custom") {
+      saveCustomThemePalette(palette);
+      saveCustomComponentStyles({ types: {}, elements: {} });
+    }
     customThemeEditorOpen = true;
     themeDesignerActive = true;
     applyTheme("custom");
@@ -6432,6 +6471,22 @@
     document.getElementById("themeDesignerSelection").classList.add("hidden");
     setThemeDesignerPicking(false);
     toast("Конструктор теми увімкнено");
+  }
+
+  async function saveThemeDesignerAsNew() {
+    if (!themeDesignerActive) return false;
+    const defaultName = `Копія — ${themeDesignerBaseLabel}`.slice(0, 40);
+    const name = await showAppPrompt({
+      label: "Власне оформлення",
+      title: "Зберегти як нову тему?",
+      message: `Основа: «${themeDesignerBaseLabel}». Стандартна тема залишиться без змін, а відредагована копія з’явиться у розділі «Власне оформлення».`,
+      value: defaultName,
+      confirmText: "Зберегти тему"
+    });
+    if (!name) return false;
+    addNamedCustomTheme(name, themeDesignerBaseTheme);
+    toast(`Тему «${name}» збережено`);
+    return true;
   }
 
   function finishCustomThemeEditor() {
@@ -6569,6 +6624,7 @@
   let keyboardScrollAnimationFrame = 0;
   let appDialogResolver = null;
   let appDialogPreviousFocus = null;
+  let appDialogPromptMode = false;
   let successCheckTimer = 0;
   const editReturnScroll = { entry: null, product: null };
 
@@ -7417,11 +7473,13 @@
     cancelText = "Скасувати",
     danger = false
   } = {}) {
-    if (appDialogResolver) appDialogResolver(false);
+    if (appDialogResolver) appDialogResolver(appDialogPromptMode ? null : false);
 
     const overlay = document.getElementById("appDialogOverlay");
     const dialog = document.getElementById("appDialog");
     const confirmButton = document.getElementById("appDialogConfirmBtn");
+    const input = document.getElementById("appDialogInput");
+    appDialogPromptMode = false;
     appDialogPreviousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     document.getElementById("appDialogLabel").textContent = label;
@@ -7431,6 +7489,8 @@
     document.getElementById("appDialogCancelBtn").textContent = cancelText;
     confirmButton.classList.toggle("danger", danger);
     dialog.classList.toggle("destructive", danger);
+    input.classList.add("hidden");
+    input.value = "";
     overlay.classList.remove("hidden");
     document.body.classList.add("app-dialog-open");
     document.getElementById("appDialogCancelBtn").focus();
@@ -7440,13 +7500,48 @@
     });
   }
 
+  function showAppPrompt({
+    label = "Нове оформлення",
+    title = "Назва власної теми",
+    message = "",
+    placeholder = "Наприклад: Моя робоча тема",
+    value = "",
+    confirmText = "Зберегти",
+    cancelText = "Скасувати"
+  } = {}) {
+    const promise = showAppDialog({ label, title, message, confirmText, cancelText });
+    const input = document.getElementById("appDialogInput");
+    appDialogPromptMode = true;
+    input.placeholder = placeholder;
+    input.value = value;
+    input.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    });
+    return promise;
+  }
+
   function closeAppDialog(result = false) {
     if (!appDialogResolver) return;
+    const input = document.getElementById("appDialogInput");
+    const promptMode = appDialogPromptMode;
+    if (promptMode && result) {
+      const value = input.value.trim();
+      if (!value) {
+        toast("Введи назву теми", true);
+        input.focus();
+        return;
+      }
+      result = value;
+    }
     const resolve = appDialogResolver;
     appDialogResolver = null;
+    appDialogPromptMode = false;
     document.getElementById("appDialogOverlay").classList.add("hidden");
     document.body.classList.remove("app-dialog-open");
-    resolve(result);
+    input.classList.add("hidden");
+    resolve(promptMode ? (result || null) : Boolean(result));
     if (appDialogPreviousFocus?.isConnected) appDialogPreviousFocus.focus({ preventScroll: true });
     appDialogPreviousFocus = null;
   }
@@ -10415,6 +10510,11 @@
   document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
   document.getElementById("appDialogCancelBtn").addEventListener("click", () => closeAppDialog(false));
   document.getElementById("appDialogConfirmBtn").addEventListener("click", () => closeAppDialog(true));
+  document.getElementById("appDialogInput").addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    closeAppDialog(true);
+  });
   document.getElementById("appDialogOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeAppDialog(false);
   });
@@ -10431,6 +10531,7 @@
   document.getElementById("openCustomThemeEditorBtn").addEventListener("click", enterCustomThemeEditor);
   document.getElementById("finishCustomThemeBtn").addEventListener("click", finishCustomThemeEditor);
   document.getElementById("themeDesignerDoneBtn").addEventListener("click", finishCustomThemeEditor);
+  document.getElementById("themeDesignerSaveAsBtn").addEventListener("click", saveThemeDesignerAsNew);
   document.getElementById("themeDesignerPickBtn").addEventListener("click", () => {
     const shouldStartPicking = !themeDesignerPicking;
     closeThemeDesignerSelection(true);
