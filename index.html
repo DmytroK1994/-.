@@ -974,6 +974,24 @@
       background: transparent;
       color: var(--muted-soft);
     }
+    .trash-retention-settings {
+      margin-bottom: 12px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .trash-retention-settings label:first-child {
+      margin-top: 0;
+    }
+    .trash-retention-settings select,
+    .trash-retention-settings input {
+      min-height: 42px;
+      padding: 8px 10px;
+    }
+    .trash-retention-description {
+      margin-bottom: 0;
+    }
     .theme-category-list,
     .theme-options-list {
       display: grid;
@@ -3974,7 +3992,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.71</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.72</span></div>
     </div>
   </div>
 
@@ -4231,7 +4249,7 @@
     <div class="reset-confirmation-dialog">
       <div class="reset-warning-label">Увага</div>
       <h2 id="resetConfirmationTitle">Повністю очистити програму?</h2>
-      <p>Після підтвердження дані зникнуть із програми, але їх можна буде відновити з кошика протягом 24 годин:</p>
+      <p>Після підтвердження дані зникнуть із програми, але їх можна буде відновити з кошика протягом вибраного терміну зберігання:</p>
       <ul class="reset-data-list">
         <li>усі найменування, одиниці виміру та типові кількості;</li>
         <li>поточний підрахунок;</li>
@@ -4513,7 +4531,20 @@
 
   <div id="pageTrash" class="hidden">
     <div class="card" id="settingsTrashSection">
-      <p class="small">Видалені дані зберігаються тут 24 години, після чого автоматично стираються.</p>
+      <div class="trash-retention-settings">
+        <label for="trashRetentionSelect">Зберігати видалені дані</label>
+        <select id="trashRetentionSelect">
+          <option value="1">24 години</option>
+          <option value="7">7 днів</option>
+          <option value="30">30 днів</option>
+          <option value="custom">Довільний термін</option>
+        </select>
+        <div class="hidden" id="trashCustomRetentionWrap">
+          <label for="trashCustomRetentionDays">Кількість днів</label>
+          <input id="trashCustomRetentionDays" type="number" inputmode="numeric" min="1" max="3650" step="1" value="14" />
+        </div>
+        <p class="small trash-retention-description" id="trashRetentionDescription"></p>
+      </div>
       <div id="trashList"></div>
       <button class="danger hidden" id="emptyTrashBtn">Очистити кошик зараз</button>
     </div>
@@ -4612,7 +4643,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.71</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.72</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4627,13 +4658,13 @@
         <li>50 тем оформлення, згрупованих за стилем, включно з власним конструктором;</li>
         <li>попередній перегляд і компактний PDF формату A4;</li>
         <li>резервне копіювання та відновлення даних;</li>
-        <li>кошик із можливістю відновлення видаленого протягом 24 годин;</li>
+        <li>кошик із налаштовуваним терміном зберігання видалених даних;</li>
         <li>безпечний демонстраційний режим без доступу до власних списків.</li>
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.71</span></div>
-        <div class="small">Блок резервної копії автоматично вміщується по висоті; свайп із верхніх розділів повертає до головного меню.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.72</span></div>
+        <div class="small">У кошику можна вибрати термін автоматичного зберігання: 24 години, 7 днів, 30 днів або довільну кількість днів.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4704,7 +4735,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.71";
+  const APP_VERSION = "1.72";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4725,7 +4756,9 @@
   const DEMO_DATA_VERSION = "2";
   const TRASH_KEY = "warehouseJournalTrashV1";
   const DEMO_TRASH_KEY = "warehouseJournalDemoTrashV1";
-  const TRASH_RETENTION_MS = 24 * 60 * 60 * 1000;
+  const TRASH_RETENTION_KEY = "warehouseJournalTrashRetention";
+  const TRASH_CUSTOM_DAYS_KEY = "warehouseJournalTrashCustomDays";
+  const DAY_MS = 24 * 60 * 60 * 1000;
   const THEMES = [
     "dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper",
     "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta",
@@ -6249,6 +6282,70 @@
     return demoModeActive ? DEMO_TRASH_KEY : TRASH_KEY;
   }
 
+  function getTrashRetentionMode() {
+    try {
+      const saved = localStorage.getItem(TRASH_RETENTION_KEY) || "1";
+      return ["1", "7", "30", "custom"].includes(saved) ? saved : "1";
+    } catch (error) {
+      return "1";
+    }
+  }
+
+  function getTrashCustomRetentionDays() {
+    try {
+      const saved = Math.round(Number(localStorage.getItem(TRASH_CUSTOM_DAYS_KEY) || 14));
+      return Math.max(1, Math.min(3650, saved || 14));
+    } catch (error) {
+      return 14;
+    }
+  }
+
+  function getTrashRetentionDays() {
+    const mode = getTrashRetentionMode();
+    return mode === "custom" ? getTrashCustomRetentionDays() : Number(mode);
+  }
+
+  function ukrainianDaysText(days) {
+    const value = Math.max(1, Math.round(Number(days) || 1));
+    const lastTwo = value % 100;
+    const last = value % 10;
+    const word = last === 1 && lastTwo !== 11
+      ? "день"
+      : last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)
+        ? "дні"
+        : "днів";
+    return `${value} ${word}`;
+  }
+
+  function trashRetentionDurationText() {
+    const days = getTrashRetentionDays();
+    return days === 1 ? "24 години" : ukrainianDaysText(days);
+  }
+
+  function updateTrashRetentionUI() {
+    const mode = getTrashRetentionMode();
+    const select = document.getElementById("trashRetentionSelect");
+    const customWrap = document.getElementById("trashCustomRetentionWrap");
+    const customInput = document.getElementById("trashCustomRetentionDays");
+    const description = document.getElementById("trashRetentionDescription");
+    if (select) select.value = mode;
+    if (customWrap) customWrap.classList.toggle("hidden", mode !== "custom");
+    if (customInput) customInput.value = String(getTrashCustomRetentionDays());
+    if (description) {
+      description.textContent = `Нові та вже наявні записи автоматично стиратимуться через ${trashRetentionDurationText()}.`;
+    }
+  }
+
+  function applyTrashRetentionToExistingItems() {
+    const retentionMs = getTrashRetentionDays() * DAY_MS;
+    const now = Date.now();
+    const items = loadTrashItems()
+      .map(item => ({ ...item, expiresAt: Number(item.createdAt || now) + retentionMs }))
+      .filter(item => item.expiresAt > now);
+    saveTrashItems(items);
+    renderTrash();
+  }
+
   function cloneData(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -6282,7 +6379,7 @@
       type,
       label,
       createdAt: Date.now(),
-      expiresAt: Date.now() + TRASH_RETENTION_MS,
+      expiresAt: Date.now() + getTrashRetentionDays() * DAY_MS,
       payload: cloneData(payload)
     });
     return saveTrashItems(items);
@@ -6290,8 +6387,10 @@
 
   function trashRemainingText(expiresAt) {
     const remaining = Math.max(0, Number(expiresAt) - Date.now());
+    const days = Math.floor(remaining / DAY_MS);
     const hours = Math.floor(remaining / 3600000);
     const minutes = Math.max(1, Math.ceil((remaining % 3600000) / 60000));
+    if (days > 0) return `Залишилось: ${days} дн ${hours % 24} год`;
     return hours > 0 ? `Залишилось: ${hours} год ${minutes} хв` : `Залишилось: ${minutes} хв`;
   }
 
@@ -6379,6 +6478,7 @@
   }
 
   function renderTrash() {
+    updateTrashRetentionUI();
     const list = document.getElementById("trashList");
     const emptyButton = document.getElementById("emptyTrashBtn");
     if (!list || !emptyButton) return;
@@ -7727,7 +7827,7 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити підрахунок?",
-      message: `Підрахунок від ${niceDate(day.date)} переміститься в кошик на 24 години.`,
+      message: `Підрахунок від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Видалити",
       danger: true
     });
@@ -7840,7 +7940,7 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити вибрані підрахунки?",
-      message: `Буде переміщено в кошик на 24 години: ${ids.length}.`,
+      message: `Буде переміщено в кошик на ${trashRetentionDurationText()}: ${ids.length}.`,
       confirmText: "Видалити",
       danger: true
     });
@@ -7870,7 +7970,7 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити порожні підрахунки?",
-      message: `У кошик на 24 години буде переміщено порожніх підрахунків: ${count}.`,
+      message: `У кошик на ${trashRetentionDurationText()} буде переміщено порожніх підрахунків: ${count}.`,
       confirmText: "Видалити",
       danger: true
     });
@@ -7897,7 +7997,7 @@
     const confirmed = await showAppDialog({
       label: "Увага",
       title: "Очистити всю історію?",
-      message: "Усі збережені підрахунки буде переміщено в кошик на 24 години.",
+      message: `Усі збережені підрахунки буде переміщено в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Очистити історію",
       danger: true
     });
@@ -8326,7 +8426,7 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити найменування?",
-      message: `Найменування «${product.name}» переміститься в кошик на 24 години. Записи в уже збережених підрахунках залишаться.`,
+      message: `Найменування «${product.name}» переміститься в кошик на ${trashRetentionDurationText()}. Записи в уже збережених підрахунках залишаться.`,
       confirmText: "Видалити",
       danger: true
     });
@@ -8450,7 +8550,7 @@
     const confirmed = await showAppDialog({
       label: "Відновлення даних",
       title: "Відновити резервну копію?",
-      message: `Поточні дані буде замінено даними з ${sourceName}. Попередній стан збережеться в кошику на 24 години.`,
+      message: `Поточні дані буде замінено даними з ${sourceName}. Попередній стан збережеться в кошику на ${trashRetentionDurationText()}.`,
       confirmText: "Відновити",
       danger: true
     });
@@ -9135,6 +9235,22 @@
   document.getElementById("deleteEmptyDaysBtn").addEventListener("click", deleteEmptyDays);
   document.getElementById("deleteAllHistoryBtn").addEventListener("click", deleteAllHistory);
   document.getElementById("emptyTrashBtn").addEventListener("click", emptyTrash);
+  document.getElementById("trashRetentionSelect").addEventListener("change", event => {
+    const mode = ["1", "7", "30", "custom"].includes(event.target.value) ? event.target.value : "1";
+    try { localStorage.setItem(TRASH_RETENTION_KEY, mode); } catch (error) {}
+    updateTrashRetentionUI();
+    applyTrashRetentionToExistingItems();
+    if (mode === "custom") document.getElementById("trashCustomRetentionDays").focus();
+    toast(`Термін зберігання: ${trashRetentionDurationText()}`);
+  });
+  document.getElementById("trashCustomRetentionDays").addEventListener("change", event => {
+    const days = Math.max(1, Math.min(3650, Math.round(Number(event.target.value) || 1)));
+    event.target.value = String(days);
+    try { localStorage.setItem(TRASH_CUSTOM_DAYS_KEY, String(days)); } catch (error) {}
+    updateTrashRetentionUI();
+    applyTrashRetentionToExistingItems();
+    toast(`Термін зберігання: ${trashRetentionDurationText()}`);
+  });
   document.getElementById("toggleProductSelectBtn").addEventListener("click", () => toggleProductSelectMode(true));
   document.getElementById("selectAllProductsBtn").addEventListener("click", toggleSelectAllProducts);
   document.getElementById("deleteSelectedProductsBtn").addEventListener("click", deleteSelectedProducts);
