@@ -1100,8 +1100,8 @@
     html.menu-style-game #pageThemes.theme-category-root .theme-category-button {
       justify-content: flex-start;
       padding-left: max(24px, env(safe-area-inset-left));
-      border-left: 0;
-      border-radius: 0 8px 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       text-align: left;
     }
     .theme-category-button.gesture-selected,
@@ -1399,8 +1399,8 @@
       margin: 6px 0 0 -14px;
       padding: 7px 38px 7px 28px;
       overflow: hidden;
-      border-left: 0;
-      border-radius: 0 8px 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       background: var(--surface-strong);
       text-align: left;
       letter-spacing: .15px;
@@ -1442,9 +1442,9 @@
       margin-left: 0;
       padding-right: 28px;
       padding-left: 38px;
-      border-right: 0;
       border-left: 1px solid var(--border);
-      border-radius: 8px 0 0 8px;
+      border-right: 1px solid var(--border);
+      border-radius: 8px;
       text-align: right;
       transform-origin: right center;
     }
@@ -1529,9 +1529,11 @@
       box-shadow: 5px 5px 0 var(--border);
       font-size: 15px;
       font-weight: 750;
+      transition: background .16s ease, color .16s ease, border-color .16s ease,
+        box-shadow .16s ease, outline-color .16s ease, transform .14s ease;
     }
-    .nav-choice:hover,
-    .nav-choice:active {
+    .nav-choice:hover:not(.gesture-selected),
+    .nav-choice:active:not(.gesture-selected) {
       background: var(--surface);
     }
     .theme-category-button.nav-choice {
@@ -1753,8 +1755,8 @@
       max-width: 100%;
       min-height: 52px;
       padding: 12px 38px 12px 24px;
-      border-left: 0;
-      border-radius: 0 8px 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       background: var(--surface-strong);
       text-align: left;
       white-space: nowrap;
@@ -1765,9 +1767,9 @@
       box-shadow: 5px 5px 0 var(--selection-border);
     }
     html.menu-style-game.menu-side-right .management-option {
-      border-right: 0;
       border-left: 1px solid var(--border);
-      border-radius: 8px 0 0 8px;
+      border-right: 1px solid var(--border);
+      border-radius: 8px;
       text-align: right;
     }
     @media (max-height: 560px) {
@@ -3914,7 +3916,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.63</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.65</span></div>
     </div>
   </div>
 
@@ -4553,7 +4555,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.63</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.65</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4573,8 +4575,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.63</span></div>
-        <div class="small">Пункти головного меню стали компактнішими та за розміром відповідають кнопкам у розділі тем оформлення.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.65</span></div>
+        <div class="small">Наведення мишкою та затискання пальцем переміщують те саме виділення, що використовується джойстиком.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4645,7 +4647,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.63";
+  const APP_VERSION = "1.65";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6895,6 +6897,33 @@
   function activateThemeGestureSelection() {
     const item = getThemeGestureItems()[themeGestureIndex];
     if (item) item.click();
+  }
+
+  function selectNavigationItemFromPointer(target) {
+    if (!(target instanceof Element)) return;
+    const item = target.closest(".menu-btn, .management-option, .theme-option-button");
+    if (!item || item.classList.contains("gesture-selected")) return;
+
+    const groups = [
+      [getGestureMenuItems(), setGestureMenuSelection],
+      [getManagementGestureItems(), setManagementGestureSelection],
+      [getThemeGestureItems(), setThemeGestureSelection]
+    ];
+    for (const [items, selectItem] of groups) {
+      const index = items.indexOf(item);
+      if (index < 0) continue;
+      selectItem(index);
+      break;
+    }
+  }
+
+  function initPointerNavigationSelection() {
+    document.addEventListener("pointerover", event => {
+      if (event.pointerType === "mouse") selectNavigationItemFromPointer(event.target);
+    });
+    document.addEventListener("pointerdown", event => {
+      if (event.pointerType !== "mouse") selectNavigationItemFromPointer(event.target);
+    }, true);
   }
 
   function initThemeGesturePad() {
@@ -9270,6 +9299,7 @@
   initGestureMenuPad();
   initManagementGesturePad();
   initThemeGesturePad();
+  initPointerNavigationSelection();
   initMenuSwipeGestures();
   initPageBackSwipe();
   initDocumentPreviewSwipe();
