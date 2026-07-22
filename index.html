@@ -828,15 +828,40 @@
       color: var(--soft-action-text);
       box-shadow: none;
     }
-    .product-add-launcher {
-      margin-bottom: 12px;
+    .product-search-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 3px;
+    }
+    .product-search-heading h2 {
+      min-width: 0;
+      margin: 0;
     }
     #openProductAddBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      gap: 5px;
+      width: auto;
+      min-width: 94px;
+      min-height: 38px;
       margin: 0;
+      padding: 7px 11px;
       border: 1px solid var(--soft-success-border);
+      border-radius: 11px;
       background: var(--soft-success-bg);
       color: var(--soft-success-text);
       box-shadow: none;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .product-add-plus {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: .8;
     }
     #productsList .list-item-actions button.yellow {
       border: 1px solid var(--soft-warning-border);
@@ -3090,6 +3115,9 @@
         margin-bottom: 3px;
         font-size: 17px;
       }
+      #pageProducts .product-search-heading h2 {
+        margin-bottom: 0;
+      }
       #pageProducts .product-list-search-card .small {
         margin: 2px 0 6px;
         font-size: 12px;
@@ -3948,7 +3976,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.68</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.69</span></div>
     </div>
   </div>
 
@@ -4269,12 +4297,11 @@
   </div>
 
   <div id="pageProducts" class="hidden">
-    <div class="product-add-launcher no-print">
-      <button class="green" id="openProductAddBtn">Додати найменування</button>
-    </div>
-
     <div class="card product-list-search-card">
-      <h2>Пошук у найменуваннях</h2>
+      <div class="product-search-heading">
+        <h2>Пошук у найменуваннях</h2>
+        <button class="green" id="openProductAddBtn"><span class="product-add-plus" aria-hidden="true">+</span><span>Додати</span></button>
+      </div>
       <p class="small">Швидко знайди потрібну позицію.</p>
       <div class="combo-wrap">
         <input id="productListSearch" placeholder="Введи назву для пошуку..." autocomplete="off" />
@@ -4587,7 +4614,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.68</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.69</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4607,8 +4634,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.68</span></div>
-        <div class="small">Блок резервної копії повністю нерухомий, не має внутрішнього прокручування й компактно підлаштовується під нижчі екрани.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.69</span></div>
+        <div class="small">Кнопку додавання найменувань перенесено безпосередньо в блок пошуку та зроблено компактною.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4679,7 +4706,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.68";
+  const APP_VERSION = "1.69";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
