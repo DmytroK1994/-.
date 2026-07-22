@@ -461,7 +461,7 @@
     }
     body.page-today .app-header {
       overflow: hidden;
-      padding: calc(env(safe-area-inset-top) + 6px) max(10px, env(safe-area-inset-right)) 8px max(10px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 5px) max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
       border-bottom-color: transparent;
       border-radius: 0 0 30px 30px;
       box-shadow: 0 14px 32px var(--header-shadow);
@@ -499,7 +499,7 @@
     body.page-today .topbar {
       grid-template-columns: 40px 1fr 40px;
       gap: 6px;
-      margin-bottom: 5px;
+      margin-bottom: 1px;
     }
     body.page-today .topbar h1 {
       font-size: 20px;
@@ -2318,7 +2318,7 @@
     }
     body.page-today .date-line {
       font-size: 12px;
-      line-height: 1.2;
+      line-height: 1.05;
     }
     .menu-open-swipe-hint {
       display: none;
@@ -2329,9 +2329,9 @@
       text-align: center;
     }
     body.page-today .menu-open-swipe-hint {
-      margin-top: 2px;
+      margin-top: 0;
       font-size: 10px;
-      line-height: 1.15;
+      line-height: 1.05;
     }
     .compact-header-row {
       display: block;
@@ -2677,7 +2677,7 @@
       width: min(100%, 640px);
       margin: 0;
       overflow: visible;
-      transform: scale(var(--backup-fit-scale, 1));
+      transform: translateY(var(--backup-fit-shift, 0px)) scale(var(--backup-fit-scale, 1));
       transform-origin: center;
     }
     .other-settings-stack {
@@ -4559,7 +4559,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.80</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.81</span></div>
     </div>
   </div>
 
@@ -5297,7 +5297,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.80</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.81</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-actions">
@@ -5324,8 +5324,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.80</span></div>
-            <div class="small">На першій картці розділу «Про додаток» версію й опис закріплено зверху, а основні дії перенесено до нижньої частини.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.81</span></div>
+            <div class="small">Посилено автоматичне припасування картки резервної копії та додатково ущільнено шапку поточного підрахунку.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5396,7 +5396,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.80";
+  const APP_VERSION = "1.81";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8400,6 +8400,7 @@
   }
 
   let backupFitFrame = 0;
+  let backupPositionFrame = 0;
   let backupFitObserver = null;
   function updateAppBottomObstructionMetric() {
     const nav = document.getElementById("appBottomNav");
@@ -8418,15 +8419,28 @@
 
   function fitBackupSection() {
     cancelAnimationFrame(backupFitFrame);
+    cancelAnimationFrame(backupPositionFrame);
     backupFitFrame = requestAnimationFrame(() => {
       const page = document.getElementById("pageBackup");
       const section = document.getElementById("settingsBackupSection");
       if (!page || !section || page.classList.contains("hidden")) return;
       section.style.setProperty("--backup-fit-scale", "1");
-      const availableHeight = Math.max(1, page.clientHeight - 10);
+      section.style.setProperty("--backup-fit-shift", "0px");
+      const availableHeight = Math.max(1, page.clientHeight - 20);
       const naturalHeight = Math.max(1, section.offsetHeight);
       const scale = Math.min(1, availableHeight / naturalHeight);
       section.style.setProperty("--backup-fit-scale", scale.toFixed(4));
+      backupPositionFrame = requestAnimationFrame(() => {
+        if (page.classList.contains("hidden")) return;
+        const pageRect = page.getBoundingClientRect();
+        const sectionRect = section.getBoundingClientRect();
+        const topLimit = pageRect.top + 8;
+        const bottomLimit = pageRect.bottom - 12;
+        let shift = 0;
+        if (sectionRect.bottom > bottomLimit) shift -= sectionRect.bottom - bottomLimit;
+        if (sectionRect.top + shift < topLimit) shift += topLimit - (sectionRect.top + shift);
+        section.style.setProperty("--backup-fit-shift", `${Math.floor(shift)}px`);
+      });
     });
   }
 
