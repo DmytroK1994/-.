@@ -2794,6 +2794,44 @@
       font-weight: 900;
       letter-spacing: .2px;
     }
+    .entry-collapsible-section {
+      margin-top: 4px;
+    }
+    .entry-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .entry-section-header .form-section-title {
+      flex: 1;
+    }
+    #pageToday .entry-form-card .entry-section-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 30px;
+      width: 30px !important;
+      min-width: 30px !important;
+      height: 28px !important;
+      min-height: 28px !important;
+      margin: 8px 0 0 !important;
+      padding: 0 !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 9px !important;
+      background: var(--surface-deep) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      line-height: 1 !important;
+    }
+    .entry-collapsible-section.is-collapsed .entry-section-content {
+      display: none;
+    }
+    .entry-collapsible-section.is-collapsed .form-section-title {
+      margin-bottom: 0;
+    }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       #pageToday .entry-form-card {
         padding: 12px;
@@ -2824,6 +2862,9 @@
         margin: 9px 0 3px;
         padding-top: 7px;
         font-size: 13px;
+      }
+      #pageToday .entry-form-card .entry-section-toggle {
+        margin-top: 5px !important;
       }
       #pageToday .entry-form-card button:not(.clear-search-btn) {
         min-height: 44px;
@@ -3866,7 +3907,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.60</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.61</span></div>
     </div>
   </div>
 
@@ -3995,35 +4036,65 @@
         </select>
       </div>
 
-      <div class="row">
-        <div>
-          <label>Піддонів</label>
-          <input id="pallets" type="number" inputmode="decimal" placeholder="Наприклад: 5" />
+      <section class="entry-collapsible-section" data-entry-section="pallets">
+        <div class="entry-section-header">
+          <div class="form-section-title">Піддони</div>
+          <button type="button" class="entry-section-toggle" data-entry-section-toggle="pallets" data-entry-section-label="Піддони" aria-expanded="true" aria-controls="entrySectionPallets" aria-label="Згорнути розділ Піддони">−</button>
         </div>
-        <div>
-          <label id="palletQuantityLabel" for="kgPerPallet">Кілограмів у піддоні</label>
-          <input id="kgPerPallet" type="number" inputmode="decimal" placeholder="Наприклад: 675" />
+        <div class="entry-section-content" id="entrySectionPallets">
+          <div class="row">
+            <div>
+              <label>Піддонів</label>
+              <input id="pallets" type="number" inputmode="decimal" placeholder="Наприклад: 5" />
+            </div>
+            <div>
+              <label id="palletQuantityLabel" for="kgPerPallet">Кілограмів у піддоні</label>
+              <input id="kgPerPallet" type="number" inputmode="decimal" placeholder="Наприклад: 675" />
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="form-section-title">Поштучно</div>
-      <div class="row">
-        <div>
-          <label>Кількість</label>
-          <input id="pieces" type="number" inputmode="decimal" placeholder="Наприклад: 10" />
+      <section class="entry-collapsible-section" data-entry-section="pieces">
+        <div class="entry-section-header">
+          <div class="form-section-title">Поштучно</div>
+          <button type="button" class="entry-section-toggle" data-entry-section-toggle="pieces" data-entry-section-label="Поштучно" aria-expanded="true" aria-controls="entrySectionPieces" aria-label="Згорнути розділ Поштучно">−</button>
         </div>
-        <div>
-          <label id="pieceQuantityLabel" for="kgPerPiece">Кілограмів в одиниці</label>
-          <input id="kgPerPiece" type="number" inputmode="decimal" placeholder="Наприклад: 25" />
+        <div class="entry-section-content" id="entrySectionPieces">
+          <div class="row">
+            <div>
+              <label>Кількість</label>
+              <input id="pieces" type="number" inputmode="decimal" placeholder="Наприклад: 10" />
+            </div>
+            <div>
+              <label id="pieceQuantityLabel" for="kgPerPiece">Кілограмів в одиниці</label>
+              <input id="kgPerPiece" type="number" inputmode="decimal" placeholder="Наприклад: 25" />
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="form-section-title">Окрема кількість</div>
-      <label id="directQuantityLabel" for="directKg">Окрема кількість, кг</label>
-      <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+      <section class="entry-collapsible-section" data-entry-section="direct">
+        <div class="entry-section-header">
+          <div class="form-section-title">Окрема кількість</div>
+          <button type="button" class="entry-section-toggle" data-entry-section-toggle="direct" data-entry-section-label="Окрема кількість" aria-expanded="true" aria-controls="entrySectionDirect" aria-label="Згорнути розділ Окрема кількість">−</button>
+        </div>
+        <div class="entry-section-content" id="entrySectionDirect">
+          <label id="directQuantityLabel" for="directKg">Окрема кількість, кг</label>
+          <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+        </div>
+      </section>
 
-      <label>Коментар</label>
-      <input id="comment" placeholder="" />
+      <section class="entry-collapsible-section" data-entry-section="comment">
+        <div class="entry-section-header">
+          <div class="form-section-title">Коментар</div>
+          <button type="button" class="entry-section-toggle" data-entry-section-toggle="comment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="entrySectionComment" aria-label="Згорнути розділ Коментар">−</button>
+        </div>
+        <div class="entry-section-content" id="entrySectionComment">
+          <label for="comment">Текст коментаря</label>
+          <input id="comment" placeholder="" />
+        </div>
+      </section>
 
       <button class="green" id="saveEntryBtn">Додати</button>
       <button class="secondary" id="cancelEditBtn">Очистити / скасувати</button>
@@ -4475,7 +4546,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.60</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.61</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4495,8 +4566,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.60</span></div>
-        <div class="small">Джойстик зберігає вибрану тему та позицію списку після зміни оформлення; блок резервної копії зафіксовано по центру.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.61</span></div>
+        <div class="small">На сторінці поточного підрахунку можна окремо згортати секції «Піддони», «Поштучно», «Окрема кількість» і «Коментар». Вибраний вигляд зберігається після перезапуску.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4567,7 +4638,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.60";
+  const APP_VERSION = "1.61";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -4581,6 +4652,7 @@
   const MENU_SIDE_KEY = "warehouseJournalMenuSide";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
+  const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
@@ -7311,6 +7383,39 @@
     if (select) select.value = normalizedMode;
   }
 
+  function getEntrySectionState() {
+    const defaults = { pallets: true, pieces: true, direct: true, comment: true };
+    try {
+      const saved = JSON.parse(localStorage.getItem(ENTRY_SECTION_STATE_KEY) || "{}");
+      Object.keys(defaults).forEach(key => {
+        if (typeof saved[key] === "boolean") defaults[key] = saved[key];
+      });
+    } catch (error) {}
+    return defaults;
+  }
+
+  function applyEntrySectionState(state = getEntrySectionState()) {
+    document.querySelectorAll("[data-entry-section]").forEach(section => {
+      const key = section.dataset.entrySection;
+      const expanded = state[key] !== false;
+      const button = section.querySelector(`[data-entry-section-toggle="${key}"]`);
+      section.classList.toggle("is-collapsed", !expanded);
+      if (!button) return;
+      const label = button.dataset.entrySectionLabel || "секцію";
+      button.textContent = expanded ? "−" : "+";
+      button.setAttribute("aria-expanded", String(expanded));
+      button.setAttribute("aria-label", `${expanded ? "Згорнути" : "Розгорнути"} розділ ${label}`);
+    });
+  }
+
+  function toggleEntrySection(key) {
+    const state = getEntrySectionState();
+    if (!(key in state)) return;
+    state[key] = !state[key];
+    try { localStorage.setItem(ENTRY_SECTION_STATE_KEY, JSON.stringify(state)); } catch (error) {}
+    applyEntrySectionState(state);
+  }
+
   function canUsePageBackSwipe() {
     if (!PAGE_PARENTS[currentPage] || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
@@ -8266,7 +8371,9 @@
     localStorage.removeItem("warehouseJournalV2");
     localStorage.removeItem(LAST_ENTRY_UNIT_KEY);
     localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
+    localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
     applyEntryUnitVisibility("hidden");
+    applyEntrySectionState();
     save();
     clearEntryForm();
     clearProductForm();
@@ -9066,6 +9173,9 @@
     applyEntryUnitVisibility(mode);
     toast(mode === "visible" ? "Вибір одиниці показано" : "Вибір одиниці приховано");
   });
+  document.querySelectorAll("[data-entry-section-toggle]").forEach(button => {
+    button.addEventListener("click", () => toggleEntrySection(button.dataset.entrySectionToggle));
+  });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
@@ -9123,6 +9233,7 @@
   applyJoystickMode();
   applyMenuStyle();
   applyEntryUnitVisibility();
+  applyEntrySectionState();
   updateDemoModeUI();
   renderThemeCategories();
   render();
