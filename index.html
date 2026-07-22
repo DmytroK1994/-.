@@ -1090,9 +1090,6 @@
       background: transparent;
       box-shadow: none;
     }
-    #pageThemes.theme-category-open .theme-gesture-pad {
-      display: none !important;
-    }
     html.menu-style-game #pageThemes.theme-category-root .theme-category-list {
       margin-left: 0;
       margin-right: auto;
@@ -1137,7 +1134,8 @@
       padding: 7px;
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
-      #pageThemes.theme-category-root {
+      #pageThemes.theme-category-root,
+      #pageThemes.theme-category-open {
         min-height: calc(100dvh - env(safe-area-inset-top) - 82px);
         padding-bottom: 0;
         overflow: hidden;
@@ -1161,6 +1159,65 @@
       }
       #pageThemes.theme-category-root .theme-category-button {
         pointer-events: auto;
+      }
+      #pageThemes.theme-category-open #settingsThemeSection {
+        position: fixed;
+        top: calc(env(safe-area-inset-top) + 70px);
+        right: max(14px, env(safe-area-inset-right));
+        left: max(14px, env(safe-area-inset-left));
+        z-index: 7;
+        width: auto;
+        max-height: calc(100dvh - env(safe-area-inset-top) - 160px);
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        pointer-events: none;
+      }
+      #pageThemes.theme-category-open .theme-category-back {
+        display: none;
+      }
+      #pageThemes.theme-category-open .theme-category-view {
+        width: calc(100% - 24px);
+        max-width: 460px;
+        max-height: calc(100dvh - env(safe-area-inset-top) - 175px);
+        margin-right: auto;
+        margin-left: auto;
+        padding: 0 5px 10px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        pointer-events: auto;
+        touch-action: pan-y;
+        scrollbar-width: thin;
+      }
+      #pageThemes.theme-category-open .theme-category-view h2 {
+        margin: 0 0 6px;
+      }
+      #pageThemes.theme-category-open .theme-options-list {
+        width: 100%;
+        gap: 6px;
+        margin-top: 0;
+      }
+      #pageThemes.theme-category-open .theme-option-row {
+        grid-template-columns: minmax(0, 1fr) 39px;
+        gap: 6px;
+      }
+      #pageThemes.theme-category-open .theme-option-button,
+      #pageThemes.theme-category-open .favorite-theme-button {
+        min-height: 39px;
+      }
+      #pageThemes.theme-category-open .theme-option-button {
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+      #pageThemes.theme-category-open .favorite-theme-button {
+        width: 39px;
+        font-size: 18px;
+      }
+      #pageThemes.theme-category-open .theme-palette {
+        width: 44px;
+        height: 24px;
       }
       .theme-gesture-pad {
         position: fixed;
@@ -3690,7 +3747,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.55</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.56</span></div>
     </div>
   </div>
 
@@ -4292,7 +4349,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.55</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.56</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4312,8 +4369,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.55</span></div>
-        <div class="small">Повернуто зовнішню картку на сторінці резервної копії.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.56</span></div>
+        <div class="small">Підкатегорії тем переведено на компактні списки з екранним джойстиком; мобільну кнопку повернення прибрано.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4384,7 +4441,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.55";
+  const APP_VERSION = "1.56";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6593,6 +6650,18 @@
     const selected = items[themeGestureIndex];
     const label = document.getElementById("themeGestureSelection");
     if (label) label.textContent = "Вибрано: " + selected.textContent.trim();
+    if (activeThemeCategory) {
+      const wheel = document.getElementById("themeCategoryView");
+      if (wheel) {
+        const wheelRect = wheel.getBoundingClientRect();
+        const selectedRect = selected.getBoundingClientRect();
+        if (selectedRect.top < wheelRect.top) {
+          wheel.scrollTo({ top: wheel.scrollTop + selectedRect.top - wheelRect.top - 6, behavior: "smooth" });
+        } else if (selectedRect.bottom > wheelRect.bottom) {
+          wheel.scrollTo({ top: wheel.scrollTop + selectedRect.bottom - wheelRect.bottom + 6, behavior: "smooth" });
+        }
+      }
+    }
   }
 
   function initializeThemeGestureSelection() {
