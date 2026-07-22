@@ -2693,6 +2693,167 @@
     .other-settings-group .settings-group-description {
       margin: 0 0 12px;
     }
+    .button-layout-preview {
+      display: grid;
+      min-height: 94px;
+      margin: 2px 0 12px;
+      padding: 12px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface-deep);
+    }
+    .button-layout-preview button {
+      width: min(76%, 360px);
+      min-height: 39px;
+      margin: 0;
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: 5px 5px 0 var(--border);
+      font-size: 15px;
+      font-weight: 750;
+      pointer-events: none;
+      transition: width .2s ease, min-height .2s ease, padding .2s ease, font-size .2s ease;
+    }
+    .button-layout-preview[data-width="edge"] button { width: 100%; }
+    .button-layout-preview[data-size="small"] button {
+      width: min(68%, 320px);
+      min-height: 34px;
+      padding-block: 5px;
+      font-size: 14px;
+    }
+    .button-layout-preview[data-size="large"] button {
+      width: min(86%, 410px);
+      min-height: 47px;
+      padding-block: 10px;
+      padding-inline: 18px;
+      font-size: 16px;
+    }
+    .button-layout-preview[data-width="edge"] button { width: 100%; }
+    .button-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 10px;
+    }
+    .button-layout-grid label {
+      margin-top: 4px;
+    }
+    @media (max-width: 520px) {
+      .button-layout-grid { grid-template-columns: 1fr; }
+    }
+
+    html {
+      --navigation-button-min-height: 39px;
+      --navigation-button-padding-y: 7px;
+      --navigation-button-padding-x: 14px;
+      --navigation-button-font-size: 15px;
+      --menu-list-width-reduction: 88px;
+      --settings-list-width-reduction: 60px;
+      --themes-list-width-reduction: 60px;
+    }
+    html[data-nav-button-size="small"] {
+      --navigation-button-min-height: 34px;
+      --navigation-button-padding-y: 5px;
+      --navigation-button-padding-x: 11px;
+      --navigation-button-font-size: 14px;
+      --menu-list-width-reduction: 104px;
+      --settings-list-width-reduction: 76px;
+      --themes-list-width-reduction: 76px;
+    }
+    html[data-nav-button-size="large"] {
+      --navigation-button-min-height: 47px;
+      --navigation-button-padding-y: 10px;
+      --navigation-button-padding-x: 18px;
+      --navigation-button-font-size: 16px;
+      --menu-list-width-reduction: 68px;
+      --settings-list-width-reduction: 40px;
+      --themes-list-width-reduction: 40px;
+    }
+    html[data-menu-button-size="small"] .drawer,
+    html[data-settings-button-size="small"] #pageManagement,
+    html[data-themes-button-size="small"] #pageThemes {
+      --navigation-button-min-height: 34px;
+      --navigation-button-padding-y: 5px;
+      --navigation-button-padding-x: 11px;
+      --navigation-button-font-size: 14px;
+    }
+    html[data-menu-button-size="large"] .drawer,
+    html[data-settings-button-size="large"] #pageManagement,
+    html[data-themes-button-size="large"] #pageThemes {
+      --navigation-button-min-height: 47px;
+      --navigation-button-padding-y: 10px;
+      --navigation-button-padding-x: 18px;
+      --navigation-button-font-size: 16px;
+    }
+    html[data-menu-button-size="standard"] .drawer,
+    html[data-settings-button-size="standard"] #pageManagement,
+    html[data-themes-button-size="standard"] #pageThemes {
+      --navigation-button-min-height: 39px;
+      --navigation-button-padding-y: 7px;
+      --navigation-button-padding-x: 14px;
+      --navigation-button-font-size: 15px;
+    }
+    html[data-menu-button-size="small"] .drawer { --menu-list-width-reduction: 104px; }
+    html[data-menu-button-size="standard"] .drawer { --menu-list-width-reduction: 88px; }
+    html[data-menu-button-size="large"] .drawer { --menu-list-width-reduction: 68px; }
+    html[data-settings-button-size="small"] #pageManagement { --settings-list-width-reduction: 76px; }
+    html[data-settings-button-size="standard"] #pageManagement { --settings-list-width-reduction: 60px; }
+    html[data-settings-button-size="large"] #pageManagement { --settings-list-width-reduction: 40px; }
+    html[data-themes-button-size="small"] #pageThemes { --themes-list-width-reduction: 76px; }
+    html[data-themes-button-size="standard"] #pageThemes { --themes-list-width-reduction: 60px; }
+    html[data-themes-button-size="large"] #pageThemes { --themes-list-width-reduction: 40px; }
+    .drawer .menu-btn,
+    #pageManagement .management-option,
+    #pageThemes .theme-category-button,
+    #pageThemes .theme-option-button,
+    #pageThemes .favorite-theme-button {
+      min-height: var(--navigation-button-min-height) !important;
+      font-size: var(--navigation-button-font-size) !important;
+    }
+    #pageThemes .theme-option-row {
+      grid-template-columns: minmax(0, 1fr) var(--navigation-button-min-height) !important;
+    }
+    #pageThemes .favorite-theme-button {
+      width: var(--navigation-button-min-height) !important;
+    }
+    .drawer .menu-btn,
+    #pageManagement .management-option,
+    #pageThemes .theme-category-button,
+    #pageThemes .theme-option-button {
+      padding-top: var(--navigation-button-padding-y) !important;
+      padding-bottom: var(--navigation-button-padding-y) !important;
+    }
+    @media (hover: none), (pointer: coarse), (max-width: 900px) {
+      .menu-wheel {
+        width: calc(100% - var(--menu-list-width-reduction)) !important;
+      }
+      .management-options {
+        width: calc(100% - var(--settings-list-width-reduction)) !important;
+      }
+      #pageThemes.theme-category-root .theme-category-list,
+      #pageThemes.theme-category-open .theme-category-view {
+        width: calc(100% - var(--themes-list-width-reduction)) !important;
+      }
+      html[data-nav-button-width="edge"] .menu-wheel,
+      html[data-nav-button-width="edge"] .management-options,
+      html[data-nav-button-width="edge"] #pageThemes.theme-category-root .theme-category-list,
+      html[data-nav-button-width="edge"] #pageThemes.theme-category-open .theme-category-view {
+        width: calc(100% - 28px) !important;
+        max-width: 680px !important;
+      }
+    }
+    @media (min-width: 901px) {
+      html[data-nav-button-width="edge"] .management-options,
+      html[data-nav-button-width="edge"] #pageThemes .theme-category-list,
+      html[data-nav-button-width="edge"] #pageThemes .theme-category-view {
+        width: min(calc(100% - 28px), 680px);
+        max-width: none;
+      }
+    }
     #pageHistory button.yellow {
       border-color: var(--soft-warning-border);
       background: var(--soft-warning-bg);
@@ -4276,7 +4437,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.76</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.77</span></div>
     </div>
   </div>
 
@@ -4903,6 +5064,59 @@
       </section>
 
       <section class="card other-settings-group">
+        <h2>Розмір кнопок навігації</h2>
+        <p class="small settings-group-description">Налаштуй однакову основу для кнопок меню, налаштувань і тем або задай окремий розмір для кожного розділу.</p>
+        <div class="button-layout-preview" id="buttonLayoutPreview" data-width="current" data-size="standard" aria-label="Приклад вигляду кнопки">
+          <button type="button" tabindex="-1">Приклад пункту меню</button>
+        </div>
+        <div class="button-layout-grid">
+          <div>
+            <label for="navButtonWidthSelect">Ширина кнопок</label>
+            <select id="navButtonWidthSelect">
+              <option value="current">Як зараз</option>
+              <option value="edge">Майже до країв екрана</option>
+            </select>
+          </div>
+          <div>
+            <label for="navButtonSizeSelect">Загальний розмір</label>
+            <select id="navButtonSizeSelect">
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший на один крок</option>
+            </select>
+          </div>
+          <div>
+            <label for="menuButtonSizeSelect">Головне меню</label>
+            <select id="menuButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="settingsButtonSizeSelect">Меню налаштувань</label>
+            <select id="settingsButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="themesButtonSizeSelect">Теми оформлення</label>
+            <select id="themesButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+        </div>
+        <p class="small">Зміни застосовуються одразу. Окремий розмір має перевагу над загальним.</p>
+      </section>
+
+      <section class="card other-settings-group">
         <h2>Введення даних</h2>
         <p class="small settings-group-description">Налаштування полів на екрані поточного підрахунку.</p>
         <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
@@ -4954,7 +5168,7 @@
       <div class="about-card-viewport">
         <section class="card about-card is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.76</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.77</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-actions">
@@ -4981,8 +5195,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.76</span></div>
-            <div class="small">З головного екрана прибрано зайву підказку повернення, а шапку поточного підрахунку зроблено нижчою та щільнішою.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.77</span></div>
+            <div class="small">В «Інших налаштуваннях» додано ширину й розміри навігаційних кнопок із живим прикладом та окремими параметрами для меню, налаштувань і тем.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5053,7 +5267,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.76";
+  const APP_VERSION = "1.77";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5065,6 +5279,11 @@
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
   const MENU_STYLE_KEY = "warehouseJournalMenuStyle";
   const MENU_SIDE_KEY = "warehouseJournalMenuSide";
+  const NAV_BUTTON_WIDTH_KEY = "warehouseJournalNavigationButtonWidth";
+  const NAV_BUTTON_SIZE_KEY = "warehouseJournalNavigationButtonSize";
+  const MENU_BUTTON_SIZE_KEY = "warehouseJournalMenuButtonSize";
+  const SETTINGS_BUTTON_SIZE_KEY = "warehouseJournalSettingsButtonSize";
+  const THEMES_BUTTON_SIZE_KEY = "warehouseJournalThemesButtonSize";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
@@ -7889,6 +8108,73 @@
     requestAnimationFrame(updateMenuOverflowIndicator);
   }
 
+  function readNavigationButtonSetting(key, allowed, fallback) {
+    try {
+      const value = localStorage.getItem(key) || fallback;
+      return allowed.includes(value) ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function getNavigationButtonWidth() {
+    return readNavigationButtonSetting(NAV_BUTTON_WIDTH_KEY, ["current", "edge"], "current");
+  }
+
+  function getNavigationButtonSize() {
+    return readNavigationButtonSetting(NAV_BUTTON_SIZE_KEY, ["small", "standard", "large"], "standard");
+  }
+
+  function getSectionButtonSize(key) {
+    return readNavigationButtonSetting(key, ["inherit", "small", "standard", "large"], "inherit");
+  }
+
+  function resolveSectionButtonSize(value) {
+    return value === "inherit" ? getNavigationButtonSize() : value;
+  }
+
+  function updateNavigationButtonPreview(size = getNavigationButtonSize(), label = "Приклад пункту меню") {
+    const preview = document.getElementById("buttonLayoutPreview");
+    if (!preview) return;
+    preview.dataset.width = getNavigationButtonWidth();
+    preview.dataset.size = resolveSectionButtonSize(size);
+    const button = preview.querySelector("button");
+    if (button) button.textContent = label;
+  }
+
+  function applyNavigationButtonLayout(previewSize = getNavigationButtonSize(), previewLabel) {
+    const root = document.documentElement;
+    const width = getNavigationButtonWidth();
+    const globalSize = getNavigationButtonSize();
+    const menuSize = getSectionButtonSize(MENU_BUTTON_SIZE_KEY);
+    const settingsSize = getSectionButtonSize(SETTINGS_BUTTON_SIZE_KEY);
+    const themesSize = getSectionButtonSize(THEMES_BUTTON_SIZE_KEY);
+    root.dataset.navButtonWidth = width;
+    root.dataset.navButtonSize = globalSize;
+    root.dataset.menuButtonSize = menuSize;
+    root.dataset.settingsButtonSize = settingsSize;
+    root.dataset.themesButtonSize = themesSize;
+
+    const values = {
+      navButtonWidthSelect: width,
+      navButtonSizeSelect: globalSize,
+      menuButtonSizeSelect: menuSize,
+      settingsButtonSizeSelect: settingsSize,
+      themesButtonSizeSelect: themesSize
+    };
+    Object.entries(values).forEach(([id, value]) => {
+      const select = document.getElementById(id);
+      if (select) select.value = value;
+    });
+    updateNavigationButtonPreview(previewSize, previewLabel || "Приклад пункту меню");
+    requestAnimationFrame(updateMenuOverflowIndicator);
+  }
+
+  function saveNavigationButtonSetting(key, value, previewSize, previewLabel) {
+    try { localStorage.setItem(key, value); } catch (error) {}
+    applyNavigationButtonLayout(previewSize, previewLabel);
+  }
+
   function getEntryUnitVisibility() {
     try {
       return localStorage.getItem(ENTRY_UNIT_VISIBILITY_KEY) === "visible" ? "visible" : "hidden";
@@ -9901,6 +10187,21 @@
     applyMenuStyle(getMenuStyle());
     toast(side === "right" ? "Бокове меню переміщено вправо" : "Бокове меню переміщено вліво");
   });
+  document.getElementById("navButtonWidthSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(NAV_BUTTON_WIDTH_KEY, event.target.value, getNavigationButtonSize(), "Приклад ширини кнопки");
+  });
+  document.getElementById("navButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(NAV_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Загальний розмір кнопки");
+  });
+  document.getElementById("menuButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(MENU_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки меню");
+  });
+  document.getElementById("settingsButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(SETTINGS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки налаштувань");
+  });
+  document.getElementById("themesButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(THEMES_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки тем");
+  });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
   entryUnitVisibilitySelect.addEventListener("change", event => {
@@ -9968,6 +10269,7 @@
   renderAppVersion();
   applyJoystickMode();
   applyMenuStyle();
+  applyNavigationButtonLayout();
   applyEntryUnitVisibility();
   applyEntrySectionState();
   updateDemoModeUI();
