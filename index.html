@@ -1364,8 +1364,9 @@
       background: var(--surface-strong);
       color: var(--text);
       text-align: center;
-      margin-top: 7px;
-      padding: 13px 14px;
+      min-height: 39px;
+      margin-top: 6px;
+      padding: 7px 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
       box-shadow: 5px 5px 0 var(--border);
@@ -1394,9 +1395,9 @@
       position: relative;
       width: 100%;
       max-width: 100%;
-      min-height: 54px;
-      margin: 8px 0 0 -14px;
-      padding: 13px 38px 13px 28px;
+      min-height: 39px;
+      margin: 6px 0 0 -14px;
+      padding: 7px 38px 7px 28px;
       overflow: hidden;
       border-left: 0;
       border-radius: 0 8px 8px 0;
@@ -3913,7 +3914,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.62</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.63</span></div>
     </div>
   </div>
 
@@ -4552,7 +4553,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.62</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.63</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4572,8 +4573,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.62</span></div>
-        <div class="small">Блок резервної копії правильно відцентровано між шапкою та нижнім краєм екрана з однаковими відступами.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.63</span></div>
+        <div class="small">Пункти головного меню стали компактнішими та за розміром відповідають кнопкам у розділі тем оформлення.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4644,7 +4645,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.62";
+  const APP_VERSION = "1.63";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
