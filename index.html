@@ -4548,7 +4548,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.78</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.79</span></div>
     </div>
   </div>
 
@@ -5286,7 +5286,7 @@
       <div class="about-card-viewport">
         <section class="card about-card is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.78</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.79</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-actions">
@@ -5313,8 +5313,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.78</span></div>
-            <div class="small">Картки в розділах «Про додаток» та «Інші налаштування» тепер рухаються разом із пальцем і перегортаються після короткого вертикального свайпа.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.79</span></div>
+            <div class="small">Перед застосуванням іншої теми тепер обов’язково показується підтвердження з назвами поточної та обраної тем.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5385,7 +5385,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.78";
+  const APP_VERSION = "1.79";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5768,9 +5768,11 @@
     toast("Власну тему збережено");
   }
 
-  function applyNamedCustomTheme(id) {
+  async function applyNamedCustomTheme(id) {
     const theme = loadNamedCustomThemes().find(item => item.id === id);
     if (!theme) return;
+    const confirmed = await confirmThemeChange(theme.name);
+    if (!confirmed) return;
     saveCustomThemePalette({ ...CUSTOM_THEME_DEFAULTS, ...theme.palette });
     saveCustomComponentStyles(theme.componentStyles || { types: {}, elements: {} });
     customThemeEditorOpen = false;
@@ -6283,8 +6285,31 @@
     scrollAppToTop();
   }
 
-  function chooseTheme(theme) {
+  async function confirmThemeChange(targetLabel) {
+    const currentTheme = document.documentElement.dataset.theme || "dark";
+    const currentLabel = getThemeLabel(currentTheme);
+    return showAppDialog({
+      label: "Зміна теми",
+      title: `Змінити тему на «${targetLabel}»?`,
+      message: `Поточна тема: «${currentLabel}». Обрана тема: «${targetLabel}». Застосувати нове оформлення?`,
+      confirmText: "Так, змінити",
+      cancelText: "Ні, залишити"
+    });
+  }
+
+  async function chooseTheme(theme) {
     if (!THEMES.includes(theme)) return;
+    const currentTheme = document.documentElement.dataset.theme || "dark";
+    if (theme === currentTheme && theme !== "custom") {
+      toast("Цю тему вже вибрано");
+      return;
+    }
+    const confirmed = await confirmThemeChange(getThemeLabel(theme));
+    if (!confirmed) {
+      const select = document.getElementById("themeSelect");
+      if (select) select.value = currentTheme;
+      return;
+    }
     const selectedGestureTheme = activeThemeCategory
       ? document.querySelector("#themeOptionsList .theme-option-button.gesture-selected")?.dataset.id || ""
       : "";
@@ -7351,6 +7376,7 @@
     title = "Підтвердити дію?",
     message = "",
     confirmText = "Підтвердити",
+    cancelText = "Скасувати",
     danger = false
   } = {}) {
     if (appDialogResolver) appDialogResolver(false);
@@ -7364,6 +7390,7 @@
     document.getElementById("appDialogTitle").textContent = title;
     document.getElementById("appDialogMessage").textContent = message;
     confirmButton.textContent = confirmText;
+    document.getElementById("appDialogCancelBtn").textContent = cancelText;
     confirmButton.classList.toggle("danger", danger);
     dialog.classList.toggle("destructive", danger);
     overlay.classList.remove("hidden");
