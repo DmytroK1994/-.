@@ -4595,7 +4595,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.85</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.86</span></div>
     </div>
   </div>
 
@@ -5335,7 +5335,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.85</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.86</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5365,8 +5365,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.85</span></div>
-            <div class="small">Назву конструктора теми винесено в окремий верхній рядок, щоб кнопки більше не перекривали її на телефоні.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.86</span></div>
+            <div class="small">Вихід із конструктора тепер скасовує незбережені зміни, а повторне збереження під тією самою назвою оновлює вибрану власну тему.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5437,13 +5437,14 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.85";
+  const APP_VERSION = "1.86";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
   const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
   const CUSTOM_THEME_LIBRARY_KEY = "warehouseJournalCustomThemeLibrary";
+  const ACTIVE_NAMED_CUSTOM_THEME_KEY = "warehouseJournalActiveNamedCustomTheme";
   const FAVORITE_THEMES_KEY = "warehouseJournalFavoriteThemes";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
@@ -5605,6 +5606,14 @@
   let themeDesignerActive = false;
   let themeDesignerBaseTheme = "custom";
   let themeDesignerBaseLabel = "Власна тема";
+  let activeNamedCustomThemeId = "";
+  let activeNamedCustomThemeName = "";
+  let themeDesignerRestoreTheme = "dark";
+  let themeDesignerRestorePalette = null;
+  let themeDesignerRestoreComponentStyles = null;
+  let themeDesignerRestoreNamedThemeId = "";
+  let themeDesignerRestoreNamedThemeName = "";
+  let themeDesignerSavedDuringSession = false;
   let themeDesignerPicking = false;
   let themeDesignerTarget = null;
   let themeDesignerType = null;
@@ -5772,17 +5781,30 @@
     try { localStorage.setItem(CUSTOM_THEME_LIBRARY_KEY, JSON.stringify(themes)); } catch (error) {}
   }
 
-  function addNamedCustomTheme(name, baseTheme = "custom") {
+  function setActiveNamedCustomTheme(id = "", name = "") {
+    activeNamedCustomThemeId = id;
+    activeNamedCustomThemeName = name;
+    try {
+      if (id) localStorage.setItem(ACTIVE_NAMED_CUSTOM_THEME_KEY, JSON.stringify({ id, name }));
+      else localStorage.removeItem(ACTIVE_NAMED_CUSTOM_THEME_KEY);
+    } catch (error) {}
+  }
+
+  function addNamedCustomTheme(name, baseTheme = "custom", replaceId = "") {
     const themes = loadNamedCustomThemes();
+    const replaceIndex = replaceId ? themes.findIndex(item => item.id === replaceId) : -1;
+    const previous = replaceIndex >= 0 ? themes[replaceIndex] : null;
     const theme = {
-      id: "custom-theme-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+      id: previous?.id || "custom-theme-" + Date.now() + "-" + Math.random().toString(16).slice(2),
       name,
       palette: loadCustomTheme(),
       componentStyles: loadCustomComponentStyles(),
       baseTheme,
-      createdAt: new Date().toISOString()
+      createdAt: previous?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
-    themes.push(theme);
+    if (replaceIndex >= 0) themes[replaceIndex] = theme;
+    else themes.push(theme);
     saveNamedCustomThemes(themes);
     renderNamedCustomThemes();
     renderThemeCategories();
@@ -5843,6 +5865,7 @@
     saveCustomComponentStyles(theme.componentStyles || { types: {}, elements: {} });
     customThemeEditorOpen = false;
     applyTheme("custom");
+    setActiveNamedCustomTheme(theme.id, theme.name);
     renderThemeCategories();
     toast("Застосовано тему «" + theme.name + "»");
   }
@@ -5860,6 +5883,9 @@
     });
     if (!confirmed) return;
     saveNamedCustomThemes(themes.filter(item => item.id !== id));
+    if (activeNamedCustomThemeId === id) {
+      setActiveNamedCustomTheme();
+    }
     renderNamedCustomThemes();
     initializeThemeGestureSelection();
     toast("Тему видалено");
@@ -6405,6 +6431,9 @@
   function applyTheme(theme, persist = true) {
     const selected = THEMES.includes(theme) ? theme : "dark";
     const customPalette = loadCustomTheme();
+    if (selected !== "custom") {
+      setActiveNamedCustomTheme();
+    }
     clearCustomThemeStyles();
     document.documentElement.dataset.theme = selected;
     if (EXTRA_THEME_PALETTES[selected]) applyExtraTheme(EXTRA_THEME_PALETTES[selected]);
@@ -6450,8 +6479,16 @@
   function enterCustomThemeEditor() {
     const currentTheme = document.documentElement.dataset.theme;
     const palette = currentTheme === "custom" ? loadCustomTheme() : captureCurrentThemePalette();
+    themeDesignerRestoreTheme = currentTheme || "dark";
+    themeDesignerRestorePalette = loadCustomTheme();
+    themeDesignerRestoreComponentStyles = loadCustomComponentStyles();
+    themeDesignerRestoreNamedThemeId = activeNamedCustomThemeId;
+    themeDesignerRestoreNamedThemeName = activeNamedCustomThemeName;
+    themeDesignerSavedDuringSession = false;
     themeDesignerBaseTheme = currentTheme || "dark";
-    themeDesignerBaseLabel = currentTheme === "custom" ? "Власна тема" : getThemeLabel(currentTheme);
+    themeDesignerBaseLabel = currentTheme === "custom"
+      ? (activeNamedCustomThemeName || "Власна тема")
+      : getThemeLabel(currentTheme);
     if (currentTheme !== "custom") {
       saveCustomThemePalette(palette);
       saveCustomComponentStyles({ types: {}, elements: {} });
@@ -6469,7 +6506,10 @@
 
   async function saveThemeDesignerAsNew() {
     if (!themeDesignerActive) return false;
-    const defaultName = `Копія — ${themeDesignerBaseLabel}`.slice(0, 40);
+    const currentSavedTheme = activeNamedCustomThemeId
+      ? loadNamedCustomThemes().find(item => item.id === activeNamedCustomThemeId)
+      : null;
+    const defaultName = (currentSavedTheme?.name || `Копія — ${themeDesignerBaseLabel}`).slice(0, 40);
     const name = await showAppPrompt({
       label: "Власне оформлення",
       title: "Зберегти як нову тему?",
@@ -6478,8 +6518,19 @@
       confirmText: "Зберегти тему"
     });
     if (!name) return false;
-    addNamedCustomTheme(name, themeDesignerBaseTheme);
-    toast(`Тему «${name}» збережено`);
+    const replaceId = currentSavedTheme && name === currentSavedTheme.name
+      ? currentSavedTheme.id
+      : "";
+    const savedTheme = addNamedCustomTheme(name, themeDesignerBaseTheme, replaceId);
+    setActiveNamedCustomTheme(savedTheme.id, savedTheme.name);
+    themeDesignerBaseLabel = savedTheme.name;
+    themeDesignerRestoreTheme = "custom";
+    themeDesignerRestorePalette = loadCustomTheme();
+    themeDesignerRestoreComponentStyles = loadCustomComponentStyles();
+    themeDesignerRestoreNamedThemeId = savedTheme.id;
+    themeDesignerRestoreNamedThemeName = savedTheme.name;
+    themeDesignerSavedDuringSession = true;
+    toast(replaceId ? `Тему «${name}» оновлено` : `Тему «${name}» збережено`);
     return true;
   }
 
@@ -6495,8 +6546,19 @@
     document.body.classList.remove("theme-designer-active");
     document.getElementById("themeDesignerToolbar").classList.add("hidden");
     document.getElementById("themeDesignerSelection").classList.add("hidden");
+    if (themeDesignerRestorePalette) saveCustomThemePalette(themeDesignerRestorePalette);
+    if (themeDesignerRestoreComponentStyles) saveCustomComponentStyles(themeDesignerRestoreComponentStyles);
+    applyTheme(themeDesignerRestoreTheme || "dark");
+    if (themeDesignerRestoreTheme === "custom") {
+      setActiveNamedCustomTheme(themeDesignerRestoreNamedThemeId, themeDesignerRestoreNamedThemeName);
+    } else {
+      setActiveNamedCustomTheme();
+    }
     updateCustomThemeControls(loadCustomTheme(), false);
-    toast("Власну тему збережено");
+    toast(themeDesignerSavedDuringSession ? "Збережену тему залишено активною" : "Зміни теми скасовано");
+    themeDesignerRestorePalette = null;
+    themeDesignerRestoreComponentStyles = null;
+    themeDesignerSavedDuringSession = false;
   }
 
   function resetCustomTheme() {
@@ -6579,6 +6641,18 @@
 
   let savedTheme = "dark";
   try { savedTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (e) {}
+  if (savedTheme === "custom") {
+    try {
+      const savedActiveTheme = JSON.parse(localStorage.getItem(ACTIVE_NAMED_CUSTOM_THEME_KEY) || "null");
+      const matchingTheme = savedActiveTheme?.id
+        ? loadNamedCustomThemes().find(item => item.id === savedActiveTheme.id)
+        : null;
+      if (matchingTheme) setActiveNamedCustomTheme(matchingTheme.id, matchingTheme.name);
+      else setActiveNamedCustomTheme();
+    } catch (error) {
+      setActiveNamedCustomTheme();
+    }
+  }
   applyTheme(savedTheme, false);
 
   let demoModeActive = getDemoModePreference();
