@@ -3496,6 +3496,153 @@
       border-radius: 16px;
       background: var(--surface-deep);
     }
+    #pageAbout {
+      --about-edge-gap: 14px;
+      position: fixed;
+      top: calc(var(--app-header-bottom, 68px) + var(--about-edge-gap));
+      right: 0;
+      bottom: calc(var(--app-bottom-obstruction, env(safe-area-inset-bottom)) + var(--about-edge-gap));
+      left: 0;
+      width: 100%;
+      min-height: 0;
+      padding-inline: var(--about-edge-gap);
+      overflow: hidden;
+    }
+    .about-deck {
+      display: grid;
+      grid-template-rows: 28px minmax(0, 1fr) 28px;
+      width: min(100%, 640px);
+      height: 100%;
+      margin-inline: auto;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .about-card-viewport {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .about-card {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: clamp(14px, 3.2dvh, 24px);
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(108%) scale(.96);
+      transition: transform .36s cubic-bezier(.2, .78, .24, 1), opacity .24s ease;
+    }
+    .about-card.is-before {
+      transform: translateY(-108%) scale(.96);
+    }
+    .about-card.is-active {
+      z-index: 2;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .about-card.is-after {
+      transform: translateY(108%) scale(.96);
+    }
+    .about-deck.no-transition .about-card {
+      transition: none;
+    }
+    .about-card .about-heading-row {
+      margin-bottom: 10px;
+    }
+    .about-card .about-lead {
+      margin-bottom: 12px;
+      line-height: 1.42;
+    }
+    .about-card .feature-list {
+      margin-bottom: 0;
+      font-size: clamp(12px, 1.8dvh, 14px);
+      line-height: 1.38;
+    }
+    .about-card .feature-list li + li {
+      margin-top: clamp(2px, .6dvh, 5px);
+    }
+    .about-card .whats-new-card {
+      margin: 0;
+    }
+    .about-card-actions {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .about-card-actions button {
+      min-height: 40px;
+      margin: 0;
+      padding: 8px 11px;
+      font-size: 14px;
+    }
+    .about-card-nav {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      width: 54px !important;
+      min-height: 28px !important;
+      height: 28px;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      place-items: center;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--muted-soft) !important;
+      box-shadow: none !important;
+      opacity: .62;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .about-card-nav:not(:disabled):hover,
+    .about-card-nav:not(:disabled):active {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+    .about-card-nav:disabled {
+      visibility: hidden;
+      opacity: 0;
+    }
+    .about-card-nav::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border-top: 2px solid currentColor;
+      border-left: 2px solid currentColor;
+    }
+    #aboutPrevCardBtn::before {
+      transform: translateY(4px) rotate(45deg);
+    }
+    #aboutNextCardBtn::before {
+      transform: translateY(-4px) rotate(225deg);
+    }
+    .about-card-position {
+      position: absolute;
+      right: 10px;
+      bottom: 9px;
+      z-index: 4;
+      color: var(--muted-soft);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+    @media (max-height: 620px) {
+      #pageAbout { --about-edge-gap: 9px; }
+      .about-deck { grid-template-rows: 22px minmax(0, 1fr) 22px; }
+      .about-card-nav { min-height: 22px !important; height: 22px; }
+      .about-card { padding: 11px 13px; }
+      .about-card .about-lead,
+      .about-card #demoModeStatus { font-size: 11px; line-height: 1.28; }
+      .about-card-actions { gap: 4px; margin-top: 5px; }
+      .about-card-actions button { min-height: 34px; padding: 6px 8px; font-size: 12px; }
+    }
     .install-action-card {
       margin-bottom: 18px;
       padding: 14px;
@@ -4099,7 +4246,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.74</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.75</span></div>
     </div>
   </div>
 
@@ -4772,36 +4919,45 @@
   </div>
 
   <div id="pageAbout" class="hidden">
-    <div class="card">
-      <div class="about-heading-row">
-        <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.74</span></div>
-        </div>
-      </div>
-      <p class="about-lead">
-        Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.
-      </p>
+    <div class="about-deck" id="aboutDeck" tabindex="0" aria-label="Картки інформації про додаток">
+      <button type="button" class="about-card-nav" id="aboutPrevCardBtn" aria-label="Попередня картка"></button>
+      <div class="about-card-viewport">
+        <section class="card about-card is-active" data-about-card aria-label="Додаток і дії">
+          <div class="about-heading-row">
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.75</span></div>
+          </div>
+          <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
+          <div class="about-card-actions">
+            <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
+            <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
+            <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
+            <button id="updateAppBtn">Перевірити оновлення</button>
+          </div>
+        </section>
 
-      <h3 class="about-section-title">Основні можливості</h3>
-      <ul class="feature-list">
-        <li>довідник найменувань і швидкий пошук;</li>
-        <li>підрахунок піддонів, штук та окремої кількості в різних одиницях;</li>
-        <li>історія підрахунків за датами;</li>
-        <li>50 тем оформлення, згрупованих за стилем, включно з власним конструктором;</li>
-        <li>попередній перегляд і компактний PDF формату A4;</li>
-        <li>резервне копіювання та відновлення даних;</li>
-        <li>кошик із налаштовуваним терміном зберігання видалених даних;</li>
-        <li>безпечний демонстраційний режим без доступу до власних списків.</li>
-      </ul>
+        <section class="card about-card is-after" data-about-card aria-label="Основні можливості">
+          <h3 class="about-section-title">Основні можливості</h3>
+          <ul class="feature-list">
+            <li>довідник найменувань і швидкий пошук;</li>
+            <li>підрахунок піддонів, штук та окремої кількості в різних одиницях;</li>
+            <li>історія підрахунків за датами;</li>
+            <li>50 тем оформлення, згрупованих за стилем, включно з власним конструктором;</li>
+            <li>попередній перегляд і компактний PDF формату A4;</li>
+            <li>резервне копіювання та відновлення даних;</li>
+            <li>кошик із налаштовуваним терміном зберігання видалених даних;</li>
+            <li>безпечний демонстраційний режим без доступу до власних списків.</li>
+          </ul>
+        </section>
 
-      <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.74</span></div>
-        <div class="small">Виправлено обрізання нижнього краю блока резервної копії: сторінка тепер враховує нижню панель навігації та безпечну область екрана.</div>
+        <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
+          <div class="whats-new-card">
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.75</span></div>
+            <div class="small">Розділ «Про додаток» став компактною колодою карток: інформація перемикається вертикальним свайпом і завжди залишається в межах екрана.</div>
+          </div>
+        </section>
+        <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
       </div>
-      <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
-      <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
-      <button id="openInstallFromAboutBtn">Встановлення та поширення</button>
-      <button id="updateAppBtn">Перевірити оновлення</button>
+      <button type="button" class="about-card-nav" id="aboutNextCardBtn" aria-label="Наступна картка"></button>
     </div>
   </div>
 
@@ -4867,7 +5023,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.74";
+  const APP_VERSION = "1.75";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7817,6 +7973,87 @@
     }
   }
 
+  let aboutCardIndex = 0;
+  let aboutWheelLocked = false;
+  function showAboutCard(nextIndex, animate = true) {
+    const deck = document.getElementById("aboutDeck");
+    const cards = Array.from(document.querySelectorAll("[data-about-card]"));
+    if (!deck || !cards.length) return;
+    aboutCardIndex = Math.max(0, Math.min(cards.length - 1, nextIndex));
+    if (!animate) deck.classList.add("no-transition");
+    cards.forEach((card, index) => {
+      card.classList.toggle("is-before", index < aboutCardIndex);
+      card.classList.toggle("is-active", index === aboutCardIndex);
+      card.classList.toggle("is-after", index > aboutCardIndex);
+      card.setAttribute("aria-hidden", String(index !== aboutCardIndex));
+      card.inert = index !== aboutCardIndex;
+    });
+    const previousButton = document.getElementById("aboutPrevCardBtn");
+    const nextButton = document.getElementById("aboutNextCardBtn");
+    const position = document.getElementById("aboutCardPosition");
+    if (previousButton) previousButton.disabled = aboutCardIndex === 0;
+    if (nextButton) nextButton.disabled = aboutCardIndex === cards.length - 1;
+    if (position) position.textContent = `${aboutCardIndex + 1} із ${cards.length}`;
+    if (!animate) {
+      requestAnimationFrame(() => requestAnimationFrame(() => deck.classList.remove("no-transition")));
+    }
+  }
+
+  function initAboutCardDeck() {
+    const deck = document.getElementById("aboutDeck");
+    if (!deck) return;
+    let tracking = false;
+    let startX = 0;
+    let startY = 0;
+
+    document.getElementById("aboutPrevCardBtn").addEventListener("click", () => {
+      showAboutCard(aboutCardIndex - 1);
+    });
+    document.getElementById("aboutNextCardBtn").addEventListener("click", () => {
+      showAboutCard(aboutCardIndex + 1);
+    });
+
+    deck.addEventListener("touchstart", event => {
+      if (event.touches.length !== 1) return;
+      tracking = true;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }, { passive: true });
+
+    deck.addEventListener("touchmove", event => {
+      if (!tracking || event.touches.length !== 1) return;
+      const deltaX = event.touches[0].clientX - startX;
+      const deltaY = event.touches[0].clientY - startY;
+      if (Math.abs(deltaY) > 8 && Math.abs(deltaY) > Math.abs(deltaX)) event.preventDefault();
+    }, { passive: false });
+
+    deck.addEventListener("touchend", event => {
+      if (!tracking) return;
+      tracking = false;
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      if (Math.abs(deltaY) < 44 || Math.abs(deltaY) <= Math.abs(deltaX) * 1.15) return;
+      showAboutCard(aboutCardIndex + (deltaY < 0 ? 1 : -1));
+    }, { passive: true });
+
+    deck.addEventListener("touchcancel", () => { tracking = false; }, { passive: true });
+    deck.addEventListener("wheel", event => {
+      if (Math.abs(event.deltaY) < 12 || aboutWheelLocked) return;
+      event.preventDefault();
+      aboutWheelLocked = true;
+      showAboutCard(aboutCardIndex + (event.deltaY > 0 ? 1 : -1));
+      setTimeout(() => { aboutWheelLocked = false; }, 420);
+    }, { passive: false });
+    deck.addEventListener("keydown", event => {
+      if (!["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) return;
+      event.preventDefault();
+      const moveForward = event.key === "ArrowDown" || event.key === "PageDown";
+      showAboutCard(aboutCardIndex + (moveForward ? 1 : -1));
+    });
+    showAboutCard(0, false);
+  }
+
   function canUsePageBackSwipe() {
     if (!hasPageBackDestination() || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
@@ -7923,7 +8160,10 @@
     if (page === "backup") fitBackupSection();
     if (page === "trash") document.getElementById("pageTrash").classList.remove("hidden");
     if (page === "otherSettings") document.getElementById("pageOtherSettings").classList.remove("hidden");
-    if (page === "about") document.getElementById("pageAbout").classList.remove("hidden");
+    if (page === "about") {
+      document.getElementById("pageAbout").classList.remove("hidden");
+      showAboutCard(0, false);
+    }
     if (page === "install") {
       document.getElementById("pageInstall").classList.remove("hidden");
       updateInstallUI();
@@ -9705,6 +9945,7 @@
   updatePageBackButton();
   initAppHeaderBottomMetric();
   initBackupSectionFit();
+  initAboutCardDeck();
   initAppKeyboardScrollRestore();
   initAppTopPosition();
   initGestureMenuPad();
