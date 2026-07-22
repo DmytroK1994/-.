@@ -4614,7 +4614,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.89</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.90</span></div>
     </div>
   </div>
 
@@ -5354,7 +5354,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.89</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.90</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5384,8 +5384,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.89</span></div>
-            <div class="small">Додано надійний вибір тем на Android без залежності від браузерної події натискання.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.90</span></div>
+            <div class="small">Виправлено миттєве відкриття тем джойстиком на Android без необхідності затримувати палець.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5456,7 +5456,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.89";
+  const APP_VERSION = "1.90";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7959,7 +7959,13 @@
 
   function activateThemeGestureSelection() {
     const item = getThemeGestureItems()[themeGestureIndex];
-    if (item) item.click();
+    if (!item) return;
+    const action = item.dataset.action;
+    const id = item.dataset.id;
+    if (action === "open-theme-category") openThemeCategory(id);
+    else if (action === "choose-theme") chooseTheme(id);
+    else if (action === "choose-saved-custom-theme") applyNamedCustomTheme(id);
+    else item.click();
   }
 
   function selectNavigationItemFromPointer(target) {
@@ -8082,7 +8088,9 @@
       if (Math.abs(distance) > 10) themeGestureMoved = true;
       const nextIndex = Math.max(0, Math.min(getThemeGestureItems().length - 1,
         themeGestureDragStartIndex + Math.round(distance / 42)));
-      if (nextIndex !== themeGestureIndex) setThemeGestureSelection(nextIndex);
+      if (nextIndex !== themeGestureIndex) {
+        setThemeGestureSelection(nextIndex, isAndroidDevice ? "auto" : "smooth");
+      }
     });
 
     const finishGesture = event => {
