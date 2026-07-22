@@ -2491,27 +2491,21 @@
       gap: 8px;
     }
     .theme-designer-heading {
-      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       align-items: center;
       gap: 6px;
     }
     .theme-designer-heading strong {
+      grid-column: 1 / -1;
       font-size: 13px;
       line-height: 1.15;
+      text-align: center;
     }
-    @media (max-width: 350px) {
-      .theme-designer-heading {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-      .theme-designer-heading strong {
-        grid-column: 1 / -1;
-        text-align: center;
-      }
-      .theme-designer-heading button {
-        width: 100%;
-        padding-inline: 5px;
-        font-size: 11px;
-      }
+    .theme-designer-heading button {
+      width: 100%;
+      min-width: 0;
+      padding-inline: 5px;
+      font-size: 11px;
     }
     .theme-designer-toolbar button {
       min-height: 36px;
@@ -4601,7 +4595,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.84</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.85</span></div>
     </div>
   </div>
 
@@ -5341,7 +5335,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.84</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.85</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5371,8 +5365,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.84</span></div>
-            <div class="small">Конструктор тепер створює чисту копію поточної теми та дозволяє зберегти її під новою назвою у «Власному оформленні».</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.85</span></div>
+            <div class="small">Назву конструктора теми винесено в окремий верхній рядок, щоб кнопки більше не перекривали її на телефоні.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5443,7 +5437,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.84";
+  const APP_VERSION = "1.85";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
