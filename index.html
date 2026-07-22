@@ -2632,7 +2632,7 @@
       position: fixed;
       top: calc(var(--app-header-bottom, 68px) + var(--backup-edge-gap));
       right: 0;
-      bottom: calc(env(safe-area-inset-bottom) + var(--backup-edge-gap));
+      bottom: calc(var(--app-bottom-obstruction, env(safe-area-inset-bottom)) + var(--backup-edge-gap));
       left: 0;
       display: grid;
       width: 100%;
@@ -4099,7 +4099,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.73</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.74</span></div>
     </div>
   </div>
 
@@ -4775,7 +4775,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.73</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.74</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4795,8 +4795,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.73</span></div>
-        <div class="small">У найменуваннях додано окремий перегляд інформації, компактне редагування олівцем і видалення значком кошика.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.74</span></div>
+        <div class="small">Виправлено обрізання нижнього краю блока резервної копії: сторінка тепер враховує нижню панель навігації та безпечну область екрана.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4867,7 +4867,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.73";
+  const APP_VERSION = "1.74";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7601,6 +7601,7 @@
     if (swipeHint) swipeHint.classList.toggle("hidden", !hasParent || !swipeMode);
     document.body.classList.toggle("subpage-swipe-back", hasParent && swipeMode);
     document.body.classList.toggle("bottom-nav-visible", showBottomNav);
+    updateAppBottomObstructionMetric();
   }
 
   function navigateBack() {
@@ -7771,6 +7772,21 @@
 
   let backupFitFrame = 0;
   let backupFitObserver = null;
+  function updateAppBottomObstructionMetric() {
+    const nav = document.getElementById("appBottomNav");
+    const navIsVisible = nav && !nav.classList.contains("hidden");
+    if (!navIsVisible) {
+      document.documentElement.style.removeProperty("--app-bottom-obstruction");
+      fitBackupSection();
+      return;
+    }
+    const navTop = nav.getBoundingClientRect().top;
+    const viewportHeight = window.innerHeight;
+    const obstruction = Math.max(0, Math.ceil(viewportHeight - navTop));
+    document.documentElement.style.setProperty("--app-bottom-obstruction", `${obstruction}px`);
+    fitBackupSection();
+  }
+
   function fitBackupSection() {
     cancelAnimationFrame(backupFitFrame);
     backupFitFrame = requestAnimationFrame(() => {
@@ -7778,7 +7794,7 @@
       const section = document.getElementById("settingsBackupSection");
       if (!page || !section || page.classList.contains("hidden")) return;
       section.style.setProperty("--backup-fit-scale", "1");
-      const availableHeight = Math.max(1, page.clientHeight - 2);
+      const availableHeight = Math.max(1, page.clientHeight - 10);
       const naturalHeight = Math.max(1, section.offsetHeight);
       const scale = Math.min(1, availableHeight / naturalHeight);
       section.style.setProperty("--backup-fit-scale", scale.toFixed(4));
@@ -7786,16 +7802,18 @@
   }
 
   function initBackupSectionFit() {
-    window.addEventListener("resize", fitBackupSection, { passive: true });
+    window.addEventListener("resize", updateAppBottomObstructionMetric, { passive: true });
     if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", fitBackupSection, { passive: true });
+      window.visualViewport.addEventListener("resize", updateAppBottomObstructionMetric, { passive: true });
     }
     if ("ResizeObserver" in window) {
       const page = document.getElementById("pageBackup");
       const section = document.getElementById("settingsBackupSection");
-      backupFitObserver = new ResizeObserver(fitBackupSection);
+      const nav = document.getElementById("appBottomNav");
+      backupFitObserver = new ResizeObserver(updateAppBottomObstructionMetric);
       if (page) backupFitObserver.observe(page);
       if (section) backupFitObserver.observe(section);
+      if (nav) backupFitObserver.observe(nav);
     }
   }
 
