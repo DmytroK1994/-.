@@ -2616,13 +2616,18 @@
       position: fixed;
       top: 50%;
       left: 50%;
-      width: min(calc(100% - 32px), 420px);
+      display: flex;
+      width: max-content;
+      max-width: min(calc(100% - 40px), 420px);
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
       background: #16a34a;
       color: white;
-      padding: 12px 16px;
+      padding: 11px 18px 11px 12px;
       border: 1px solid var(--soft-success-border);
-      border-radius: 14px;
-      box-shadow: 0 14px 38px rgba(0, 0, 0, .24);
+      border-radius: 999px;
+      box-shadow: 0 16px 38px rgba(0, 0, 0, .26), 0 2px 8px rgba(0, 0, 0, .16);
       text-align: center;
       font-weight: 800;
       line-height: 1.35;
@@ -2638,6 +2643,23 @@
       visibility: visible;
       transform: translate(-50%, -50%) scale(1);
       transition-delay: 0s;
+    }
+    .toast::before {
+      content: "✓";
+      display: grid;
+      flex: 0 0 24px;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .22);
+      color: inherit;
+      font-size: 14px;
+      font-weight: 950;
+      line-height: 1;
+    }
+    .toast[data-kind="danger"]::before {
+      content: "!";
     }
     .success-check {
       position: fixed;
@@ -4627,7 +4649,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.92</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.93</span></div>
     </div>
   </div>
 
@@ -5367,7 +5389,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.92</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.93</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5397,8 +5419,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.92</span></div>
-            <div class="small">Посилено сенсорне керування темами на Android: короткий дотик джойстика обробляється без затримки.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.93</span></div>
+            <div class="small">Спливаючі повідомлення отримали окремий компактний дизайн плаваючої капсули.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5469,7 +5491,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.92";
+  const APP_VERSION = "1.93";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7557,6 +7579,7 @@
     el.style.background = danger ? "var(--soft-danger-bg)" : "var(--soft-success-bg)";
     el.style.borderColor = danger ? "var(--soft-danger-border)" : "var(--soft-success-border)";
     el.style.color = danger ? "var(--soft-danger-text)" : "var(--soft-success-text)";
+    el.dataset.kind = danger ? "danger" : "success";
     el.classList.add("show");
     toastTimer = window.setTimeout(() => el.classList.remove("show"), 1800);
   }
