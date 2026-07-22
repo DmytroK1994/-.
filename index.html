@@ -2476,6 +2476,24 @@
       color: var(--soft-action-text);
       box-shadow: none;
     }
+    #pageBackup {
+      position: relative;
+      min-height: calc(100dvh - env(safe-area-inset-top) - 100px);
+      overflow: hidden;
+    }
+    #settingsBackupSection {
+      position: fixed;
+      top: calc(50% + 4px);
+      left: 50%;
+      z-index: 8;
+      width: min(calc(100% - 28px), 640px);
+      max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 150px);
+      margin: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      transform: translate(-50%, -50%);
+    }
     .other-settings-stack {
       display: grid;
       gap: 12px;
@@ -3848,7 +3866,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.59</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.60</span></div>
     </div>
   </div>
 
@@ -4457,7 +4475,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.59</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.60</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4477,8 +4495,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.59</span></div>
-        <div class="small">Для бокового меню додано вибір лівого або правого розташування з повністю видимими пунктами біля вибраного краю.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.60</span></div>
+        <div class="small">Джойстик зберігає вибрану тему та позицію списку після зміни оформлення; блок резервної копії зафіксовано по центру.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4549,7 +4567,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.59";
+  const APP_VERSION = "1.60";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5440,6 +5458,11 @@
 
   function chooseTheme(theme) {
     if (!THEMES.includes(theme)) return;
+    const selectedGestureTheme = activeThemeCategory
+      ? document.querySelector("#themeOptionsList .theme-option-button.gesture-selected")?.dataset.id || ""
+      : "";
+    const categoryView = document.getElementById("themeCategoryView");
+    const previousCategoryScroll = categoryView?.scrollTop || 0;
     if (theme === "custom") {
       enterCustomThemeEditor();
       renderThemeCategories();
@@ -5449,6 +5472,15 @@
     customThemeEditorOpen = false;
     applyTheme(theme);
     renderThemeCategories();
+    if (selectedGestureTheme) {
+      requestAnimationFrame(() => {
+        const items = getThemeGestureItems();
+        const selectedIndex = items.findIndex(item => item.dataset.id === selectedGestureTheme);
+        const refreshedCategoryView = document.getElementById("themeCategoryView");
+        if (refreshedCategoryView) refreshedCategoryView.scrollTop = previousCategoryScroll;
+        if (selectedIndex >= 0) setThemeGestureSelection(selectedIndex, "auto");
+      });
+    }
     toast("Тему змінено");
   }
 
@@ -6751,7 +6783,7 @@
     return Array.from(document.querySelectorAll(selector)).filter(item => !item.classList.contains("hidden"));
   }
 
-  function setThemeGestureSelection(index) {
+  function setThemeGestureSelection(index, behavior = "smooth") {
     const items = getThemeGestureItems();
     if (!items.length) return;
     themeGestureIndex = Math.max(0, Math.min(items.length - 1, index));
@@ -6765,9 +6797,9 @@
         const wheelRect = wheel.getBoundingClientRect();
         const selectedRect = selected.getBoundingClientRect();
         if (selectedRect.top < wheelRect.top) {
-          wheel.scrollTo({ top: wheel.scrollTop + selectedRect.top - wheelRect.top - 6, behavior: "smooth" });
+          wheel.scrollTo({ top: wheel.scrollTop + selectedRect.top - wheelRect.top - 6, behavior });
         } else if (selectedRect.bottom > wheelRect.bottom) {
-          wheel.scrollTo({ top: wheel.scrollTop + selectedRect.bottom - wheelRect.bottom + 6, behavior: "smooth" });
+          wheel.scrollTo({ top: wheel.scrollTop + selectedRect.bottom - wheelRect.bottom + 6, behavior });
         }
       }
     }
