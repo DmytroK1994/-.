@@ -2499,11 +2499,8 @@
       position: relative;
       z-index: 8;
       width: min(100%, 640px);
-      max-height: 100%;
       margin: 0;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-width: thin;
+      overflow: visible;
     }
     .other-settings-stack {
       display: grid;
@@ -2566,6 +2563,39 @@
     .backup-file-name {
       margin: -2px 0 10px;
       overflow-wrap: anywhere;
+    }
+    @media (max-height: 700px) {
+      #pageBackup {
+        --backup-edge-gap: 10px;
+      }
+      #settingsBackupSection {
+        padding: 10px 12px;
+        border-radius: 16px;
+      }
+      #settingsBackupSection .small {
+        margin: 3px 0;
+        font-size: 11px;
+        line-height: 1.2;
+      }
+      #settingsBackupSection label {
+        margin: 5px 0 3px;
+        font-size: 11px;
+      }
+      #settingsBackupSection button {
+        min-height: 34px;
+        margin-top: 4px;
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+      #settingsBackupSection textarea {
+        height: clamp(62px, 12dvh, 86px);
+        min-height: 62px;
+        padding: 7px 8px;
+        font-size: 13px;
+      }
+      #settingsBackupSection .backup-file-name {
+        margin: 0 0 4px;
+      }
     }
     .custom-theme-panel {
       margin-top: 14px;
@@ -3918,7 +3948,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.67</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.68</span></div>
     </div>
   </div>
 
@@ -4557,7 +4587,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.67</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.68</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4577,8 +4607,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.67</span></div>
-        <div class="small">Свайп від правого краю вліво на головній сторінці налаштувань повертає до основного меню.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.68</span></div>
+        <div class="small">Блок резервної копії повністю нерухомий, не має внутрішнього прокручування й компактно підлаштовується під нижчі екрани.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4649,7 +4679,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.67";
+  const APP_VERSION = "1.68";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
