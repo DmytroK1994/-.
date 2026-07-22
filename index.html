@@ -3774,6 +3774,25 @@
     .about-card-primary .about-heading-row {
       margin-bottom: 8px;
     }
+    .about-card-illustration {
+      display: grid;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 2px 0 4px;
+      place-items: center;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .about-card-illustration img {
+      display: block;
+      width: min(58%, 220px);
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 16px color-mix(in srgb, var(--text) 18%, transparent));
+      user-select: none;
+      -webkit-user-drag: none;
+    }
     .about-card-primary .about-card-actions {
       margin-top: auto;
       padding-bottom: 20px;
@@ -3858,6 +3877,8 @@
       .about-card { padding: 11px 13px; }
       .about-card .about-lead,
       .about-card #demoModeStatus { font-size: 11px; line-height: 1.28; }
+      .about-card-illustration { padding-block: 0 2px; }
+      .about-card-illustration img { width: min(46%, 150px); }
       .about-card-actions { gap: 4px; margin-top: 5px; }
       .about-card-primary .about-card-actions { margin-top: auto; padding-bottom: 14px; }
       .about-card-actions button { min-height: 34px; padding: 6px 8px; font-size: 12px; }
@@ -4559,7 +4580,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.81</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.82</span></div>
     </div>
   </div>
 
@@ -5297,9 +5318,12 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.81</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.82</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
+          <div class="about-card-illustration" aria-hidden="true">
+            <img src="./assets/about-inventory-illustration.png" alt="">
+          </div>
           <div class="about-card-actions">
             <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
             <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -5324,8 +5348,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.81</span></div>
-            <div class="small">Посилено автоматичне припасування картки резервної копії та додатково ущільнено шапку поточного підрахунку.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.82</span></div>
+            <div class="small">У вільний центр першої картки «Про додаток» додано нейтральну ілюстрацію обліку, яка пасує до світлих і темних тем.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5396,7 +5420,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.81";
+  const APP_VERSION = "1.82";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";

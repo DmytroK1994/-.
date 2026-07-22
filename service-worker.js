@@ -1,11 +1,12 @@
-const CACHE_NAME = "oblik-zalyshkiv-v1-81";
+const CACHE_NAME = "oblik-zalyshkiv-v1-82";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  "./banner.png"
+  "./banner.png",
+  "./assets/about-inventory-illustration.png"
 ];
 
 self.addEventListener("install", event => {
