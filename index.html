@@ -2477,22 +2477,28 @@
       box-shadow: none;
     }
     #pageBackup {
-      position: relative;
-      min-height: calc(100dvh - env(safe-area-inset-top) - 100px);
+      --backup-edge-gap: 14px;
+      position: fixed;
+      top: calc(var(--app-header-bottom, 68px) + var(--backup-edge-gap));
+      right: 0;
+      bottom: calc(env(safe-area-inset-bottom) + var(--backup-edge-gap));
+      left: 0;
+      display: grid;
+      width: 100%;
+      min-height: 0;
+      padding-inline: var(--backup-edge-gap);
+      place-items: center;
       overflow: hidden;
     }
     #settingsBackupSection {
-      position: fixed;
-      top: calc(50% + 4px);
-      left: 50%;
+      position: relative;
       z-index: 8;
-      width: min(calc(100% - 28px), 640px);
-      max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 150px);
+      width: min(100%, 640px);
+      max-height: 100%;
       margin: 0;
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-width: thin;
-      transform: translate(-50%, -50%);
     }
     .other-settings-stack {
       display: grid;
@@ -3907,7 +3913,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.61</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.62</span></div>
     </div>
   </div>
 
@@ -4546,7 +4552,7 @@
     <div class="card">
       <div class="about-heading-row">
         <div>
-          <div class="about-version">Версія <span id="aboutVersionLabel">1.61</span></div>
+          <div class="about-version">Версія <span id="aboutVersionLabel">1.62</span></div>
         </div>
       </div>
       <p class="about-lead">
@@ -4566,8 +4572,8 @@
       </ul>
 
       <div class="whats-new-card">
-        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.61</span></div>
-        <div class="small">На сторінці поточного підрахунку можна окремо згортати секції «Піддони», «Поштучно», «Окрема кількість» і «Коментар». Вибраний вигляд зберігається після перезапуску.</div>
+        <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.62</span></div>
+        <div class="small">Блок резервної копії правильно відцентровано між шапкою та нижнім краєм екрана з однаковими відступами.</div>
       </div>
       <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
       <p class="small" id="demoModeStatus">Демонстраційний режим використовує окремі тестові дані та не змінює твої записи.</p>
@@ -4638,7 +4644,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.61";
+  const APP_VERSION = "1.62";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7416,6 +7422,25 @@
     applyEntrySectionState(state);
   }
 
+  function updateAppHeaderBottomMetric() {
+    const header = document.querySelector(".app-header");
+    if (!header) return;
+    const bottom = Math.max(0, Math.ceil(header.getBoundingClientRect().bottom));
+    document.documentElement.style.setProperty("--app-header-bottom", `${bottom}px`);
+  }
+
+  function initAppHeaderBottomMetric() {
+    updateAppHeaderBottomMetric();
+    window.addEventListener("resize", updateAppHeaderBottomMetric, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", updateAppHeaderBottomMetric, { passive: true });
+    }
+    if ("ResizeObserver" in window) {
+      const header = document.querySelector(".app-header");
+      if (header) new ResizeObserver(updateAppHeaderBottomMetric).observe(header);
+    }
+  }
+
   function canUsePageBackSwipe() {
     if (!PAGE_PARENTS[currentPage] || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
@@ -9238,6 +9263,7 @@
   renderThemeCategories();
   render();
   updatePageBackButton();
+  initAppHeaderBottomMetric();
   initAppKeyboardScrollRestore();
   initAppTopPosition();
   initGestureMenuPad();
