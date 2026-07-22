@@ -4614,7 +4614,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.88</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.89</span></div>
     </div>
   </div>
 
@@ -5354,7 +5354,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.88</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.89</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5384,8 +5384,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.88</span></div>
-            <div class="small">Виправлено вибір тем на Android: список більше не зміщується під пальцем до завершення прямого натискання.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.89</span></div>
+            <div class="small">Додано надійний вибір тем на Android без залежності від браузерної події натискання.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5456,7 +5456,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.88";
+  const APP_VERSION = "1.89";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6702,6 +6702,9 @@
   let themeGestureAxis = "";
   let themeGestureDragging = false;
   let themeGestureMoved = false;
+  let androidThemeTouch = null;
+  let androidThemeClickBlockId = "";
+  let androidThemeClickBlockUntil = 0;
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -7989,6 +7992,56 @@
       if (directThemeButton) return;
       selectNavigationItemFromPointer(event.target);
     }, true);
+  }
+
+  function initAndroidThemeDirectSelection() {
+    if (!isAndroidDevice) return;
+    const list = document.getElementById("themeOptionsList");
+    if (!list) return;
+
+    list.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" || event.isPrimary === false) return;
+      if (event.button !== undefined && event.button !== 0) return;
+      const button = event.target instanceof Element
+        ? event.target.closest(".theme-option-button[data-action='choose-theme']")
+        : null;
+      if (!button) return;
+      androidThemeTouch = {
+        pointerId: event.pointerId,
+        button,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false
+      };
+    });
+
+    document.addEventListener("pointermove", event => {
+      if (!androidThemeTouch || event.pointerId !== androidThemeTouch.pointerId) return;
+      const distance = Math.hypot(
+        event.clientX - androidThemeTouch.startX,
+        event.clientY - androidThemeTouch.startY
+      );
+      if (distance > 12) androidThemeTouch.moved = true;
+    }, true);
+
+    const finishAndroidThemeTouch = event => {
+      if (!androidThemeTouch || event.pointerId !== androidThemeTouch.pointerId) return;
+      const touch = androidThemeTouch;
+      androidThemeTouch = null;
+      if (event.type === "pointercancel" || touch.moved || !touch.button.isConnected) return;
+      const releasedButton = event.target instanceof Element
+        ? event.target.closest(".theme-option-button[data-action='choose-theme']")
+        : null;
+      if (releasedButton !== touch.button) return;
+      const theme = touch.button.dataset.id;
+      if (!theme) return;
+      androidThemeClickBlockId = theme;
+      androidThemeClickBlockUntil = Date.now() + 700;
+      chooseTheme(theme);
+    };
+
+    document.addEventListener("pointerup", finishAndroidThemeTouch, true);
+    document.addEventListener("pointercancel", finishAndroidThemeTouch, true);
   }
 
   function initThemeGesturePad() {
@@ -10440,7 +10493,14 @@
     if (action === "select-product") selectProduct(id);
     if (action === "select-quick-edit-entry") selectQuickEditEntry(id);
     if (action === "open-theme-category") openThemeCategory(id);
-    if (action === "choose-theme") chooseTheme(id);
+    if (action === "choose-theme") {
+      if (id === androidThemeClickBlockId && Date.now() < androidThemeClickBlockUntil) {
+        androidThemeClickBlockId = "";
+        androidThemeClickBlockUntil = 0;
+      } else {
+        chooseTheme(id);
+      }
+    }
     if (action === "toggle-favorite-theme") toggleFavoriteTheme(id);
     if (action === "choose-saved-custom-theme") applyNamedCustomTheme(id);
     if (action === "delete-saved-custom-theme") deleteNamedCustomTheme(id);
@@ -10782,6 +10842,7 @@
   initGestureMenuPad();
   initManagementGesturePad();
   initThemeGesturePad();
+  initAndroidThemeDirectSelection();
   initPointerNavigationSelection();
   initMenuSwipeGestures();
   initPageBackSwipe();
