@@ -4062,6 +4062,88 @@
       font-size: 11px;
       margin-bottom: 1px;
     }
+    .preview-sheet.order-preview-sheet {
+      overflow: hidden;
+    }
+    .preview-sheet.order-preview-sheet .preview-report-table,
+    .preview-sheet.order-preview-sheet #previewTodayList {
+      min-width: 0;
+      overflow: visible;
+    }
+    .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row,
+    .preview-sheet.order-preview-sheet .order-report-table .order-print-row {
+      grid-template-columns:
+        minmax(0, .4fr)
+        minmax(0, 1fr)
+        minmax(0, 1.75fr)
+        minmax(0, 1.05fr)
+        minmax(0, 3fr);
+    }
+    .preview-sheet.order-preview-sheet .order-report-table.order-long-names .print-table-header-row,
+    .preview-sheet.order-preview-sheet .order-report-table.order-long-names .order-print-row {
+      grid-template-columns:
+        minmax(0, .4fr)
+        minmax(0, .9fr)
+        minmax(0, 2.2fr)
+        minmax(0, 1fr)
+        minmax(0, 2.45fr);
+    }
+    .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row > div,
+    .preview-sheet.order-preview-sheet .order-report-table .order-print-row > div {
+      padding: 3px;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      hyphens: auto;
+      line-height: 1.12;
+    }
+    .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row > div {
+      display: flex;
+      min-height: 25px;
+      align-items: center;
+      font-weight: 800;
+    }
+    .preview-sheet.order-preview-sheet .order-status-badge {
+      max-width: 100%;
+      white-space: normal;
+    }
+    .preview-sheet.order-preview-sheet .order-warehouse-report-row {
+      padding: 4px 6px;
+      overflow-wrap: anywhere;
+    }
+    .preview-sheet.order-preview-sheet .order-document-footer {
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 420px) {
+      .preview-sheet.order-preview-sheet {
+        padding: 8px;
+      }
+      .preview-sheet.order-preview-sheet .preview-report-title.order-document-title {
+        margin-bottom: 7px;
+        font-size: 15px;
+      }
+      .preview-sheet.order-preview-sheet .preview-report-table {
+        font-size: 7.5px;
+      }
+      .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row > div,
+      .preview-sheet.order-preview-sheet .order-report-table .order-print-row > div {
+        padding: 2px;
+      }
+      .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row > div {
+        min-height: 21px;
+      }
+      .preview-sheet.order-preview-sheet .order-document-footer {
+        margin-top: 10px;
+        padding-top: 7px;
+        font-size: 8px;
+      }
+      .preview-sheet.order-preview-sheet .order-document-signatures {
+        gap: 10px;
+      }
+      .preview-sheet.order-preview-sheet .order-signature-line {
+        min-width: 54px;
+      }
+    }
     .about-heading-row {
       display: flex;
       align-items: flex-start;
@@ -5980,6 +6062,7 @@
         gap: 7px;
       }
       .desktop-order-destination strong {
+        color: var(--text);
         white-space: nowrap;
       }
       #desktopOrderWarehouseSelect {
@@ -5987,15 +6070,25 @@
         min-height: 38px;
         margin: 0;
         padding-block: 6px;
+        border: 1px solid var(--field-border, var(--border-strong));
+        background-color: var(--field-bg, var(--surface-strong)) !important;
+        color: var(--field-text, var(--text)) !important;
+        -webkit-text-fill-color: var(--field-text, var(--text));
         font-weight: 800;
         text-align: center;
+      }
+      #desktopOrderWarehouseSelect option {
+        background: var(--field-bg, var(--surface-strong));
+        color: var(--field-text, var(--text));
       }
       #desktopManageWarehousesBtn {
         width: auto;
         min-height: 36px;
         margin: 0;
         padding: 6px 10px;
-        color: var(--muted);
+        border-color: var(--field-border, var(--border-strong));
+        background: var(--field-bg, var(--surface-strong));
+        color: var(--field-text, var(--text));
         font-size: 12px;
       }
       body.workspace-orders.order-entry-dialog-mode #pageToday .entry-form-heading-row {
@@ -6156,7 +6249,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.20</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.22</span></div>
     </div>
   </div>
 
@@ -6218,7 +6311,7 @@
           <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
         </div>
       </div>
-      <button type="button" class="header-about-version hidden" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.20</span></button>
+      <button type="button" class="header-about-version hidden" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.22</span></button>
       <div class="compact-header-spacer" aria-hidden="true"></div>
     </div>
   </div>
@@ -7081,6 +7174,20 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 2.22</h3>
+          <ul>
+            <li>виправлено макет попереднього перегляду замовлення;</li>
+            <li>узгоджено пропорції колонок із друкованим документом та прибрано обрізання тексту за межами аркуша;</li>
+            <li>окремо адаптовано заголовки, коментарі й підписи для вузького екрана телефона.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.21</h3>
+          <ul>
+            <li>виправлено контраст назви вибраного складу та кнопки керування складами у комп’ютерній версії замовлень.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
           <h3>Версія 2.20</h3>
           <ul>
             <li>номер версії перенесено в праву частину шапки сторінки «Про додаток»;</li>
@@ -7336,7 +7443,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.20";
+  const APP_VERSION = "2.22";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13515,10 +13622,12 @@
     const hasLongNames = orders && longestNameLength > 36;
     const printTable = document.querySelector(".print-report-table");
     const previewTable = document.getElementById("previewReportTable");
+    const previewSheet = document.querySelector("#documentPreview .preview-sheet");
     [printTable, previewTable].forEach(table => {
       table?.classList.toggle("order-report-table", orders);
       table?.classList.toggle("order-long-names", hasLongNames);
     });
+    previewSheet?.classList.toggle("order-preview-sheet", orders);
     document.getElementById("printReportTitle")?.classList.toggle("order-document-title", orders);
     document.getElementById("previewReportTitle")?.classList.toggle("order-document-title", orders);
     ["printOrderMeta", "previewOrderMeta"].forEach(id => {
