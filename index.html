@@ -5655,7 +5655,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.14</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.15</span></div>
     </div>
   </div>
 
@@ -6526,7 +6526,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.14</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.15</span></div>
           </div>
           <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -6556,8 +6556,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.14</span></div>
-            <div class="small">Комп’ютерне меню знову відкривається й закривається, робоча сторінка стала послідовною, друк у браузері використовує повну A4-розмітку, а в інших налаштуваннях додано джойстик.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.15</span></div>
+            <div class="small">Закриття меню свайпом, кнопкою або натисканням поза панеллю тепер завжди повертає на поточну головну сторінку — інвентаризацію або замовлення.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6660,7 +6660,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.14";
+  const APP_VERSION = "2.15";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10008,6 +10008,7 @@
           drawerBg.classList.remove("open");
           document.body.classList.remove("drawer-open");
           getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
+          if (drawerWasOpen) returnToWorkspaceHome();
         } else if (!drawerWasOpen) {
           initializeGestureMenuSelection();
         }
@@ -10092,6 +10093,7 @@
           horizontalSwipe = false;
           closeSwipeDirection = "";
           closeMenuImmediately();
+          returnToWorkspaceHome();
         }
         return;
       }
@@ -10266,6 +10268,16 @@
       drawer.classList.remove("no-transition");
       drawerBg.classList.remove("no-transition");
     });
+  }
+
+  function returnToWorkspaceHome() {
+    if (currentPage === "today") return;
+    showPage("today", { fromBack: true });
+  }
+
+  function dismissMenuToHome() {
+    closeMenu();
+    returnToWorkspaceHome();
   }
 
   function hasPageBackDestination(page = currentPage) {
@@ -12835,8 +12847,8 @@
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
   });
-  document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
-  document.getElementById("drawerBg").addEventListener("click", closeMenu);
+  document.getElementById("closeMenuBtn").addEventListener("click", dismissMenuToHome);
+  document.getElementById("drawerBg").addEventListener("click", dismissMenuToHome);
   document.getElementById("bottomBackBtn").addEventListener("click", navigateBottomBack);
   document.getElementById("bottomHomeBtn").addEventListener("click", () => showPage("today", { fromBack: true }));
   document.getElementById("bottomMenuBtn").addEventListener("click", openMenu);
@@ -13159,6 +13171,11 @@
 
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
+
+    if (document.getElementById("drawer").classList.contains("open")) {
+      dismissMenuToHome();
+      return;
+    }
 
     if (!document.getElementById("appDialogOverlay").classList.contains("hidden")) {
       closeAppDialog(false);
