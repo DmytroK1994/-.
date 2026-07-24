@@ -5041,6 +5041,338 @@
       }
       body.workspace-orders .order-warehouse-dropdown summary::after { top:8px; }
     }
+    /*
+      Комп'ютерний інтерфейс.
+      Він вмикається лише для пристрою з точною мишкою, тому не змінює
+      мобільний вигляд, сенсорні жести або розміри елементів на телефоні.
+    */
+    .desktop-sidebar-title,
+    .desktop-back-btn {
+      display: none;
+    }
+    @media (min-width: 760px) and (hover: hover) and (pointer: fine) {
+      :root {
+        --desktop-sidebar-width: 224px;
+        --desktop-header-height: 70px;
+        --desktop-content-gap: 22px;
+      }
+      html {
+        scroll-padding-top: calc(var(--desktop-header-height) + 18px);
+      }
+      body,
+      body.page-today,
+      body:not(.page-today),
+      body.subpage-swipe-back,
+      body.bottom-nav-visible {
+        min-width: 760px;
+        padding:
+          calc(var(--desktop-header-height) + 18px)
+          24px
+          32px
+          calc(var(--desktop-sidebar-width) + 24px);
+      }
+      .app-header,
+      body.page-today .app-header,
+      body:not(.page-today) .app-header {
+        left: var(--desktop-sidebar-width);
+        min-height: var(--desktop-header-height);
+        padding: 10px 24px;
+        overflow: visible;
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        box-shadow: 0 8px 24px var(--header-shadow);
+      }
+      body.page-today .topbar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        width: 100%;
+        margin: 0;
+      }
+      body.page-today .workspace-switcher {
+        justify-self: start;
+        text-align: left;
+      }
+      body.page-today .workspace-switcher-button {
+        justify-content: flex-start;
+        min-height: 46px;
+        padding-inline: 14px;
+        font-size: 22px;
+      }
+      body.page-today #newDayBtn {
+        width: 46px;
+        height: 46px;
+      }
+      body.page-today .date-line {
+        position: absolute;
+        top: 37px;
+        left: 39px;
+        width: auto;
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: left;
+        pointer-events: none;
+      }
+      body.page-today .compact-header-row {
+        display: none;
+      }
+      body:not(.page-today) .compact-header-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        min-height: 49px;
+        gap: 16px;
+      }
+      body:not(.page-today) .compact-header-content {
+        text-align: left;
+      }
+      body:not(.page-today) .section-header-title {
+        font-size: 22px;
+        text-align: left;
+      }
+      body:not(.page-today) .compact-header-hints,
+      body:not(.page-today) .compact-menu-btn,
+      body:not(.page-today) .compact-header-spacer {
+        display: none;
+      }
+      body:not(.page-today) .desktop-back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        min-width: 92px;
+        min-height: 40px;
+        margin: 0;
+        padding: 8px 14px;
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        background: var(--surface-strong);
+        color: var(--text);
+        box-shadow: none;
+      }
+      #openMenuBtn,
+      #compactMenuBtn,
+      .drawer-close-btn,
+      .drawer-bg,
+      .drawer-gesture-pad,
+      .management-gesture-pad,
+      .theme-gesture-pad,
+      .menu-swipe-hint,
+      .menu-more-indicator,
+      #appBottomNav {
+        display: none !important;
+      }
+      .drawer {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 105;
+        display: flex;
+        width: var(--desktop-sidebar-width);
+        height: 100vh;
+        min-height: 100vh;
+        padding: 22px 16px;
+        overflow: hidden;
+        border: 0;
+        border-right: 1px solid var(--border);
+        background: var(--surface-deep);
+        box-shadow: 8px 0 26px rgba(0, 0, 0, .12);
+        transform: none !important;
+        transition: none;
+      }
+      .drawer-menu-content {
+        display: flex;
+        width: 100%;
+        min-height: 0;
+        flex-direction: column;
+        overflow-y: auto;
+        padding-bottom: 0;
+        pointer-events: auto;
+        scrollbar-width: thin;
+      }
+      .menu-header {
+        position: static;
+        display: block;
+        min-height: 0;
+        margin: 0 0 28px;
+        padding: 0 4px 18px;
+        border-bottom: 1px solid var(--border);
+        outline: 0;
+        background: transparent;
+        color: var(--text);
+        text-align: left;
+      }
+      .mobile-menu-title {
+        display: none;
+      }
+      .desktop-sidebar-title {
+        display: block;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: -.25px;
+      }
+      .desktop-sidebar-title::after {
+        content: "Робоча панель";
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: .2px;
+      }
+      .menu-wheel {
+        display: grid;
+        position: static;
+        inset: auto;
+        width: 100% !important;
+        max-width: none;
+        max-height: none;
+        gap: 10px;
+        align-content: start;
+        overflow: visible;
+        padding: 0;
+        transform: none !important;
+      }
+      .drawer .menu-btn,
+      html.menu-style-game .drawer .menu-btn {
+        width: 100%;
+        max-width: none;
+        min-height: 44px !important;
+        margin: 0;
+        padding: 9px 13px !important;
+        border-radius: 12px;
+        text-align: left;
+        transform: none;
+        white-space: normal;
+        box-shadow: 3px 3px 0 var(--border);
+      }
+      html.menu-style-game .drawer .menu-btn::after,
+      .drawer .menu-btn.gesture-selected::before,
+      .drawer .menu-btn.gesture-selected::after {
+        display: none;
+      }
+      .drawer .menu-btn:hover,
+      .drawer .menu-btn.active {
+        border-color: var(--selection-border);
+        background: var(--selection-bg);
+        color: var(--selection-text);
+        box-shadow: 3px 3px 0 var(--selection-border);
+      }
+      #pageToday,
+      #pageHistory,
+      #pageManagement,
+      #pageProducts,
+      #pageThemes,
+      #pageBackup,
+      #pageTrash,
+      #pageOtherSettings,
+      #pageInstall,
+      #pageAbout {
+        width: 100%;
+        max-width: 1440px;
+        margin-inline: auto;
+      }
+      .card {
+        box-shadow: 0 10px 28px var(--card-shadow);
+      }
+      #pageManagement,
+      #historyNavigation {
+        min-height: calc(100vh - var(--desktop-header-height) - 56px);
+      }
+      #pageManagement .management-shell,
+      #historyNavigation .management-shell {
+        display: grid;
+        align-content: center;
+        width: min(100%, 720px);
+        min-height: inherit;
+        margin-inline: auto;
+      }
+      #pageManagement .management-options,
+      #historyNavigation .management-options {
+        position: static;
+        inset: auto;
+        width: min(100%, 620px) !important;
+        max-width: 620px;
+        max-height: none;
+        overflow: visible;
+        padding: 8px 4px 14px;
+        transform: none !important;
+      }
+      .product-list-search-card,
+      body:not(.page-today):not(.subpage-swipe-back) .product-list-search-card,
+      .current-list-search-card,
+      body.page-today .current-list-search-card {
+        top: calc(var(--desktop-header-height) + 14px);
+      }
+      #productsList {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+        gap: 14px;
+        align-items: start;
+      }
+      #productsList .item {
+        height: 100%;
+        margin: 0;
+      }
+      #pageHistory #historyRecordsView > .card {
+        max-width: 1180px;
+        margin-inline: auto;
+      }
+      #pageBackup,
+      #pageAbout,
+      #pageInstall {
+        max-width: 980px;
+      }
+      .quick-edit-dialog,
+      .product-add-dialog,
+      .warehouse-manager-dialog,
+      .app-dialog {
+        max-width: 640px;
+      }
+    }
+    @media (min-width: 1180px) and (hover: hover) and (pointer: fine) {
+      #pageToday {
+        display: grid;
+        grid-template-columns: minmax(350px, 430px) minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 16px var(--desktop-content-gap);
+        align-items: start;
+      }
+      #pageToday > .print-only {
+        display: none;
+      }
+      #pageToday .entry-form-card {
+        position: sticky;
+        top: calc(var(--desktop-header-height) + 18px);
+        grid-column: 1;
+        grid-row: 1 / span 3;
+        max-height: calc(100vh - var(--desktop-header-height) - 36px);
+        margin: 0;
+        overflow: auto;
+        scrollbar-width: thin;
+      }
+      #pageToday .document-actions-card {
+        display: grid;
+        grid-column: 2;
+        grid-row: 1;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0;
+      }
+      #pageToday .document-actions-card button {
+        min-height: 46px;
+        margin: 0;
+      }
+      #pageToday .current-list-search-card {
+        grid-column: 2;
+        grid-row: 2;
+        margin: 0;
+      }
+      #pageToday #todayList {
+        grid-column: 2;
+        grid-row: 3;
+        min-width: 0;
+      }
+    }
   </style>
 
 <link rel="manifest" href="manifest.json">
@@ -5081,7 +5413,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.10</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.11</span></div>
     </div>
   </div>
 
@@ -5089,7 +5421,10 @@
   <aside class="drawer" id="drawer">
     <div class="drawer-menu-content">
       <div class="menu-header">
-        <div class="menu-title">Меню</div>
+        <div class="menu-title">
+          <span class="mobile-menu-title">Меню</span>
+          <span class="desktop-sidebar-title">Облік залишків</span>
+        </div>
         <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
       </div>
       <p class="menu-swipe-hint">Свайпни вліво або вправо, щоб закрити меню</p>
@@ -5132,6 +5467,7 @@
     <div class="date-line" id="activeDateLabel"></div>
     <div class="compact-header-row">
       <button class="compact-menu-btn" id="compactMenuBtn">Меню</button>
+      <button class="desktop-back-btn" id="desktopBackBtn" type="button"><span aria-hidden="true">←</span>&nbsp; Назад</button>
       <div class="compact-header-content">
         <div class="section-header-title" id="sectionHeaderTitle"></div>
         <div class="compact-header-hints">
@@ -5319,7 +5655,7 @@
       <button class="secondary" id="cancelEditBtn">Очистити / скасувати</button>
     </div>
 
-    <div class="card no-print">
+    <div class="card no-print document-actions-card">
       <button id="previewDocumentBtn">Попередній перегляд документа</button>
       <button id="printBtn">Друк / PDF</button>
     </div>
@@ -5885,9 +6221,9 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.10</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.11</span></div>
           </div>
-          <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
+          <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
             <img src="./assets/about-inventory-illustration.png" alt="">
           </div>
@@ -5915,8 +6251,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.10</span></div>
-            <div class="small">Пошук у замовленні працює одночасно по всіх складах без зайвого перемальовування, а весь заголовок складу став активною зоною згортання.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.11</span></div>
+            <div class="small">Додано окремий комп’ютерний інтерфейс: постійне бокове меню, широка робоча область і зручне двоколонкове розташування без змін мобільної версії.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6019,7 +6355,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.10";
+  const APP_VERSION = "2.11";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9559,6 +9895,19 @@
     showPage("today", { fromBack: true });
   }
 
+  function navigateDesktopBack() {
+    if (currentPage === "themes" && activeThemeCategory) {
+      closeThemeCategory();
+      return;
+    }
+    const parentPage = PAGE_PARENTS[currentPage];
+    if (parentPage) {
+      showPage(parentPage, { fromBack: true });
+      return;
+    }
+    showPage("today", { fromBack: true });
+  }
+
   function getBackNavigationPreference() {
     try {
       const saved = localStorage.getItem(BACK_NAV_KEY) || "auto";
@@ -12032,6 +12381,7 @@
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("compactMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("desktopBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("workspaceSwitcherBtn").addEventListener("click", event => {
     event.stopPropagation();
     toggleWorkspaceDropdown();
