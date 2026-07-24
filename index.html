@@ -969,6 +969,10 @@
       color: var(--soft-success-text);
       box-shadow: none;
     }
+    #saveEntryBtn.keyboard-action-replaced {
+      visibility: hidden;
+      pointer-events: none;
+    }
     #previewDocumentBtn {
       border: 1px solid var(--primary-bg);
       background: var(--primary-bg);
@@ -4879,30 +4883,30 @@
       display:grid;
       width:100%;
       max-width:100%;
-      grid-template-columns:6% 13% 28% 14% 39%;
+      grid-template-columns:5% 13% 24% 13% 45%;
     }
     .order-report-table.order-long-names .print-table-header-row,
     .order-report-table.order-long-names .preview-table-header-row,
     .order-report-table.order-long-names .order-print-row {
-      grid-template-columns:6% 12% 33% 13% 36%;
+      grid-template-columns:5% 12% 30% 12% 41%;
     }
     .order-print-row { border:1px solid #aaa; break-inside:avoid; page-break-inside:avoid; }
     .order-report-table .print-table-header-row > div,
     .order-report-table .preview-table-header-row > div,
     .order-print-row > div {
       min-width:0;
-      padding:6px 5px;
+      padding:4px;
       border-right:1px solid #aaa;
       border-bottom:1px solid #aaa;
       overflow-wrap:anywhere;
       word-break:normal;
       white-space:normal;
-      line-height:1.2;
+      line-height:1.15;
     }
     .order-report-table .print-table-header-row > div:last-child,
     .order-report-table .preview-table-header-row > div:last-child,
     .order-print-row > div:last-child { border-left:0; border-right:0; text-align:left; }
-    .order-warehouse-report-row { padding:7px 8px; border:1px solid #999; border-bottom:0; background:#ececec; color:#111; font-weight:800; text-align:left; break-inside:avoid; page-break-inside:avoid; }
+    .order-warehouse-report-row { padding:5px 7px; border:1px solid #999; border-bottom:0; background:#ececec; color:#111; font-weight:800; text-align:left; break-inside:avoid; page-break-inside:avoid; }
     .print-report-header h1.order-document-title,
     .preview-report-title.order-document-title {
       width:100%;
@@ -4913,7 +4917,7 @@
       text-align:center;
       text-transform:uppercase;
     }
-    .order-status-badge { display:inline-block; font-weight:750; }
+    .order-status-badge { display:inline-block; font-weight:750; white-space:nowrap; }
     .order-print-row.order-status-important {
       background:#e8f1ff;
     }
@@ -4964,11 +4968,16 @@
     @media print {
       .order-report-table .print-table-header-row,
       .order-report-table .order-print-row {
-        grid-template-columns:8mm 24mm minmax(42mm,1.25fr) 25mm minmax(60mm,1.8fr);
+        grid-template-columns:7mm 20mm minmax(38mm,1fr) 22mm minmax(78mm,2.1fr);
       }
       .order-report-table.order-long-names .print-table-header-row,
       .order-report-table.order-long-names .order-print-row {
-        grid-template-columns:8mm 22mm minmax(50mm,1.45fr) 23mm minmax(52mm,1.55fr);
+        grid-template-columns:7mm 20mm minmax(48mm,1.2fr) 22mm minmax(68mm,1.8fr);
+      }
+      .order-report-table .print-table-header-row > div,
+      .order-report-table .order-print-row > div {
+        padding:3px;
+        line-height:1.1;
       }
     }
     @media (max-width:600px) {
@@ -5039,7 +5048,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.07</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.08</span></div>
     </div>
   </div>
 
@@ -5825,7 +5834,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.07</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.08</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5855,8 +5864,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.07</span></div>
-            <div class="small">Позиції поточного замовлення тепер розділені за складами на окремі списки, які можна згортати й розгортати.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.08</span></div>
+            <div class="small">Кнопка над клавіатурою більше не дублює основну, а в PDF кожен склад має власний компактний заголовок таблиці.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5959,7 +5968,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.07";
+  const APP_VERSION = "2.08";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7300,6 +7309,7 @@
   function updateKeyboardEntryAction() {
     const button = document.getElementById("keyboardSaveEntryBtn");
     if (!button) return;
+    const normalButton = document.getElementById("saveEntryBtn");
     const viewport = window.visualViewport;
     const keyboardInset = viewport
       ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
@@ -7312,6 +7322,7 @@
       && !document.getElementById("pageToday").classList.contains("hidden");
     button.textContent = document.getElementById("saveEntryBtn")?.textContent || "Додати";
     button.classList.toggle("hidden", !shouldShow);
+    normalButton?.classList.toggle("keyboard-action-replaced", shouldShow);
   }
 
   function initKeyboardEntryAction() {
@@ -7322,6 +7333,7 @@
       const activeField = document.activeElement;
       if (isAppKeyboardField(activeField)) activeField.blur();
       button.classList.add("hidden");
+      document.getElementById("saveEntryBtn")?.classList.remove("keyboard-action-replaced");
       saveEntry();
       scheduleKeyboardScrollRestore();
     });
@@ -11227,6 +11239,15 @@
   }
 
   function buildOrderDocumentRows(order) {
+    const columnHeader = `
+      <div class="print-table-header-row order-warehouse-column-header">
+        <div>№</div>
+        <div>Статус</div>
+        <div>Найменування</div>
+        <div>Кількість</div>
+        <div>Коментар</div>
+      </div>
+    `;
     const footer = `
       <div class="order-document-footer">
         <div class="order-document-notes"><strong>Примітки:</strong>${order.notes ? ` ${escapeHtml(order.notes)}` : ""}</div>
@@ -11247,8 +11268,8 @@
       }
       warehouseGroups.get(key).entries.push(entry);
     });
-    let index = 0;
     const orderRows = Array.from(warehouseGroups.values()).map(group => {
+      let index = 0;
       const rows = group.entries.map(entry => {
         index += 1;
         const commentParts = [];
@@ -11264,10 +11285,12 @@
           </div>
         `;
       }).join("");
-      const warehouseHeading = group.name && group.name !== "Без складу"
-        ? `<div class="order-warehouse-report-row">Склад: ${escapeHtml(group.name)}</div>`
-        : "";
-      return `${warehouseHeading}${rows}`;
+      const warehouseHeading = `<div class="order-warehouse-report-row">${
+        group.name && group.name !== "Без складу"
+          ? `Склад: ${escapeHtml(group.name)}`
+          : "Без складу"
+      }</div>`;
+      return `${warehouseHeading}${columnHeader}${rows}`;
     }).join("");
     return `${orderRows}${footer}`;
   }
@@ -11279,6 +11302,8 @@
     const headerHtml = headers.map(header => `<div>${header}</div>`).join("");
     document.getElementById("printTableHeaderRow").innerHTML = headerHtml;
     document.getElementById("previewTableHeaderRow").innerHTML = headerHtml;
+    document.getElementById("printTableHeaderRow").classList.toggle("hidden", orders);
+    document.getElementById("previewTableHeaderRow").classList.toggle("hidden", orders);
     const longestNameLength = orders
       ? documentData.entries.reduce((max, entry) => Math.max(max, String(entry.productName || "").length), 0)
       : 0;
