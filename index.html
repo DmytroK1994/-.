@@ -5188,6 +5188,87 @@
     .warehouse-manager-list { display:grid; gap:8px; margin:14px 0; }
     .warehouse-manager-row, .warehouse-add-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
     .warehouse-add-row { margin-top:12px; }
+    .desktop-order-toolbar {
+      display: none;
+    }
+    .order-entry-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1320;
+      display: grid;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      place-items: center;
+      background: var(--overlay);
+    }
+    .order-entry-dialog {
+      width: min(100%, 560px);
+      max-height: min(88dvh, 720px);
+      overflow: auto;
+      padding: 19px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: 0 24px 70px var(--popover-shadow);
+    }
+    .order-entry-dialog-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .order-entry-dialog-header h2 {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+    .order-entry-dialog-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px 10px;
+    }
+    .order-entry-dialog-grid .order-entry-comment-field {
+      grid-column: 1 / -1;
+    }
+    .order-entry-dialog-grid label {
+      margin-top: 0;
+    }
+    .order-entry-dialog-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 13px;
+    }
+    .order-entry-dialog-actions button {
+      margin: 0;
+    }
+    .combo-option.keyboard-active {
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text) !important;
+      outline: 2px solid var(--selection-outline);
+      outline-offset: -2px;
+    }
+    body.workspace-orders.order-entry-dialog-mode .entry-form-card > .entry-collapsible-section,
+    body.workspace-orders.order-entry-dialog-mode .entry-form-card > #selectedProductLabel,
+    body.workspace-orders.order-entry-dialog-mode .entry-form-card > #saveEntryBtn,
+    body.workspace-orders.order-entry-dialog-mode .entry-form-card > #cancelEditBtn {
+      display: none !important;
+    }
+    body.workspace-orders.order-entry-dialog-mode .entry-form-card {
+      padding-bottom: 14px;
+    }
+    body.workspace-orders.order-entry-dialog-mode .entry-product-search-block > label {
+      margin-top: 0;
+    }
+    @media (max-width: 420px) {
+      .order-entry-dialog-grid {
+        grid-template-columns: 1fr;
+      }
+      .order-entry-dialog-grid .order-entry-comment-field {
+        grid-column: auto;
+      }
+    }
     .order-report-meta { display:grid; gap:3px; margin:0 0 10px; font-size:12px; text-align:left; }
     .order-report-table .print-table-header-row,
     .order-report-table .preview-table-header-row,
@@ -5783,6 +5864,65 @@
       #pageToday #todayList {
         min-width: 0;
       }
+      body.workspace-orders.order-entry-dialog-mode #pageToday .desktop-order-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 12px;
+        padding: 10px 12px;
+      }
+      .desktop-order-document-actions {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+      }
+      .desktop-order-document-actions button {
+        width: auto;
+        min-height: 38px;
+        margin: 0;
+        padding: 7px 13px;
+        font-size: 13px;
+      }
+      .desktop-order-destination {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+      }
+      .desktop-order-destination strong {
+        white-space: nowrap;
+      }
+      #desktopOrderWarehouseSelect {
+        width: min(280px, 36vw);
+        min-height: 38px;
+        margin: 0;
+        padding-block: 6px;
+        font-weight: 800;
+        text-align: center;
+      }
+      #desktopManageWarehousesBtn {
+        width: auto;
+        min-height: 36px;
+        margin: 0;
+        padding: 6px 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      body.workspace-orders.order-entry-dialog-mode #pageToday .entry-form-heading-row {
+        display: none;
+      }
+      body.workspace-orders.order-entry-dialog-mode #pageToday .entry-form-card {
+        padding: 13px 15px;
+      }
+      body.workspace-orders.order-entry-dialog-mode #pageToday .document-actions-card {
+        display: none;
+      }
+      body.workspace-orders.order-entry-dialog-mode #pageToday .entry-product-search-block {
+        max-width: 760px;
+        margin-inline: auto;
+      }
       #historyNavigation .management-shell {
         width: min(100%, 500px);
       }
@@ -5899,7 +6039,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.18</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.19</span></div>
     </div>
   </div>
 
@@ -6018,6 +6158,18 @@
       <div class="order-report-meta hidden" id="printOrderMeta"></div>
     </div>
 
+    <div class="card no-print desktop-order-toolbar" id="desktopOrderToolbar">
+      <div class="desktop-order-document-actions">
+        <button type="button" id="desktopOrderPreviewBtn">Попередній перегляд</button>
+        <button type="button" id="desktopOrderPrintBtn">Друк / PDF</button>
+      </div>
+      <div class="desktop-order-destination">
+        <strong>Замовлення на:</strong>
+        <select id="desktopOrderWarehouseSelect" aria-label="Склад замовлення"></select>
+        <button type="button" class="secondary" id="desktopManageWarehousesBtn">Склади</button>
+      </div>
+    </div>
+
     <div class="card no-print entry-form-card">
       <div class="entry-form-heading-row">
         <h2 id="formTitle">Додати до підрахунку</h2>
@@ -6035,11 +6187,13 @@
 
       <input type="hidden" id="editingEntryId" />
 
-      <label>Пошук позиції</label>
-      <div class="combo-wrap">
-        <input id="productSearch" placeholder="Почни вводити назву: молоко, какао, жир..." autocomplete="off" />
-        <button type="button" id="clearProductSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
-        <div id="productSearchResults" class="combo-list hidden"></div>
+      <div class="entry-product-search-block">
+        <label>Пошук позиції</label>
+        <div class="combo-wrap">
+          <input id="productSearch" placeholder="Почни вводити назву: молоко, какао, жир..." autocomplete="off" />
+          <button type="button" id="clearProductSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
+          <div id="productSearchResults" class="combo-list hidden"></div>
+        </div>
       </div>
 
       <select id="productSelect" class="hidden-select"></select>
@@ -6733,6 +6887,12 @@
           <option value="visible">Показувати</option>
         </select>
         <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
+        <label for="orderEntryModeSelect">Додавання позицій у замовленнях на телефоні</label>
+        <select id="orderEntryModeSelect">
+          <option value="classic">Поточна розгорнута форма</option>
+          <option value="dialog">Компактний пошук і окреме вікно</option>
+        </select>
+        <p class="small" id="orderEntryModeDescription">На комп’ютері завжди використовується компактний пошук і окреме вікно. Це налаштування змінює лише телефонну версію.</p>
       </section>
     </div>
   </div>
@@ -6775,7 +6935,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.18</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.19</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік залишків</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -6800,6 +6960,16 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.19</h3>
+          <ul>
+            <li>комп’ютерний екран замовлень переведено на компактний сценарій із пошуком та окремим вікном додавання;</li>
+            <li>попередній перегляд, друк і вибір складу об’єднано у верхній панелі;</li>
+            <li>додано керування пошуком стрілками клавіатури та вибір клавішею Enter;</li>
+            <li>додано кількість, одиницю виміру, коментар, терміновість і дату потреби в одному вікні;</li>
+            <li>на телефоні можна вибирати між старою розгорнутою та новою компактною формою.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.18</h3>
           <ul>
@@ -6948,6 +7118,10 @@
             <option value="critical">Критично</option>
           </select>
         </div>
+        <div>
+          <label for="quickEditNeedDate">Дата потреби</label>
+          <input id="quickEditNeedDate" type="date" />
+        </div>
       </div>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
@@ -6972,6 +7146,61 @@
     </div>
   </div>
 
+  <div class="order-entry-overlay hidden" id="orderEntryOverlay" role="dialog" aria-modal="true" aria-labelledby="orderEntryDialogTitle">
+    <div class="order-entry-dialog">
+      <div class="order-entry-dialog-header">
+        <div>
+          <div class="small">Додати в замовлення</div>
+          <h2 id="orderEntryDialogTitle">Найменування</h2>
+        </div>
+        <button type="button" class="dialog-icon-close" id="closeOrderEntryDialogBtn" aria-label="Закрити">×</button>
+      </div>
+      <input type="hidden" id="orderEntryProductId" />
+      <div class="order-entry-dialog-grid">
+        <div>
+          <label for="orderEntryQuantity">Кількість</label>
+          <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+        </div>
+        <div>
+          <label for="orderEntryUnit">Одиниця виміру</label>
+          <select id="orderEntryUnit">
+            <option value="kg">Кілограми (кг)</option>
+            <option value="g">Грами (г)</option>
+            <option value="t">Тонни (т)</option>
+            <option value="pcs">Штуки (шт)</option>
+            <option value="boxes">Коробки (кор.)</option>
+            <option value="bags">Мішки (міш.)</option>
+            <option value="pallets">Піддони (підд.)</option>
+            <option value="l">Літри (л)</option>
+            <option value="m">Метри (м)</option>
+            <option value="packs">Упаковки (уп.)</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderEntryStatus">Терміновість</label>
+          <select id="orderEntryStatus">
+            <option value="normal">Звичайно</option>
+            <option value="important">Важливо</option>
+            <option value="urgent">Терміново</option>
+            <option value="critical">Критично</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderEntryNeedDate">Дата потреби</label>
+          <input id="orderEntryNeedDate" type="date" />
+        </div>
+        <div class="order-entry-comment-field">
+          <label for="orderEntryComment">Коментар</label>
+          <textarea id="orderEntryComment" rows="3" placeholder="Додаткова інформація до позиції"></textarea>
+        </div>
+      </div>
+      <div class="order-entry-dialog-actions">
+        <button type="button" id="saveOrderEntryDialogBtn">Додати в замовлення</button>
+        <button type="button" class="secondary" id="cancelOrderEntryDialogBtn">Закрити</button>
+      </div>
+    </div>
+  </div>
+
 <script src="./assets/qrcode-generator.js"></script>
 <script src="./assets/jsQR.js"></script>
 <script>
@@ -6979,7 +7208,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.18";
+  const APP_VERSION = "2.19";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7007,6 +7236,7 @@
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
+  const ORDER_ENTRY_MODE_KEY = "warehouseJournalOrderEntryMode";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
@@ -7046,6 +7276,7 @@
     LAST_ENTRY_UNIT_KEY,
     ENTRY_UNIT_VISIBILITY_KEY,
     ENTRY_SECTION_STATE_KEY,
+    ORDER_ENTRY_MODE_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
   ];
@@ -8332,7 +8563,11 @@
   }
 
   function isEntryKeyboardActionField(element) {
-    if (!(element instanceof Element) || !element.closest("#pageToday .entry-form-card")) return false;
+    if (!(element instanceof Element)) return false;
+    if (element.closest("#orderEntryOverlay")) {
+      return Boolean(element.matches("#orderEntryQuantity, #orderEntryUnit, #orderEntryStatus, #orderEntryNeedDate, #orderEntryComment"));
+    }
+    if (!element.closest("#pageToday .entry-form-card")) return false;
     return Boolean(element.matches([
       "#pallets",
       "#kgPerPallet",
@@ -8347,7 +8582,10 @@
   function updateKeyboardEntryAction() {
     const button = document.getElementById("keyboardSaveEntryBtn");
     if (!button) return;
-    const normalButton = document.getElementById("saveEntryBtn");
+    const orderDialogOpen = !document.getElementById("orderEntryOverlay")?.classList.contains("hidden");
+    const normalButton = orderDialogOpen
+      ? document.getElementById("saveOrderEntryDialogBtn")
+      : document.getElementById("saveEntryBtn");
     const viewport = window.visualViewport;
     const keyboardInset = viewport
       ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
@@ -8358,7 +8596,7 @@
       && isEntryKeyboardActionField(document.activeElement)
       && document.getElementById("pageToday")
       && !document.getElementById("pageToday").classList.contains("hidden");
-    button.textContent = document.getElementById("saveEntryBtn")?.textContent || "Додати";
+    button.textContent = normalButton?.textContent || "Додати";
     button.classList.toggle("hidden", !shouldShow);
     normalButton?.classList.toggle("keyboard-action-replaced", shouldShow);
   }
@@ -8372,7 +8610,9 @@
       if (isAppKeyboardField(activeField)) activeField.blur();
       button.classList.add("hidden");
       document.getElementById("saveEntryBtn")?.classList.remove("keyboard-action-replaced");
-      saveEntry();
+      document.getElementById("saveOrderEntryDialogBtn")?.classList.remove("keyboard-action-replaced");
+      if (!document.getElementById("orderEntryOverlay")?.classList.contains("hidden")) saveOrderEntryFromDialog();
+      else saveEntry();
       scheduleKeyboardScrollRestore();
     });
     document.addEventListener("focusin", () => requestAnimationFrame(updateKeyboardEntryAction));
@@ -9098,6 +9338,7 @@
       order.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
         entry.orderStatus = normalizeOrderStatus(entry.orderStatus);
+        entry.needDate = String(entry.needDate || entry.neededBy || order.date || todayISO());
         delete entry.neededBy;
         if (entry.warehouseId) {
           const warehouse = normalized.warehouses.find(item => item.id === entry.warehouseId);
@@ -9414,10 +9655,10 @@
       `<option value="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.name)}</option>`
     ).join("");
     const empty = `<option value="">Оберіть склад</option>`;
-    ["orderWarehouseSelect", "quickEditWarehouse"].forEach(id => {
+    ["orderWarehouseSelect", "desktopOrderWarehouseSelect", "quickEditWarehouse"].forEach(id => {
       const select = document.getElementById(id);
       if (!select) return;
-      const current = id === "orderWarehouseSelect"
+      const current = id === "orderWarehouseSelect" || id === "desktopOrderWarehouseSelect"
         ? (state.activeWarehouseId || "")
         : (select.value || state.activeWarehouseId || "");
       select.innerHTML = empty + options;
@@ -9584,6 +9825,7 @@
     }
     const searchLabel = document.querySelector("label[for='todayListSearch']");
     if (searchLabel) searchLabel.textContent = orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації";
+    applyOrderEntryMode();
   }
 
   function setWorkspaceMode(mode) {
@@ -10339,7 +10581,7 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
-      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "changelogOverlay", "qrTransferOverlay"]
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
         swipeMode = "";
@@ -10843,6 +11085,44 @@
     if (select) select.value = normalizedMode;
   }
 
+  function getOrderEntryMode() {
+    try {
+      return localStorage.getItem(ORDER_ENTRY_MODE_KEY) === "dialog" ? "dialog" : "classic";
+    } catch (error) {
+      return "classic";
+    }
+  }
+
+  function usesOrderEntryDialogMode() {
+    if (!workspaceIsOrders()) return false;
+    return !isMobileDevice || getOrderEntryMode() === "dialog";
+  }
+
+  function updateCurrentOrderSearchVisibility() {
+    const card = document.querySelector("#pageToday .current-list-search-card");
+    if (!card) return;
+    const shouldHide = usesOrderEntryDialogMode() && getActiveDay().entries.length === 0;
+    card.classList.toggle("hidden", shouldHide);
+    if (shouldHide) resetTodayListSearch();
+  }
+
+  function applyOrderEntryMode() {
+    const dialogMode = usesOrderEntryDialogMode();
+    document.body.classList.toggle("order-entry-dialog-mode", dialogMode);
+    const select = document.getElementById("orderEntryModeSelect");
+    const description = document.getElementById("orderEntryModeDescription");
+    if (select) {
+      select.value = isMobileDevice ? getOrderEntryMode() : "dialog";
+      select.disabled = !isMobileDevice;
+    }
+    if (description) {
+      description.textContent = isMobileDevice
+        ? "Зміна стосується лише телефона. На комп’ютері завжди використовується компактний пошук і окреме вікно."
+        : "На комп’ютері автоматично використовується компактний пошук і окреме вікно. Телефонне налаштування збережено окремо.";
+    }
+    updateCurrentOrderSearchVisibility();
+  }
+
   function getEntrySectionState() {
     const defaults = { pallets: true, pieces: true, direct: true, comment: true, orderDetails: false };
     try {
@@ -11102,7 +11382,7 @@
   function canUsePageBackSwipe() {
     if (!hasPageBackDestination() || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
-    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "changelogOverlay", "qrTransferOverlay"]
+    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay"]
       .some(id => !document.getElementById(id).classList.contains("hidden"));
   }
 
@@ -11580,6 +11860,7 @@
     renderWarehouseOptions();
     document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
     document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
+    document.getElementById("quickEditNeedDate").value = entry.needDate || getActiveDay().date || todayISO();
   }
 
   function renderQuickEditTabs(entries, selectedId) {
@@ -11664,7 +11945,8 @@
       Object.assign(updated, {
         warehouseId,
         warehouseName: warehouse.name,
-        orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value)
+        orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value),
+        needDate: document.getElementById("quickEditNeedDate").value || getActiveDay().date || todayISO()
       });
     }
     recalcEntry(updated);
@@ -11681,6 +11963,91 @@
     closeQuickEdit();
     showSuccessCheck();
     scheduleKeyboardScrollRestore();
+  }
+
+  function openOrderEntryDialog(productId) {
+    if (!usesOrderEntryDialogMode()) return;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+    document.getElementById("orderEntryProductId").value = product.id;
+    document.getElementById("orderEntryDialogTitle").textContent = product.name;
+    document.getElementById("orderEntryQuantity").value = "";
+    document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
+    document.getElementById("orderEntryStatus").value = "normal";
+    document.getElementById("orderEntryNeedDate").value = getActiveDay().date || todayISO();
+    document.getElementById("orderEntryComment").value = "";
+    document.getElementById("orderEntryOverlay").classList.remove("hidden");
+    document.body.classList.add("order-entry-open");
+    window.setTimeout(() => document.getElementById("orderEntryQuantity").focus(), 80);
+  }
+
+  function closeOrderEntryDialog({ returnFocus = true } = {}) {
+    if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    document.getElementById("orderEntryOverlay").classList.add("hidden");
+    document.body.classList.remove("order-entry-open");
+    document.getElementById("orderEntryProductId").value = "";
+    document.getElementById("orderEntryQuantity").value = "";
+    document.getElementById("orderEntryComment").value = "";
+    scheduleKeyboardScrollRestore();
+    if (returnFocus) {
+      window.setTimeout(() => document.getElementById("productSearch").focus({ preventScroll: true }), 80);
+    }
+  }
+
+  function saveOrderEntryFromDialog() {
+    const productId = document.getElementById("orderEntryProductId").value;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      closeOrderEntryDialog();
+      return;
+    }
+    const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+    if (!warehouse) {
+      toast("Спочатку обери або додай склад", true);
+      return;
+    }
+    const quantityInput = document.getElementById("orderEntryQuantity").value.trim();
+    const quantity = calculateWeightExpression(quantityInput);
+    if (!quantity.valid || quantity.value <= 0) {
+      toast("Введи правильну кількість", true);
+      return;
+    }
+    const unit = normalizeMeasurementUnit(document.getElementById("orderEntryUnit").value);
+    const needDate = document.getElementById("orderEntryNeedDate").value || getActiveDay().date || todayISO();
+    const entry = {
+      id: uid(),
+      createdAt: nowText(),
+      productId: product.id,
+      productName: product.name,
+      unit,
+      pallets: 0,
+      kgPerPallet: 0,
+      pieces: 0,
+      kgPerPiece: 0,
+      directKg: quantity.value,
+      directKgExpression: quantity.display,
+      comment: document.getElementById("orderEntryComment").value.trim(),
+      warehouseId: warehouse.id,
+      warehouseName: warehouse.name,
+      orderStatus: normalizeOrderStatus(document.getElementById("orderEntryStatus").value),
+      needDate
+    };
+    recalcEntry(entry);
+    product.defaultUnit = unit;
+    rememberEntryUnit(unit);
+    getActiveDay().entries.push(entry);
+    document.getElementById("productSearch").value = "";
+    document.getElementById("productSelect").value = "";
+    document.getElementById("selectedProductLabel").textContent = "Позицію не вибрано";
+    updateClearSearchButton();
+    save();
+    closeOrderEntryDialog({ returnFocus: false });
+    showSuccessCheck();
+    window.setTimeout(() => document.getElementById("productSearch").focus({ preventScroll: true }), 120);
   }
 
   function saveEntry() {
@@ -11723,7 +12090,8 @@
       Object.assign(entryData, {
         warehouseId,
         warehouseName: warehouse.name,
-        orderStatus: "normal"
+        orderStatus: "normal",
+        needDate: getActiveDay().date || todayISO()
       });
     }
 
@@ -12558,6 +12926,7 @@
     applyNavigationButtonLayout();
     applyEntryUnitVisibility();
     applyEntrySectionState();
+    applyOrderEntryMode();
   }
 
   function readBackupFileAsText(file) {
@@ -12792,6 +13161,8 @@
     renderSelect(true);
   }
 
+  let productSearchKeyboardIndex = -1;
+
   function renderSelect(showDropdown = false) {
     const select = document.getElementById("productSelect");
     const results = document.getElementById("productSearchResults");
@@ -12800,6 +13171,7 @@
     const search = (searchInput?.value || "").trim().toLowerCase();
     const currentSelected = select.value;
     const productsSorted = sortedProducts();
+    productSearchKeyboardIndex = -1;
 
     updateClearSearchButton();
 
@@ -12860,6 +13232,29 @@
       btn.dataset.id = p.id;
       results.appendChild(btn);
     });
+  }
+
+  function moveProductSearchSelection(direction) {
+    const results = document.getElementById("productSearchResults");
+    if (results.classList.contains("hidden")) renderSelect(true);
+    const options = Array.from(results.querySelectorAll(".combo-option"));
+    if (!options.length) return;
+    options.forEach(option => option.classList.remove("keyboard-active"));
+    productSearchKeyboardIndex = productSearchKeyboardIndex < 0
+      ? (direction > 0 ? 0 : options.length - 1)
+      : (productSearchKeyboardIndex + direction + options.length) % options.length;
+    const active = options[productSearchKeyboardIndex];
+    active.classList.add("keyboard-active");
+    active.scrollIntoView({ block: "nearest" });
+  }
+
+  function activateProductSearchSelection() {
+    const results = document.getElementById("productSearchResults");
+    const options = Array.from(results.querySelectorAll(".combo-option"));
+    const active = options[productSearchKeyboardIndex] || (document.getElementById("productSearch").value.trim() ? options[0] : null);
+    if (!active) return false;
+    selectProduct(active.dataset.id);
+    return true;
   }
 
   function buildDocumentRows(day) {
@@ -12951,6 +13346,9 @@
         index += 1;
         const commentParts = [];
         if (entry.comment) commentParts.push(entry.comment);
+        if (entry.needDate && entry.needDate !== order.date) {
+          commentParts.push(`Потрібно до: ${niceDate(entry.needDate)}`);
+        }
         const status = normalizeOrderStatus(entry.orderStatus);
         return `
           <div class="order-print-row order-status-${status}">
@@ -13011,6 +13409,7 @@
         ? `ЗАМОВЛЕННЯ НА ${niceDate(day.date)}`
         : `Залишки на ${niceDate(day.date)}`;
     }
+    updateCurrentOrderSearchVisibility();
 
     const list = document.getElementById("todayList");
     const printList = document.getElementById("printTodayList");
@@ -13056,7 +13455,7 @@
         <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}" data-entry-id="${e.id}">
           <div class="entry-row-details">
             <div class="small">${relativeEdited ? `<span class="edited-relative-label" data-edited-timestamp="${escapeHtml(e.editedTimestamp)}">${escapeHtml(relativeEdited)}</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
-            ${orders ? `<div class="order-entry-context"><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span></div>` : ""}
+            ${orders ? `<div class="order-entry-context"><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span><span>Потрібно до: ${escapeHtml(niceDate(e.needDate || day.date))}</span></div>` : ""}
           </div>
           <div class="actions entry-actions">
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
@@ -13390,6 +13789,7 @@
     document.getElementById("productSearchResults").innerHTML = "";
     document.getElementById("productSearchResults").classList.add("hidden");
     fillDefaultWeights();
+    if (usesOrderEntryDialogMode()) openOrderEntryDialog(id);
   }
 
   function updateApp() {
@@ -13556,6 +13956,12 @@
   document.getElementById("orderWarehouseSelect").addEventListener("change", event => {
     state.activeWarehouseId = event.target.value || null;
     saveOnly();
+    renderWarehouseOptions();
+  });
+  document.getElementById("desktopOrderWarehouseSelect").addEventListener("change", event => {
+    state.activeWarehouseId = event.target.value || null;
+    saveOnly();
+    renderWarehouseOptions();
   });
   document.getElementById("orderResponsible").addEventListener("input", event => {
     if (!workspaceIsOrders()) return;
@@ -13577,6 +13983,7 @@
     document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     openWarehouseManager();
   });
+  document.getElementById("desktopManageWarehousesBtn").addEventListener("click", openWarehouseManager);
   document.getElementById("addWarehouseBtn").addEventListener("click", addWarehouseManagerRow);
   document.getElementById("newWarehouseName").addEventListener("keydown", event => {
     if (event.key === "Enter") {
@@ -13588,6 +13995,12 @@
   document.getElementById("closeWarehouseManagerBtn").addEventListener("click", closeWarehouseManager);
   document.getElementById("warehouseManagerOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeWarehouseManager();
+  });
+  document.getElementById("saveOrderEntryDialogBtn").addEventListener("click", saveOrderEntryFromDialog);
+  document.getElementById("closeOrderEntryDialogBtn").addEventListener("click", () => closeOrderEntryDialog({ returnFocus: false }));
+  document.getElementById("cancelOrderEntryDialogBtn").addEventListener("click", () => closeOrderEntryDialog({ returnFocus: false }));
+  document.getElementById("orderEntryOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeOrderEntryDialog({ returnFocus: false });
   });
   document.getElementById("quickEditUnit").addEventListener("change", event => {
     updateEntryUnitLabels(event.target.value, "quickEdit");
@@ -13603,18 +14016,31 @@
     }, 150);
   });
   document.getElementById("productSearch").addEventListener("keydown", event => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveProductSearchSelection(event.key === "ArrowDown" ? 1 : -1);
+      return;
+    }
     if (event.key === "Enter") {
       event.preventDefault();
-      event.currentTarget.blur();
+      if (!activateProductSearchSelection()) {
+        event.currentTarget.blur();
+        document.getElementById("productSearchResults").classList.add("hidden");
+      }
+      return;
+    }
+    if (event.key === "Escape") {
       document.getElementById("productSearchResults").classList.add("hidden");
     }
   });
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
 
   document.getElementById("previewDocumentBtn").addEventListener("click", () => openDocumentPreview());
+  document.getElementById("desktopOrderPreviewBtn").addEventListener("click", () => openDocumentPreview());
   document.getElementById("closeDocumentPreviewBtn").addEventListener("click", closeDocumentPreview);
   document.getElementById("printPreviewBtn").addEventListener("click", () => window.print());
   document.getElementById("printBtn").addEventListener("click", () => window.print());
+  document.getElementById("desktopOrderPrintBtn").addEventListener("click", () => window.print());
   document.getElementById("todayListSearch").addEventListener("input", () => {
     updateTodayListSearchClearButton();
     renderToday({ listOnly: true });
@@ -13836,6 +14262,18 @@
     applyEntryUnitVisibility(mode);
     toast(mode === "visible" ? "Вибір одиниці показано" : "Вибір одиниці приховано");
   });
+  const orderEntryModeSelect = document.getElementById("orderEntryModeSelect");
+  orderEntryModeSelect.value = isMobileDevice ? getOrderEntryMode() : "dialog";
+  orderEntryModeSelect.disabled = !isMobileDevice;
+  orderEntryModeSelect.addEventListener("change", event => {
+    if (!isMobileDevice) return;
+    const mode = event.target.value === "dialog" ? "dialog" : "classic";
+    try { localStorage.setItem(ORDER_ENTRY_MODE_KEY, mode); } catch (error) {}
+    clearEntryForm();
+    applyOrderEntryMode();
+    renderToday();
+    toast(mode === "dialog" ? "Увімкнено компактне додавання" : "Увімкнено розгорнуту форму");
+  });
   document.querySelectorAll("[data-entry-section-toggle]").forEach(button => {
     button.addEventListener("click", () => toggleEntrySection(button.dataset.entrySectionToggle));
   });
@@ -13890,6 +14328,11 @@
       return;
     }
 
+    if (!document.getElementById("orderEntryOverlay").classList.contains("hidden")) {
+      closeOrderEntryDialog({ returnFocus: false });
+      return;
+    }
+
     if (!document.getElementById("quickEditOverlay").classList.contains("hidden")) {
       closeQuickEdit();
       return;
@@ -13929,6 +14372,7 @@
   applyMenuStyle();
   applyNavigationButtonLayout();
   applyEntryUnitVisibility();
+  applyOrderEntryMode();
   applyEntrySectionState();
   updateDemoModeUI();
   renderThemeCategories();
