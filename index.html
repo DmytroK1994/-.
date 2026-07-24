@@ -5510,10 +5510,12 @@
         text-align: left;
       }
       .drawer-bg {
+        z-index: 110;
         display: block !important;
       }
       .drawer {
         inset: 0 auto 0 0;
+        z-index: 111;
         width: min(88vw, 340px);
         padding: 18px 14px;
         border-right: 1px solid var(--border);
@@ -5655,7 +5657,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.15</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.16</span></div>
     </div>
   </div>
 
@@ -6526,7 +6528,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.15</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.16</span></div>
           </div>
           <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -6556,8 +6558,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.15</span></div>
-            <div class="small">Закриття меню свайпом, кнопкою або натисканням поза панеллю тепер завжди повертає на поточну головну сторінку — інвентаризацію або замовлення.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.16</span></div>
+            <div class="small">Виправлено комп’ютерне меню: панель і всі її кнопки тепер знаходяться над затемненим фоном та правильно реагують на натискання.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6660,7 +6662,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.15";
+  const APP_VERSION = "2.16";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
