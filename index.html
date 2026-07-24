@@ -2567,6 +2567,7 @@
     }
     .compact-header-row {
       display: block;
+      position: relative;
     }
     .compact-header-content {
       min-width: 0;
@@ -2586,6 +2587,32 @@
     }
     .compact-header-spacer {
       display: none;
+    }
+    .header-about-version {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      display: inline-flex;
+      width: auto;
+      min-width: 0;
+      min-height: 30px;
+      margin: 0;
+      padding: 5px 8px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-deep);
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+      transform: translateY(-50%);
+    }
+    .header-about-version:not(.hidden) + .compact-header-spacer {
+      display: none !important;
     }
     .compact-menu-btn {
       display: none;
@@ -2977,6 +3004,59 @@
       overflow: visible;
       transform: translateY(var(--backup-fit-shift, 0px)) scale(var(--backup-fit-scale, 1));
       transform-origin: center;
+    }
+    .backup-action-menu {
+      position: relative;
+      margin: 8px 0 10px;
+    }
+    .backup-action-menu summary {
+      display: flex;
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 14px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--primary-bg);
+      border-radius: 12px;
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+      cursor: pointer;
+      font-weight: 850;
+      list-style: none;
+      text-align: center;
+    }
+    .backup-action-menu summary::-webkit-details-marker {
+      display: none;
+    }
+    .backup-action-menu summary::after {
+      content: "⌄";
+      margin-left: 8px;
+      font-size: 13px;
+    }
+    .backup-action-menu[open] summary::after {
+      content: "⌃";
+    }
+    .backup-action-options {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 6px);
+      left: 0;
+      display: grid;
+      width: 100%;
+      gap: 6px;
+      padding: 8px;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      background: var(--surface-strong);
+      box-shadow: 0 18px 44px var(--popover-shadow);
+    }
+    #settingsBackupSection .backup-action-options button {
+      min-height: 38px;
+      margin: 0;
+      padding: 7px 10px;
+      font-size: 12px;
+      box-shadow: none;
     }
     .other-settings-stack {
       display: grid;
@@ -5486,6 +5566,14 @@
       body:not(.page-today) .compact-header-content {
         text-align: left;
       }
+      .header-about-version {
+        position: static;
+        min-height: 38px;
+        padding: 8px 13px;
+        color: var(--text);
+        font-size: 14px;
+        transform: none;
+      }
       body:not(.page-today) .section-header-title {
         font-size: 22px;
         text-align: left;
@@ -5975,6 +6063,35 @@
         min-height: 500px;
         margin: 0 auto;
       }
+      #historyRecordsView #historyList .item {
+        margin-bottom: 8px;
+        padding: 11px 14px;
+        border-radius: 14px;
+        box-shadow: 0 5px 15px var(--card-shadow);
+      }
+      #historyRecordsView #historyList .name {
+        font-size: 15px;
+      }
+      #historyRecordsView #historyList .small,
+      #historyRecordsView #historyList .history-created {
+        font-size: 11px;
+      }
+      #historyRecordsView #historyList .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      #historyRecordsView #historyList button.smallbtn {
+        width: auto;
+        min-width: 72px;
+        min-height: 33px;
+        margin: 0;
+        padding: 5px 9px;
+        border-radius: 9px;
+        font-size: 11px;
+        box-shadow: none;
+      }
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       #otherSettingsCategoryView {
@@ -6039,7 +6156,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.19</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.20</span></div>
     </div>
   </div>
 
@@ -6101,6 +6218,7 @@
           <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
         </div>
       </div>
+      <button type="button" class="header-about-version hidden" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.20</span></button>
       <div class="compact-header-spacer" aria-hidden="true"></div>
     </div>
   </div>
@@ -6674,10 +6792,15 @@
         Дані зберігаються в пам'яті цього браузера. Для надійності періодично роби резервну копію.
       </p>
       <p class="small">Копіювання збереже текст резервної копії в буфері обміну. Завантаження створить окремий файл на пристрої.</p>
-      <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
-      <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
-      <button type="button" id="sendBackupQrBtn">Передати дані через QR</button>
-      <button type="button" id="receiveBackupQrBtn">Отримати дані через QR</button>
+      <details class="backup-action-menu" id="backupActionMenu">
+        <summary>Зберегти або передати дані</summary>
+        <div class="backup-action-options">
+          <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
+          <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
+          <button type="button" id="sendBackupQrBtn">Передати дані через QR</button>
+          <button type="button" id="receiveBackupQrBtn">Отримати дані через QR</button>
+        </div>
+      </details>
 
       <label>Відновлення з файлу</label>
       <input class="hidden" id="backupFileInput" type="file" accept=".json,application/json,text/json" />
@@ -6934,9 +7057,6 @@
     <div class="about-deck" id="aboutDeck" aria-label="Інформація про додаток">
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
-          <div class="about-heading-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.19</span></button>
-          </div>
           <div class="about-single-description">
             <p><strong>Облік залишків</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
             <p>Застосунок допомагає швидко додавати кількість піддонами, поштучно або окремим значенням, розділяти замовлення за складами, шукати й редагувати позиції, переглядати історію та формувати документи для друку або PDF.</p>
@@ -6960,6 +7080,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.20</h3>
+          <ul>
+            <li>номер версії перенесено в праву частину шапки сторінки «Про додаток»;</li>
+            <li>записи історії інвентаризацій і замовлень зроблено компактнішими на комп’ютері;</li>
+            <li>копіювання, завантаження та QR-передачу об’єднано в одну компактну кнопку вибору дії.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.19</h3>
           <ul>
@@ -7208,7 +7336,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.19";
+  const APP_VERSION = "2.20";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11456,6 +11584,8 @@
     document.body.classList.toggle("page-today", page === "today");
     const sectionTitle = page === "today" ? workspaceLabel() : (PAGE_TITLES[page] || "Облік залишків");
     document.getElementById("sectionHeaderTitle").textContent = sectionTitle;
+    document.getElementById("openChangelogBtn").classList.toggle("hidden", page !== "about");
+    if (page !== "backup") document.getElementById("backupActionMenu").removeAttribute("open");
     document.title = page === "today" ? `${sectionTitle} — Облік залишків` : `${sectionTitle} — Облік залишків`;
 
     closeMenu();
@@ -14091,10 +14221,25 @@
     openProductInfo(productCard.dataset.id);
   });
 
-  document.getElementById("copyBackupBtn").addEventListener("click", copyBackup);
-  document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
-  document.getElementById("sendBackupQrBtn").addEventListener("click", chooseQrBackupScope);
-  document.getElementById("receiveBackupQrBtn").addEventListener("click", openQrReceiver);
+  function closeBackupActionMenu() {
+    document.getElementById("backupActionMenu").removeAttribute("open");
+  }
+  document.getElementById("copyBackupBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    copyBackup();
+  });
+  document.getElementById("downloadBackupBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    downloadBackup();
+  });
+  document.getElementById("sendBackupQrBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    chooseQrBackupScope();
+  });
+  document.getElementById("receiveBackupQrBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    openQrReceiver();
+  });
   document.getElementById("closeQrTransferBtn").addEventListener("click", closeQrTransfer);
   document.getElementById("previousQrPartBtn").addEventListener("click", () => {
     qrTransferPartIndex = Math.max(0, qrTransferPartIndex - 1);
