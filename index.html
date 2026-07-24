@@ -1156,6 +1156,37 @@
       justify-content: center;
       gap: 6px;
     }
+    #productNormalActions {
+      justify-content: flex-start;
+    }
+    #toggleProductSelectBtn {
+      width: auto !important;
+      min-width: 0 !important;
+      min-height: 32px !important;
+      flex: 0 0 auto;
+      padding: 6px 11px !important;
+      border-color: var(--border) !important;
+      background: var(--surface-deep) !important;
+      color: var(--muted) !important;
+      box-shadow: none !important;
+      font-size: 12px !important;
+    }
+    .product-view-hint {
+      margin-top: 5px;
+      color: var(--muted-soft);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .product-info-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .product-info-actions button {
+      margin: 0;
+    }
     .product-editor-heading {
       position: relative;
       display: grid;
@@ -5593,6 +5624,58 @@
       #pageToday #todayList {
         min-width: 0;
       }
+      #historyNavigation .management-shell {
+        width: min(100%, 500px);
+      }
+      #historyNavigation .management-options {
+        width: min(100%, 440px) !important;
+        max-width: 440px;
+        gap: 8px;
+      }
+      #historyNavigation .management-option {
+        min-height: 36px !important;
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+      }
+      #pageHistory .history-toolbar {
+        gap: 7px;
+      }
+      #pageHistory .history-toolbar button {
+        min-height: 34px;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      #pageBackup {
+        position: relative;
+        inset: auto;
+        display: grid;
+        width: 100%;
+        min-height: calc(100vh - var(--desktop-header-height) - 52px);
+        padding: 22px 0;
+        place-items: center;
+        overflow: visible;
+      }
+      #settingsBackupSection {
+        width: min(100%, 680px);
+        margin: 0 auto;
+        transform: none !important;
+      }
+      #pageAbout {
+        position: relative;
+        inset: auto;
+        display: grid;
+        width: 100%;
+        min-height: calc(100vh - var(--desktop-header-height) - 52px);
+        padding: 22px 0;
+        place-items: center;
+        overflow: visible;
+      }
+      #pageAbout .about-deck {
+        width: min(100%, 720px);
+        height: min(650px, calc(100vh - var(--desktop-header-height) - 72px));
+        min-height: 500px;
+        margin: 0 auto;
+      }
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       #otherSettingsCategoryView {
@@ -5657,7 +5740,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.16</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.17</span></div>
     </div>
   </div>
 
@@ -6149,7 +6232,10 @@
             <div class="product-info-value" id="productInfoPiece"></div>
           </div>
         </div>
-        <button type="button" class="secondary" id="closeProductInfoBtn">Закрити</button>
+        <div class="product-info-actions">
+          <button type="button" id="editProductFromInfoBtn">Редагувати</button>
+          <button type="button" class="secondary" id="closeProductInfoBtn">Закрити</button>
+        </div>
       </div>
     </div>
   </div>
@@ -6338,7 +6424,7 @@
           <option value="button">Кнопка «Назад»</option>
           <option value="swipe">Свайп справа наліво</option>
         </select>
-        <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
+        <p class="small" id="backNavigationDescription">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
       </section>
 
       <section class="card other-settings-group hidden" data-other-settings-panel="menu">
@@ -6528,7 +6614,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.16</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.17</span></div>
           </div>
           <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -6558,8 +6644,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.16</span></div>
-            <div class="small">Виправлено комп’ютерне меню: панель і всі її кнопки тепер знаходяться над затемненим фоном та правильно реагують на натискання.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.17</span></div>
+            <div class="small">Компактніша історія на комп’ютері, видимі сторінки резервної копії та інформації про додаток, а також зрозуміліший перегляд і редагування найменувань.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6662,7 +6748,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.16";
+  const APP_VERSION = "2.17";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11593,7 +11679,7 @@
       if (document.getElementById("productAddOverlay").classList.contains("hidden")) return;
       if (view === "single") document.getElementById("newProductName").focus();
       else if (view === "bulk") document.getElementById("bulkProductsText").focus();
-      else if (view === "info") document.getElementById("closeProductInfoBtn").focus();
+      else if (view === "info") document.getElementById("editProductFromInfoBtn").focus();
       else document.getElementById("chooseSingleProductBtn").focus();
     }, 80);
   }
@@ -11622,7 +11708,14 @@
     pieceRow.classList.toggle("hidden", pieceValue <= 0);
     document.getElementById("productInfoPallet").textContent = palletValue > 0 ? formatQuantity(palletValue, unit) : "";
     document.getElementById("productInfoPiece").textContent = pieceValue > 0 ? formatQuantity(pieceValue, unit) : "";
+    document.getElementById("productInfoView").dataset.productId = product.id;
     openProductAddModal("info");
+  }
+
+  function editProductFromInfo() {
+    const id = document.getElementById("productInfoView").dataset.productId;
+    if (!id) return;
+    startEditProduct(id);
   }
 
   function closeProductAddModal({ resetForms = true } = {}) {
@@ -12626,10 +12719,8 @@
             <div>
               <div class="name">${escapeHtml(p.name)}</div>
               <div class="product-unit">Одиниця виміру: ${unit}</div>
+              ${productSelectMode ? "" : `<div class="product-view-hint">Натисни, щоб переглянути інформацію</div>`}
             </div>
-            ${productSelectMode ? "" : `<div class="actions list-item-actions">
-              <button class="smallbtn yellow" data-action="edit-product" data-id="${p.id}" aria-label="Редагувати ${escapeHtml(p.name)}" title="Редагувати"><span class="product-edit-icon" aria-hidden="true"></span></button>
-            </div>`}
           </div>
         </div>
       `;
@@ -12790,7 +12881,6 @@
 
     if (action === "edit-entry") startEditEntry(id);
     if (action === "delete-entry") deleteEntry(id);
-    if (action === "edit-product") startEditProduct(id);
     if (action === "delete-product") deleteProduct(id);
     if (action === "select-day") selectDay(id, el.dataset.kind);
     if (action === "preview-day") openDocumentPreview(id, el.dataset.kind);
@@ -12983,6 +13073,7 @@
   });
 
   document.getElementById("openProductAddBtn").addEventListener("click", openProductAddChoice);
+  document.getElementById("editProductFromInfoBtn").addEventListener("click", editProductFromInfo);
   document.getElementById("closeProductInfoBtn").addEventListener("click", dismissProductAddModal);
   document.getElementById("chooseSingleProductBtn").addEventListener("click", () => {
     clearProductForm();
@@ -13086,8 +13177,15 @@
   });
   document.getElementById("resetCustomThemeBtn").addEventListener("click", resetCustomTheme);
   const backNavigationSelect = document.getElementById("backNavigationSelect");
-  backNavigationSelect.value = getBackNavigationPreference();
+  backNavigationSelect.value = isMobileDevice ? getBackNavigationPreference() : "auto";
+  if (!isMobileDevice) {
+    backNavigationSelect.disabled = true;
+    backNavigationSelect.title = "На комп’ютері спосіб повернення визначається автоматично";
+    document.getElementById("backNavigationDescription").textContent =
+      "На комп’ютері автоматично використовуються кнопки навігації. Мобільне налаштування зберігається окремо і не змінюється.";
+  }
   backNavigationSelect.addEventListener("change", event => {
+    if (!isMobileDevice) return;
     try { localStorage.setItem(BACK_NAV_KEY, event.target.value); } catch (error) {}
     updatePageBackButton();
     toast("Спосіб повернення змінено");
