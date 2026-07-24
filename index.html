@@ -851,6 +851,10 @@
       cursor: pointer;
       list-style: none;
       touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #todayList .order-warehouse-list-group > summary > * {
+      pointer-events: none;
     }
     #todayList .order-warehouse-list-group > summary::-webkit-details-marker {
       display: none;
@@ -864,6 +868,7 @@
       font-size: 20px;
       font-weight: 900;
       transform: translateY(-55%);
+      pointer-events: none;
     }
     #todayList .order-warehouse-list-group[open] > summary::after {
       content: "⌃";
@@ -888,6 +893,12 @@
     }
     #todayList .order-warehouse-list-group:not([open]) .order-warehouse-group-content {
       display: none;
+    }
+    #todayList {
+      overflow-anchor: none;
+    }
+    .current-list-search-card {
+      overflow-anchor: auto;
     }
     #todayList .report-item.recently-edited {
       background:
@@ -5070,7 +5081,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.09</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.10</span></div>
     </div>
   </div>
 
@@ -5874,7 +5885,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.09</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.10</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5904,8 +5915,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.09</span></div>
-            <div class="small">Історію розділено на інвентаризації та замовлення, а вибір розділу отримав звичні кнопки й керування джойстиком.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.10</span></div>
+            <div class="small">Пошук у замовленні працює одночасно по всіх складах без зайвого перемальовування, а весь заголовок складу став активною зоною згортання.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6008,7 +6019,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.09";
+  const APP_VERSION = "2.10";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11311,7 +11322,7 @@
     const input = document.getElementById("todayListSearch");
     if (!input) return;
     resetTodayListSearch();
-    renderToday();
+    renderToday({ listOnly: true });
     input.focus();
   }
 
@@ -11541,20 +11552,25 @@
     });
   }
 
-  function renderToday() {
+  function renderToday(options = {}) {
     const day = getActiveDay();
     const orders = workspaceIsOrders();
-    updateWorkspaceUI();
-    document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}${orders ? "Поточне замовлення" : "Поточна інвентаризація"}: ${niceDate(day.date)}`;
-    document.getElementById("printReportTitle").textContent = orders
-      ? `ЗАМОВЛЕННЯ НА ${niceDate(day.date)}`
-      : `Залишки на ${niceDate(day.date)}`;
+    const listOnly = options.listOnly === true;
+    if (!listOnly) {
+      updateWorkspaceUI();
+      document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}${orders ? "Поточне замовлення" : "Поточна інвентаризація"}: ${niceDate(day.date)}`;
+      document.getElementById("printReportTitle").textContent = orders
+        ? `ЗАМОВЛЕННЯ НА ${niceDate(day.date)}`
+        : `Залишки на ${niceDate(day.date)}`;
+    }
 
     const list = document.getElementById("todayList");
     const printList = document.getElementById("printTodayList");
     list.innerHTML = "";
-    applyDocumentLayout(day, orders);
-    printList.innerHTML = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
+    if (!listOnly) {
+      applyDocumentLayout(day, orders);
+      printList.innerHTML = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
+    }
     updateTodayListSearchClearButton();
 
     const allGroups = groupEntries(day);
@@ -11563,9 +11579,13 @@
       return;
     }
 
-    const query = (document.getElementById("todayListSearch")?.value || "").trim().toLocaleLowerCase("uk-UA");
+    const normalizeSearchValue = value => String(value || "")
+      .normalize("NFKC")
+      .trim()
+      .toLocaleLowerCase("uk-UA");
+    const query = normalizeSearchValue(document.getElementById("todayListSearch")?.value);
     const groups = allGroups.filter(group =>
-      !query || String(group.name || "").toLocaleLowerCase("uk-UA").includes(query)
+      !query || group.entries.some(entry => normalizeSearchValue(entry.productName).includes(query))
     );
 
     if (!groups.length) {
@@ -12151,7 +12171,7 @@
   document.getElementById("printBtn").addEventListener("click", () => window.print());
   document.getElementById("todayListSearch").addEventListener("input", () => {
     updateTodayListSearchClearButton();
-    renderToday();
+    renderToday({ listOnly: true });
   });
   document.getElementById("clearTodayListSearchBtn").addEventListener("click", clearTodayListSearch);
   document.getElementById("saveQuickEditBtn").addEventListener("click", saveQuickEditEntry);
