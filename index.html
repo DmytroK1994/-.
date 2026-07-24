@@ -2911,10 +2911,10 @@
       100% { opacity: 0; transform: scale(.96); }
     }
 
-    #pageHistory button,
+    #pageHistory button:not(.nav-choice),
     #pageThemes button,
     #pageBackup button,
-    #pageOtherSettings button,
+    #pageOtherSettings button:not(.nav-choice),
     #pageAbout button,
     #pageInstall button {
       border: 1px solid var(--soft-action-border);
@@ -4115,26 +4115,20 @@
       border-top: 2px solid currentColor;
       border-left: 2px solid currentColor;
     }
-    #aboutPrevCardBtn::before,
-    #otherSettingsPrevCardBtn::before {
+    #aboutPrevCardBtn::before {
       transform: translateY(4px) rotate(45deg);
     }
-    #aboutNextCardBtn::before,
-    #otherSettingsNextCardBtn::before {
+    #aboutNextCardBtn::before {
       transform: translateY(-4px) rotate(225deg);
     }
     #aboutPrevCardBtn,
-    #otherSettingsPrevCardBtn,
-    #aboutNextCardBtn,
-    #otherSettingsNextCardBtn {
+    #aboutNextCardBtn {
       position: absolute;
       right: 0;
       left: 0;
     }
-    #aboutPrevCardBtn,
-    #otherSettingsPrevCardBtn { top: 0; }
-    #aboutNextCardBtn,
-    #otherSettingsNextCardBtn { bottom: 0; }
+    #aboutPrevCardBtn { top: 0; }
+    #aboutNextCardBtn { bottom: 0; }
     .about-card-position {
       position: absolute;
       right: 10px;
@@ -4250,6 +4244,62 @@
       #pageOtherSettings .other-settings-group label { margin: 4px 0 3px; font-size: 10px; }
       #pageOtherSettings .other-settings-group select { min-height: 34px; padding: 5px 7px; font-size: 12px; }
       #pageOtherSettings .button-layout-preview { min-height: 56px; margin-bottom: 4px; }
+    }
+    /* Звичайна категорійна навігація замість карткової колоди. */
+    #pageOtherSettings {
+      position: relative;
+      inset: auto;
+      display: block;
+      width: min(100%, 720px);
+      min-height: calc(100dvh - var(--app-header-bottom, 82px) - var(--app-bottom-obstruction, 0px) - 28px);
+      padding: 0;
+      overflow: visible;
+    }
+    .other-settings-category-view {
+      display: grid;
+      min-height: inherit;
+      align-content: center;
+    }
+    .other-settings-category-list {
+      position: static;
+      inset: auto;
+      width: calc(100% - var(--settings-list-width-reduction, 60px));
+      max-width: 620px;
+      max-height: none;
+      overflow: visible;
+      transform: none !important;
+    }
+    .other-settings-category-list .management-option {
+      width: 100%;
+      text-align: center;
+    }
+    .other-settings-panel-view {
+      width: min(100%, 680px);
+      margin-inline: auto;
+      padding-bottom: 18px;
+    }
+    #pageOtherSettings .other-settings-group {
+      position: static;
+      inset: auto;
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 16px;
+      overflow: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+      transition: none;
+    }
+    #pageOtherSettings .other-settings-group.hidden {
+      display: none !important;
+    }
+    .other-settings-subsection {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
     }
     .install-action-card {
       margin-bottom: 18px;
@@ -5413,7 +5463,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.11</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.12</span></div>
     </div>
   </div>
 
@@ -6067,11 +6117,20 @@
   </div>
 
   <div id="pageOtherSettings" class="hidden">
-    <div class="other-settings-deck" id="otherSettingsDeck" tabindex="0" aria-label="Картки інших налаштувань">
-      <button type="button" class="about-card-nav" id="otherSettingsPrevCardBtn" aria-label="Попередня картка налаштувань"></button>
-      <div class="other-settings-card-viewport">
-        <div class="other-settings-stack" id="settingsOtherSection">
-      <section class="card other-settings-group is-active" data-other-settings-card>
+    <div class="other-settings-category-view" id="otherSettingsCategoryView">
+      <div class="management-heading">
+        <p class="small">Обери категорію, яку потрібно налаштувати.</p>
+      </div>
+      <div class="management-options other-settings-category-list">
+        <button type="button" class="management-option nav-choice" data-other-settings-category="navigation">Навігація</button>
+        <button type="button" class="management-option nav-choice" data-other-settings-category="menu">Меню та керування</button>
+        <button type="button" class="management-option nav-choice" data-other-settings-category="buttons">Кнопки навігації</button>
+        <button type="button" class="management-option nav-choice" data-other-settings-category="entry">Введення даних</button>
+      </div>
+    </div>
+
+    <div class="other-settings-panel-view hidden" id="otherSettingsPanelView">
+      <section class="card other-settings-group hidden" data-other-settings-panel="navigation">
         <h2>Навігація</h2>
         <p class="small settings-group-description">Вибери, як повертатися з вкладених сторінок застосунку.</p>
         <label for="backNavigationSelect">Спосіб повернення</label>
@@ -6083,7 +6142,7 @@
         <p class="small">На iPhone автоматично використовується свайп від правого краю вліво. На Android і комп’ютері — кнопка.</p>
       </section>
 
-      <section class="card other-settings-group is-after" data-other-settings-card>
+      <section class="card other-settings-group hidden" data-other-settings-panel="menu">
         <h2>Керування меню</h2>
         <p class="small settings-group-description">Джойстик дозволяє вибирати пункти рухом пальця вгору або вниз.</p>
         <label for="joystickModeSelect">Джойстик меню та налаштувань</label>
@@ -6092,9 +6151,7 @@
           <option value="disabled">Вимкнено — звичайний список</option>
         </select>
         <p class="small">Коли джойстик вимкнено, пункти показуються звичайним списком.</p>
-      </section>
-
-      <section class="card other-settings-group is-after" data-other-settings-card>
+        <div class="other-settings-subsection">
         <h2>Вигляд меню</h2>
         <p class="small settings-group-description">Зміни розташування пунктів основного меню.</p>
         <label for="menuStyleSelect">Вигляд основного меню</label>
@@ -6110,9 +6167,10 @@
           </select>
         </div>
         <p class="small" id="menuStyleDescription"></p>
+        </div>
       </section>
 
-      <section class="card other-settings-group is-after" data-other-settings-card>
+      <section class="card other-settings-group hidden" data-other-settings-panel="buttons">
         <h2>Розмір кнопок навігації</h2>
         <p class="small settings-group-description">Налаштуй однакову основу для кнопок меню, налаштувань і тем або задай окремий розмір для кожного розділу.</p>
         <div class="button-layout-preview" id="buttonLayoutPreview" data-width="current" data-size="standard" aria-label="Приклад вигляду кнопки">
@@ -6165,7 +6223,7 @@
         <p class="small">Зміни застосовуються одразу. Окремий розмір має перевагу над загальним.</p>
       </section>
 
-      <section class="card other-settings-group is-after" data-other-settings-card>
+      <section class="card other-settings-group hidden" data-other-settings-panel="entry">
         <h2>Введення даних</h2>
         <p class="small settings-group-description">Налаштування полів на екрані поточного підрахунку.</p>
         <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
@@ -6175,10 +6233,6 @@
         </select>
         <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
       </section>
-        </div>
-        <div class="about-card-position" id="otherSettingsCardPosition" aria-live="polite">1 із 5</div>
-      </div>
-      <button type="button" class="about-card-nav" id="otherSettingsNextCardBtn" aria-label="Наступна картка налаштувань"></button>
     </div>
   </div>
 
@@ -6221,7 +6275,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.11</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.12</span></div>
           </div>
           <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -6251,8 +6305,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.11</span></div>
-            <div class="small">Додано окремий комп’ютерний інтерфейс: постійне бокове меню, широка робоча область і зручне двоколонкове розташування без змін мобільної версії.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.12</span></div>
+            <div class="small">Кнопки історії приведено до спільного стилю, а інші налаштування розділено на окремі зрозумілі категорії без карткового перегортання.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6355,7 +6409,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.11";
+  const APP_VERSION = "2.12";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9877,6 +9931,10 @@
       closeThemeCategory();
       return;
     }
+    if (currentPage === "otherSettings" && activeOtherSettingsCategory) {
+      showOtherSettingsCategories();
+      return;
+    }
     if (MENU_RETURN_PAGES.has(currentPage)) {
       openMenu();
       return;
@@ -9898,6 +9956,10 @@
   function navigateDesktopBack() {
     if (currentPage === "themes" && activeThemeCategory) {
       closeThemeCategory();
+      return;
+    }
+    if (currentPage === "otherSettings" && activeOtherSettingsCategory) {
+      showOtherSettingsCategories();
       return;
     }
     const parentPage = PAGE_PARENTS[currentPage];
@@ -10316,55 +10378,51 @@
     showAboutCard(0, false);
   }
 
-  let otherSettingsCardIndex = 0;
-  let otherSettingsWheelLocked = false;
-  function showOtherSettingsCard(nextIndex, animate = true) {
-    const deck = document.getElementById("otherSettingsDeck");
-    const cards = Array.from(document.querySelectorAll("[data-other-settings-card]"));
-    if (!deck || !cards.length) return;
-    otherSettingsCardIndex = Math.max(0, Math.min(cards.length - 1, nextIndex));
-    if (!animate) deck.classList.add("no-transition");
-    cards.forEach((card, index) => {
-      card.classList.toggle("is-before", index < otherSettingsCardIndex);
-      card.classList.toggle("is-active", index === otherSettingsCardIndex);
-      card.classList.toggle("is-after", index > otherSettingsCardIndex);
-      card.setAttribute("aria-hidden", String(index !== otherSettingsCardIndex));
-      card.inert = index !== otherSettingsCardIndex;
-    });
-    const previousButton = document.getElementById("otherSettingsPrevCardBtn");
-    const nextButton = document.getElementById("otherSettingsNextCardBtn");
-    const position = document.getElementById("otherSettingsCardPosition");
-    if (previousButton) previousButton.disabled = otherSettingsCardIndex === 0;
-    if (nextButton) nextButton.disabled = otherSettingsCardIndex === cards.length - 1;
-    if (position) position.textContent = `${otherSettingsCardIndex + 1} із ${cards.length}`;
-    if (!animate) requestAnimationFrame(() => requestAnimationFrame(() => deck.classList.remove("no-transition")));
+  const OTHER_SETTINGS_CATEGORY_TITLES = {
+    navigation: "Навігація",
+    menu: "Меню та керування",
+    buttons: "Кнопки навігації",
+    entry: "Введення даних"
+  };
+  let activeOtherSettingsCategory = "";
+
+  function updateOtherSettingsHeader(title) {
+    const sectionTitle = document.getElementById("sectionHeaderTitle");
+    const resolvedTitle = title || PAGE_TITLES.otherSettings;
+    if (sectionTitle) sectionTitle.textContent = resolvedTitle;
+    document.title = `${resolvedTitle} — Облік залишків`;
   }
 
-  function initOtherSettingsCardDeck() {
-    const deck = document.getElementById("otherSettingsDeck");
-    if (!deck) return;
-    const cards = Array.from(document.querySelectorAll("[data-other-settings-card]"));
-    document.getElementById("otherSettingsPrevCardBtn").addEventListener("click", () => {
-      showOtherSettingsCard(otherSettingsCardIndex - 1);
+  function showOtherSettingsCategories() {
+    activeOtherSettingsCategory = "";
+    document.getElementById("otherSettingsCategoryView").classList.remove("hidden");
+    document.getElementById("otherSettingsPanelView").classList.add("hidden");
+    document.querySelectorAll("[data-other-settings-panel]").forEach(panel => panel.classList.add("hidden"));
+    updateOtherSettingsHeader();
+    scrollAppToTop();
+  }
+
+  function openOtherSettingsCategory(category) {
+    const panel = document.querySelector(`[data-other-settings-panel="${category}"]`);
+    if (!panel || !OTHER_SETTINGS_CATEGORY_TITLES[category]) return;
+    activeOtherSettingsCategory = category;
+    document.getElementById("otherSettingsCategoryView").classList.add("hidden");
+    document.getElementById("otherSettingsPanelView").classList.remove("hidden");
+    document.querySelectorAll("[data-other-settings-panel]").forEach(item => {
+      item.classList.toggle("hidden", item !== panel);
     });
-    document.getElementById("otherSettingsNextCardBtn").addEventListener("click", () => {
-      showOtherSettingsCard(otherSettingsCardIndex + 1);
+    updateOtherSettingsHeader(OTHER_SETTINGS_CATEGORY_TITLES[category]);
+    scrollAppToTop();
+  }
+
+  function initOtherSettingsCategories() {
+    document.querySelectorAll("[data-other-settings-category]").forEach(button => {
+      button.addEventListener("click", () => openOtherSettingsCategory(button.dataset.otherSettingsCategory));
     });
-    attachInteractiveVerticalDeck(deck, cards, () => otherSettingsCardIndex, index => showOtherSettingsCard(index));
-    deck.addEventListener("wheel", event => {
-      if (Math.abs(event.deltaY) < 12 || otherSettingsWheelLocked) return;
-      event.preventDefault();
-      otherSettingsWheelLocked = true;
-      showOtherSettingsCard(otherSettingsCardIndex + (event.deltaY > 0 ? 1 : -1));
-      setTimeout(() => { otherSettingsWheelLocked = false; }, 420);
-    }, { passive: false });
-    deck.addEventListener("keydown", event => {
-      if (!["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) return;
-      event.preventDefault();
-      const moveForward = event.key === "ArrowDown" || event.key === "PageDown";
-      showOtherSettingsCard(otherSettingsCardIndex + (moveForward ? 1 : -1));
-    });
-    showOtherSettingsCard(0, false);
+    activeOtherSettingsCategory = "";
+    document.getElementById("otherSettingsCategoryView").classList.remove("hidden");
+    document.getElementById("otherSettingsPanelView").classList.add("hidden");
+    document.querySelectorAll("[data-other-settings-panel]").forEach(panel => panel.classList.add("hidden"));
   }
 
   function canUsePageBackSwipe() {
@@ -10490,7 +10548,7 @@
     if (page === "trash") document.getElementById("pageTrash").classList.remove("hidden");
     if (page === "otherSettings") {
       document.getElementById("pageOtherSettings").classList.remove("hidden");
-      showOtherSettingsCard(0, false);
+      showOtherSettingsCategories();
     }
     if (page === "about") {
       document.getElementById("pageAbout").classList.remove("hidden");
@@ -12761,7 +12819,7 @@
   initAppHeaderBottomMetric();
   initBackupSectionFit();
   initAboutCardDeck();
-  initOtherSettingsCardDeck();
+  initOtherSettingsCategories();
   initAppKeyboardScrollRestore();
   initKeyboardEntryAction();
   initAppTopPosition();
