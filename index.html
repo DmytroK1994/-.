@@ -4746,6 +4746,7 @@
       }
 
       #pageToday {
+        display: block !important;
         position: static !important;
         width: 100% !important;
         max-width: none !important;
@@ -4786,7 +4787,7 @@
       }
 
       .print-only {
-        display: block;
+        display: block !important;
       }
 
       .screen-only {
@@ -5138,7 +5139,7 @@
     .desktop-back-btn {
       display: none;
     }
-    @media (min-width: 760px) and (hover: hover) and (pointer: fine) {
+    @media screen and (min-width: 760px) and (hover: hover) and (pointer: fine) {
       :root {
         --desktop-sidebar-width: 224px;
         --desktop-header-height: 70px;
@@ -5418,7 +5419,7 @@
         max-width: 640px;
       }
     }
-    @media (min-width: 1180px) and (hover: hover) and (pointer: fine) {
+    @media screen and (min-width: 1180px) and (hover: hover) and (pointer: fine) {
       #pageToday {
         display: grid;
         grid-template-columns: minmax(350px, 430px) minmax(0, 1fr);
@@ -5462,6 +5463,158 @@
         min-width: 0;
       }
     }
+    /*
+      Уточнений комп'ютерний режим: звичайна висувна панель і послідовна
+      робоча сторінка. Ці правила навмисно не діють під час друку.
+    */
+    @media screen and (min-width: 760px) and (hover: hover) and (pointer: fine) {
+      body,
+      body.page-today,
+      body:not(.page-today),
+      body.subpage-swipe-back,
+      body.bottom-nav-visible {
+        padding-right: 24px;
+        padding-left: 24px;
+      }
+      .app-header,
+      body.page-today .app-header,
+      body:not(.page-today) .app-header {
+        left: 0;
+      }
+      body.page-today .topbar {
+        grid-template-columns: 46px minmax(0, 1fr) 46px;
+      }
+      body.page-today .workspace-switcher {
+        justify-self: center;
+        text-align: center;
+      }
+      body.page-today .workspace-switcher-button {
+        justify-content: center;
+      }
+      body.page-today .date-line {
+        position: static;
+        width: 100%;
+        margin: 0;
+        text-align: center;
+      }
+      body #openMenuBtn {
+        display: grid !important;
+      }
+      body:not(.page-today) .compact-header-row {
+        grid-template-columns: auto auto minmax(0, 1fr);
+      }
+      body:not(.page-today) #compactMenuBtn {
+        display: block !important;
+      }
+      body:not(.page-today) .compact-header-content {
+        text-align: left;
+      }
+      .drawer-bg {
+        display: block !important;
+      }
+      .drawer {
+        inset: 0 auto 0 0;
+        width: min(88vw, 340px);
+        padding: 18px 14px;
+        border-right: 1px solid var(--border);
+        box-shadow: none;
+        transform: translate3d(-100%, 0, 0) !important;
+        transition: transform .3s cubic-bezier(.22, .75, .28, 1);
+      }
+      .drawer.open {
+        box-shadow: 18px 0 42px rgba(0, 0, 0, .24);
+        transform: translate3d(0, 0, 0) !important;
+      }
+      .drawer-menu-content {
+        overflow-y: auto;
+      }
+      .menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        margin: 0 0 12px;
+        padding: 2px;
+        border-bottom: 0;
+      }
+      .mobile-menu-title {
+        display: inline;
+      }
+      .desktop-sidebar-title {
+        display: none;
+      }
+      .drawer-close-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+      .menu-wheel {
+        width: 100% !important;
+        gap: 9px;
+      }
+      .drawer .menu-btn,
+      html.menu-style-game .drawer .menu-btn {
+        text-align: center;
+      }
+      #pageToday,
+      #pageHistory,
+      #pageManagement,
+      #pageProducts,
+      #pageThemes,
+      #pageBackup,
+      #pageTrash,
+      #pageOtherSettings,
+      #pageInstall,
+      #pageAbout {
+        max-width: 1080px;
+      }
+      #pageToday {
+        display: block;
+      }
+      #pageToday .entry-form-card {
+        position: static;
+        max-height: none;
+        margin-bottom: 12px;
+        overflow: visible;
+      }
+      #pageToday .document-actions-card {
+        display: block;
+        margin-bottom: 12px;
+      }
+      #pageToday .document-actions-card button {
+        margin-top: 8px;
+      }
+      #pageToday .current-list-search-card {
+        position: sticky;
+        margin-bottom: 12px;
+      }
+      #pageToday #todayList {
+        min-width: 0;
+      }
+    }
+    @media (hover: none), (pointer: coarse), (max-width: 900px) {
+      #otherSettingsCategoryView {
+        position: relative;
+        display: block;
+        min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
+      }
+      #otherSettingsCategoryView .management-heading {
+        padding-top: 2px;
+      }
+      #otherSettingsCategoryView .other-settings-category-list {
+        position: absolute;
+        top: 42px;
+        left: 50%;
+        width: calc(100% - var(--settings-list-width-reduction, 60px));
+        max-width: 430px;
+        max-height: 340px;
+        overflow-y: auto;
+        padding: 8px 4px 14px;
+        pointer-events: auto;
+        touch-action: pan-y;
+        transform: translateX(-50%) !important;
+      }
+    }
   </style>
 
 <link rel="manifest" href="manifest.json">
@@ -5502,7 +5655,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.13</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.14</span></div>
     </div>
   </div>
 
@@ -6166,6 +6319,11 @@
         <button type="button" class="management-option nav-choice" data-other-settings-category="buttons">Кнопки навігації</button>
         <button type="button" class="management-option nav-choice" data-other-settings-category="entry">Введення даних</button>
       </div>
+      <div class="management-gesture-pad" id="otherSettingsGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування іншими налаштуваннями">
+        <span class="gesture-pad-handle"></span>
+        <span class="gesture-pad-selection" id="otherSettingsGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
+        <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
+      </div>
     </div>
 
     <div class="other-settings-panel-view hidden" id="otherSettingsPanelView">
@@ -6368,7 +6526,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.13</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.14</span></div>
           </div>
           <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -6398,8 +6556,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.13</span></div>
-            <div class="small">Додано окремий розмір кнопок для кожного навігаційного меню, підрозділу та списку вибору з автоматичним загальним розміром для майбутніх меню.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.14</span></div>
+            <div class="small">Комп’ютерне меню знову відкривається й закривається, робоча сторінка стала послідовною, друк у браузері використовує повну A4-розмітку, а в інших налаштуваннях додано джойстик.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6502,7 +6660,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.13";
+  const APP_VERSION = "2.14";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7790,6 +7948,7 @@
   let historyGestureAxis = "";
   let historyGestureDragging = false;
   let historyGestureMoved = false;
+  let otherSettingsGestureIndex = 0;
   let themeGestureIndex = 0;
   let themeGestureDragStartX = 0;
   let themeGestureDragStartY = 0;
@@ -9483,6 +9642,102 @@
     });
   }
 
+  function getOtherSettingsGestureItems() {
+    return Array.from(document.querySelectorAll(
+      "#otherSettingsCategoryView [data-other-settings-category]"
+    ));
+  }
+
+  function setOtherSettingsGestureSelection(index) {
+    const items = getOtherSettingsGestureItems();
+    if (!items.length) return;
+    otherSettingsGestureIndex = Math.max(0, Math.min(items.length - 1, index));
+    items.forEach((item, itemIndex) => {
+      item.classList.toggle("gesture-selected", itemIndex === otherSettingsGestureIndex);
+    });
+    const selected = items[otherSettingsGestureIndex];
+    const label = document.getElementById("otherSettingsGestureSelection");
+    if (label) label.textContent = "Вибрано: " + selected.textContent.trim();
+    selected.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function initializeOtherSettingsGestureSelection() {
+    otherSettingsGestureIndex = 0;
+    getOtherSettingsGestureItems().forEach(item => item.classList.remove("gesture-selected"));
+    const label = document.getElementById("otherSettingsGestureSelection");
+    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
+  }
+
+  function initOtherSettingsGesturePad() {
+    const pad = document.getElementById("otherSettingsGesturePad");
+    if (!pad) return;
+    let dragging = false;
+    let moved = false;
+    let axis = "";
+    let startX = 0;
+    let startY = 0;
+    let startIndex = 0;
+
+    pad.addEventListener("pointerdown", event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      event.preventDefault();
+      dragging = true;
+      moved = false;
+      axis = "";
+      startX = event.clientX;
+      startY = event.clientY;
+      startIndex = otherSettingsGestureIndex;
+      pad.classList.add("dragging");
+      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    pad.addEventListener("pointermove", event => {
+      if (!dragging) return;
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      if (!axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 10) {
+        axis = Math.abs(deltaX) > Math.abs(deltaY) ? "horizontal" : "vertical";
+      }
+      if (axis === "horizontal") {
+        dragging = false;
+        moved = false;
+        axis = "";
+        pad.classList.remove("dragging");
+        try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+        return;
+      }
+      if (axis !== "vertical") return;
+      event.preventDefault();
+      if (Math.abs(deltaY) > 10) moved = true;
+      setOtherSettingsGestureSelection(startIndex + Math.round(deltaY / 42));
+    });
+
+    const finishGesture = event => {
+      if (!dragging) return;
+      dragging = false;
+      axis = "";
+      pad.classList.remove("dragging");
+      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (event.type === "pointercancel" || moved) return;
+      getOtherSettingsGestureItems()[otherSettingsGestureIndex]?.click();
+    };
+
+    pad.addEventListener("pointerup", finishGesture);
+    pad.addEventListener("pointercancel", finishGesture);
+    pad.addEventListener("keydown", event => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        setOtherSettingsGestureSelection(
+          otherSettingsGestureIndex + (event.key === "ArrowDown" ? 1 : -1)
+        );
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        getOtherSettingsGestureItems()[otherSettingsGestureIndex]?.click();
+      }
+    });
+  }
+
   function getThemeGestureItems() {
     const selector = activeThemeCategory
       ? "#themeOptionsList .theme-option-button, #savedCustomThemesList [data-action='choose-saved-custom-theme']"
@@ -10522,6 +10777,7 @@
     document.getElementById("otherSettingsPanelView").classList.add("hidden");
     document.querySelectorAll("[data-other-settings-panel]").forEach(panel => panel.classList.add("hidden"));
     updateOtherSettingsHeader();
+    initializeOtherSettingsGestureSelection();
     scrollAppToTop();
   }
 
@@ -10546,6 +10802,7 @@
     document.getElementById("otherSettingsCategoryView").classList.remove("hidden");
     document.getElementById("otherSettingsPanelView").classList.add("hidden");
     document.querySelectorAll("[data-other-settings-panel]").forEach(panel => panel.classList.add("hidden"));
+    initializeOtherSettingsGestureSelection();
   }
 
   function canUsePageBackSwipe() {
@@ -12967,6 +13224,7 @@
   initGestureMenuPad();
   initManagementGesturePad();
   initHistoryGesturePad();
+  initOtherSettingsGesturePad();
   initThemeGesturePad();
   initAndroidThemeTouchSelection();
   initPointerNavigationSelection();
