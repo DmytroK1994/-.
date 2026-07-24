@@ -4196,6 +4196,18 @@
     .app-dialog-actions button {
       margin: 0;
     }
+    .app-dialog.has-alternative .app-dialog-actions {
+      grid-template-columns: 1fr;
+    }
+    .app-dialog.has-alternative #appDialogConfirmBtn {
+      order: 1;
+    }
+    .app-dialog.has-alternative #appDialogAlternativeBtn {
+      order: 2;
+    }
+    .app-dialog.has-alternative #appDialogCancelBtn {
+      order: 3;
+    }
     @keyframes app-dialog-in {
       from { opacity: 0; transform: translateY(12px) scale(.97); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -4649,7 +4661,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.94</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.96</span></div>
     </div>
   </div>
 
@@ -4899,6 +4911,7 @@
       <input class="app-dialog-input hidden" id="appDialogInput" maxlength="40" autocomplete="off" />
       <div class="app-dialog-actions">
         <button class="secondary" id="appDialogCancelBtn">Скасувати</button>
+        <button class="secondary hidden" id="appDialogAlternativeBtn">Інший варіант</button>
         <button id="appDialogConfirmBtn">Підтвердити</button>
       </div>
     </div>
@@ -4914,7 +4927,7 @@
         <li>поточний підрахунок;</li>
         <li>всю історію підрахунків.</li>
       </ul>
-      <div class="reset-final-warning">Цю дію неможливо скасувати. Відновити дані можна буде лише з попередньо збереженої резервної копії.</div>
+      <div class="reset-final-warning">Перед очищенням програма автоматично збереже резервну копію в кошику. Її можна буде відновити протягом вибраного терміну зберігання.</div>
       <div class="reset-confirmation-field">
         <label for="resetConfirmationInput">Щоб розблокувати видалення, введи слово <span class="reset-confirmation-word">ВИДАЛИТИ</span></label>
         <input id="resetConfirmationInput" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ВИДАЛИТИ" />
@@ -5389,7 +5402,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.94</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.96</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5419,8 +5432,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.94</span></div>
-            <div class="small">Перероблено вибір тем на Android через єдиний нативний обробник короткого дотику.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.96</span></div>
+            <div class="small">Додано вибір між повною резервною копією та окремою копією лише найменувань.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5491,7 +5504,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.94";
+  const APP_VERSION = "1.96";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5520,6 +5533,30 @@
   const DEMO_TRASH_KEY = "warehouseJournalDemoTrashV1";
   const TRASH_RETENTION_KEY = "warehouseJournalTrashRetention";
   const TRASH_CUSTOM_DAYS_KEY = "warehouseJournalTrashCustomDays";
+  const BACKUP_FORMAT = "oblik-zalyshkiv-backup";
+  const BACKUP_SCHEMA_VERSION = 2;
+  const BACKUP_SETTING_KEYS = [
+    THEME_KEY,
+    CUSTOM_THEME_KEY,
+    CUSTOM_COMPONENT_STYLES_KEY,
+    CUSTOM_THEME_LIBRARY_KEY,
+    ACTIVE_NAMED_CUSTOM_THEME_KEY,
+    FAVORITE_THEMES_KEY,
+    BACK_NAV_KEY,
+    JOYSTICK_MODE_KEY,
+    MENU_STYLE_KEY,
+    MENU_SIDE_KEY,
+    NAV_BUTTON_WIDTH_KEY,
+    NAV_BUTTON_SIZE_KEY,
+    MENU_BUTTON_SIZE_KEY,
+    SETTINGS_BUTTON_SIZE_KEY,
+    THEMES_BUTTON_SIZE_KEY,
+    LAST_ENTRY_UNIT_KEY,
+    ENTRY_UNIT_VISIBILITY_KEY,
+    ENTRY_SECTION_STATE_KEY,
+    TRASH_RETENTION_KEY,
+    TRASH_CUSTOM_DAYS_KEY
+  ];
   const DAY_MS = 24 * 60 * 60 * 1000;
   const THEMES = [
     "dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper",
@@ -6748,6 +6785,7 @@
   let appDialogResolver = null;
   let appDialogPreviousFocus = null;
   let appDialogPromptMode = false;
+  let appDialogAlternativeResult = null;
   let toastTimer = 0;
   let successCheckTimer = 0;
   const editReturnScroll = { entry: null, product: null };
@@ -7332,6 +7370,11 @@
       days.slice().reverse().forEach(day => {
         if (!state.days.some(existing => existing.id === day.id)) state.days.unshift(day);
       });
+    } else if (item.type === "backup" && item.payload?.backup) {
+      const backup = parseBackupPayload(item.payload.backup);
+      state = normalizeState(cloneData(backup.state));
+      restoreBackupSettings(backup.settings);
+      ensureActiveDay();
     } else if (item.type === "full-state" && item.payload?.state) {
       state = normalizeState(cloneData(item.payload.state));
     }
@@ -7422,15 +7465,21 @@
 
   function normalizeState(source) {
     const normalized = source && typeof source === "object" ? source : {};
-    normalized.products = Array.isArray(normalized.products) ? normalized.products : [];
-    normalized.days = Array.isArray(normalized.days) ? normalized.days : [];
+    normalized.products = Array.isArray(normalized.products)
+      ? normalized.products.filter(product => product && typeof product === "object")
+      : [];
+    normalized.days = Array.isArray(normalized.days)
+      ? normalized.days.filter(day => day && typeof day === "object")
+      : [];
     normalized.activeDayId = normalized.activeDayId || null;
 
     normalized.products.forEach(product => {
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
     });
     normalized.days.forEach(day => {
-      day.entries = Array.isArray(day.entries) ? day.entries : [];
+      day.entries = Array.isArray(day.entries)
+        ? day.entries.filter(entry => entry && typeof entry === "object")
+        : [];
       day.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
       });
@@ -7599,6 +7648,8 @@
     message = "",
     confirmText = "Підтвердити",
     cancelText = "Скасувати",
+    alternativeText = "",
+    alternativeResult = null,
     danger = false
   } = {}) {
     if (appDialogResolver) appDialogResolver(appDialogPromptMode ? null : false);
@@ -7606,8 +7657,10 @@
     const overlay = document.getElementById("appDialogOverlay");
     const dialog = document.getElementById("appDialog");
     const confirmButton = document.getElementById("appDialogConfirmBtn");
+    const alternativeButton = document.getElementById("appDialogAlternativeBtn");
     const input = document.getElementById("appDialogInput");
     appDialogPromptMode = false;
+    appDialogAlternativeResult = alternativeResult;
     appDialogPreviousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     document.getElementById("appDialogLabel").textContent = label;
@@ -7615,8 +7668,11 @@
     document.getElementById("appDialogMessage").textContent = message;
     confirmButton.textContent = confirmText;
     document.getElementById("appDialogCancelBtn").textContent = cancelText;
+    alternativeButton.textContent = alternativeText || "Інший варіант";
+    alternativeButton.classList.toggle("hidden", !alternativeText);
     confirmButton.classList.toggle("danger", danger);
     dialog.classList.toggle("destructive", danger);
+    dialog.classList.toggle("has-alternative", Boolean(alternativeText));
     input.classList.add("hidden");
     input.value = "";
     overlay.classList.remove("hidden");
@@ -7666,10 +7722,13 @@
     const resolve = appDialogResolver;
     appDialogResolver = null;
     appDialogPromptMode = false;
+    appDialogAlternativeResult = null;
     document.getElementById("appDialogOverlay").classList.add("hidden");
     document.body.classList.remove("app-dialog-open");
     input.classList.add("hidden");
-    resolve(promptMode ? (result || null) : Boolean(result));
+    document.getElementById("appDialogAlternativeBtn").classList.add("hidden");
+    document.getElementById("appDialog").classList.remove("has-alternative");
+    resolve(promptMode ? (result || null) : result);
     if (appDialogPreviousFocus?.isConnected) appDialogPreviousFocus.focus({ preventScroll: true });
     appDialogPreviousFocus = null;
   }
@@ -9869,8 +9928,97 @@
     toast("TXT-звіт створено");
   }
 
+  function createBackupPayload(scope = "full") {
+    const normalizedScope = scope === "products" ? "products" : "full";
+    const settings = {};
+    if (normalizedScope === "full") {
+      BACKUP_SETTING_KEYS.forEach(key => {
+        try {
+          const value = localStorage.getItem(key);
+          if (value !== null) settings[key] = value;
+        } catch (error) {}
+      });
+    }
+    return {
+      format: BACKUP_FORMAT,
+      schemaVersion: BACKUP_SCHEMA_VERSION,
+      scope: normalizedScope,
+      appVersion: APP_VERSION,
+      exportedAt: new Date().toISOString(),
+      state: normalizedScope === "products"
+        ? { products: cloneData(state.products), days: [], activeDayId: null }
+        : cloneData(state),
+      settings
+    };
+  }
+
+  function backupText(scope = "full") {
+    return JSON.stringify(createBackupPayload(scope), null, 2);
+  }
+
+  function parseBackupPayload(raw) {
+    let data = raw;
+    if (typeof data === "string") {
+      const cleaned = data.replace(/^\uFEFF/, "").trim();
+      if (!cleaned) throw new Error("empty-backup");
+      data = JSON.parse(cleaned);
+      if (typeof data === "string") data = JSON.parse(data.replace(/^\uFEFF/, "").trim());
+    }
+    if (!data || typeof data !== "object") throw new Error("bad-backup");
+
+    const wrappedState = data.state && typeof data.state === "object" ? data.state : null;
+    const nestedState = data.data?.state && typeof data.data.state === "object" ? data.data.state : null;
+    const backupState = wrappedState || nestedState || data;
+    if (!Array.isArray(backupState.products) || !Array.isArray(backupState.days)) {
+      throw new Error("bad-backup-structure");
+    }
+    const settings = data.settings && typeof data.settings === "object" && !Array.isArray(data.settings)
+      ? data.settings
+      : {};
+    const scope = data.scope === "products" ? "products" : "full";
+    return { state: backupState, settings, scope };
+  }
+
+  function restoreBackupSettings(settings) {
+    if (!settings || typeof settings !== "object") return;
+    BACKUP_SETTING_KEYS.forEach(key => {
+      const value = settings[key];
+      if (typeof value !== "string") return;
+      if (key === THEME_KEY && !THEMES.includes(value)) return;
+      try { localStorage.setItem(key, value); } catch (error) {}
+    });
+
+    let restoredTheme = "dark";
+    try { restoredTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (error) {}
+    if (restoredTheme === "custom") {
+      try {
+        const activeTheme = JSON.parse(localStorage.getItem(ACTIVE_NAMED_CUSTOM_THEME_KEY) || "null");
+        if (activeTheme?.id) setActiveNamedCustomTheme(activeTheme.id, activeTheme.name || "");
+        else setActiveNamedCustomTheme();
+      } catch (error) {
+        setActiveNamedCustomTheme();
+      }
+    }
+    applyTheme(THEMES.includes(restoredTheme) ? restoredTheme : "dark", false);
+    applyJoystickMode();
+    applyMenuStyle();
+    applyNavigationButtonLayout();
+    applyEntryUnitVisibility();
+    applyEntrySectionState();
+  }
+
+  function readBackupFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error || new Error("file-read-error"));
+      reader.onabort = () => reject(new Error("file-read-aborted"));
+      reader.readAsText(file, "UTF-8");
+    });
+  }
+
   function copyBackup() {
-    const text = JSON.stringify(state, null, 2);
+    const text = backupText("full");
     navigator.clipboard.writeText(text).then(() => {
       toast("Текст резервної копії скопійовано");
     }).catch(() => {
@@ -9879,34 +10027,55 @@
     });
   }
 
-  function downloadBackup() {
-    downloadFile(`sklad-backup-${todayISO()}.json`, JSON.stringify(state, null, 2), "application/json;charset=utf-8");
-    toast("Файл резервної копії створено");
+  async function downloadBackup() {
+    const choice = await showAppDialog({
+      label: "Резервна копія",
+      title: "Що зберегти у файлі?",
+      message: "Повна копія містить весь облік, історію, теми та налаштування. Копія найменувань містить лише список назв, одиниці виміру та типові кількості.",
+      confirmText: "Повна копія",
+      alternativeText: "Лише найменування",
+      alternativeResult: "products",
+      cancelText: "Скасувати"
+    });
+    if (!choice) return;
+
+    const scope = choice === "products" ? "products" : "full";
+    const filename = scope === "products"
+      ? `sklad-names-${todayISO()}.json`
+      : `sklad-backup-${todayISO()}.json`;
+    downloadFile(filename, backupText(scope), "application/json;charset=utf-8");
+    toast(scope === "products" ? "Копію найменувань створено" : "Повну резервну копію створено");
   }
 
   async function restoreBackup(raw, sourceName = "резервної копії") {
-    let data;
+    let backup;
     try {
-      data = JSON.parse(raw);
-      if (!data || typeof data !== "object" || !Array.isArray(data.products) || !Array.isArray(data.days)) {
-        throw new Error("bad-backup");
-      }
+      backup = parseBackupPayload(raw);
     } catch (error) {
       toast("Це не дійсний файл резервної копії", true);
       return false;
     }
 
+    const productsOnly = backup.scope === "products";
     const confirmed = await showAppDialog({
       label: "Відновлення даних",
-      title: "Відновити резервну копію?",
-      message: `Поточні дані буде замінено даними з ${sourceName}. Попередній стан збережеться в кошику на ${trashRetentionDurationText()}.`,
+      title: productsOnly ? "Відновити найменування?" : "Відновити резервну копію?",
+      message: productsOnly
+        ? `Список найменувань буде замінено даними з ${sourceName}. Поточні підрахунки та історія залишаться без змін. Попередній стан збережеться в кошику на ${trashRetentionDurationText()}.`
+        : `Поточні дані буде замінено даними з ${sourceName}. Попередній стан збережеться в кошику на ${trashRetentionDurationText()}.`,
       confirmText: "Відновити",
       danger: true
     });
     if (!confirmed) return false;
 
     if (!putInTrash("full-state", "Дані до відновлення резервної копії", { state })) return false;
-    state = normalizeState(data);
+    if (productsOnly) {
+      const importedState = normalizeState(cloneData(backup.state));
+      state.products = importedState.products;
+    } else {
+      state = normalizeState(cloneData(backup.state));
+      restoreBackupSettings(backup.settings);
+    }
     ensureActiveDay();
     save();
     document.getElementById("importData").value = "";
@@ -9942,7 +10111,7 @@
     }
 
     try {
-      const raw = await file.text();
+      const raw = await readBackupFileAsText(file);
       const restored = await restoreBackup(raw, `файлу «${file.name}»`);
       if (restored) {
         fileName.textContent = `Відновлено з файлу: ${file.name}`;
@@ -9958,7 +10127,8 @@
     closeResetConfirmation();
     productSelectMode = false;
     selectedProductIds.clear();
-    if (!putInTrash("full-state", "Дані до повного очищення програми", { state })) return;
+    const recoveryBackup = createBackupPayload();
+    if (!putInTrash("backup", "Резервна копія до повного очищення програми", { backup: recoveryBackup })) return;
     if (demoModeActive) {
       state = { products: [], days: [], activeDayId: null };
       save();
@@ -10727,6 +10897,9 @@
   document.getElementById("importBtn").addEventListener("click", importBackup);
   document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
   document.getElementById("appDialogCancelBtn").addEventListener("click", () => closeAppDialog(false));
+  document.getElementById("appDialogAlternativeBtn").addEventListener("click", () => {
+    closeAppDialog(appDialogAlternativeResult);
+  });
   document.getElementById("appDialogConfirmBtn").addEventListener("click", () => closeAppDialog(true));
   document.getElementById("appDialogInput").addEventListener("keydown", event => {
     if (event.key !== "Enter") return;
