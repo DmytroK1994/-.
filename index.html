@@ -5389,6 +5389,24 @@
       grid-template-columns: 1fr 1fr;
       gap: 9px 10px;
     }
+    .order-entry-dialog-grid > div {
+      min-width: 0;
+    }
+    .order-entry-dialog-grid input,
+    .order-entry-dialog-grid select,
+    .order-entry-dialog-grid textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      margin-right: 0;
+      margin-left: 0;
+    }
+    #orderEntryNeedDate {
+      padding-right: 10px;
+      padding-left: 10px;
+      text-align: center;
+    }
     .order-entry-dialog-grid .order-entry-comment-field {
       grid-column: 1 / -1;
     }
@@ -6249,7 +6267,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.22</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.23</span></div>
     </div>
   </div>
 
@@ -6311,7 +6329,7 @@
           <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
         </div>
       </div>
-      <button type="button" class="header-about-version hidden" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.22</span></button>
+      <button type="button" class="header-about-version hidden" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.23</span></button>
       <div class="compact-header-spacer" aria-hidden="true"></div>
     </div>
   </div>
@@ -7174,6 +7192,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 2.23</h3>
+          <ul>
+            <li>поле «Дата потреби» у вікні додавання замовлення вирівняно всередині картки;</li>
+            <li>для полів вікна зафіксовано однакову ширину та симетричні відступи на телефоні.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
           <h3>Версія 2.22</h3>
           <ul>
             <li>виправлено макет попереднього перегляду замовлення;</li>
@@ -7443,7 +7468,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.22";
+  const APP_VERSION = "2.23";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
