@@ -3684,6 +3684,7 @@
       inset: 0;
       z-index: 200;
       overflow: auto;
+      overflow-x: hidden;
       overscroll-behavior-x: none;
       background: #d7dbe1;
       color: #111;
@@ -3756,6 +3757,7 @@
     }
     .preview-sheet {
       width: min(100%, 210mm);
+      max-width: 100%;
       min-height: min(297mm, calc((100vw - 24px) * 1.414));
       margin: 0 auto;
       padding: clamp(10px, 3vw, 7mm);
@@ -3771,6 +3773,8 @@
     }
     .preview-report-table {
       width: 100%;
+      max-width: 100%;
+      overflow: hidden;
       font-size: 9px;
       line-height: 1.15;
     }
@@ -4813,12 +4817,14 @@
     .order-report-table .preview-table-header-row,
     .order-print-row {
       display:grid;
-      grid-template-columns:8mm 24mm minmax(42mm,1.25fr) 25mm minmax(60mm,1.8fr);
+      width:100%;
+      max-width:100%;
+      grid-template-columns:6% 13% 28% 14% 39%;
     }
     .order-report-table.order-long-names .print-table-header-row,
     .order-report-table.order-long-names .preview-table-header-row,
     .order-report-table.order-long-names .order-print-row {
-      grid-template-columns:8mm 22mm minmax(50mm,1.45fr) 23mm minmax(52mm,1.55fr);
+      grid-template-columns:6% 12% 33% 13% 36%;
     }
     .order-print-row { border:1px solid #aaa; border-bottom:0; break-inside:avoid; page-break-inside:avoid; }
     .order-report-table .print-table-header-row > div,
@@ -4851,6 +4857,16 @@
     }
     .order-status-badge { display:inline-block; font-weight:750; }
     .order-entry-context { display:flex; flex-wrap:wrap; gap:5px 10px; margin:4px 0; font-size:.82rem; color:var(--muted); }
+    @media print {
+      .order-report-table .print-table-header-row,
+      .order-report-table .order-print-row {
+        grid-template-columns:8mm 24mm minmax(42mm,1.25fr) 25mm minmax(60mm,1.8fr);
+      }
+      .order-report-table.order-long-names .print-table-header-row,
+      .order-report-table.order-long-names .order-print-row {
+        grid-template-columns:8mm 22mm minmax(50mm,1.45fr) 23mm minmax(52mm,1.55fr);
+      }
+    }
     @media (max-width:600px) {
       .entry-form-heading-row { align-items:stretch; }
       .order-warehouse-control { width:min(47%,190px); }
@@ -4895,7 +4911,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.02</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.03</span></div>
     </div>
   </div>
 
@@ -5692,7 +5708,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.02</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.03</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5722,8 +5738,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.02</span></div>
-            <div class="small">Під час введення кількості над мобільною клавіатурою з’являється швидка кнопка «Додати».</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.03</span></div>
+            <div class="small">Таблиця замовлення тепер повністю вміщується у попередній перегляд без горизонтального прокручування.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5830,7 +5846,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.02";
+  const APP_VERSION = "2.03";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
