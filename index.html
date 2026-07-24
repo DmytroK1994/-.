@@ -4826,7 +4826,7 @@
     .order-report-table.order-long-names .order-print-row {
       grid-template-columns:6% 12% 33% 13% 36%;
     }
-    .order-print-row { border:1px solid #aaa; border-bottom:0; break-inside:avoid; page-break-inside:avoid; }
+    .order-print-row { border:1px solid #aaa; break-inside:avoid; page-break-inside:avoid; }
     .order-report-table .print-table-header-row > div,
     .order-report-table .preview-table-header-row > div,
     .order-print-row > div {
@@ -4843,8 +4843,6 @@
     .order-report-table .preview-table-header-row > div:last-child,
     .order-print-row > div:last-child { border-left:0; border-right:0; text-align:left; }
     .order-warehouse-report-row { padding:7px 8px; border:1px solid #999; border-bottom:0; background:#ececec; color:#111; font-weight:800; text-align:left; break-inside:avoid; page-break-inside:avoid; }
-    .order-report-table #printTodayList > :last-child,
-    .order-report-table #previewTodayList > :last-child { border-bottom:1px solid #999; }
     .print-report-header h1.order-document-title,
     .preview-report-title.order-document-title {
       width:100%;
@@ -4856,6 +4854,52 @@
       text-transform:uppercase;
     }
     .order-status-badge { display:inline-block; font-weight:750; }
+    .order-print-row.order-status-important {
+      background:#e8f1ff;
+    }
+    .order-print-row.order-status-urgent {
+      background:#fff3bf;
+    }
+    .order-print-row.order-status-critical {
+      background:#ffd9d9;
+      color:#7f1d1d;
+      font-weight:750;
+    }
+    .order-print-row.order-status-important,
+    .order-print-row.order-status-urgent,
+    .order-print-row.order-status-critical {
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    .order-document-footer {
+      margin-top:14px;
+      padding-top:10px;
+      border-top:1px solid #999;
+      color:#111;
+      font-size:11px;
+      line-height:1.35;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .order-document-notes {
+      min-height:34px;
+      margin-bottom:18px;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+    .order-document-signatures {
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      gap:24px;
+      align-items:end;
+    }
+    .order-signature-line {
+      display:inline-block;
+      min-width:110px;
+      margin-left:6px;
+      border-bottom:1px solid #111;
+    }
+    .order-document-signatures > div:last-child { text-align:right; }
     .order-entry-context { display:flex; flex-wrap:wrap; gap:5px 10px; margin:4px 0; font-size:.82rem; color:var(--muted); }
     @media print {
       .order-report-table .print-table-header-row,
@@ -4934,7 +4978,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.04</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.05</span></div>
     </div>
   </div>
 
@@ -5143,23 +5187,12 @@
         </div>
         <div class="entry-section-content" id="entrySectionOrderDetails">
           <div class="order-document-fields hidden" id="orderDocumentFields">
-            <label for="orderResponsible">Відповідальний</label>
-            <input id="orderResponsible" placeholder="Ім’я відповідального" autocomplete="name" />
-          </div>
-          <div class="order-entry-fields hidden" id="orderEntryFields">
-            <div>
-              <label for="orderStatus">Статус</label>
-              <select id="orderStatus">
-                <option value="normal">Звичайно</option>
-                <option value="important">Важливо</option>
-                <option value="urgent">Терміново</option>
-                <option value="critical">Критично</option>
-              </select>
-            </div>
-            <div>
-              <label for="orderNeededBy">Дата потреби</label>
-              <input id="orderNeededBy" type="date" />
-            </div>
+            <label for="orderResponsible">Відповідальний — прізвище та ініціали</label>
+            <input id="orderResponsible" placeholder="Наприклад: Іваненко І. І." autocomplete="name" />
+            <label for="orderDate">Дата замовлення</label>
+            <input id="orderDate" type="date" />
+            <label for="orderNotes">Примітки до замовлення</label>
+            <textarea id="orderNotes" rows="3" placeholder="Загальні примітки, які будуть у PDF"></textarea>
           </div>
           <div id="entryUnitControl" class="hidden">
             <label for="entryUnit">Одиниця виміру</label>
@@ -5731,7 +5764,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.04</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.05</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5761,8 +5794,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.04</span></div>
-            <div class="small">Заголовок «Додати до замовлення» не переноситься на телефоні, а вибір складу став більшим і помітнішим.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.05</span></div>
+            <div class="small">Замовлення отримало загальну дату й примітки, нижній блок відповідального та кольорове позначення важливості рядків у PDF.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5836,10 +5869,6 @@
             <option value="critical">Критично</option>
           </select>
         </div>
-        <div>
-          <label for="quickEditNeededBy">Дата потреби</label>
-          <input id="quickEditNeededBy" type="date" />
-        </div>
       </div>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
@@ -5869,7 +5898,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.04";
+  const APP_VERSION = "2.05";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7202,10 +7231,7 @@
       "#kgPerPiece",
       "#directKg",
       "#comment",
-      "#entryUnit",
-      "#orderResponsible",
-      "#orderStatus",
-      "#orderNeededBy"
+      "#entryUnit"
     ].join(", ")));
   }
 
@@ -7945,13 +7971,14 @@
     });
     normalized.orders.forEach(order => {
       order.responsible = String(order.responsible || "");
+      order.notes = String(order.notes || "");
       order.entries = Array.isArray(order.entries)
         ? order.entries.filter(entry => entry && typeof entry === "object")
         : [];
       order.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
         entry.orderStatus = normalizeOrderStatus(entry.orderStatus);
-        entry.neededBy = String(entry.neededBy || "");
+        delete entry.neededBy;
         if (entry.warehouseId) {
           const warehouse = normalized.warehouses.find(item => item.id === entry.warehouseId);
           if (warehouse) entry.warehouseName = warehouse.name;
@@ -8389,7 +8416,7 @@
     const orders = workspaceIsOrders();
     const label = workspaceLabel();
     document.body.classList.toggle("workspace-orders", orders);
-    ["orderWarehouseControl", "orderDocumentFields", "orderEntryFields"].forEach(id => {
+    ["orderWarehouseControl", "orderDocumentFields"].forEach(id => {
       document.getElementById(id)?.classList.toggle("hidden", !orders);
     });
     const unitVisible = orders || getEntryUnitVisibility() === "visible";
@@ -8400,6 +8427,14 @@
     const responsibleInput = document.getElementById("orderResponsible");
     if (responsibleInput && document.activeElement !== responsibleInput) {
       responsibleInput.value = activeDocument?.responsible || "";
+    }
+    const orderDateInput = document.getElementById("orderDate");
+    if (orderDateInput && document.activeElement !== orderDateInput) {
+      orderDateInput.value = activeDocument?.date || todayISO();
+    }
+    const orderNotesInput = document.getElementById("orderNotes");
+    if (orderNotesInput && document.activeElement !== orderNotesInput) {
+      orderNotesInput.value = activeDocument?.notes || "";
     }
     const switcherLabel = document.getElementById("workspaceSwitcherLabel");
     if (switcherLabel) switcherLabel.textContent = label;
@@ -8451,7 +8486,7 @@
     if (workspaceIsOrders()) {
       if (!state.activeOrderId || !state.orders.some(order => order.id === state.activeOrderId)) {
         const id = uid();
-        state.orders.unshift({ id, date: todayISO(), createdAt: nowText(), responsible: "", entries: [] });
+        state.orders.unshift({ id, date: todayISO(), createdAt: nowText(), responsible: "", notes: "", entries: [] });
         state.activeOrderId = id;
         saveOnly();
       }
@@ -9889,7 +9924,7 @@
     if (!confirmed) return;
 
     const id = uid();
-    const documentData = { id, date: todayISO(), createdAt: nowText(), responsible: "", entries: [] };
+    const documentData = { id, date: todayISO(), createdAt: nowText(), responsible: "", notes: "", entries: [] };
     if (orders) {
       state.orders.unshift(documentData);
       state.activeOrderId = id;
@@ -10161,7 +10196,6 @@
     renderWarehouseOptions();
     document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
     document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
-    document.getElementById("quickEditNeededBy").value = entry.neededBy || "";
   }
 
   function renderQuickEditTabs(entries, selectedId) {
@@ -10246,8 +10280,7 @@
       Object.assign(updated, {
         warehouseId,
         warehouseName: warehouse.name,
-        orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value),
-        neededBy: document.getElementById("quickEditNeededBy").value || ""
+        orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value)
       });
     }
     recalcEntry(updated);
@@ -10306,8 +10339,7 @@
       Object.assign(entryData, {
         warehouseId,
         warehouseName: warehouse.name,
-        orderStatus: normalizeOrderStatus(document.getElementById("orderStatus").value),
-        neededBy: document.getElementById("orderNeededBy").value || ""
+        orderStatus: "normal"
       });
     }
 
@@ -10329,6 +10361,7 @@
         restoreEditPosition("entry");
         return;
       }
+      if (workspaceIsOrders()) entryData.orderStatus = normalizeOrderStatus(old.orderStatus);
       Object.assign(old, entryData, { editedAt: nowText(), editedTimestamp: new Date().toISOString() });
       toast("Запис оновлено");
     } else {
@@ -10364,8 +10397,6 @@
     document.getElementById("comment").value = e.comment || "";
     if (workspaceIsOrders()) {
       document.getElementById("orderWarehouseSelect").value = e.warehouseId || "";
-      document.getElementById("orderStatus").value = normalizeOrderStatus(e.orderStatus);
-      document.getElementById("orderNeededBy").value = e.neededBy || "";
     }
     document.getElementById("formTitle").textContent = "Редагувати запис";
     document.getElementById("saveEntryBtn").textContent = "Зберегти зміни";
@@ -10410,8 +10441,6 @@
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
     document.getElementById("comment").value = "";
-    document.getElementById("orderStatus").value = "normal";
-    document.getElementById("orderNeededBy").value = "";
     document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Додати до замовлення" : "Додати до інвентаризації";
     document.getElementById("saveEntryBtn").textContent = "Додати";
     fillDefaultWeights();
@@ -11136,8 +11165,17 @@
   }
 
   function buildOrderDocumentRows(order) {
+    const footer = `
+      <div class="order-document-footer">
+        <div class="order-document-notes"><strong>Примітки:</strong>${order.notes ? ` ${escapeHtml(order.notes)}` : ""}</div>
+        <div class="order-document-signatures">
+          <div><strong>Відповідальний:</strong> ${escapeHtml(order.responsible || "________________")}</div>
+          <div><strong>Підпис відповідального:</strong><span class="order-signature-line">&nbsp;</span></div>
+        </div>
+      </div>
+    `;
     if (!order.entries.length) {
-      return `<div class="order-warehouse-report-row">Записів немає.</div>`;
+      return `<div class="order-warehouse-report-row">Записів немає.</div>${footer}`;
     }
     const warehouseGroups = new Map();
     order.entries.forEach(entry => {
@@ -11148,16 +11186,16 @@
       warehouseGroups.get(key).entries.push(entry);
     });
     let index = 0;
-    return Array.from(warehouseGroups.values()).map(group => {
+    const orderRows = Array.from(warehouseGroups.values()).map(group => {
       const rows = group.entries.map(entry => {
         index += 1;
         const commentParts = [];
         if (entry.comment) commentParts.push(entry.comment);
-        if (entry.neededBy) commentParts.push(`Потрібно до: ${niceDate(entry.neededBy)}`);
+        const status = normalizeOrderStatus(entry.orderStatus);
         return `
-          <div class="order-print-row">
+          <div class="order-print-row order-status-${status}">
             <div>${index}</div>
-            <div><span class="order-status-badge">${escapeHtml(orderStatusLabel(entry.orderStatus))}</span></div>
+            <div><span class="order-status-badge">${escapeHtml(orderStatusLabel(status))}</span></div>
             <div>${escapeHtml(entry.productName)}</div>
             <div>${formatQuantity(entry.totalKg, entry.unit)}</div>
             <div>${escapeHtml(commentParts.join(" · "))}</div>
@@ -11169,6 +11207,7 @@
         : "";
       return `${warehouseHeading}${rows}`;
     }).join("");
+    return `${orderRows}${footer}`;
   }
 
   function applyDocumentLayout(documentData, orders) {
@@ -11190,14 +11229,10 @@
     });
     document.getElementById("printReportTitle")?.classList.toggle("order-document-title", orders);
     document.getElementById("previewReportTitle")?.classList.toggle("order-document-title", orders);
-    const metaHtml = orders
-      ? `<div><strong>Відповідальний:</strong> ${escapeHtml(documentData.responsible || "Не вказано")}</div>
-         <div><strong>Дата формування:</strong> ${escapeHtml(new Date().toLocaleString("uk-UA"))}</div>`
-      : "";
     ["printOrderMeta", "previewOrderMeta"].forEach(id => {
       const meta = document.getElementById(id);
-      meta.innerHTML = metaHtml;
-      meta.classList.toggle("hidden", !orders);
+      meta.innerHTML = "";
+      meta.classList.add("hidden");
     });
   }
 
@@ -11247,7 +11282,7 @@
         <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}" data-entry-id="${e.id}">
           <div class="entry-row-details">
             <div class="small">${relativeEdited ? `<span class="edited-relative-label" data-edited-timestamp="${escapeHtml(e.editedTimestamp)}">${escapeHtml(relativeEdited)}</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
-            ${orders ? `<div class="order-entry-context"><span>Склад: ${escapeHtml(e.warehouseName || "не вказано")}</span><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span>${e.neededBy ? `<span>Потрібно до: ${niceDate(e.neededBy)}</span>` : ""}</div>` : ""}
+            ${orders ? `<div class="order-entry-context"><span>Склад: ${escapeHtml(e.warehouseName || "не вказано")}</span><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span></div>` : ""}
           </div>
           <div class="actions entry-actions">
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
@@ -11703,6 +11738,17 @@
   document.getElementById("orderResponsible").addEventListener("input", event => {
     if (!workspaceIsOrders()) return;
     getActiveDay().responsible = event.target.value;
+    saveOnly();
+  });
+  document.getElementById("orderDate").addEventListener("change", event => {
+    if (!workspaceIsOrders() || !event.target.value) return;
+    getActiveDay().date = event.target.value;
+    saveOnly();
+    renderToday();
+  });
+  document.getElementById("orderNotes").addEventListener("input", event => {
+    if (!workspaceIsOrders()) return;
+    getActiveDay().notes = event.target.value;
     saveOnly();
   });
   document.getElementById("manageWarehousesBtn").addEventListener("click", () => {
