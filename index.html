@@ -832,6 +832,63 @@
       display: block;
       transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
+    #todayList .order-warehouse-list-group {
+      margin: 0 0 12px;
+    }
+    #todayList .order-warehouse-list-group > summary {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 10px 42px 10px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: 0 8px 20px var(--card-shadow);
+      cursor: pointer;
+      list-style: none;
+      touch-action: manipulation;
+    }
+    #todayList .order-warehouse-list-group > summary::-webkit-details-marker {
+      display: none;
+    }
+    #todayList .order-warehouse-list-group > summary::after {
+      content: "⌄";
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      color: var(--muted);
+      font-size: 20px;
+      font-weight: 900;
+      transform: translateY(-55%);
+    }
+    #todayList .order-warehouse-list-group[open] > summary::after {
+      content: "⌃";
+      transform: translateY(-42%);
+    }
+    #todayList .order-warehouse-group-title {
+      min-width: 0;
+      font-size: 16px;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #todayList .order-warehouse-group-count {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    #todayList .order-warehouse-group-content {
+      padding-top: 8px;
+    }
+    #todayList .order-warehouse-list-group:not([open]) .order-warehouse-group-content {
+      display: none;
+    }
     #todayList .report-item.recently-edited {
       background:
         linear-gradient(rgba(34, 197, 94, .15), rgba(34, 197, 94, .15)),
@@ -4982,7 +5039,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.06</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.07</span></div>
     </div>
   </div>
 
@@ -5768,7 +5825,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.06</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.07</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5798,8 +5855,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.06</span></div>
-            <div class="small">Вибір складу в замовленні став непрозорим і більшим, а назва вибраного складу тепер добре помітна та вирівняна по центру.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.07</span></div>
+            <div class="small">Позиції поточного замовлення тепер розділені за складами на окремі списки, які можна згортати й розгортати.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5902,7 +5959,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.06";
+  const APP_VERSION = "2.07";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7175,6 +7232,7 @@
   let themeGestureDragging = false;
   let themeGestureMoved = false;
   let themeGestureLastActivation = 0;
+  const orderWarehouseGroupOpenState = new Map();
   let workspaceMode = getWorkspaceModePreference();
   let currentPage = "today";
   let pageNavigationHistory = [];
@@ -11272,12 +11330,13 @@
       return;
     }
 
-    groups.forEach(g => {
+    const appendProductGroup = (g, target) => {
       const div = document.createElement("div");
       const isHighlighted = g.entries.some(entry => Boolean(entry.editedAt));
       div.className = `item report-item${isHighlighted ? " recently-edited" : ""}`;
       div.dataset.action = "open-quick-edit";
       div.dataset.productId = g.productId;
+      div.dataset.firstEntryId = g.entries[0]?.id || "";
 
       const entriesHtml = g.entries.map(e => {
         const isEditedEntry = Boolean(e.editedAt);
@@ -11286,7 +11345,7 @@
         <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}" data-entry-id="${e.id}">
           <div class="entry-row-details">
             <div class="small">${relativeEdited ? `<span class="edited-relative-label" data-edited-timestamp="${escapeHtml(e.editedTimestamp)}">${escapeHtml(relativeEdited)}</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
-            ${orders ? `<div class="order-entry-context"><span>Склад: ${escapeHtml(e.warehouseName || "не вказано")}</span><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span></div>` : ""}
+            ${orders ? `<div class="order-entry-context"><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span></div>` : ""}
           </div>
           <div class="actions entry-actions">
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
@@ -11306,7 +11365,48 @@
         <div class="report-item-content">${entriesHtml}</div>
       `;
 
-      list.appendChild(div);
+      target.appendChild(div);
+    };
+
+    if (!orders) {
+      groups.forEach(group => appendProductGroup(group, list));
+      return;
+    }
+
+    const warehouseGroups = new Map();
+    groups.forEach(group => {
+      const warehouseKey = group.warehouseId || `name:${group.warehouseName || "Без складу"}`;
+      if (!warehouseGroups.has(warehouseKey)) {
+        warehouseGroups.set(warehouseKey, {
+          name: group.warehouseName || "Без складу",
+          groups: []
+        });
+      }
+      warehouseGroups.get(warehouseKey).groups.push(group);
+    });
+
+    warehouseGroups.forEach((warehouseGroup, warehouseKey) => {
+      const details = document.createElement("details");
+      const stateKey = `${day.id || day.date}::${warehouseKey}`;
+      const entryCount = warehouseGroup.groups.reduce((sum, group) => sum + group.entries.length, 0);
+      details.className = "order-warehouse-list-group";
+      details.open = query ? true : orderWarehouseGroupOpenState.get(stateKey) !== false;
+
+      const summary = document.createElement("summary");
+      summary.innerHTML = `
+        <span class="order-warehouse-group-title">Склад: ${escapeHtml(warehouseGroup.name)}</span>
+        <span class="order-warehouse-group-count">${warehouseGroup.groups.length} поз. · ${entryCount} зап.</span>
+      `;
+
+      const content = document.createElement("div");
+      content.className = "order-warehouse-group-content";
+      warehouseGroup.groups.forEach(group => appendProductGroup(group, content));
+
+      details.append(summary, content);
+      details.addEventListener("toggle", () => {
+        if (!query) orderWarehouseGroupOpenState.set(stateKey, details.open);
+      });
+      list.appendChild(details);
     });
   }
 
@@ -11601,7 +11701,10 @@
     const quickEditCard = event.target.closest("[data-action='open-quick-edit']");
     if (quickEditCard && !event.target.closest("button")) {
       const entryRow = event.target.closest(".entry-row[data-entry-id]");
-      openQuickEdit(quickEditCard.dataset.productId, entryRow?.dataset.entryId || "");
+      openQuickEdit(
+        quickEditCard.dataset.productId,
+        entryRow?.dataset.entryId || quickEditCard.dataset.firstEntryId || ""
+      );
       return;
     }
 
