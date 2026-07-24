@@ -1180,12 +1180,14 @@
     }
     .product-info-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin-top: 10px;
     }
     .product-info-actions button {
       margin: 0;
+      padding-inline: 7px;
+      font-size: 12px;
     }
     .product-editor-heading {
       position: relative;
@@ -4184,20 +4186,6 @@
       border-top: 2px solid currentColor;
       border-left: 2px solid currentColor;
     }
-    #aboutPrevCardBtn::before {
-      transform: translateY(4px) rotate(45deg);
-    }
-    #aboutNextCardBtn::before {
-      transform: translateY(-4px) rotate(225deg);
-    }
-    #aboutPrevCardBtn,
-    #aboutNextCardBtn {
-      position: absolute;
-      right: 0;
-      left: 0;
-    }
-    #aboutPrevCardBtn { top: 0; }
-    #aboutNextCardBtn { bottom: 0; }
     .about-card-position {
       position: absolute;
       right: 10px;
@@ -4207,6 +4195,177 @@
       font-size: 10px;
       font-weight: 800;
       letter-spacing: .04em;
+    }
+    .about-version-button {
+      width: auto !important;
+      min-width: 0 !important;
+      min-height: 30px !important;
+      margin: 0 !important;
+      padding: 5px 9px !important;
+      border-color: var(--border) !important;
+      background: var(--surface-deep) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 12px !important;
+      text-align: left;
+    }
+    .about-single-description {
+      margin: auto 0;
+      padding: 16px 4px;
+      color: var(--text);
+      font-size: clamp(14px, 2.2vh, 17px);
+      line-height: 1.55;
+      text-align: left;
+    }
+    .about-single-description p {
+      margin: 0 0 12px;
+    }
+    .about-single-description p:last-child {
+      margin-bottom: 0;
+    }
+    .about-card-static {
+      justify-content: flex-start;
+      overflow-y: auto;
+      touch-action: pan-y;
+    }
+    .about-card-static .about-card-actions {
+      margin-top: auto;
+    }
+
+    .changelog-overlay,
+    .qr-transfer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 220;
+      display: grid;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      place-items: center;
+      background: var(--overlay);
+    }
+    .changelog-dialog,
+    .qr-transfer-dialog {
+      width: min(100%, 620px);
+      max-height: min(86dvh, 760px);
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 24px 70px var(--popover-shadow);
+    }
+    .changelog-dialog {
+      padding: 18px;
+    }
+    .changelog-header,
+    .qr-transfer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .changelog-header h2,
+    .qr-transfer-header h2 {
+      margin: 0;
+    }
+    .dialog-icon-close {
+      width: 34px !important;
+      min-width: 34px !important;
+      min-height: 34px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border-radius: 50% !important;
+      background: var(--surface-deep) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 22px !important;
+      line-height: 1 !important;
+    }
+    .changelog-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .changelog-entry {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .changelog-entry h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+    .changelog-entry ul {
+      margin: 0;
+      padding-left: 19px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .qr-transfer-dialog {
+      padding: 16px;
+      overflow: hidden;
+    }
+    .qr-transfer-body {
+      margin-top: 12px;
+    }
+    .qr-display {
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .qr-display img {
+      display: block;
+      width: min(100%, 360px);
+      max-height: 52dvh;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .qr-transfer-progress {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .qr-transfer-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .qr-transfer-actions button {
+      margin: 0;
+    }
+    .qr-scanner-frame {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #111;
+      aspect-ratio: 1 / 1;
+    }
+    .qr-scanner-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .qr-scanner-guide {
+      position: absolute;
+      inset: 14%;
+      border: 3px solid rgba(255,255,255,.88);
+      border-radius: 18px;
+      box-shadow: 0 0 0 999px rgba(0,0,0,.24);
+      pointer-events: none;
+    }
+    .qr-manual-input {
+      min-height: 78px;
+      margin-top: 10px;
+      font-size: 11px;
     }
     @media (max-height: 620px) {
       #pageAbout { --about-edge-gap: 9px; }
@@ -5740,7 +5899,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.17</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.18</span></div>
     </div>
   </div>
 
@@ -6233,6 +6392,7 @@
           </div>
         </div>
         <div class="product-info-actions">
+          <button type="button" class="secondary" id="shareProductQrBtn">Поділитися</button>
           <button type="button" id="editProductFromInfoBtn">Редагувати</button>
           <button type="button" class="secondary" id="closeProductInfoBtn">Закрити</button>
         </div>
@@ -6362,6 +6522,8 @@
       <p class="small">Копіювання збереже текст резервної копії в буфері обміну. Завантаження створить окремий файл на пристрої.</p>
       <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
       <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
+      <button type="button" id="sendBackupQrBtn">Передати дані через QR</button>
+      <button type="button" id="receiveBackupQrBtn">Отримати дані через QR</button>
 
       <label>Відновлення з файлу</label>
       <input class="hidden" id="backupFileInput" type="file" accept=".json,application/json,text/json" />
@@ -6609,16 +6771,16 @@
   </div>
 
   <div id="pageAbout" class="hidden">
-    <div class="about-deck" id="aboutDeck" tabindex="0" aria-label="Картки інформації про додаток">
-      <button type="button" class="about-card-nav" id="aboutPrevCardBtn" aria-label="Попередня картка"></button>
+    <div class="about-deck" id="aboutDeck" aria-label="Інформація про додаток">
       <div class="about-card-viewport">
-        <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
+        <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.17</span></div>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.18</span></button>
           </div>
-          <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
-          <div class="about-card-illustration" aria-hidden="true">
-            <img src="./assets/about-inventory-illustration.png" alt="">
+          <div class="about-single-description">
+            <p><strong>Облік залишків</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
+            <p>Застосунок допомагає швидко додавати кількість піддонами, поштучно або окремим значенням, розділяти замовлення за складами, шукати й редагувати позиції, переглядати історію та формувати документи для друку або PDF.</p>
+            <p>Усі дані зберігаються локально на твоєму пристрої. Для перенесення доступні файли резервної копії та автономна передача через один QR-код або їх нумеровану серію.</p>
           </div>
           <div class="about-card-actions">
             <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
@@ -6627,30 +6789,97 @@
             <button id="updateAppBtn">Перевірити оновлення</button>
           </div>
         </section>
+      </div>
+    </div>
+  </div>
 
-        <section class="card about-card is-after" data-about-card aria-label="Основні можливості">
-          <h3 class="about-section-title">Основні можливості</h3>
-          <ul class="feature-list">
-            <li>довідник найменувань і швидкий пошук;</li>
-            <li>підрахунок піддонів, штук та окремої кількості в різних одиницях;</li>
-            <li>історія підрахунків за датами;</li>
-            <li>50 тем оформлення, згрупованих за стилем, включно з власним конструктором;</li>
-            <li>попередній перегляд і компактний PDF формату A4;</li>
-            <li>резервне копіювання та відновлення даних;</li>
-            <li>кошик із налаштовуваним терміном зберігання видалених даних;</li>
-            <li>безпечний демонстраційний режим без доступу до власних списків.</li>
+  <div class="changelog-overlay hidden" id="changelogOverlay" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+    <div class="changelog-dialog">
+      <div class="changelog-header">
+        <h2 id="changelogTitle">Історія змін</h2>
+        <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
+      </div>
+      <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.18</h3>
+          <ul>
+            <li>сторінку «Про додаток» зібрано в одну компактну картку;</li>
+            <li>додано історію змін за натисканням на номер версії;</li>
+            <li>додано передачу повної копії, списку або одного найменування через серію QR-кодів.</li>
           </ul>
         </section>
-
-        <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
-          <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.17</span></div>
-            <div class="small">Компактніша історія на комп’ютері, видимі сторінки резервної копії та інформації про додаток, а також зрозуміліший перегляд і редагування найменувань.</div>
-          </div>
+        <section class="changelog-entry">
+          <h3>Версії 2.14–2.17 · комп’ютер і навігація</h3>
+          <ul>
+            <li>створено окреме адаптивне компонування для комп’ютера без зміни мобільного інтерфейсу;</li>
+            <li>виправлено відкривання, закривання та натискання пунктів головного меню;</li>
+            <li>повернення з меню веде до активної інвентаризації або замовлення;</li>
+            <li>історію зроблено компактнішою, а сторінки резервної копії та «Про додаток» — видимими на комп’ютері;</li>
+            <li>у найменуваннях перегляд інформації відділено від редагування.</li>
+          </ul>
         </section>
-        <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
+        <section class="changelog-entry">
+          <h3>Інвентаризація та замовлення</h3>
+          <ul>
+            <li>додано два робочі режими зі збереженням останнього вибраного режиму;</li>
+            <li>реалізовано склади, згортання груп, пошук у всіх складах і редагування позицій у вікні;</li>
+            <li>додано статуси замовлення, дату, відповідального, примітки та підсвічування важливості;</li>
+            <li>поля піддонів, поштучного введення, окремої кількості й коментаря можна приховувати;</li>
+            <li>кнопка додавання з’являється над клавіатурою без дублювання основної кнопки.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Документи та історія</h3>
+          <ul>
+            <li>додано попередній перегляд, друк і PDF для інвентаризації та замовлень;</li>
+            <li>таблиці замовлень групуються за складами й компактно підлаштовують ширину колонок;</li>
+            <li>історію розділено на інвентаризації та замовлення, додано пошук, вибір і масове видалення;</li>
+            <li>виправлено початок документа з верхнього краю сторінки та горизонтальне переповнення.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Теми, безпека даних і зручність</h3>
+          <ul>
+            <li>додано багато категорій тем, улюблені теми та конструктор власного оформлення;</li>
+            <li>власна тема створюється на основі поточної, не змінюючи стандартні теми;</li>
+            <li>резервні копії підтримують повний формат або лише найменування;</li>
+            <li>додано кошик, термін зберігання та автоматичну копію перед повним очищенням;</li>
+            <li>реалізовано демонстраційний режим, стилізовані підтвердження, центральні повідомлення та відновлення позиції після клавіатури.</li>
+          </ul>
+        </section>
       </div>
-      <button type="button" class="about-card-nav" id="aboutNextCardBtn" aria-label="Наступна картка"></button>
+    </div>
+  </div>
+
+  <div class="qr-transfer-overlay hidden" id="qrTransferOverlay" role="dialog" aria-modal="true" aria-labelledby="qrTransferTitle">
+    <div class="qr-transfer-dialog">
+      <div class="qr-transfer-header">
+        <h2 id="qrTransferTitle">Передача через QR</h2>
+        <button type="button" class="dialog-icon-close" id="closeQrTransferBtn" aria-label="Закрити">×</button>
+      </div>
+      <div class="qr-transfer-body" id="qrSendView">
+        <div class="qr-display"><img id="qrTransferImage" alt="QR-код для передачі даних"></div>
+        <p class="qr-transfer-progress" id="qrTransferProgress"></p>
+        <div class="qr-transfer-actions">
+          <button type="button" class="secondary" id="previousQrPartBtn">Попередній</button>
+          <button type="button" id="nextQrPartBtn">Наступний</button>
+          <button type="button" class="secondary" id="copyQrPartBtn">Скопіювати код</button>
+          <button type="button" class="secondary" id="shareQrPartBtn">Поділитися кодом</button>
+        </div>
+      </div>
+      <div class="qr-transfer-body hidden" id="qrReceiveView">
+        <div class="qr-scanner-frame">
+          <video id="qrScannerVideo" playsinline muted></video>
+          <div class="qr-scanner-guide" aria-hidden="true"></div>
+        </div>
+        <canvas class="hidden" id="qrScannerCanvas"></canvas>
+        <p class="qr-transfer-progress" id="qrReceiveProgress">Наведи камеру на перший QR-код.</p>
+        <textarea class="qr-manual-input" id="qrManualInput" placeholder="Або встав сюди текст QR-коду вручну"></textarea>
+        <div class="qr-transfer-actions">
+          <button type="button" id="startQrScannerBtn">Увімкнути камеру</button>
+          <button type="button" class="secondary" id="importQrTextBtn">Додати вставлену частину</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -6743,12 +6972,14 @@
     </div>
   </div>
 
+<script src="./assets/qrcode-generator.js"></script>
+<script src="./assets/jsQR.js"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.17";
+  const APP_VERSION = "2.18";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6786,6 +7017,9 @@
   const TRASH_CUSTOM_DAYS_KEY = "warehouseJournalTrashCustomDays";
   const BACKUP_FORMAT = "oblik-zalyshkiv-backup";
   const BACKUP_SCHEMA_VERSION = 2;
+  const QR_TRANSFER_FORMAT = "oblik-zalyshkiv-qr";
+  const QR_TRANSFER_VERSION = 1;
+  const QR_TRANSFER_CHUNK_SIZE = 520;
   const BACKUP_SETTING_KEYS = [
     THEME_KEY,
     CUSTOM_THEME_KEY,
@@ -7922,7 +8156,7 @@
   }
 
   function renderAppVersion() {
-    ["splashVersionLabel", "aboutVersionLabel", "aboutWhatsNewVersion"].forEach(id => {
+    ["splashVersionLabel", "aboutVersionLabel"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = APP_VERSION;
     });
@@ -10105,7 +10339,7 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
-      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay"]
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "changelogOverlay", "qrTransferOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
         swipeMode = "";
@@ -10803,57 +11037,17 @@
     deck.addEventListener("touchcancel", finishDrag, { passive: true });
   }
 
-  function showAboutCard(nextIndex, animate = true) {
-    const deck = document.getElementById("aboutDeck");
-    const cards = Array.from(document.querySelectorAll("[data-about-card]"));
-    if (!deck || !cards.length) return;
-    aboutCardIndex = Math.max(0, Math.min(cards.length - 1, nextIndex));
-    if (!animate) deck.classList.add("no-transition");
-    cards.forEach((card, index) => {
-      card.classList.toggle("is-before", index < aboutCardIndex);
-      card.classList.toggle("is-active", index === aboutCardIndex);
-      card.classList.toggle("is-after", index > aboutCardIndex);
-      card.setAttribute("aria-hidden", String(index !== aboutCardIndex));
-      card.inert = index !== aboutCardIndex;
-    });
-    const previousButton = document.getElementById("aboutPrevCardBtn");
-    const nextButton = document.getElementById("aboutNextCardBtn");
-    const position = document.getElementById("aboutCardPosition");
-    if (previousButton) previousButton.disabled = aboutCardIndex === 0;
-    if (nextButton) nextButton.disabled = aboutCardIndex === cards.length - 1;
-    if (position) position.textContent = `${aboutCardIndex + 1} із ${cards.length}`;
-    if (!animate) {
-      requestAnimationFrame(() => requestAnimationFrame(() => deck.classList.remove("no-transition")));
-    }
+  function showAboutCard() {
+    const card = document.querySelector("[data-about-card]");
+    if (!card) return;
+    card.classList.remove("is-before", "is-after");
+    card.classList.add("is-active");
+    card.setAttribute("aria-hidden", "false");
+    card.inert = false;
   }
 
   function initAboutCardDeck() {
-    const deck = document.getElementById("aboutDeck");
-    if (!deck) return;
-    const cards = Array.from(document.querySelectorAll("[data-about-card]"));
-
-    document.getElementById("aboutPrevCardBtn").addEventListener("click", () => {
-      showAboutCard(aboutCardIndex - 1);
-    });
-    document.getElementById("aboutNextCardBtn").addEventListener("click", () => {
-      showAboutCard(aboutCardIndex + 1);
-    });
-
-    attachInteractiveVerticalDeck(deck, cards, () => aboutCardIndex, index => showAboutCard(index));
-    deck.addEventListener("wheel", event => {
-      if (Math.abs(event.deltaY) < 12 || aboutWheelLocked) return;
-      event.preventDefault();
-      aboutWheelLocked = true;
-      showAboutCard(aboutCardIndex + (event.deltaY > 0 ? 1 : -1));
-      setTimeout(() => { aboutWheelLocked = false; }, 420);
-    }, { passive: false });
-    deck.addEventListener("keydown", event => {
-      if (!["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) return;
-      event.preventDefault();
-      const moveForward = event.key === "ArrowDown" || event.key === "PageDown";
-      showAboutCard(aboutCardIndex + (moveForward ? 1 : -1));
-    });
-    showAboutCard(0, false);
+    showAboutCard();
   }
 
   const OTHER_SETTINGS_CATEGORY_TITLES = {
@@ -10908,7 +11102,7 @@
   function canUsePageBackSwipe() {
     if (!hasPageBackDestination() || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
-    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay"]
+    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "changelogOverlay", "qrTransferOverlay"]
       .some(id => !document.getElementById(id).classList.contains("hidden"));
   }
 
@@ -11952,6 +12146,366 @@
 
   function backupText(scope = "full") {
     return JSON.stringify(createBackupPayload(scope), null, 2);
+  }
+
+  let qrTransferParts = [];
+  let qrTransferPartIndex = 0;
+  let qrScannerStream = null;
+  let qrScannerFrame = 0;
+  let qrScannerLastTime = 0;
+  let qrScannerLastValue = "";
+  let qrScannerLastValueAt = 0;
+  let qrScanBusy = false;
+  let qrReceivedTransfer = null;
+
+  function textToBase64(text) {
+    const bytes = new TextEncoder().encode(text);
+    let binary = "";
+    for (let index = 0; index < bytes.length; index += 8192) {
+      binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
+    }
+    return btoa(binary);
+  }
+
+  function base64ToText(value) {
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+    return new TextDecoder().decode(bytes);
+  }
+
+  function transferChecksum(text) {
+    let hash = 2166136261;
+    for (let index = 0; index < text.length; index++) {
+      hash ^= text.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(36);
+  }
+
+  function createProductsBackup(products) {
+    const payload = createBackupPayload("products");
+    payload.state.products = cloneData(products);
+    return payload;
+  }
+
+  function buildQrTransferParts(kind, products = []) {
+    const payload = kind === "full"
+      ? createBackupPayload("full")
+      : createProductsBackup(products);
+    const transferText = JSON.stringify({
+      format: QR_TRANSFER_FORMAT,
+      version: QR_TRANSFER_VERSION,
+      kind,
+      payload
+    });
+    const encoded = textToBase64(transferText);
+    const transferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const checksum = transferChecksum(encoded);
+    const chunks = [];
+    for (let offset = 0; offset < encoded.length; offset += QR_TRANSFER_CHUNK_SIZE) {
+      chunks.push(encoded.slice(offset, offset + QR_TRANSFER_CHUNK_SIZE));
+    }
+    return chunks.map((data, index) => JSON.stringify({
+      f: "ozqr",
+      v: QR_TRANSFER_VERSION,
+      id: transferId,
+      p: index + 1,
+      n: chunks.length,
+      h: checksum,
+      d: data
+    }));
+  }
+
+  function renderQrTransferPart() {
+    const image = document.getElementById("qrTransferImage");
+    const progress = document.getElementById("qrTransferProgress");
+    const previousButton = document.getElementById("previousQrPartBtn");
+    const nextButton = document.getElementById("nextQrPartBtn");
+    if (!qrTransferParts.length || typeof qrcode !== "function") {
+      progress.textContent = "Не вдалося створити QR-код.";
+      image.removeAttribute("src");
+      return;
+    }
+    try {
+      if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+      const qr = qrcode(0, "L");
+      qr.addData(qrTransferParts[qrTransferPartIndex]);
+      qr.make();
+      image.src = qr.createDataURL(5, 10);
+      const total = qrTransferParts.length;
+      progress.textContent = total === 1
+        ? "Один QR-код · відскануй його на іншому пристрої"
+        : `QR-код ${qrTransferPartIndex + 1} із ${total} · сканувати можна в будь-якому порядку`;
+      previousButton.disabled = qrTransferPartIndex === 0;
+      nextButton.disabled = qrTransferPartIndex === total - 1;
+    } catch (error) {
+      progress.textContent = "Ця частина завелика для QR-коду.";
+      image.removeAttribute("src");
+    }
+  }
+
+  function openQrSend(kind, products) {
+    try {
+      qrTransferParts = buildQrTransferParts(kind, products);
+    } catch (error) {
+      toast("Не вдалося підготувати дані для QR", true);
+      return;
+    }
+    qrTransferPartIndex = 0;
+    document.getElementById("qrTransferTitle").textContent =
+      kind === "product" ? "Поділитися найменуванням" :
+      kind === "products" ? "Передати найменування" : "Передати повну копію";
+    document.getElementById("qrSendView").classList.remove("hidden");
+    document.getElementById("qrReceiveView").classList.add("hidden");
+    document.getElementById("qrTransferOverlay").classList.remove("hidden");
+    renderQrTransferPart();
+  }
+
+  async function chooseQrBackupScope() {
+    const choice = await showAppDialog({
+      label: "Передача між пристроями",
+      title: "Що передати через QR?",
+      message: "Повна копія може складатися з великої кількості QR-кодів. Для швидкої передачі довідника вибери лише найменування.",
+      confirmText: "Повна копія",
+      alternativeText: "Лише найменування",
+      alternativeResult: "products",
+      cancelText: "Скасувати"
+    });
+    if (!choice) return;
+    if (choice === "products") openQrSend("products", state.products);
+    else openQrSend("full");
+  }
+
+  function shareCurrentProductQr() {
+    const id = document.getElementById("productInfoView").dataset.productId;
+    const product = state.products.find(item => item.id === id);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+    openQrSend("product", [product]);
+  }
+
+  function stopQrScanner() {
+    cancelAnimationFrame(qrScannerFrame);
+    qrScannerFrame = 0;
+    if (qrScannerStream) {
+      qrScannerStream.getTracks().forEach(track => track.stop());
+      qrScannerStream = null;
+    }
+    const video = document.getElementById("qrScannerVideo");
+    if (video) video.srcObject = null;
+    const button = document.getElementById("startQrScannerBtn");
+    if (button) button.textContent = "Увімкнути камеру";
+  }
+
+  function closeQrTransfer() {
+    stopQrScanner();
+    document.getElementById("qrTransferOverlay").classList.add("hidden");
+    document.getElementById("qrManualInput").value = "";
+    qrScanBusy = false;
+  }
+
+  function openQrReceiver() {
+    qrReceivedTransfer = null;
+    qrScannerLastValue = "";
+    qrScannerLastValueAt = 0;
+    document.getElementById("qrTransferTitle").textContent = "Отримати дані через QR";
+    document.getElementById("qrSendView").classList.add("hidden");
+    document.getElementById("qrReceiveView").classList.remove("hidden");
+    document.getElementById("qrReceiveProgress").textContent = "Наведи камеру на будь-який QR-код серії.";
+    document.getElementById("qrTransferOverlay").classList.remove("hidden");
+  }
+
+  async function importTransferredProducts(products, singleProduct) {
+    const incoming = Array.isArray(products) ? products.filter(item => item && String(item.name || "").trim()) : [];
+    if (!incoming.length) {
+      toast("У передачі немає найменувань", true);
+      return;
+    }
+    const confirmed = await showAppDialog({
+      label: "QR-передача",
+      title: singleProduct ? "Додати найменування?" : "Додати отримані найменування?",
+      message: singleProduct
+        ? `Буде додано або оновлено найменування «${incoming[0].name}».`
+        : `Отримано найменувань: ${incoming.length}. Нові буде додано, а для наявних назв оновляться одиниці виміру та типові кількості.`,
+      confirmText: "Додати",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    if (!putInTrash("products", "Найменування до QR-передачі", { products: cloneData(state.products) })) return;
+
+    const existingByName = new Map(state.products.map(item => [String(item.name || "").trim().toLocaleLowerCase("uk"), item]));
+    let added = 0;
+    let updated = 0;
+    incoming.forEach(item => {
+      const name = String(item.name || "").trim();
+      const key = name.toLocaleLowerCase("uk");
+      const existing = existingByName.get(key);
+      if (existing) {
+        existing.defaultUnit = normalizeMeasurementUnit(item.defaultUnit);
+        existing.defaultPalletKg = Number(item.defaultPalletKg || 0);
+        existing.defaultPieceKg = Number(item.defaultPieceKg || 0);
+        updated++;
+      } else {
+        const created = {
+          id: uid(),
+          name,
+          defaultUnit: normalizeMeasurementUnit(item.defaultUnit),
+          defaultPalletKg: Number(item.defaultPalletKg || 0),
+          defaultPieceKg: Number(item.defaultPieceKg || 0)
+        };
+        state.products.push(created);
+        existingByName.set(key, created);
+        added++;
+      }
+    });
+    state.products = sortedProducts();
+    save();
+    renderProducts();
+    showSuccessCheck();
+    toast(`Додано: ${added}. Оновлено: ${updated}.`);
+  }
+
+  async function finishQrTransfer(encoded, kind) {
+    let transfer;
+    try {
+      transfer = JSON.parse(base64ToText(encoded));
+      if (transfer.format !== QR_TRANSFER_FORMAT || transfer.version !== QR_TRANSFER_VERSION || !transfer.payload) {
+        throw new Error("bad-transfer");
+      }
+    } catch (error) {
+      toast("QR-передача пошкоджена або має невідомий формат", true);
+      return;
+    }
+    closeQrTransfer();
+    if (kind === "full") {
+      await restoreBackup(JSON.stringify(transfer.payload), "QR-передачі");
+      return;
+    }
+    await importTransferredProducts(transfer.payload?.state?.products, kind === "product");
+  }
+
+  async function acceptQrTransferPart(rawValue) {
+    let part;
+    try {
+      part = JSON.parse(String(rawValue || "").trim());
+      if (part.f !== "ozqr" || part.v !== QR_TRANSFER_VERSION || !part.id || !part.d ||
+          !Number.isInteger(part.p) || !Number.isInteger(part.n) || part.p < 1 || part.p > part.n) {
+        throw new Error("bad-part");
+      }
+    } catch (error) {
+      toast("Це не QR-код передачі з цього застосунку", true);
+      return false;
+    }
+
+    if (!qrReceivedTransfer) {
+      qrReceivedTransfer = {
+        id: part.id,
+        total: part.n,
+        checksum: part.h,
+        parts: new Array(part.n),
+        kind: ""
+      };
+    }
+    if (qrReceivedTransfer.id !== part.id || qrReceivedTransfer.total !== part.n || qrReceivedTransfer.checksum !== part.h) {
+      toast("Цей QR належить до іншої передачі. Заверши поточну серію.", true);
+      return false;
+    }
+
+    qrReceivedTransfer.parts[part.p - 1] = part.d;
+    const received = qrReceivedTransfer.parts.filter(Boolean).length;
+    document.getElementById("qrReceiveProgress").textContent =
+      received === part.n ? "Усі частини отримано. Перевіряю дані…" : `Отримано ${received} із ${part.n}. Покажи наступний QR-код.`;
+    if (received !== part.n) return true;
+
+    const encoded = qrReceivedTransfer.parts.join("");
+    if (transferChecksum(encoded) !== qrReceivedTransfer.checksum) {
+      toast("Не вдалося перевірити цілісність QR-передачі", true);
+      qrReceivedTransfer = null;
+      return false;
+    }
+    let kind = "";
+    try {
+      kind = JSON.parse(base64ToText(encoded)).kind;
+    } catch (error) {}
+    await finishQrTransfer(encoded, kind);
+    return true;
+  }
+
+  function scanQrVideoFrame(time = 0) {
+    if (!qrScannerStream) return;
+    qrScannerFrame = requestAnimationFrame(scanQrVideoFrame);
+    if (qrScanBusy || time - qrScannerLastTime < 170) return;
+    qrScannerLastTime = time;
+    const video = document.getElementById("qrScannerVideo");
+    if (!video.videoWidth || video.readyState < 2 || typeof jsQR !== "function") return;
+    const canvas = document.getElementById("qrScannerCanvas");
+    const maxSide = 640;
+    const scale = Math.min(1, maxSide / Math.max(video.videoWidth, video.videoHeight));
+    canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+    canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const result = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "dontInvert" });
+    if (!result?.data) return;
+    const now = Date.now();
+    if (result.data === qrScannerLastValue && now - qrScannerLastValueAt < 1200) return;
+    qrScannerLastValue = result.data;
+    qrScannerLastValueAt = now;
+    qrScanBusy = true;
+    acceptQrTransferPart(result.data).finally(() => { qrScanBusy = false; });
+  }
+
+  async function startQrScanner() {
+    if (qrScannerStream) {
+      stopQrScanner();
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || typeof jsQR !== "function") {
+      toast("Камера недоступна. Встав текст QR-коду вручну.", true);
+      return;
+    }
+    try {
+      qrScannerStream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: "environment" } }
+      });
+      const video = document.getElementById("qrScannerVideo");
+      video.srcObject = qrScannerStream;
+      await video.play();
+      document.getElementById("startQrScannerBtn").textContent = "Вимкнути камеру";
+      qrScannerFrame = requestAnimationFrame(scanQrVideoFrame);
+    } catch (error) {
+      stopQrScanner();
+      toast("Не вдалося відкрити камеру. Перевір дозвіл або встав код вручну.", true);
+    }
+  }
+
+  async function copyCurrentQrPart() {
+    const value = qrTransferParts[qrTransferPartIndex] || "";
+    try {
+      await navigator.clipboard.writeText(value);
+      toast("Текст поточного QR-коду скопійовано");
+    } catch (error) {
+      toast("Не вдалося скопіювати код", true);
+    }
+  }
+
+  async function shareCurrentQrPart() {
+    const value = qrTransferParts[qrTransferPartIndex] || "";
+    if (!value) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "QR-передача даних", text: value });
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+    }
+    await copyCurrentQrPart();
   }
 
   function parseBackupPayload(raw) {
@@ -13073,6 +13627,7 @@
   });
 
   document.getElementById("openProductAddBtn").addEventListener("click", openProductAddChoice);
+  document.getElementById("shareProductQrBtn").addEventListener("click", shareCurrentProductQr);
   document.getElementById("editProductFromInfoBtn").addEventListener("click", editProductFromInfo);
   document.getElementById("closeProductInfoBtn").addEventListener("click", dismissProductAddModal);
   document.getElementById("chooseSingleProductBtn").addEventListener("click", () => {
@@ -13112,6 +13667,32 @@
 
   document.getElementById("copyBackupBtn").addEventListener("click", copyBackup);
   document.getElementById("downloadBackupBtn").addEventListener("click", downloadBackup);
+  document.getElementById("sendBackupQrBtn").addEventListener("click", chooseQrBackupScope);
+  document.getElementById("receiveBackupQrBtn").addEventListener("click", openQrReceiver);
+  document.getElementById("closeQrTransferBtn").addEventListener("click", closeQrTransfer);
+  document.getElementById("previousQrPartBtn").addEventListener("click", () => {
+    qrTransferPartIndex = Math.max(0, qrTransferPartIndex - 1);
+    renderQrTransferPart();
+  });
+  document.getElementById("nextQrPartBtn").addEventListener("click", () => {
+    qrTransferPartIndex = Math.min(qrTransferParts.length - 1, qrTransferPartIndex + 1);
+    renderQrTransferPart();
+  });
+  document.getElementById("copyQrPartBtn").addEventListener("click", copyCurrentQrPart);
+  document.getElementById("shareQrPartBtn").addEventListener("click", shareCurrentQrPart);
+  document.getElementById("startQrScannerBtn").addEventListener("click", startQrScanner);
+  document.getElementById("importQrTextBtn").addEventListener("click", async () => {
+    const input = document.getElementById("qrManualInput");
+    const value = input.value.trim();
+    if (!value) {
+      toast("Встав текст QR-коду", true);
+      return;
+    }
+    if (await acceptQrTransferPart(value)) input.value = "";
+  });
+  document.getElementById("qrTransferOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeQrTransfer();
+  });
   document.getElementById("selectBackupFileBtn").addEventListener("click", () => {
     const input = document.getElementById("backupFileInput");
     input.value = "";
@@ -13259,6 +13840,18 @@
     button.addEventListener("click", () => toggleEntrySection(button.dataset.entrySectionToggle));
   });
   document.getElementById("updateAppBtn").addEventListener("click", updateApp);
+  document.getElementById("openChangelogBtn").addEventListener("click", () => {
+    document.getElementById("changelogOverlay").classList.remove("hidden");
+    document.getElementById("closeChangelogBtn").focus();
+  });
+  document.getElementById("closeChangelogBtn").addEventListener("click", () => {
+    document.getElementById("changelogOverlay").classList.add("hidden");
+    document.getElementById("openChangelogBtn").focus({ preventScroll: true });
+  });
+  document.getElementById("changelogOverlay").addEventListener("click", event => {
+    if (event.target !== event.currentTarget) return;
+    document.getElementById("changelogOverlay").classList.add("hidden");
+  });
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
   document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showPage("backup"));
@@ -13271,6 +13864,16 @@
 
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
+
+    if (!document.getElementById("qrTransferOverlay").classList.contains("hidden")) {
+      closeQrTransfer();
+      return;
+    }
+
+    if (!document.getElementById("changelogOverlay").classList.contains("hidden")) {
+      document.getElementById("changelogOverlay").classList.add("hidden");
+      return;
+    }
 
     if (document.getElementById("drawer").classList.contains("open")) {
       dismissMenuToHome();

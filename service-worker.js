@@ -1,4 +1,4 @@
-const CACHE_NAME = "oblik-zalyshkiv-v2-17";
+const CACHE_NAME = "oblik-zalyshkiv-v2-18";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -6,7 +6,8 @@ const APP_ASSETS = [
   "./icon-192.png",
   "./icon-512.png",
   "./banner.png",
-  "./assets/about-inventory-illustration.png"
+  "./assets/qrcode-generator.js",
+  "./assets/jsQR.js"
 ];
 
 self.addEventListener("install", event => {
