@@ -3040,8 +3040,7 @@
     }
     html[data-menu-button-size="small"] .drawer,
     html[data-settings-button-size="small"] #pageManagement,
-    html[data-settings-button-size="small"] #historyNavigation,
-    html[data-themes-button-size="small"] #pageThemes {
+    html[data-themes-button-size="small"] #themeCategoryList {
       --navigation-button-min-height: 34px;
       --navigation-button-padding-y: 5px;
       --navigation-button-padding-x: 11px;
@@ -3049,8 +3048,7 @@
     }
     html[data-menu-button-size="large"] .drawer,
     html[data-settings-button-size="large"] #pageManagement,
-    html[data-settings-button-size="large"] #historyNavigation,
-    html[data-themes-button-size="large"] #pageThemes {
+    html[data-themes-button-size="large"] #themeCategoryList {
       --navigation-button-min-height: 47px;
       --navigation-button-padding-y: 10px;
       --navigation-button-padding-x: 18px;
@@ -3058,12 +3056,44 @@
     }
     html[data-menu-button-size="standard"] .drawer,
     html[data-settings-button-size="standard"] #pageManagement,
-    html[data-settings-button-size="standard"] #historyNavigation,
-    html[data-themes-button-size="standard"] #pageThemes {
+    html[data-themes-button-size="standard"] #themeCategoryList {
       --navigation-button-min-height: 39px;
       --navigation-button-padding-y: 7px;
       --navigation-button-padding-x: 14px;
       --navigation-button-font-size: 15px;
+    }
+    html[data-history-button-size="small"] #historyNavigation,
+    html[data-theme-items-button-size="small"] #themeCategoryView,
+    html[data-other-settings-button-size="small"] #otherSettingsCategoryView,
+    html[data-workspace-button-size="small"] #workspaceDropdown,
+    html[data-bottom-nav-button-size="small"] #appBottomNav,
+    html[data-dialog-menu-button-size="small"] .configurable-dialog-menu {
+      --navigation-button-min-height: 34px;
+      --navigation-button-padding-y: 5px;
+      --navigation-button-padding-x: 11px;
+      --navigation-button-font-size: 14px;
+    }
+    html[data-history-button-size="standard"] #historyNavigation,
+    html[data-theme-items-button-size="standard"] #themeCategoryView,
+    html[data-other-settings-button-size="standard"] #otherSettingsCategoryView,
+    html[data-workspace-button-size="standard"] #workspaceDropdown,
+    html[data-bottom-nav-button-size="standard"] #appBottomNav,
+    html[data-dialog-menu-button-size="standard"] .configurable-dialog-menu {
+      --navigation-button-min-height: 39px;
+      --navigation-button-padding-y: 7px;
+      --navigation-button-padding-x: 14px;
+      --navigation-button-font-size: 15px;
+    }
+    html[data-history-button-size="large"] #historyNavigation,
+    html[data-theme-items-button-size="large"] #themeCategoryView,
+    html[data-other-settings-button-size="large"] #otherSettingsCategoryView,
+    html[data-workspace-button-size="large"] #workspaceDropdown,
+    html[data-bottom-nav-button-size="large"] #appBottomNav,
+    html[data-dialog-menu-button-size="large"] .configurable-dialog-menu {
+      --navigation-button-min-height: 47px;
+      --navigation-button-padding-y: 10px;
+      --navigation-button-padding-x: 18px;
+      --navigation-button-font-size: 16px;
     }
     html[data-menu-button-size="small"] .drawer { --menu-list-width-reduction: 104px; }
     html[data-menu-button-size="standard"] .drawer { --menu-list-width-reduction: 88px; }
@@ -3077,9 +3107,13 @@
     .drawer .menu-btn,
     #pageManagement .management-option,
     #historyNavigation .management-option,
+    #otherSettingsCategoryView .management-option,
     #pageThemes .theme-category-button,
     #pageThemes .theme-option-button,
-    #pageThemes .favorite-theme-button {
+    #pageThemes .favorite-theme-button,
+    #workspaceDropdown .workspace-option,
+    #appBottomNav button,
+    .configurable-dialog-menu button {
       min-height: var(--navigation-button-min-height) !important;
       font-size: var(--navigation-button-font-size) !important;
     }
@@ -3092,8 +3126,12 @@
     .drawer .menu-btn,
     #pageManagement .management-option,
     #historyNavigation .management-option,
+    #otherSettingsCategoryView .management-option,
     #pageThemes .theme-category-button,
-    #pageThemes .theme-option-button {
+    #pageThemes .theme-option-button,
+    #workspaceDropdown .workspace-option,
+    #appBottomNav button,
+    .configurable-dialog-menu button {
       padding-top: var(--navigation-button-padding-y) !important;
       padding-bottom: var(--navigation-button-padding-y) !important;
     }
@@ -5286,14 +5324,15 @@
       html.menu-style-game .drawer .menu-btn {
         width: 100%;
         max-width: none;
-        min-height: 44px !important;
+        min-height: var(--navigation-button-min-height) !important;
         margin: 0;
-        padding: 9px 13px !important;
+        padding: var(--navigation-button-padding-y) 13px !important;
         border-radius: 12px;
         text-align: left;
         transform: none;
         white-space: normal;
         box-shadow: 3px 3px 0 var(--border);
+        font-size: var(--navigation-button-font-size) !important;
       }
       html.menu-style-game .drawer .menu-btn::after,
       .drawer .menu-btn.gesture-selected::before,
@@ -5463,7 +5502,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.12</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.13</span></div>
     </div>
   </div>
 
@@ -5589,7 +5628,7 @@
           <select id="orderWarehouseSelect" class="hidden" aria-label="Склад замовлення"></select>
           <details class="order-warehouse-dropdown" id="orderWarehouseDropdown">
             <summary id="orderWarehouseSummary">Оберіть склад</summary>
-            <div class="order-warehouse-dropdown-menu">
+            <div class="order-warehouse-dropdown-menu configurable-dialog-menu">
               <div id="orderWarehouseDropdownOptions"></div>
               <button type="button" class="order-warehouse-manage-link" id="manageWarehousesBtn">Редагувати склади</button>
             </div>
@@ -5882,7 +5921,7 @@
       <div id="productAddChoice">
         <h2 id="productAddDialogTitle">Додати найменування</h2>
         <p class="small">Обери, як саме потрібно додати найменування.</p>
-        <div class="product-add-choice-actions">
+        <div class="product-add-choice-actions configurable-dialog-menu">
           <button type="button" id="chooseSingleProductBtn">Одне найменування</button>
           <button type="button" id="chooseBulkProductsBtn">Список найменувань</button>
         </div>
@@ -6211,7 +6250,16 @@
             </select>
           </div>
           <div>
-            <label for="themesButtonSizeSelect">Теми оформлення</label>
+            <label for="historyButtonSizeSelect">Меню історії</label>
+            <select id="historyButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="themesButtonSizeSelect">Категорії тем</label>
             <select id="themesButtonSizeSelect">
               <option value="inherit">Як загальний</option>
               <option value="small">Менший</option>
@@ -6219,8 +6267,53 @@
               <option value="large">Більший</option>
             </select>
           </div>
+          <div>
+            <label for="themeItemsButtonSizeSelect">Список тем</label>
+            <select id="themeItemsButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="otherSettingsButtonSizeSelect">Категорії інших налаштувань</label>
+            <select id="otherSettingsButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="workspaceButtonSizeSelect">Перемикання розділів</label>
+            <select id="workspaceButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="bottomNavButtonSizeSelect">Нижня навігація</label>
+            <select id="bottomNavButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
+          <div>
+            <label for="dialogMenuButtonSizeSelect">Меню у вікнах</label>
+            <select id="dialogMenuButtonSizeSelect">
+              <option value="inherit">Як загальний</option>
+              <option value="small">Менший</option>
+              <option value="standard">Стандартний</option>
+              <option value="large">Більший</option>
+            </select>
+          </div>
         </div>
-        <p class="small">Зміни застосовуються одразу. Окремий розмір має перевагу над загальним.</p>
+        <p class="small">Зміни застосовуються одразу. Майбутні меню автоматично використовуватимуть загальний розмір, доки для них не буде задано окремий.</p>
       </section>
 
       <section class="card other-settings-group hidden" data-other-settings-panel="entry">
@@ -6275,7 +6368,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.12</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.13</span></div>
           </div>
           <p class="about-lead">Мобільний і комп’ютерний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -6305,8 +6398,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.12</span></div>
-            <div class="small">Кнопки історії приведено до спільного стилю, а інші налаштування розділено на окремі зрозумілі категорії без карткового перегортання.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.13</span></div>
+            <div class="small">Додано окремий розмір кнопок для кожного навігаційного меню, підрозділу та списку вибору з автоматичним загальним розміром для майбутніх меню.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -6326,7 +6419,7 @@
       <div class="quick-edit-header">
         <h2 id="quickEditTitle">Редагування позиції</h2>
       </div>
-      <div class="quick-edit-tabs" id="quickEditTabs"></div>
+      <div class="quick-edit-tabs configurable-dialog-menu" id="quickEditTabs"></div>
       <input type="hidden" id="quickEditProductId" />
       <input type="hidden" id="quickEditEntryId" />
       <label for="quickEditUnit">Одиниця виміру</label>
@@ -6409,7 +6502,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.12";
+  const APP_VERSION = "2.13";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6426,7 +6519,13 @@
   const NAV_BUTTON_SIZE_KEY = "warehouseJournalNavigationButtonSize";
   const MENU_BUTTON_SIZE_KEY = "warehouseJournalMenuButtonSize";
   const SETTINGS_BUTTON_SIZE_KEY = "warehouseJournalSettingsButtonSize";
+  const HISTORY_BUTTON_SIZE_KEY = "warehouseJournalHistoryButtonSize";
   const THEMES_BUTTON_SIZE_KEY = "warehouseJournalThemesButtonSize";
+  const THEME_ITEMS_BUTTON_SIZE_KEY = "warehouseJournalThemeItemsButtonSize";
+  const OTHER_SETTINGS_BUTTON_SIZE_KEY = "warehouseJournalOtherSettingsButtonSize";
+  const WORKSPACE_BUTTON_SIZE_KEY = "warehouseJournalWorkspaceButtonSize";
+  const BOTTOM_NAV_BUTTON_SIZE_KEY = "warehouseJournalBottomNavigationButtonSize";
+  const DIALOG_MENU_BUTTON_SIZE_KEY = "warehouseJournalDialogMenuButtonSize";
   const WORKSPACE_MODE_KEY = "warehouseJournalWorkspaceMode";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
@@ -6456,7 +6555,13 @@
     NAV_BUTTON_SIZE_KEY,
     MENU_BUTTON_SIZE_KEY,
     SETTINGS_BUTTON_SIZE_KEY,
+    HISTORY_BUTTON_SIZE_KEY,
     THEMES_BUTTON_SIZE_KEY,
+    THEME_ITEMS_BUTTON_SIZE_KEY,
+    OTHER_SETTINGS_BUTTON_SIZE_KEY,
+    WORKSPACE_BUTTON_SIZE_KEY,
+    BOTTOM_NAV_BUTTON_SIZE_KEY,
+    DIALOG_MENU_BUTTON_SIZE_KEY,
     WORKSPACE_MODE_KEY,
     LAST_ENTRY_UNIT_KEY,
     ENTRY_UNIT_VISIBILITY_KEY,
@@ -10085,19 +10190,37 @@
     const globalSize = getNavigationButtonSize();
     const menuSize = getSectionButtonSize(MENU_BUTTON_SIZE_KEY);
     const settingsSize = getSectionButtonSize(SETTINGS_BUTTON_SIZE_KEY);
+    const historySize = getSectionButtonSize(HISTORY_BUTTON_SIZE_KEY);
     const themesSize = getSectionButtonSize(THEMES_BUTTON_SIZE_KEY);
+    const themeItemsSize = getSectionButtonSize(THEME_ITEMS_BUTTON_SIZE_KEY);
+    const otherSettingsSize = getSectionButtonSize(OTHER_SETTINGS_BUTTON_SIZE_KEY);
+    const workspaceSize = getSectionButtonSize(WORKSPACE_BUTTON_SIZE_KEY);
+    const bottomNavSize = getSectionButtonSize(BOTTOM_NAV_BUTTON_SIZE_KEY);
+    const dialogMenuSize = getSectionButtonSize(DIALOG_MENU_BUTTON_SIZE_KEY);
     root.dataset.navButtonWidth = width;
     root.dataset.navButtonSize = globalSize;
     root.dataset.menuButtonSize = menuSize;
     root.dataset.settingsButtonSize = settingsSize;
+    root.dataset.historyButtonSize = historySize;
     root.dataset.themesButtonSize = themesSize;
+    root.dataset.themeItemsButtonSize = themeItemsSize;
+    root.dataset.otherSettingsButtonSize = otherSettingsSize;
+    root.dataset.workspaceButtonSize = workspaceSize;
+    root.dataset.bottomNavButtonSize = bottomNavSize;
+    root.dataset.dialogMenuButtonSize = dialogMenuSize;
 
     const values = {
       navButtonWidthSelect: width,
       navButtonSizeSelect: globalSize,
       menuButtonSizeSelect: menuSize,
       settingsButtonSizeSelect: settingsSize,
-      themesButtonSizeSelect: themesSize
+      historyButtonSizeSelect: historySize,
+      themesButtonSizeSelect: themesSize,
+      themeItemsButtonSizeSelect: themeItemsSize,
+      otherSettingsButtonSizeSelect: otherSettingsSize,
+      workspaceButtonSizeSelect: workspaceSize,
+      bottomNavButtonSizeSelect: bottomNavSize,
+      dialogMenuButtonSizeSelect: dialogMenuSize
     };
     Object.entries(values).forEach(([id, value]) => {
       const select = document.getElementById(id);
@@ -12734,8 +12857,26 @@
   document.getElementById("settingsButtonSizeSelect").addEventListener("change", event => {
     saveNavigationButtonSetting(SETTINGS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки налаштувань");
   });
+  document.getElementById("historyButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(HISTORY_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки історії");
+  });
   document.getElementById("themesButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(THEMES_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки тем");
+    saveNavigationButtonSetting(THEMES_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад категорії тем");
+  });
+  document.getElementById("themeItemsButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(THEME_ITEMS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад окремої теми");
+  });
+  document.getElementById("otherSettingsButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(OTHER_SETTINGS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад категорії налаштувань");
+  });
+  document.getElementById("workspaceButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(WORKSPACE_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад перемикання розділу");
+  });
+  document.getElementById("bottomNavButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(BOTTOM_NAV_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад нижньої навігації");
+  });
+  document.getElementById("dialogMenuButtonSizeSelect").addEventListener("change", event => {
+    saveNavigationButtonSetting(DIALOG_MENU_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад меню у вікні");
   });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
