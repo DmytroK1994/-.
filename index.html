@@ -4711,6 +4711,39 @@
         margin: 0 0 5px;
       }
     }
+    .entry-form-heading-row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:8px; }
+    .entry-form-heading-row h2 { margin:0; }
+    .order-warehouse-control { display:grid; grid-template-columns:minmax(112px,1fr) auto; gap:6px; width:min(52%,330px); }
+    .order-warehouse-control select, .order-warehouse-control button { margin:0; min-height:38px; }
+    .order-document-fields, .order-entry-fields, .quick-edit-order-fields { display:grid; gap:8px; margin:10px 0; }
+    .order-entry-fields, .quick-edit-order-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .order-document-fields label, .order-entry-fields label, .quick-edit-order-fields label { margin:0; }
+    .warehouse-manager-overlay { position:fixed; inset:0; z-index:1300; display:grid; place-items:center; padding:max(18px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom)); background:rgba(0,0,0,.48); }
+    .warehouse-manager-dialog { width:min(520px,100%); max-height:min(720px,88dvh); overflow:auto; padding:20px; border:1px solid var(--border); border-radius:24px; background:var(--card); color:var(--text); box-shadow:0 24px 70px rgba(0,0,0,.28); }
+    .warehouse-manager-list { display:grid; gap:8px; margin:14px 0; }
+    .warehouse-manager-row, .warehouse-add-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
+    .warehouse-add-row { margin-top:12px; }
+    .order-report-meta { display:grid; gap:3px; margin:0 0 10px; font-size:12px; text-align:left; }
+    .order-report-table .print-table-header-row,
+    .order-report-table .preview-table-header-row,
+    .order-print-row { display:grid; grid-template-columns:7% 15% 27% 17% 34%; }
+    .order-print-row { border:1px solid #aaa; border-bottom:0; break-inside:avoid; page-break-inside:avoid; }
+    .order-report-table .print-table-header-row > div,
+    .order-report-table .preview-table-header-row > div,
+    .order-print-row > div { min-width:0; padding:6px 5px; border-right:1px solid #aaa; border-bottom:1px solid #aaa; overflow-wrap:anywhere; }
+    .order-report-table .print-table-header-row > div:last-child,
+    .order-report-table .preview-table-header-row > div:last-child,
+    .order-print-row > div:last-child { border-left:0; border-right:0; text-align:left; }
+    .order-warehouse-report-row { padding:7px 8px; border:1px solid #999; border-bottom:0; background:#ececec; color:#111; font-weight:800; text-align:left; break-inside:avoid; page-break-inside:avoid; }
+    .order-report-table #printTodayList > :last-child,
+    .order-report-table #previewTodayList > :last-child { border-bottom:1px solid #999; }
+    .order-status-badge { display:inline-block; font-weight:750; }
+    .order-entry-context { display:flex; flex-wrap:wrap; gap:5px 10px; margin:4px 0; font-size:.82rem; color:var(--muted); }
+    @media (max-width:600px) {
+      .entry-form-heading-row { align-items:stretch; }
+      .order-warehouse-control { width:min(56%,230px); grid-template-columns:1fr; }
+      .order-warehouse-control button { min-height:32px; padding-block:5px; }
+    }
   </style>
 
 <link rel="manifest" href="manifest.json">
@@ -4751,7 +4784,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.98</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.99</span></div>
     </div>
   </div>
 
@@ -4863,10 +4896,22 @@
 
     <div class="print-only print-report-header">
       <h1 id="printReportTitle"></h1>
+      <div class="order-report-meta hidden" id="printOrderMeta"></div>
     </div>
 
     <div class="card no-print entry-form-card">
-      <h2 id="formTitle">Додати до підрахунку</h2>
+      <div class="entry-form-heading-row">
+        <h2 id="formTitle">Додати до підрахунку</h2>
+        <div class="order-warehouse-control hidden" id="orderWarehouseControl">
+          <select id="orderWarehouseSelect" aria-label="Склад замовлення"></select>
+          <button type="button" class="secondary" id="manageWarehousesBtn">Редагувати склади</button>
+        </div>
+      </div>
+
+      <div class="order-document-fields hidden" id="orderDocumentFields">
+        <label for="orderResponsible">Відповідальний</label>
+        <input id="orderResponsible" placeholder="Ім’я відповідального" autocomplete="name" />
+      </div>
 
       <input type="hidden" id="editingEntryId" />
 
@@ -4879,6 +4924,22 @@
 
       <select id="productSelect" class="hidden-select"></select>
       <div id="selectedProductLabel" class="selected-product">Позицію не вибрано</div>
+
+      <div class="order-entry-fields hidden" id="orderEntryFields">
+        <div>
+          <label for="orderStatus">Статус</label>
+          <select id="orderStatus">
+            <option value="normal">Звичайно</option>
+            <option value="important">Важливо</option>
+            <option value="urgent">Терміново</option>
+            <option value="critical">Критично</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderNeededBy">Дата потреби</label>
+          <input id="orderNeededBy" type="date" />
+        </div>
+      </div>
 
       <div id="entryUnitControl" class="hidden">
         <label for="entryUnit">Одиниця виміру</label>
@@ -4979,7 +5040,7 @@
 
     <div class="print-only print-report-table">
       <div class="print-table-header">
-        <div class="print-table-header-row">
+        <div class="print-table-header-row" id="printTableHeaderRow">
           <div>Позиція та підрахунки</div>
           <div>Загальна кількість</div>
         </div>
@@ -4998,8 +5059,9 @@
     </div>
     <div class="preview-sheet">
       <h1 class="preview-report-title" id="previewReportTitle"></h1>
-      <div class="preview-report-table">
-        <div class="preview-table-header-row">
+      <div class="order-report-meta hidden" id="previewOrderMeta"></div>
+      <div class="preview-report-table" id="previewReportTable">
+        <div class="preview-table-header-row" id="previewTableHeaderRow">
           <div>Позиція та підрахунки</div>
           <div>Загальна кількість</div>
         </div>
@@ -5507,7 +5569,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.98</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.99</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5537,8 +5599,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.98</span></div>
-            <div class="small">Активний робочий розділ тепер синхронізується між шапкою, меню та джойстиком і відновлюється після запуску.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.99</span></div>
+            <div class="small">Замовлення підтримують кілька складів, відповідального, статус, дату потреби та окрему п’ятиколонкову PDF-таблицю.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5597,9 +5659,44 @@
         <label for="quickEditComment">Коментар</label>
         <input id="quickEditComment" />
       </div>
+      <div class="quick-edit-order-fields hidden" id="quickEditOrderFields">
+        <div>
+          <label for="quickEditWarehouse">В інший склад</label>
+          <select id="quickEditWarehouse"></select>
+        </div>
+        <div>
+          <label for="quickEditOrderStatus">Статус</label>
+          <select id="quickEditOrderStatus">
+            <option value="normal">Звичайно</option>
+            <option value="important">Важливо</option>
+            <option value="urgent">Терміново</option>
+            <option value="critical">Критично</option>
+          </select>
+        </div>
+        <div>
+          <label for="quickEditNeededBy">Дата потреби</label>
+          <input id="quickEditNeededBy" type="date" />
+        </div>
+      </div>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
         <button id="closeQuickEditBtn">Закрити</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="warehouse-manager-overlay hidden" id="warehouseManagerOverlay" role="dialog" aria-modal="true" aria-labelledby="warehouseManagerTitle">
+    <div class="warehouse-manager-dialog">
+      <h2 id="warehouseManagerTitle">Редагувати склади</h2>
+      <div class="small">Назви можуть бути будь-якими: наприклад, 1711, 1719 або Основний.</div>
+      <div class="warehouse-manager-list" id="warehouseManagerList"></div>
+      <div class="warehouse-add-row">
+        <input id="newWarehouseName" placeholder="Назва нового складу" autocomplete="off" />
+        <button type="button" id="addWarehouseBtn">Додати</button>
+      </div>
+      <div class="quick-edit-actions">
+        <button type="button" id="saveWarehousesBtn">Зберегти</button>
+        <button type="button" class="secondary" id="closeWarehouseManagerBtn">Закрити</button>
       </div>
     </div>
   </div>
@@ -5609,7 +5706,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.98";
+  const APP_VERSION = "1.99";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7169,7 +7266,7 @@
       return old;
     }
 
-    return { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null };
+    return { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
   }
 
   function getDemoModePreference() {
@@ -7273,6 +7370,8 @@
       activeDayId: currentDayId,
       activeOrderId: null,
       orders: [],
+      warehouses: [],
+      activeWarehouseId: null,
       days: [
         {
           id: currentDayId,
@@ -7586,8 +7685,16 @@
     normalized.orders = Array.isArray(normalized.orders)
       ? normalized.orders.filter(order => order && typeof order === "object")
       : [];
+    normalized.warehouses = Array.isArray(normalized.warehouses)
+      ? normalized.warehouses
+          .filter(warehouse => warehouse && typeof warehouse === "object" && String(warehouse.name || "").trim())
+          .map(warehouse => ({ id: warehouse.id || uid(), name: String(warehouse.name).trim() }))
+      : [];
     normalized.activeDayId = normalized.activeDayId || null;
     normalized.activeOrderId = normalized.activeOrderId || null;
+    normalized.activeWarehouseId = normalized.warehouses.some(warehouse => warehouse.id === normalized.activeWarehouseId)
+      ? normalized.activeWarehouseId
+      : (normalized.warehouses[0]?.id || null);
 
     normalized.products.forEach(product => {
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
@@ -7601,11 +7708,18 @@
       });
     });
     normalized.orders.forEach(order => {
+      order.responsible = String(order.responsible || "");
       order.entries = Array.isArray(order.entries)
         ? order.entries.filter(entry => entry && typeof entry === "object")
         : [];
       order.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
+        entry.orderStatus = normalizeOrderStatus(entry.orderStatus);
+        entry.neededBy = String(entry.neededBy || "");
+        if (entry.warehouseId) {
+          const warehouse = normalized.warehouses.find(item => item.id === entry.warehouseId);
+          if (warehouse) entry.warehouseName = warehouse.name;
+        }
       });
     });
     return normalized;
@@ -7899,6 +8013,112 @@
     return workspaceIsOrders() ? "Замовлення" : "Інвентаризація";
   }
 
+  function normalizeOrderStatus(status) {
+    return ["normal", "important", "urgent", "critical"].includes(status) ? status : "normal";
+  }
+
+  function orderStatusLabel(status) {
+    return {
+      normal: "Звичайно",
+      important: "Важливо",
+      urgent: "Терміново",
+      critical: "Критично"
+    }[normalizeOrderStatus(status)];
+  }
+
+  function renderWarehouseOptions() {
+    const options = state.warehouses.map(warehouse =>
+      `<option value="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.name)}</option>`
+    ).join("");
+    const empty = `<option value="">Оберіть склад</option>`;
+    ["orderWarehouseSelect", "quickEditWarehouse"].forEach(id => {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const current = select.value || state.activeWarehouseId || "";
+      select.innerHTML = empty + options;
+      select.value = state.warehouses.some(warehouse => warehouse.id === current) ? current : "";
+    });
+  }
+
+  function makeWarehouseManagerRow(warehouse = {}) {
+    const row = document.createElement("div");
+    row.className = "warehouse-manager-row";
+    row.dataset.id = warehouse.id || uid();
+    row.innerHTML = `
+      <input class="warehouse-name-input" value="${escapeHtml(warehouse.name || "")}" aria-label="Назва складу" />
+      <button type="button" class="danger" data-action="remove-warehouse-row" aria-label="Видалити склад">×</button>
+    `;
+    return row;
+  }
+
+  function renderWarehouseManager() {
+    const list = document.getElementById("warehouseManagerList");
+    list.innerHTML = "";
+    state.warehouses.forEach(warehouse => list.appendChild(makeWarehouseManagerRow(warehouse)));
+    if (!state.warehouses.length) {
+      const hint = document.createElement("div");
+      hint.className = "small warehouse-empty-hint";
+      hint.textContent = "Складів ще немає. Додай перший нижче.";
+      list.appendChild(hint);
+    }
+  }
+
+  function openWarehouseManager() {
+    renderWarehouseManager();
+    document.getElementById("newWarehouseName").value = "";
+    document.getElementById("warehouseManagerOverlay").classList.remove("hidden");
+  }
+
+  function closeWarehouseManager() {
+    document.getElementById("warehouseManagerOverlay").classList.add("hidden");
+  }
+
+  function addWarehouseManagerRow() {
+    const input = document.getElementById("newWarehouseName");
+    const name = input.value.trim();
+    if (!name) {
+      toast("Введи назву складу", true);
+      return;
+    }
+    document.querySelector(".warehouse-empty-hint")?.remove();
+    const row = makeWarehouseManagerRow({ id: uid(), name });
+    document.getElementById("warehouseManagerList").appendChild(row);
+    input.value = "";
+    row.querySelector("input")?.focus();
+  }
+
+  function saveWarehouses() {
+    const previous = new Map(state.warehouses.map(warehouse => [warehouse.id, warehouse.name]));
+    const rows = Array.from(document.querySelectorAll("#warehouseManagerList .warehouse-manager-row"));
+    const seen = new Set();
+    const warehouses = [];
+    for (const row of rows) {
+      const name = row.querySelector(".warehouse-name-input")?.value.trim() || "";
+      if (!name) continue;
+      const key = name.toLocaleLowerCase("uk-UA");
+      if (seen.has(key)) {
+        toast(`Назва «${name}» повторюється`, true);
+        return;
+      }
+      seen.add(key);
+      warehouses.push({ id: row.dataset.id || uid(), name });
+    }
+    state.warehouses = warehouses;
+    if (!warehouses.some(warehouse => warehouse.id === state.activeWarehouseId)) {
+      state.activeWarehouseId = warehouses[0]?.id || null;
+    }
+    state.orders.forEach(order => order.entries.forEach(entry => {
+      const renamed = warehouses.find(warehouse => warehouse.id === entry.warehouseId);
+      if (renamed) entry.warehouseName = renamed.name;
+      else if (!entry.warehouseName && previous.has(entry.warehouseId)) entry.warehouseName = previous.get(entry.warehouseId);
+    }));
+    saveOnly();
+    renderWarehouseOptions();
+    closeWarehouseManager();
+    renderToday();
+    toast("Склади збережено");
+  }
+
   function closeWorkspaceDropdown() {
     document.getElementById("workspaceDropdown")?.classList.add("hidden");
     document.getElementById("workspaceSwitcherBtn")?.setAttribute("aria-expanded", "false");
@@ -7918,6 +8138,17 @@
   function updateWorkspaceUI() {
     const orders = workspaceIsOrders();
     const label = workspaceLabel();
+    document.body.classList.toggle("workspace-orders", orders);
+    ["orderWarehouseControl", "orderDocumentFields", "orderEntryFields"].forEach(id => {
+      document.getElementById(id)?.classList.toggle("hidden", !orders);
+    });
+    document.getElementById("entryUnitControl")?.classList.toggle("hidden", !orders && getEntryUnitVisibility() !== "visible");
+    renderWarehouseOptions();
+    const activeDocument = orders ? getActiveDay() : null;
+    const responsibleInput = document.getElementById("orderResponsible");
+    if (responsibleInput && document.activeElement !== responsibleInput) {
+      responsibleInput.value = activeDocument?.responsible || "";
+    }
     const switcherLabel = document.getElementById("workspaceSwitcherLabel");
     if (switcherLabel) switcherLabel.textContent = label;
     const todayMenuButton = document.querySelector("#drawer .menu-btn[data-page='today']");
@@ -7968,7 +8199,7 @@
     if (workspaceIsOrders()) {
       if (!state.activeOrderId || !state.orders.some(order => order.id === state.activeOrderId)) {
         const id = uid();
-        state.orders.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
+        state.orders.unshift({ id, date: todayISO(), createdAt: nowText(), responsible: "", entries: [] });
         state.activeOrderId = id;
         saveOnly();
       }
@@ -8511,7 +8742,7 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
-      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay"]
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
         swipeMode = "";
@@ -9263,7 +9494,7 @@
   function canUsePageBackSwipe() {
     if (!hasPageBackDestination() || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
-    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay"]
+    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay"]
       .some(id => !document.getElementById(id).classList.contains("hidden"));
   }
 
@@ -9403,7 +9634,7 @@
     if (!confirmed) return;
 
     const id = uid();
-    const documentData = { id, date: todayISO(), createdAt: nowText(), entries: [] };
+    const documentData = { id, date: todayISO(), createdAt: nowText(), responsible: "", entries: [] };
     if (orders) {
       state.orders.unshift(documentData);
       state.activeOrderId = id;
@@ -9671,6 +9902,11 @@
     document.getElementById("quickEditKgPerPiece").value = entry.kgPerPiece || "";
     document.getElementById("quickEditDirectKg").value = entry.directKgExpression || entry.directKg || "";
     document.getElementById("quickEditComment").value = entry.comment || "";
+    document.getElementById("quickEditOrderFields").classList.toggle("hidden", !workspaceIsOrders());
+    renderWarehouseOptions();
+    document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
+    document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
+    document.getElementById("quickEditNeededBy").value = entry.neededBy || "";
   }
 
   function renderQuickEditTabs(entries, selectedId) {
@@ -9678,7 +9914,7 @@
     tabs.innerHTML = entries.map((entry, index) => `
       <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
         data-action="select-quick-edit-entry" data-id="${entry.id}">
-        ${index + 1}. ${formatQuantity(entry.totalKg, entry.unit)}
+        ${index + 1}. ${formatQuantity(entry.totalKg, entry.unit)}${workspaceIsOrders() ? ` · ${escapeHtml(entry.warehouseName || "Без складу")}` : ""}
       </button>
     `).join("");
     tabs.classList.toggle("hidden", entries.length < 2);
@@ -9745,6 +9981,20 @@
       directKgExpression: directCalculation.display,
       comment: document.getElementById("quickEditComment").value.trim()
     };
+    if (workspaceIsOrders()) {
+      const warehouseId = document.getElementById("quickEditWarehouse").value;
+      const warehouse = state.warehouses.find(item => item.id === warehouseId);
+      if (!warehouse) {
+        toast("Оберіть склад", true);
+        return;
+      }
+      Object.assign(updated, {
+        warehouseId,
+        warehouseName: warehouse.name,
+        orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value),
+        neededBy: document.getElementById("quickEditNeededBy").value || ""
+      });
+    }
     recalcEntry(updated);
     if (updated.totalKg <= 0) {
       toast("Введи кількість", true);
@@ -9791,6 +10041,20 @@
       directKgExpression: directCalculation.display,
       comment: document.getElementById("comment").value.trim()
     };
+    if (workspaceIsOrders()) {
+      const warehouseId = document.getElementById("orderWarehouseSelect").value;
+      const warehouse = state.warehouses.find(item => item.id === warehouseId);
+      if (!warehouse) {
+        toast("Спочатку обери або додай склад", true);
+        return;
+      }
+      Object.assign(entryData, {
+        warehouseId,
+        warehouseName: warehouse.name,
+        orderStatus: normalizeOrderStatus(document.getElementById("orderStatus").value),
+        neededBy: document.getElementById("orderNeededBy").value || ""
+      });
+    }
 
     recalcEntry(entryData);
     product.defaultUnit = entryData.unit;
@@ -9843,6 +10107,11 @@
     document.getElementById("kgPerPiece").value = e.kgPerPiece || "";
     document.getElementById("directKg").value = e.directKgExpression || e.directKg || "";
     document.getElementById("comment").value = e.comment || "";
+    if (workspaceIsOrders()) {
+      document.getElementById("orderWarehouseSelect").value = e.warehouseId || "";
+      document.getElementById("orderStatus").value = normalizeOrderStatus(e.orderStatus);
+      document.getElementById("orderNeededBy").value = e.neededBy || "";
+    }
     document.getElementById("formTitle").textContent = "Редагувати запис";
     document.getElementById("saveEntryBtn").textContent = "Зберегти зміни";
 
@@ -9886,6 +10155,8 @@
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
     document.getElementById("comment").value = "";
+    document.getElementById("orderStatus").value = "normal";
+    document.getElementById("orderNeededBy").value = "";
     document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Додати до замовлення" : "Додати до інвентаризації";
     document.getElementById("saveEntryBtn").textContent = "Додати";
     fillDefaultWeights();
@@ -10104,8 +10375,17 @@
     day.entries.forEach(e => {
       const productId = e.productId || e.productName;
       const unit = normalizeMeasurementUnit(e.unit);
-      const key = `${productId}::${unit}`;
-      if (!map[key]) map[key] = { productId, name: e.productName, unit, totalKg: 0, entries: [] };
+      const warehouseKey = workspaceIsOrders() ? (e.warehouseId || e.warehouseName || "without-warehouse") : "";
+      const key = `${warehouseKey}::${productId}::${unit}`;
+      if (!map[key]) map[key] = {
+        productId,
+        name: e.productName,
+        unit,
+        warehouseId: e.warehouseId || "",
+        warehouseName: e.warehouseName || "Без складу",
+        totalKg: 0,
+        entries: []
+      };
       map[key].totalKg += Number(e.totalKg || 0);
       map[key].entries.push(e);
     });
@@ -10183,7 +10463,7 @@
       appVersion: APP_VERSION,
       exportedAt: new Date().toISOString(),
       state: normalizedScope === "products"
-        ? { products: cloneData(state.products), days: [], activeDayId: null, orders: [], activeOrderId: null }
+        ? { products: cloneData(state.products), days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null }
         : cloneData(state),
       settings
     };
@@ -10368,7 +10648,7 @@
     const recoveryBackup = createBackupPayload();
     if (!putInTrash("backup", "Резервна копія до повного очищення програми", { backup: recoveryBackup })) return;
     if (demoModeActive) {
-      state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null };
+      state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
       save();
       clearEntryForm();
       clearProductForm();
@@ -10376,7 +10656,7 @@
       showPage("today");
       return;
     }
-    state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null };
+    state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
     localStorage.removeItem("warehouseJournalV2");
     localStorage.removeItem(LAST_ENTRY_UNIT_KEY);
     localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
@@ -10600,6 +10880,59 @@
     }).join("");
   }
 
+  function buildOrderDocumentRows(order) {
+    if (!order.entries.length) {
+      return `<div class="order-warehouse-report-row">Записів немає.</div>`;
+    }
+    const warehouseGroups = new Map();
+    order.entries.forEach(entry => {
+      const key = entry.warehouseId || `name:${entry.warehouseName || "Без складу"}`;
+      if (!warehouseGroups.has(key)) {
+        warehouseGroups.set(key, { name: entry.warehouseName || "Без складу", entries: [] });
+      }
+      warehouseGroups.get(key).entries.push(entry);
+    });
+    let index = 0;
+    return Array.from(warehouseGroups.values()).map(group => {
+      const rows = group.entries.map(entry => {
+        index += 1;
+        const commentParts = [];
+        if (entry.comment) commentParts.push(entry.comment);
+        if (entry.neededBy) commentParts.push(`Потрібно до: ${niceDate(entry.neededBy)}`);
+        return `
+          <div class="order-print-row">
+            <div>${index}</div>
+            <div><span class="order-status-badge">${escapeHtml(orderStatusLabel(entry.orderStatus))}</span></div>
+            <div>${escapeHtml(entry.productName)}</div>
+            <div>${formatQuantity(entry.totalKg, entry.unit)}</div>
+            <div>${escapeHtml(commentParts.join(" · "))}</div>
+          </div>
+        `;
+      }).join("");
+      return `<div class="order-warehouse-report-row">Склад: ${escapeHtml(group.name)}</div>${rows}`;
+    }).join("");
+  }
+
+  function applyDocumentLayout(documentData, orders) {
+    const headers = orders
+      ? ["№", "Статус", "Найменування", "Кількість", "Коментар"]
+      : ["Позиція та підрахунки", "Загальна кількість"];
+    const headerHtml = headers.map(header => `<div>${header}</div>`).join("");
+    document.getElementById("printTableHeaderRow").innerHTML = headerHtml;
+    document.getElementById("previewTableHeaderRow").innerHTML = headerHtml;
+    document.querySelector(".print-report-table")?.classList.toggle("order-report-table", orders);
+    document.getElementById("previewReportTable")?.classList.toggle("order-report-table", orders);
+    const metaHtml = orders
+      ? `<div><strong>Відповідальний:</strong> ${escapeHtml(documentData.responsible || "Не вказано")}</div>
+         <div><strong>Дата формування:</strong> ${escapeHtml(new Date().toLocaleString("uk-UA"))}</div>`
+      : "";
+    ["printOrderMeta", "previewOrderMeta"].forEach(id => {
+      const meta = document.getElementById(id);
+      meta.innerHTML = metaHtml;
+      meta.classList.toggle("hidden", !orders);
+    });
+  }
+
   function renderToday() {
     const day = getActiveDay();
     const orders = workspaceIsOrders();
@@ -10612,7 +10945,8 @@
     const list = document.getElementById("todayList");
     const printList = document.getElementById("printTodayList");
     list.innerHTML = "";
-    printList.innerHTML = buildDocumentRows(day);
+    applyDocumentLayout(day, orders);
+    printList.innerHTML = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
     updateTodayListSearchClearButton();
 
     const allGroups = groupEntries(day);
@@ -10643,8 +10977,8 @@
         return `
         <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}" data-entry-id="${e.id}">
           <div class="small">${isEditedEntry ? `<span class="edited-entry-label">Відредаговано</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
+          ${orders ? `<div class="order-entry-context"><span>Склад: ${escapeHtml(e.warehouseName || "не вказано")}</span><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span>${e.neededBy ? `<span>Потрібно до: ${niceDate(e.neededBy)}</span>` : ""}</div>` : ""}
           <div class="actions entry-actions">
-            <button class="smallbtn yellow" data-action="edit-entry" data-id="${e.id}">Редагувати</button>
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
           </div>
         </div>
@@ -10900,10 +11234,12 @@
       return;
     }
 
-    const reportTitle = !dayId && workspaceIsOrders()
+    const orders = !dayId && workspaceIsOrders();
+    const reportTitle = orders
       ? `Замовлення на ${niceDate(day.date)}`
       : `Залишки на ${niceDate(day.date)}`;
-    const reportRows = buildDocumentRows(day);
+    const reportRows = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
+    applyDocumentLayout(day, orders);
     document.getElementById("printReportTitle").textContent = reportTitle;
     document.getElementById("printTodayList").innerHTML = reportRows;
     document.getElementById("previewReportTitle").textContent = reportTitle;
@@ -10984,6 +11320,15 @@
     if (action === "toggle-favorite-theme") toggleFavoriteTheme(id);
     if (action === "choose-saved-custom-theme") applyNamedCustomTheme(id);
     if (action === "delete-saved-custom-theme") deleteNamedCustomTheme(id);
+    if (action === "remove-warehouse-row") {
+      el.closest(".warehouse-manager-row")?.remove();
+      if (!document.querySelector("#warehouseManagerList .warehouse-manager-row")) {
+        const hint = document.createElement("div");
+        hint.className = "small warehouse-empty-hint";
+        hint.textContent = "Складів ще немає. Додай перший нижче.";
+        document.getElementById("warehouseManagerList").appendChild(hint);
+      }
+    }
   });
 
   document.addEventListener("change", function (event) {
@@ -11068,6 +11413,28 @@
   });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("entryUnit").addEventListener("change", changeEntryMeasurementUnit);
+  document.getElementById("orderWarehouseSelect").addEventListener("change", event => {
+    state.activeWarehouseId = event.target.value || null;
+    saveOnly();
+  });
+  document.getElementById("orderResponsible").addEventListener("input", event => {
+    if (!workspaceIsOrders()) return;
+    getActiveDay().responsible = event.target.value;
+    saveOnly();
+  });
+  document.getElementById("manageWarehousesBtn").addEventListener("click", openWarehouseManager);
+  document.getElementById("addWarehouseBtn").addEventListener("click", addWarehouseManagerRow);
+  document.getElementById("newWarehouseName").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addWarehouseManagerRow();
+    }
+  });
+  document.getElementById("saveWarehousesBtn").addEventListener("click", saveWarehouses);
+  document.getElementById("closeWarehouseManagerBtn").addEventListener("click", closeWarehouseManager);
+  document.getElementById("warehouseManagerOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeWarehouseManager();
+  });
   document.getElementById("quickEditUnit").addEventListener("change", event => {
     updateEntryUnitLabels(event.target.value, "quickEdit");
   });
@@ -11291,6 +11658,11 @@
 
     if (!document.getElementById("quickEditOverlay").classList.contains("hidden")) {
       closeQuickEdit();
+      return;
+    }
+
+    if (!document.getElementById("warehouseManagerOverlay").classList.contains("hidden")) {
+      closeWarehouseManager();
       return;
     }
 
