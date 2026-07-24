@@ -505,6 +505,96 @@
       font-size: 20px;
       line-height: 1.12;
     }
+    .workspace-switcher {
+      position: relative;
+      min-width: 0;
+      text-align: center;
+    }
+    .workspace-switcher-button {
+      display: inline-flex;
+      width: auto;
+      min-height: 38px;
+      max-width: 100%;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 0;
+      padding: 5px 10px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      font-size: 20px;
+      font-weight: 850;
+      line-height: 1.12;
+    }
+    .workspace-switcher-button:hover,
+    .workspace-switcher-button:active,
+    .workspace-switcher-button[aria-expanded="true"] {
+      background: var(--surface-deep);
+    }
+    .workspace-switcher-arrow {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1;
+      transition: transform .18s ease;
+    }
+    .workspace-switcher-button[aria-expanded="true"] .workspace-switcher-arrow {
+      transform: rotate(180deg);
+    }
+    .workspace-dropdown {
+      position: absolute;
+      top: calc(100% + 9px);
+      left: 50%;
+      z-index: 180;
+      display: grid;
+      width: min(310px, calc(100vw - 28px));
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 18px 46px var(--popover-shadow);
+      transform: translateX(-50%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .workspace-dropdown.hidden {
+      display: none;
+    }
+    .workspace-option {
+      display: grid;
+      min-height: 52px;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: 4px 4px 0 var(--border);
+      text-align: left;
+    }
+    .workspace-option.active {
+      border-color: var(--selection-border);
+      background: var(--selection-bg);
+      color: var(--selection-text);
+      box-shadow: 4px 4px 0 var(--selection-border);
+    }
+    .workspace-option-name {
+      font-weight: 850;
+    }
+    .workspace-option-mark {
+      min-width: 22px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .app-header.workspace-dropdown-open {
+      overflow: visible !important;
+    }
     body.page-today .icon-btn {
       width: 40px;
       height: 40px;
@@ -4661,7 +4751,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">1.96</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">1.98</span></div>
     </div>
   </div>
 
@@ -4674,7 +4764,7 @@
       </div>
       <p class="menu-swipe-hint">Свайпни вліво або вправо, щоб закрити меню</p>
       <div class="menu-wheel" id="menuWheel">
-        <button class="menu-btn nav-choice active" data-page="today">Поточний підрахунок</button>
+        <button class="menu-btn nav-choice active" data-page="today">Інвентаризація</button>
         <button class="menu-btn nav-choice" data-page="history">Історія</button>
         <button class="menu-btn nav-choice" data-page="management">Налаштування</button>
         <button class="menu-btn nav-choice" data-page="about">Про додаток</button>
@@ -4683,7 +4773,7 @@
     </div>
     <div class="drawer-gesture-pad" id="drawerGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування меню">
       <span class="gesture-pad-handle"></span>
-      <span class="gesture-pad-selection" id="gesturePadSelection">Вибрано: Поточний підрахунок</span>
+      <span class="gesture-pad-selection" id="gesturePadSelection">Вибрано: Інвентаризація</span>
       <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
     </div>
   </aside>
@@ -4691,7 +4781,22 @@
   <div class="app-header no-print">
     <div class="topbar">
       <button class="icon-btn" id="openMenuBtn" aria-label="Відкрити меню"><span class="hamburger-icon"></span></button>
-      <h1>Облік залишків</h1>
+      <div class="workspace-switcher">
+        <button type="button" class="workspace-switcher-button" id="workspaceSwitcherBtn" aria-expanded="false" aria-haspopup="true">
+          <span id="workspaceSwitcherLabel">Інвентаризація</span>
+          <span class="workspace-switcher-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="workspace-dropdown hidden" id="workspaceDropdown">
+          <button type="button" class="workspace-option active" data-workspace="inventory">
+            <span class="workspace-option-name">Інвентаризація</span>
+            <span class="workspace-option-mark">✓</span>
+          </button>
+          <button type="button" class="workspace-option" data-workspace="orders">
+            <span class="workspace-option-name">Замовлення</span>
+            <span class="workspace-option-mark"></span>
+          </button>
+        </div>
+      </div>
       <button class="icon-btn" id="newDayBtn" aria-label="Створити новий підрахунок"><span class="plus-icon"></span></button>
     </div>
     <div class="date-line" id="activeDateLabel"></div>
@@ -5402,7 +5507,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">1.96</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">1.98</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5432,8 +5537,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.96</span></div>
-            <div class="small">Додано вибір між повною резервною копією та окремою копією лише найменувань.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">1.98</span></div>
+            <div class="small">Активний робочий розділ тепер синхронізується між шапкою, меню та джойстиком і відновлюється після запуску.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5504,7 +5609,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "1.96";
+  const APP_VERSION = "1.98";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -5522,6 +5627,7 @@
   const MENU_BUTTON_SIZE_KEY = "warehouseJournalMenuButtonSize";
   const SETTINGS_BUTTON_SIZE_KEY = "warehouseJournalSettingsButtonSize";
   const THEMES_BUTTON_SIZE_KEY = "warehouseJournalThemesButtonSize";
+  const WORKSPACE_MODE_KEY = "warehouseJournalWorkspaceMode";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
@@ -5551,6 +5657,7 @@
     MENU_BUTTON_SIZE_KEY,
     SETTINGS_BUTTON_SIZE_KEY,
     THEMES_BUTTON_SIZE_KEY,
+    WORKSPACE_MODE_KEY,
     LAST_ENTRY_UNIT_KEY,
     ENTRY_UNIT_VISIBILITY_KEY,
     ENTRY_SECTION_STATE_KEY,
@@ -6775,6 +6882,7 @@
   let themeGestureDragging = false;
   let themeGestureMoved = false;
   let themeGestureLastActivation = 0;
+  let workspaceMode = getWorkspaceModePreference();
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -7061,7 +7169,7 @@
       return old;
     }
 
-    return { products: [], days: [], activeDayId: null };
+    return { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null };
   }
 
   function getDemoModePreference() {
@@ -7163,6 +7271,8 @@
     return {
       products,
       activeDayId: currentDayId,
+      activeOrderId: null,
+      orders: [],
       days: [
         {
           id: currentDayId,
@@ -7356,10 +7466,12 @@
       state.products = sortedProducts();
     } else if (item.type === "entries") {
       const dayData = item.payload?.day || {};
-      let day = state.days.find(existing => existing.id === dayData.id);
+      const restoreToOrders = item.payload?.workspace === "orders";
+      const documents = restoreToOrders ? state.orders : state.days;
+      let day = documents.find(existing => existing.id === dayData.id);
       if (!day) {
         day = { id: dayData.id || uid(), date: dayData.date || todayISO(), createdAt: dayData.createdAt || nowText(), entries: [] };
-        state.days.unshift(day);
+        documents.unshift(day);
       }
       const entries = Array.isArray(item.payload?.entries) ? item.payload.entries : [];
       entries.forEach(entry => {
@@ -7471,7 +7583,11 @@
     normalized.days = Array.isArray(normalized.days)
       ? normalized.days.filter(day => day && typeof day === "object")
       : [];
+    normalized.orders = Array.isArray(normalized.orders)
+      ? normalized.orders.filter(order => order && typeof order === "object")
+      : [];
     normalized.activeDayId = normalized.activeDayId || null;
+    normalized.activeOrderId = normalized.activeOrderId || null;
 
     normalized.products.forEach(product => {
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
@@ -7481,6 +7597,14 @@
         ? day.entries.filter(entry => entry && typeof entry === "object")
         : [];
       day.entries.forEach(entry => {
+        entry.unit = normalizeMeasurementUnit(entry.unit);
+      });
+    });
+    normalized.orders.forEach(order => {
+      order.entries = Array.isArray(order.entries)
+        ? order.entries.filter(entry => entry && typeof entry === "object")
+        : [];
+      order.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
       });
     });
@@ -7759,7 +7883,97 @@
     }[s]));
   }
 
+  function getWorkspaceModePreference() {
+    try {
+      return localStorage.getItem(WORKSPACE_MODE_KEY) === "orders" ? "orders" : "inventory";
+    } catch (error) {
+      return "inventory";
+    }
+  }
+
+  function workspaceIsOrders() {
+    return workspaceMode === "orders";
+  }
+
+  function workspaceLabel() {
+    return workspaceIsOrders() ? "Замовлення" : "Інвентаризація";
+  }
+
+  function closeWorkspaceDropdown() {
+    document.getElementById("workspaceDropdown")?.classList.add("hidden");
+    document.getElementById("workspaceSwitcherBtn")?.setAttribute("aria-expanded", "false");
+    document.querySelector(".app-header")?.classList.remove("workspace-dropdown-open");
+  }
+
+  function toggleWorkspaceDropdown() {
+    const dropdown = document.getElementById("workspaceDropdown");
+    const button = document.getElementById("workspaceSwitcherBtn");
+    if (!dropdown || !button) return;
+    const willOpen = dropdown.classList.contains("hidden");
+    dropdown.classList.toggle("hidden", !willOpen);
+    button.setAttribute("aria-expanded", String(willOpen));
+    document.querySelector(".app-header")?.classList.toggle("workspace-dropdown-open", willOpen);
+  }
+
+  function updateWorkspaceUI() {
+    const orders = workspaceIsOrders();
+    const label = workspaceLabel();
+    const switcherLabel = document.getElementById("workspaceSwitcherLabel");
+    if (switcherLabel) switcherLabel.textContent = label;
+    const todayMenuButton = document.querySelector("#drawer .menu-btn[data-page='today']");
+    if (todayMenuButton) todayMenuButton.textContent = label;
+    PAGE_TITLES.today = label;
+    if (currentPage === "today") {
+      const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
+      if (sectionHeaderTitle) sectionHeaderTitle.textContent = label;
+      document.title = `${label} — Облік залишків`;
+    }
+    const gestureSelection = document.getElementById("gesturePadSelection");
+    if (gestureSelection && todayMenuButton?.classList.contains("gesture-selected")) {
+      gestureSelection.textContent = `Вибрано: ${label}`;
+    }
+    document.querySelectorAll("#workspaceDropdown [data-workspace]").forEach(button => {
+      const active = button.dataset.workspace === workspaceMode;
+      button.classList.toggle("active", active);
+      const mark = button.querySelector(".workspace-option-mark");
+      if (mark) mark.textContent = active ? "✓" : "";
+    });
+    const newButton = document.getElementById("newDayBtn");
+    if (newButton) newButton.setAttribute("aria-label", orders ? "Створити нове замовлення" : "Створити нову інвентаризацію");
+    const formTitle = document.getElementById("formTitle");
+    if (formTitle && !document.getElementById("editingEntryId")?.value) {
+      formTitle.textContent = orders ? "Додати до замовлення" : "Додати до інвентаризації";
+    }
+    const searchLabel = document.querySelector("label[for='todayListSearch']");
+    if (searchLabel) searchLabel.textContent = orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації";
+  }
+
+  function setWorkspaceMode(mode) {
+    const nextMode = mode === "orders" ? "orders" : "inventory";
+    closeWorkspaceDropdown();
+    if (workspaceMode === nextMode) return;
+    workspaceMode = nextMode;
+    try { localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode); } catch (error) {}
+    resetTodayListSearch();
+    clearEntryForm();
+    ensureActiveDay();
+    saveOnly();
+    updateWorkspaceUI();
+    render();
+    scrollAppToTop();
+    toast(workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію");
+  }
+
   function ensureActiveDay() {
+    if (workspaceIsOrders()) {
+      if (!state.activeOrderId || !state.orders.some(order => order.id === state.activeOrderId)) {
+        const id = uid();
+        state.orders.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
+        state.activeOrderId = id;
+        saveOnly();
+      }
+      return;
+    }
     if (!state.activeDayId || !state.days.some(d => d.id === state.activeDayId)) {
       const id = uid();
       state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
@@ -7770,7 +7984,9 @@
 
   function getActiveDay() {
     ensureActiveDay();
-    return state.days.find(d => d.id === state.activeDayId);
+    return workspaceIsOrders()
+      ? state.orders.find(order => order.id === state.activeOrderId)
+      : state.days.find(day => day.id === state.activeDayId);
   }
 
   function getGestureMenuItems() {
@@ -9099,6 +9315,7 @@
   }
 
   function showPage(page, options = {}) {
+    closeWorkspaceDropdown();
     if (themeDesignerActive) {
       restoreThemeDesignerPreview();
       if (themeDesignerTarget) themeDesignerTarget.classList.remove("theme-designer-target");
@@ -9118,9 +9335,9 @@
     }
 
     document.body.classList.toggle("page-today", page === "today");
-    const sectionTitle = PAGE_TITLES[page] || "Облік залишків";
+    const sectionTitle = page === "today" ? workspaceLabel() : (PAGE_TITLES[page] || "Облік залишків");
     document.getElementById("sectionHeaderTitle").textContent = sectionTitle;
-    document.title = page === "today" ? "Облік залишків" : `${sectionTitle} — Облік залишків`;
+    document.title = page === "today" ? `${sectionTitle} — Облік залишків` : `${sectionTitle} — Облік залишків`;
 
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
@@ -9174,25 +9391,36 @@
   }
 
   async function createNewDay() {
+    const orders = workspaceIsOrders();
     const confirmed = await showAppDialog({
-      label: "Новий підрахунок",
-      title: "Створити новий підрахунок?",
-      message: `Буде створено окремий підрахунок на ${niceDate(todayISO())}. Поточний підрахунок залишиться збереженим в історії.`,
+      label: orders ? "Нове замовлення" : "Нова інвентаризація",
+      title: orders ? "Створити нове замовлення?" : "Створити нову інвентаризацію?",
+      message: orders
+        ? `Буде створено окреме замовлення на ${niceDate(todayISO())}. Поточне замовлення залишиться збереженим у даних застосунку.`
+        : `Буде створено окрему інвентаризацію на ${niceDate(todayISO())}. Поточна інвентаризація залишиться збереженою в історії.`,
       confirmText: "Створити"
     });
     if (!confirmed) return;
 
     const id = uid();
-    state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
-    state.activeDayId = id;
+    const documentData = { id, date: todayISO(), createdAt: nowText(), entries: [] };
+    if (orders) {
+      state.orders.unshift(documentData);
+      state.activeOrderId = id;
+    } else {
+      state.days.unshift(documentData);
+      state.activeDayId = id;
+    }
     resetTodayListSearch();
     clearEntryForm();
     save();
     showPage("today");
-    toast("Створено новий підрахунок");
+    toast(orders ? "Створено нове замовлення" : "Створено нову інвентаризацію");
   }
 
   function selectDay(id) {
+    workspaceMode = "inventory";
+    try { localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode); } catch (error) {}
     state.activeDayId = id;
     resetTodayListSearch();
     clearEntryForm();
@@ -9632,13 +9860,14 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити позицію?",
-      message: `Запис «${entry.productName}» буде видалено з поточного підрахунку.`,
+      message: `Запис «${entry.productName}» буде видалено ${workspaceIsOrders() ? "з поточного замовлення" : "з поточної інвентаризації"}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
     if (!putInTrash("entries", `Позиція «${entry.productName}»`, {
       day: { id: day.id, date: day.date, createdAt: day.createdAt },
+      workspace: workspaceMode,
       entries: [entry]
     })) return;
     day.entries = day.entries.filter(e => e.id !== id);
@@ -9657,7 +9886,7 @@
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
     document.getElementById("comment").value = "";
-    document.getElementById("formTitle").textContent = "Додати до підрахунку";
+    document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Додати до замовлення" : "Додати до інвентаризації";
     document.getElementById("saveEntryBtn").textContent = "Додати";
     fillDefaultWeights();
   }
@@ -9687,7 +9916,7 @@
     day.entries = [];
     clearEntryForm();
     save();
-    toast("Поточний день очищено");
+    toast(workspaceIsOrders() ? "Поточне замовлення очищено" : "Поточну інвентаризацію очищено");
   }
 
   function showProductAddView(view) {
@@ -9786,6 +10015,11 @@
           if (e.productId === editingId) e.productName = name;
         });
       });
+      state.orders.forEach(order => {
+        order.entries.forEach(entry => {
+          if (entry.productId === editingId) entry.productName = name;
+        });
+      });
 
       toast("Найменування оновлено");
     } else {
@@ -9880,7 +10114,9 @@
 
   function makeReport() {
     const day = getActiveDay();
-    let text = `Залишки на ${niceDate(day.date)}\n\n`;
+    let text = workspaceIsOrders()
+      ? `Замовлення на ${niceDate(day.date)}\n\n`
+      : `Залишки на ${niceDate(day.date)}\n\n`;
 
     const groups = groupEntries(day);
     if (!groups.length) return text + "Записів немає.";
@@ -9924,7 +10160,8 @@
   }
 
   function downloadTextReport() {
-    downloadFile(`sklad-${getActiveDay().date}.txt`, makeReport(), "text/plain;charset=utf-8");
+    const prefix = workspaceIsOrders() ? "zamovlennia" : "sklad";
+    downloadFile(`${prefix}-${getActiveDay().date}.txt`, makeReport(), "text/plain;charset=utf-8");
     toast("TXT-звіт створено");
   }
 
@@ -9946,7 +10183,7 @@
       appVersion: APP_VERSION,
       exportedAt: new Date().toISOString(),
       state: normalizedScope === "products"
-        ? { products: cloneData(state.products), days: [], activeDayId: null }
+        ? { products: cloneData(state.products), days: [], activeDayId: null, orders: [], activeOrderId: null }
         : cloneData(state),
       settings
     };
@@ -9987,6 +10224,7 @@
       if (key === THEME_KEY && !THEMES.includes(value)) return;
       try { localStorage.setItem(key, value); } catch (error) {}
     });
+    workspaceMode = getWorkspaceModePreference();
 
     let restoredTheme = "dark";
     try { restoredTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (error) {}
@@ -10068,7 +10306,7 @@
     });
     if (!confirmed) return false;
 
-    if (!putInTrash("full-state", "Дані до відновлення резервної копії", { state })) return false;
+    if (!putInTrash("backup", "Повна копія даних до відновлення", { backup: createBackupPayload("full") })) return false;
     if (productsOnly) {
       const importedState = normalizeState(cloneData(backup.state));
       state.products = importedState.products;
@@ -10130,7 +10368,7 @@
     const recoveryBackup = createBackupPayload();
     if (!putInTrash("backup", "Резервна копія до повного очищення програми", { backup: recoveryBackup })) return;
     if (demoModeActive) {
-      state = { products: [], days: [], activeDayId: null };
+      state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null };
       save();
       clearEntryForm();
       clearProductForm();
@@ -10138,7 +10376,7 @@
       showPage("today");
       return;
     }
-    state = { products: [], days: [], activeDayId: null };
+    state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null };
     localStorage.removeItem("warehouseJournalV2");
     localStorage.removeItem(LAST_ENTRY_UNIT_KEY);
     localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
@@ -10364,8 +10602,12 @@
 
   function renderToday() {
     const day = getActiveDay();
-    document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}Поточний підрахунок: ${niceDate(day.date)}`;
-    document.getElementById("printReportTitle").textContent = `Залишки на ${niceDate(day.date)}`;
+    const orders = workspaceIsOrders();
+    updateWorkspaceUI();
+    document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}${orders ? "Поточне замовлення" : "Поточна інвентаризація"}: ${niceDate(day.date)}`;
+    document.getElementById("printReportTitle").textContent = orders
+      ? `Замовлення на ${niceDate(day.date)}`
+      : `Залишки на ${niceDate(day.date)}`;
 
     const list = document.getElementById("todayList");
     const printList = document.getElementById("printTodayList");
@@ -10385,7 +10627,7 @@
     );
 
     if (!groups.length) {
-      list.innerHTML = `<div class="card empty">У поточному підрахунку нічого не знайдено.</div>`;
+      list.innerHTML = `<div class="card empty">${orders ? "У поточному замовленні" : "У поточній інвентаризації"} нічого не знайдено.</div>`;
       return;
     }
 
@@ -10658,7 +10900,9 @@
       return;
     }
 
-    const reportTitle = `Залишки на ${niceDate(day.date)}`;
+    const reportTitle = !dayId && workspaceIsOrders()
+      ? `Замовлення на ${niceDate(day.date)}`
+      : `Залишки на ${niceDate(day.date)}`;
     const reportRows = buildDocumentRows(day);
     document.getElementById("printReportTitle").textContent = reportTitle;
     document.getElementById("printTodayList").innerHTML = reportRows;
@@ -10754,6 +10998,18 @@
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("compactMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("workspaceSwitcherBtn").addEventListener("click", event => {
+    event.stopPropagation();
+    toggleWorkspaceDropdown();
+  });
+  document.getElementById("workspaceDropdown").addEventListener("click", event => {
+    const button = event.target.closest("[data-workspace]");
+    if (!button) return;
+    setWorkspaceMode(button.dataset.workspace);
+  });
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".workspace-switcher")) closeWorkspaceDropdown();
+  });
   document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
   document.getElementById("drawerBg").addEventListener("click", closeMenu);
   document.getElementById("bottomBackBtn").addEventListener("click", navigateBottomBack);
