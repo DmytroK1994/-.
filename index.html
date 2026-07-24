@@ -4758,15 +4758,15 @@
     .order-warehouse-control { width:min(48%,260px); min-width:0; }
     .order-warehouse-dropdown { position:relative; width:100%; }
     .order-warehouse-dropdown summary {
-      min-height:34px;
-      padding:7px 25px 7px 10px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:var(--surface-deep);
+      min-height:38px;
+      padding:8px 26px;
+      border:1px solid var(--border-strong);
+      border-radius:11px;
+      background:var(--field-bg, var(--surface-strong, #fff));
       color:var(--text);
-      font-size:13px;
+      font-size:14px;
       font-weight:850;
-      text-align:right;
+      text-align:center;
       cursor:pointer;
       list-style:none;
       white-space:nowrap;
@@ -4774,41 +4774,44 @@
       text-overflow:ellipsis;
     }
     .order-warehouse-dropdown summary::-webkit-details-marker { display:none; }
-    .order-warehouse-dropdown summary::after { content:"⌄"; position:absolute; right:8px; top:7px; color:var(--muted); }
+    .order-warehouse-dropdown summary::after { content:"⌄"; position:absolute; right:9px; top:9px; color:var(--muted); }
     .order-warehouse-dropdown[open] summary::after { content:"⌃"; }
     .order-warehouse-dropdown-menu {
       position:absolute;
       top:calc(100% + 4px);
       right:0;
       z-index:25;
-      width:min(260px,82vw);
-      padding:6px;
-      border:1px solid var(--border);
-      border-radius:12px;
-      background:var(--card);
-      box-shadow:0 14px 36px rgba(0,0,0,.2);
+      width:min(340px,92vw);
+      padding:10px;
+      border:1px solid var(--border-strong);
+      border-radius:15px;
+      background-color:var(--field-bg, var(--surface-strong, #fff));
+      opacity:1;
+      backdrop-filter:none;
+      box-shadow:0 18px 46px var(--popover-shadow, rgba(0,0,0,.3));
     }
     .order-warehouse-option,
     .order-warehouse-manage-link {
       width:100% !important;
-      min-height:30px !important;
+      min-height:44px !important;
       margin:0 !important;
-      padding:5px 8px !important;
+      padding:9px 12px !important;
       border:0 !important;
       border-radius:8px !important;
       background:transparent !important;
       color:var(--text) !important;
       box-shadow:none !important;
-      font-size:12px !important;
-      text-align:left;
+      font-size:15px !important;
+      font-weight:800 !important;
+      text-align:center;
     }
     .order-warehouse-option.active { background:var(--surface-deep) !important; font-weight:850; }
-    .order-warehouse-manage-link { margin-top:3px !important; border-top:1px solid var(--border) !important; border-radius:0 0 8px 8px !important; color:var(--muted) !important; font-size:10px !important; }
+    .order-warehouse-manage-link { margin-top:5px !important; border-top:1px solid var(--border) !important; border-radius:0 0 8px 8px !important; color:var(--muted) !important; font-size:12px !important; font-weight:700 !important; }
     .order-document-fields, .order-entry-fields, .quick-edit-order-fields { display:grid; gap:8px; margin:10px 0; }
     .order-entry-fields, .quick-edit-order-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .order-document-fields label, .order-entry-fields label, .quick-edit-order-fields label { margin:0; }
     .warehouse-manager-overlay { position:fixed; inset:0; z-index:1300; display:grid; place-items:center; padding:max(18px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom)); background:rgba(0,0,0,.48); }
-    .warehouse-manager-dialog { width:min(520px,100%); max-height:min(720px,88dvh); overflow:auto; padding:20px; border:1px solid var(--border); border-radius:24px; background:var(--card); color:var(--text); box-shadow:0 24px 70px rgba(0,0,0,.28); }
+    .warehouse-manager-dialog { width:min(520px,100%); max-height:min(720px,88dvh); overflow:auto; padding:20px; border:1px solid var(--border); border-radius:24px; background:var(--surface-strong, #fff); color:var(--text); box-shadow:0 24px 70px rgba(0,0,0,.28); }
     .warehouse-manager-list { display:grid; gap:8px; margin:14px 0; }
     .warehouse-manager-row, .warehouse-add-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
     .warehouse-add-row { margin-top:12px; }
@@ -4921,7 +4924,8 @@
       body.workspace-orders #formTitle {
         min-width:0;
         margin:0;
-        font-size:clamp(13px,4vw,17px);
+        font-size:clamp(16px,4.5vw,19px);
+        font-weight:900;
         line-height:1.1;
         white-space:nowrap;
       }
@@ -4932,11 +4936,11 @@
       body.workspace-orders .order-warehouse-dropdown summary {
         width:100%;
         min-width:0;
-        min-height:32px;
-        padding:6px 23px 6px 8px;
-        font-size:12px;
+        min-height:36px;
+        padding:7px 24px;
+        font-size:14px;
       }
-      body.workspace-orders .order-warehouse-dropdown summary::after { top:6px; }
+      body.workspace-orders .order-warehouse-dropdown summary::after { top:8px; }
     }
   </style>
 
@@ -4978,7 +4982,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.05</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.06</span></div>
     </div>
   </div>
 
@@ -5764,7 +5768,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.05</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.06</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5794,8 +5798,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.05</span></div>
-            <div class="small">Замовлення отримало загальну дату й примітки, нижній блок відповідального та кольорове позначення важливості рядків у PDF.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.06</span></div>
+            <div class="small">Вибір складу в замовленні став непрозорим і більшим, а назва вибраного складу тепер добре помітна та вирівняна по центру.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5898,7 +5902,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.05";
+  const APP_VERSION = "2.06";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8460,7 +8464,7 @@
     if (newButton) newButton.setAttribute("aria-label", orders ? "Створити нове замовлення" : "Створити нову інвентаризацію");
     const formTitle = document.getElementById("formTitle");
     if (formTitle && !document.getElementById("editingEntryId")?.value) {
-      formTitle.textContent = orders ? "Додати до замовлення" : "Додати до інвентаризації";
+      formTitle.textContent = orders ? "Замовлення на:" : "Додати до інвентаризації";
     }
     const searchLabel = document.querySelector("label[for='todayListSearch']");
     if (searchLabel) searchLabel.textContent = orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації";
@@ -10441,7 +10445,7 @@
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
     document.getElementById("comment").value = "";
-    document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Додати до замовлення" : "Додати до інвентаризації";
+    document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Замовлення на:" : "Додати до інвентаризації";
     document.getElementById("saveEntryBtn").textContent = "Додати";
     fillDefaultWeights();
   }
