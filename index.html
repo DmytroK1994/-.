@@ -2040,6 +2040,20 @@
       min-height: inherit;
       margin: 0;
     }
+    .history-navigation {
+      position: relative;
+      display: flex;
+      min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .history-navigation .management-shell {
+      position: relative;
+      width: 100%;
+      min-height: inherit;
+      margin: 0;
+    }
     .management-heading {
       position: relative;
       z-index: 8;
@@ -2263,6 +2277,9 @@
         display: flex;
       }
       #pageManagement .management-shell {
+        min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
+      }
+      .history-navigation .management-shell {
         min-height: calc(100dvh - env(safe-area-inset-top) - 148px);
       }
       #pageManagement {
@@ -3012,6 +3029,7 @@
     }
     html[data-menu-button-size="small"] .drawer,
     html[data-settings-button-size="small"] #pageManagement,
+    html[data-settings-button-size="small"] #historyNavigation,
     html[data-themes-button-size="small"] #pageThemes {
       --navigation-button-min-height: 34px;
       --navigation-button-padding-y: 5px;
@@ -3020,6 +3038,7 @@
     }
     html[data-menu-button-size="large"] .drawer,
     html[data-settings-button-size="large"] #pageManagement,
+    html[data-settings-button-size="large"] #historyNavigation,
     html[data-themes-button-size="large"] #pageThemes {
       --navigation-button-min-height: 47px;
       --navigation-button-padding-y: 10px;
@@ -3028,6 +3047,7 @@
     }
     html[data-menu-button-size="standard"] .drawer,
     html[data-settings-button-size="standard"] #pageManagement,
+    html[data-settings-button-size="standard"] #historyNavigation,
     html[data-themes-button-size="standard"] #pageThemes {
       --navigation-button-min-height: 39px;
       --navigation-button-padding-y: 7px;
@@ -3045,6 +3065,7 @@
     html[data-themes-button-size="large"] #pageThemes { --themes-list-width-reduction: 40px; }
     .drawer .menu-btn,
     #pageManagement .management-option,
+    #historyNavigation .management-option,
     #pageThemes .theme-category-button,
     #pageThemes .theme-option-button,
     #pageThemes .favorite-theme-button {
@@ -3059,6 +3080,7 @@
     }
     .drawer .menu-btn,
     #pageManagement .management-option,
+    #historyNavigation .management-option,
     #pageThemes .theme-category-button,
     #pageThemes .theme-option-button {
       padding-top: var(--navigation-button-padding-y) !important;
@@ -5048,7 +5070,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.08</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.09</span></div>
     </div>
   </div>
 
@@ -5372,7 +5394,24 @@
   </div>
 
   <div id="pageHistory" class="hidden">
-    <div class="card">
+    <div class="history-navigation" id="historyNavigation">
+      <div class="management-shell">
+        <div class="management-heading">
+          <p class="small">Обери потрібний розділ історії.</p>
+        </div>
+        <div class="management-options" id="historyModeWheel">
+          <button class="management-option nav-choice" id="openInventoryHistoryBtn">Історія інвентаризації</button>
+          <button class="management-option nav-choice" id="openOrdersHistoryBtn">Історія замовлень</button>
+        </div>
+        <div class="management-gesture-pad" id="historyGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування історією">
+          <span class="gesture-pad-handle"></span>
+          <span class="gesture-pad-selection" id="historyGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
+          <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
+        </div>
+      </div>
+    </div>
+    <div class="hidden" id="historyRecordsView">
+      <div class="card">
       <div class="history-sticky-panel no-print">
         <div class="history-search">
           <label for="historyDateSearch">Пошук за датою</label>
@@ -5393,6 +5432,7 @@
         </div>
       </div>
       <div id="historyList"></div>
+      </div>
     </div>
   </div>
 
@@ -5834,7 +5874,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.08</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.09</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5864,8 +5904,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.08</span></div>
-            <div class="small">Кнопка над клавіатурою більше не дублює основну, а в PDF кожен склад має власний компактний заголовок таблиці.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.09</span></div>
+            <div class="small">Історію розділено на інвентаризації та замовлення, а вибір розділу отримав звичні кнопки й керування джойстиком.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5968,7 +6008,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.08";
+  const APP_VERSION = "2.09";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -6194,6 +6234,8 @@
     (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
   const isAndroidDevice = /Android/i.test(navigator.userAgent);
   const PAGE_PARENTS = {
+    historyInventory: "history",
+    historyOrders: "history",
     products: "management",
     themes: "management",
     backup: "management",
@@ -6204,7 +6246,9 @@
   const MENU_RETURN_PAGES = new Set(["today", "history", "management", "about"]);
   const PAGE_TITLES = {
     today: "Поточний підрахунок",
-    history: "Історія підрахунків",
+    history: "Історія",
+    historyInventory: "Історія інвентаризації",
+    historyOrders: "Історія замовлень",
     management: "Налаштування",
     products: "Найменування",
     themes: "Теми оформлення",
@@ -7233,6 +7277,13 @@
   let managementGestureAxis = "";
   let managementGestureDragging = false;
   let managementGestureMoved = false;
+  let historyGestureIndex = 0;
+  let historyGestureDragStartX = 0;
+  let historyGestureDragStartY = 0;
+  let historyGestureDragStartIndex = 0;
+  let historyGestureAxis = "";
+  let historyGestureDragging = false;
+  let historyGestureMoved = false;
   let themeGestureIndex = 0;
   let themeGestureDragStartX = 0;
   let themeGestureDragStartY = 0;
@@ -7898,6 +7949,14 @@
       days.slice().reverse().forEach(day => {
         if (!state.days.some(existing => existing.id === day.id)) state.days.unshift(day);
       });
+    } else if (item.type === "orders") {
+      const orders = Array.isArray(item.payload?.orders) ? item.payload.orders : [];
+      orders.slice().reverse().forEach(order => {
+        if (!state.orders.some(existing => existing.id === order.id)) state.orders.unshift(order);
+      });
+      if (!state.orders.some(order => order.id === state.activeOrderId)) {
+        state.activeOrderId = orders[0]?.id || state.orders[0]?.id || null;
+      }
     } else if (item.type === "backup" && item.payload?.backup) {
       const backup = parseBackupPayload(item.payload.backup);
       state = normalizeState(cloneData(backup.state));
@@ -8821,6 +8880,99 @@
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         activateManagementGestureSelection();
+      }
+    });
+  }
+
+  function getHistoryGestureItems() {
+    return Array.from(document.querySelectorAll("#historyModeWheel .management-option"));
+  }
+
+  function setHistoryGestureSelection(index) {
+    const items = getHistoryGestureItems();
+    if (!items.length) return;
+
+    historyGestureIndex = Math.max(0, Math.min(items.length - 1, index));
+    items.forEach((item, itemIndex) => {
+      item.classList.toggle("gesture-selected", itemIndex === historyGestureIndex);
+    });
+    const selectedItem = items[historyGestureIndex];
+    const label = document.getElementById("historyGestureSelection");
+    if (label) label.textContent = "Вибрано: " + selectedItem.textContent.trim();
+  }
+
+  function initializeHistoryGestureSelection() {
+    historyGestureIndex = 0;
+    getHistoryGestureItems().forEach(item => item.classList.remove("gesture-selected"));
+    const label = document.getElementById("historyGestureSelection");
+    if (label) label.textContent = "Проведи вгору або вниз, щоб вибрати пункт";
+  }
+
+  function activateHistoryGestureSelection() {
+    const item = getHistoryGestureItems()[historyGestureIndex];
+    if (item) item.click();
+  }
+
+  function initHistoryGesturePad() {
+    const pad = document.getElementById("historyGesturePad");
+    if (!pad) return;
+
+    pad.addEventListener("pointerdown", event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      event.preventDefault();
+      historyGestureDragging = true;
+      historyGestureMoved = false;
+      historyGestureAxis = "";
+      historyGestureDragStartX = event.clientX;
+      historyGestureDragStartY = event.clientY;
+      historyGestureDragStartIndex = historyGestureIndex;
+      pad.classList.add("dragging");
+      try { pad.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    pad.addEventListener("pointermove", event => {
+      if (!historyGestureDragging) return;
+      const horizontalDistance = event.clientX - historyGestureDragStartX;
+      const verticalDistance = event.clientY - historyGestureDragStartY;
+      if (!historyGestureAxis && Math.max(Math.abs(horizontalDistance), Math.abs(verticalDistance)) > 10) {
+        historyGestureAxis = Math.abs(horizontalDistance) > Math.abs(verticalDistance) ? "horizontal" : "vertical";
+      }
+      if (historyGestureAxis === "horizontal") {
+        historyGestureDragging = false;
+        historyGestureMoved = false;
+        historyGestureAxis = "";
+        pad.classList.remove("dragging");
+        try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+        return;
+      }
+      if (historyGestureAxis !== "vertical") return;
+
+      event.preventDefault();
+      const distance = event.clientY - historyGestureDragStartY;
+      if (Math.abs(distance) > 10) historyGestureMoved = true;
+      setHistoryGestureSelection(historyGestureDragStartIndex + Math.round(distance / 42));
+    });
+
+    const finishGesture = event => {
+      if (!historyGestureDragging) return;
+      historyGestureDragging = false;
+      historyGestureAxis = "";
+      pad.classList.remove("dragging");
+      try { pad.releasePointerCapture(event.pointerId); } catch (error) {}
+      if (event.type === "pointercancel" || historyGestureMoved) return;
+      activateHistoryGestureSelection();
+    };
+
+    pad.addEventListener("pointerup", finishGesture);
+    pad.addEventListener("pointercancel", finishGesture);
+    pad.addEventListener("keydown", event => {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        setHistoryGestureSelection(historyGestureIndex + (event.key === "ArrowDown" ? 1 : -1));
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activateHistoryGestureSelection();
       }
     });
   }
@@ -9947,7 +10099,22 @@
     document.getElementById("pageInstall").classList.add("hidden");
 
     if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
-    if (page === "history") document.getElementById("pageHistory").classList.remove("hidden");
+    if (["history", "historyInventory", "historyOrders"].includes(page)) {
+      document.getElementById("pageHistory").classList.remove("hidden");
+      const navigation = document.getElementById("historyNavigation");
+      const records = document.getElementById("historyRecordsView");
+      const isHistoryRoot = page === "history";
+      navigation.classList.toggle("hidden", !isHistoryRoot);
+      records.classList.toggle("hidden", isHistoryRoot);
+      if (isHistoryRoot) {
+        initializeHistoryGestureSelection();
+      } else {
+        historySelectMode = false;
+        selectedHistoryIds.clear();
+        const search = document.getElementById("historyDateSearch");
+        if (search) search.value = "";
+      }
+    }
     if (page === "management") {
       document.getElementById("pageManagement").classList.remove("hidden");
       initializeManagementGestureSelection();
@@ -9975,7 +10142,9 @@
     }
     const activeMenuPage = ["products", "themes", "backup", "trash", "otherSettings"].includes(page)
       ? "management"
-      : (page === "install" ? "about" : page);
+      : (page === "install"
+          ? "about"
+          : (["historyInventory", "historyOrders"].includes(page) ? "history" : page));
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.page === activeMenuPage);
     });
@@ -10013,37 +10182,56 @@
     toast(orders ? "Створено нове замовлення" : "Створено нову інвентаризацію");
   }
 
-  function selectDay(id) {
-    workspaceMode = "inventory";
+  function historyUsesOrders() {
+    return currentPage === "historyOrders";
+  }
+
+  function getHistoryDocuments() {
+    return historyUsesOrders() ? state.orders : state.days;
+  }
+
+  function selectDay(id, kind = historyUsesOrders() ? "orders" : "inventory") {
+    const orders = kind === "orders";
+    workspaceMode = orders ? "orders" : "inventory";
     try { localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode); } catch (error) {}
-    state.activeDayId = id;
+    if (orders) state.activeOrderId = id;
+    else state.activeDayId = id;
     resetTodayListSearch();
     clearEntryForm();
     save();
     showPage("today");
   }
 
-  async function deleteDay(id) {
-    const day = state.days.find(d => d.id === id);
+  async function deleteDay(id, kind = historyUsesOrders() ? "orders" : "inventory") {
+    const orders = kind === "orders";
+    const documents = orders ? state.orders : state.days;
+    const day = documents.find(d => d.id === id);
     if (!day) {
-      toast("Підрахунок не знайдено", true);
+      toast(orders ? "Замовлення не знайдено" : "Інвентаризацію не знайдено", true);
       return;
     }
 
     const confirmed = await showAppDialog({
       label: "Видалення",
-      title: "Видалити підрахунок?",
-      message: `Підрахунок від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
+      title: orders ? "Видалити замовлення?" : "Видалити інвентаризацію?",
+      message: `${orders ? "Замовлення" : "Інвентаризація"} від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
-    if (!putInTrash("days", `Підрахунок від ${niceDate(day.date)}`, { days: [day] })) return;
-    state.days = state.days.filter(d => d.id !== id);
+    if (!putInTrash(
+      orders ? "orders" : "days",
+      `${orders ? "Замовлення" : "Інвентаризація"} від ${niceDate(day.date)}`,
+      orders ? { orders: [day] } : { days: [day] }
+    )) return;
+    if (orders) state.orders = state.orders.filter(d => d.id !== id);
+    else state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
 
-    if (state.activeDayId === id) {
+    if (orders && state.activeOrderId === id) {
+      state.activeOrderId = state.orders[0]?.id || null;
+    } else if (!orders && state.activeDayId === id) {
       state.activeDayId = state.days[0]?.id || null;
     }
 
@@ -10069,10 +10257,11 @@
   function getFilteredHistoryDays() {
     const rawQuery = document.getElementById("historyDateSearch")?.value || "";
     const query = normalizeHistoryDateSearch(rawQuery);
-    if (!query) return state.days;
+    const documents = getHistoryDocuments();
+    if (!query) return documents;
 
     const queryDigits = query.replace(/\D/g, "");
-    return state.days.filter(day => {
+    return documents.filter(day => {
       const isoDate = String(day.date || "");
       const displayDate = niceDate(isoDate);
       const normalizedIso = normalizeHistoryDateSearch(isoDate);
@@ -10143,19 +10332,28 @@
       return;
     }
 
+    const orders = historyUsesOrders();
+    const documents = getHistoryDocuments();
     const confirmed = await showAppDialog({
       label: "Видалення",
-      title: "Видалити вибрані підрахунки?",
+      title: orders ? "Видалити вибрані замовлення?" : "Видалити вибрані інвентаризації?",
       message: `Буде переміщено в кошик на ${trashRetentionDurationText()}: ${ids.length}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
-    const deletedDays = state.days.filter(day => selectedHistoryIds.has(day.id));
-    if (!putInTrash("days", `Вибрані підрахунки (${deletedDays.length})`, { days: deletedDays })) return;
-    state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
-    if (!state.days.some(d => d.id === state.activeDayId)) {
+    const deletedDays = documents.filter(day => selectedHistoryIds.has(day.id));
+    if (!putInTrash(
+      orders ? "orders" : "days",
+      `Вибрані ${orders ? "замовлення" : "інвентаризації"} (${deletedDays.length})`,
+      orders ? { orders: deletedDays } : { days: deletedDays }
+    )) return;
+    if (orders) state.orders = state.orders.filter(d => !selectedHistoryIds.has(d.id));
+    else state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
+    if (orders && !state.orders.some(d => d.id === state.activeOrderId)) {
+      state.activeOrderId = state.orders[0]?.id || null;
+    } else if (!orders && !state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
     }
 
@@ -10167,25 +10365,34 @@
   }
 
   async function deleteEmptyDays() {
-    const count = state.days.filter(d => !d.entries.length).length;
+    const orders = historyUsesOrders();
+    const documents = getHistoryDocuments();
+    const count = documents.filter(d => !d.entries.length).length;
     if (!count) {
-      toast("Порожніх підрахунків немає");
+      toast(`Порожніх ${orders ? "замовлень" : "інвентаризацій"} немає`);
       return;
     }
 
     const confirmed = await showAppDialog({
       label: "Видалення",
-      title: "Видалити порожні підрахунки?",
-      message: `У кошик на ${trashRetentionDurationText()} буде переміщено порожніх підрахунків: ${count}.`,
+      title: `Видалити порожні ${orders ? "замовлення" : "інвентаризації"}?`,
+      message: `У кошик на ${trashRetentionDurationText()} буде переміщено порожніх записів: ${count}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
-    const deletedDays = state.days.filter(day => !day.entries.length);
-    if (!putInTrash("days", `Порожні підрахунки (${deletedDays.length})`, { days: deletedDays })) return;
-    state.days = state.days.filter(d => d.entries.length > 0);
-    if (!state.days.some(d => d.id === state.activeDayId)) {
+    const deletedDays = documents.filter(day => !day.entries.length);
+    if (!putInTrash(
+      orders ? "orders" : "days",
+      `Порожні ${orders ? "замовлення" : "інвентаризації"} (${deletedDays.length})`,
+      orders ? { orders: deletedDays } : { days: deletedDays }
+    )) return;
+    if (orders) state.orders = state.orders.filter(d => d.entries.length > 0);
+    else state.days = state.days.filter(d => d.entries.length > 0);
+    if (orders && !state.orders.some(d => d.id === state.activeOrderId)) {
+      state.activeOrderId = state.orders[0]?.id || null;
+    } else if (!orders && !state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
     }
 
@@ -10195,23 +10402,34 @@
   }
 
   async function deleteAllHistory() {
-    if (!state.days.length) {
+    const orders = historyUsesOrders();
+    const documents = getHistoryDocuments();
+    if (!documents.length) {
       toast("Історії ще немає", true);
       return;
     }
 
     const confirmed = await showAppDialog({
       label: "Увага",
-      title: "Очистити всю історію?",
-      message: `Усі збережені підрахунки буде переміщено в кошик на ${trashRetentionDurationText()}.`,
+      title: `Очистити всю історію ${orders ? "замовлень" : "інвентаризацій"}?`,
+      message: `Усі збережені ${orders ? "замовлення" : "інвентаризації"} буде переміщено в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Очистити історію",
       danger: true
     });
     if (!confirmed) return;
 
-    if (!putInTrash("days", `Уся історія підрахунків (${state.days.length})`, { days: state.days })) return;
-    state.days = [];
-    state.activeDayId = null;
+    if (!putInTrash(
+      orders ? "orders" : "days",
+      `Уся історія ${orders ? "замовлень" : "інвентаризацій"} (${documents.length})`,
+      orders ? { orders: documents } : { days: documents }
+    )) return;
+    if (orders) {
+      state.orders = [];
+      state.activeOrderId = null;
+    } else {
+      state.days = [];
+      state.activeDayId = null;
+    }
     selectedHistoryIds.clear();
     historySelectMode = false;
     ensureActiveDay();
@@ -11603,8 +11821,11 @@
     const normalActions = document.getElementById("historyNormalActions");
     const selectActions = document.getElementById("historySelectActions");
     const filteredDays = getFilteredHistoryDays();
+    const orders = historyUsesOrders();
+    const documents = getHistoryDocuments();
 
     list.innerHTML = "";
+    if (!["historyInventory", "historyOrders"].includes(currentPage)) return;
     updateHistoryDateSearchClearButton();
 
     if (normalActions && selectActions) {
@@ -11613,13 +11834,13 @@
     }
     updateSelectAllHistoryButton();
 
-    if (!state.days.length) {
-      list.innerHTML = `<div class="empty">Історії ще немає.</div>`;
+    if (!documents.length) {
+      list.innerHTML = `<div class="empty">Історії ${orders ? "замовлень" : "інвентаризацій"} ще немає.</div>`;
       return;
     }
 
     if (!filteredDays.length) {
-      list.innerHTML = `<div class="empty">За цією датою підрахунків не знайдено.</div>`;
+      list.innerHTML = `<div class="empty">За цією датою ${orders ? "замовлень" : "інвентаризацій"} не знайдено.</div>`;
       return;
     }
 
@@ -11634,9 +11855,9 @@
       const buttonsHtml = historySelectMode
         ? ""
         : `<div class="actions">
-            <button class="smallbtn" data-action="select-day" data-id="${day.id}">Відкрити</button>
-            <button class="smallbtn" data-action="preview-day" data-id="${day.id}" aria-label="Попередній перегляд документа">Перегляд</button>
-            <button class="smallbtn danger" data-action="delete-day" data-id="${day.id}">Видалити</button>
+            <button class="smallbtn" data-action="select-day" data-kind="${orders ? "orders" : "inventory"}" data-id="${day.id}">Відкрити</button>
+            <button class="smallbtn" data-action="preview-day" data-kind="${orders ? "orders" : "inventory"}" data-id="${day.id}" aria-label="Попередній перегляд документа">Перегляд</button>
+            <button class="smallbtn danger" data-action="delete-day" data-kind="${orders ? "orders" : "inventory"}" data-id="${day.id}">Видалити</button>
           </div>`;
 
       div.innerHTML = `
@@ -11665,14 +11886,15 @@
     renderTrash();
   }
 
-  function openDocumentPreview(dayId = null) {
-    const day = dayId ? state.days.find(item => item.id === dayId) : getActiveDay();
+  function openDocumentPreview(dayId = null, kind = "") {
+    const orders = dayId ? kind === "orders" : workspaceIsOrders();
+    const documents = orders ? state.orders : state.days;
+    const day = dayId ? documents.find(item => item.id === dayId) : getActiveDay();
     if (!day) {
-      toast("Підрахунок не знайдено", true);
+      toast(orders ? "Замовлення не знайдено" : "Інвентаризацію не знайдено", true);
       return;
     }
 
-    const orders = !dayId && workspaceIsOrders();
     const reportTitle = orders
       ? `ЗАМОВЛЕННЯ НА ${niceDate(day.date)}`
       : `Залишки на ${niceDate(day.date)}`;
@@ -11749,9 +11971,9 @@
     if (action === "delete-entry") deleteEntry(id);
     if (action === "edit-product") startEditProduct(id);
     if (action === "delete-product") deleteProduct(id);
-    if (action === "select-day") selectDay(id);
-    if (action === "preview-day") openDocumentPreview(id);
-    if (action === "delete-day") deleteDay(id);
+    if (action === "select-day") selectDay(id, el.dataset.kind);
+    if (action === "preview-day") openDocumentPreview(id, el.dataset.kind);
+    if (action === "delete-day") deleteDay(id, el.dataset.kind);
     if (action === "restore-trash") restoreTrashItem(id);
     if (action === "delete-trash") deleteTrashItemPermanently(id);
     if (action === "select-product") selectProduct(id);
@@ -11811,6 +12033,8 @@
   document.getElementById("bottomHomeBtn").addEventListener("click", () => showPage("today", { fromBack: true }));
   document.getElementById("bottomMenuBtn").addEventListener("click", openMenu);
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
+  document.getElementById("openInventoryHistoryBtn").addEventListener("click", () => showPage("historyInventory"));
+  document.getElementById("openOrdersHistoryBtn").addEventListener("click", () => showPage("historyOrders"));
   document.getElementById("toggleHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(true));
   document.getElementById("selectAllHistoryBtn").addEventListener("click", toggleSelectAllHistory);
   document.getElementById("cancelHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(false));
@@ -12173,6 +12397,7 @@
   initAppTopPosition();
   initGestureMenuPad();
   initManagementGesturePad();
+  initHistoryGesturePad();
   initThemeGesturePad();
   initAndroidThemeTouchSelection();
   initPointerNavigationSelection();
