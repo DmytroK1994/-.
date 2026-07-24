@@ -4755,17 +4755,17 @@
     }
     .entry-form-heading-row { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:8px; }
     .entry-form-heading-row h2 { margin:0; }
-    .order-warehouse-control { width:min(45%,220px); }
+    .order-warehouse-control { width:min(48%,260px); min-width:0; }
     .order-warehouse-dropdown { position:relative; width:100%; }
     .order-warehouse-dropdown summary {
-      min-height:28px;
-      padding:5px 24px 5px 8px;
-      border:0;
-      border-radius:8px;
-      background:transparent;
-      color:var(--muted);
-      font-size:11px;
-      font-weight:750;
+      min-height:34px;
+      padding:7px 25px 7px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:var(--surface-deep);
+      color:var(--text);
+      font-size:13px;
+      font-weight:850;
       text-align:right;
       cursor:pointer;
       list-style:none;
@@ -4774,7 +4774,7 @@
       text-overflow:ellipsis;
     }
     .order-warehouse-dropdown summary::-webkit-details-marker { display:none; }
-    .order-warehouse-dropdown summary::after { content:"⌄"; position:absolute; right:7px; top:4px; color:var(--muted-soft); }
+    .order-warehouse-dropdown summary::after { content:"⌄"; position:absolute; right:8px; top:7px; color:var(--muted); }
     .order-warehouse-dropdown[open] summary::after { content:"⌃"; }
     .order-warehouse-dropdown-menu {
       position:absolute;
@@ -4868,8 +4868,31 @@
       }
     }
     @media (max-width:600px) {
-      .entry-form-heading-row { align-items:stretch; }
-      .order-warehouse-control { width:min(47%,190px); }
+      .entry-form-heading-row { align-items:center; }
+      body.workspace-orders .entry-form-heading-row {
+        display:grid;
+        grid-template-columns:max-content minmax(0,1fr);
+        gap:8px;
+      }
+      body.workspace-orders #formTitle {
+        min-width:0;
+        margin:0;
+        font-size:clamp(13px,4vw,17px);
+        line-height:1.1;
+        white-space:nowrap;
+      }
+      body.workspace-orders .order-warehouse-control {
+        width:100%;
+        min-width:0;
+      }
+      body.workspace-orders .order-warehouse-dropdown summary {
+        width:100%;
+        min-width:0;
+        min-height:32px;
+        padding:6px 23px 6px 8px;
+        font-size:12px;
+      }
+      body.workspace-orders .order-warehouse-dropdown summary::after { top:6px; }
     }
   </style>
 
@@ -4911,7 +4934,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.03</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.04</span></div>
     </div>
   </div>
 
@@ -5708,7 +5731,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.03</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.04</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5738,8 +5761,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.03</span></div>
-            <div class="small">Таблиця замовлення тепер повністю вміщується у попередній перегляд без горизонтального прокручування.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.04</span></div>
+            <div class="small">Заголовок «Додати до замовлення» не переноситься на телефоні, а вибір складу став більшим і помітнішим.</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5846,7 +5869,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.03";
+  const APP_VERSION = "2.04";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
