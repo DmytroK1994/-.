@@ -2792,6 +2792,29 @@
       line-height: 1;
       animation: success-check-in .72s cubic-bezier(.2, .85, .25, 1) both;
     }
+    .keyboard-entry-action {
+      position: fixed;
+      right: max(12px, env(safe-area-inset-right));
+      bottom: calc(var(--keyboard-action-inset, 0px) + 10px);
+      left: max(12px, env(safe-area-inset-left));
+      z-index: 1080;
+      width: min(520px, calc(100% - 24px));
+      min-height: 46px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      border: 1px solid var(--soft-success-border);
+      border-radius: 15px;
+      background: var(--soft-success-bg);
+      color: var(--soft-success-text);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .24);
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .keyboard-entry-action:active { transform: scale(.985); }
+    @media (min-width: 901px) and (hover: hover) {
+      .keyboard-entry-action { display: none !important; }
+    }
     @keyframes success-check-in {
       0% { opacity: 0; transform: scale(.58); }
       28% { opacity: 1; transform: scale(1.08); }
@@ -4872,7 +4895,7 @@
       <h1 class="splash-title">Облік залишків</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.01</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.02</span></div>
     </div>
   </div>
 
@@ -5669,7 +5692,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row">
-            <div class="about-version">Версія <span id="aboutVersionLabel">2.01</span></div>
+            <div class="about-version">Версія <span id="aboutVersionLabel">2.02</span></div>
           </div>
           <p class="about-lead">Мобільний інструмент для швидкого підрахунку складських залишків. Працює без реєстрації, а всі записи зберігаються локально на цьому пристрої.</p>
           <div class="about-card-illustration" aria-hidden="true">
@@ -5699,8 +5722,8 @@
 
         <section class="card about-card is-after" data-about-card aria-label="Останнє оновлення">
           <div class="whats-new-card">
-            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.01</span></div>
-            <div class="small">PDF замовлення отримав центрований заголовок, безпечне перенесення довгих назв і компактні колонки з найбільшим полем для коментаря.</div>
+            <div class="about-section-title">Що нового у версії <span id="aboutWhatsNewVersion">2.02</span></div>
+            <div class="small">Під час введення кількості над мобільною клавіатурою з’являється швидка кнопка «Додати».</div>
           </div>
         </section>
         <div class="about-card-position" id="aboutCardPosition" aria-live="polite">1 із 3</div>
@@ -5713,6 +5736,7 @@
   <div class="success-check hidden" id="successCheck" role="status" aria-label="Позицію додано">
     <div class="success-check-mark" aria-hidden="true">✓</div>
   </div>
+  <button type="button" class="keyboard-entry-action hidden" id="keyboardSaveEntryBtn">Додати</button>
 
   <div class="quick-edit-overlay hidden" id="quickEditOverlay" role="dialog" aria-modal="true" aria-labelledby="quickEditTitle">
     <div class="quick-edit-dialog">
@@ -5806,7 +5830,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.01";
+  const APP_VERSION = "2.02";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7130,6 +7154,59 @@
     return keyboardWasDetected && baselineHeight - window.visualViewport.height > 80;
   }
 
+  function isEntryKeyboardActionField(element) {
+    if (!(element instanceof Element) || !element.closest("#pageToday .entry-form-card")) return false;
+    return Boolean(element.matches([
+      "#pallets",
+      "#kgPerPallet",
+      "#pieces",
+      "#kgPerPiece",
+      "#directKg",
+      "#comment",
+      "#entryUnit",
+      "#orderResponsible",
+      "#orderStatus",
+      "#orderNeededBy"
+    ].join(", ")));
+  }
+
+  function updateKeyboardEntryAction() {
+    const button = document.getElementById("keyboardSaveEntryBtn");
+    if (!button) return;
+    const viewport = window.visualViewport;
+    const keyboardInset = viewport
+      ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+      : 0;
+    document.documentElement.style.setProperty("--keyboard-action-inset", `${Math.round(keyboardInset)}px`);
+    const shouldShow = currentPage === "today"
+      && isVirtualKeyboardVisible()
+      && isEntryKeyboardActionField(document.activeElement)
+      && document.getElementById("pageToday")
+      && !document.getElementById("pageToday").classList.contains("hidden");
+    button.textContent = document.getElementById("saveEntryBtn")?.textContent || "Додати";
+    button.classList.toggle("hidden", !shouldShow);
+  }
+
+  function initKeyboardEntryAction() {
+    const button = document.getElementById("keyboardSaveEntryBtn");
+    if (!button) return;
+    button.addEventListener("pointerdown", event => event.preventDefault());
+    button.addEventListener("click", () => {
+      const activeField = document.activeElement;
+      if (isAppKeyboardField(activeField)) activeField.blur();
+      button.classList.add("hidden");
+      saveEntry();
+      scheduleKeyboardScrollRestore();
+    });
+    document.addEventListener("focusin", () => requestAnimationFrame(updateKeyboardEntryAction));
+    document.addEventListener("focusout", () => setTimeout(updateKeyboardEntryAction, 100));
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", updateKeyboardEntryAction, { passive: true });
+      window.visualViewport.addEventListener("scroll", updateKeyboardEntryAction, { passive: true });
+    }
+    window.addEventListener("resize", updateKeyboardEntryAction, { passive: true });
+  }
+
   function clearKeyboardRestoreTimers() {
     keyboardRestoreTimers.forEach(timer => clearTimeout(timer));
     keyboardRestoreTimers = [];
@@ -7219,6 +7296,7 @@
         if (keyboardScrollY === null || keyboardViewportHeight === null) return;
         const currentHeight = window.visualViewport.height;
         if (keyboardViewportHeight - currentHeight > 100) keyboardWasDetected = true;
+        updateKeyboardEntryAction();
         if (keyboardWasDetected && currentHeight >= keyboardViewportHeight - 50) {
           scheduleKeyboardScrollRestore(true);
         }
@@ -11874,6 +11952,7 @@
   initAboutCardDeck();
   initOtherSettingsCardDeck();
   initAppKeyboardScrollRestore();
+  initKeyboardEntryAction();
   initAppTopPosition();
   initGestureMenuPad();
   initManagementGesturePad();
