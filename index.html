@@ -4845,6 +4845,39 @@
       width: 100%;
       text-align: center;
     }
+    .app-storage-usage-card {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface-strong);
+      box-shadow: 0 10px 28px var(--card-shadow);
+    }
+    .app-storage-usage-heading {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .app-storage-usage-value {
+      color: var(--text);
+      font-size: clamp(28px, 8vw, 42px);
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -.7px;
+    }
+    .app-storage-usage-details {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .app-storage-refresh {
+      width: fit-content;
+      min-width: 140px;
+      margin: 0;
+    }
     .other-settings-panel-view {
       width: min(100%, 680px);
       margin-inline: auto;
@@ -6546,7 +6579,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.49</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.50</span></div>
     </div>
   </div>
 
@@ -7273,6 +7306,7 @@
         <button type="button" class="management-option nav-choice" data-other-settings-category="menu">Меню та керування</button>
         <button type="button" class="management-option nav-choice" data-other-settings-category="buttons">Кнопки навігації</button>
         <button type="button" class="management-option nav-choice" data-other-settings-category="entry">Введення даних</button>
+        <button type="button" class="management-option nav-choice" data-other-settings-category="storage">Дані та пам’ять</button>
       </div>
       <div class="management-gesture-pad" id="otherSettingsGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування іншими налаштуваннями">
         <span class="gesture-pad-handle"></span>
@@ -7451,6 +7485,17 @@
         </select>
         <p class="small" id="orderEntryModeDescription">Інвентаризація та замовлення налаштовуються незалежно одне від одного.</p>
       </section>
+
+      <section class="card other-settings-group hidden" data-other-settings-panel="storage">
+        <h2>Дані та пам’ять</h2>
+        <p class="small settings-group-description">Тут показано приблизний обсяг локальних даних і кешу, які застосунок займає саме на цьому пристрої.</p>
+        <div class="app-storage-usage-card" aria-live="polite">
+          <div class="app-storage-usage-heading">Зайнято на цьому пристрої</div>
+          <div class="app-storage-usage-value" id="appStorageUsageValue">Обчислення…</div>
+          <p class="app-storage-usage-details" id="appStorageUsageDetails">Перевіряю збережені дані та кеш застосунку.</p>
+          <button type="button" class="secondary app-storage-refresh" id="refreshAppStorageUsageBtn">Оновити розмір</button>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -7492,7 +7537,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.49</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.50</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7517,6 +7562,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.50</h3>
+          <ul>
+            <li>в «Інших налаштуваннях» додано окрему категорію «Дані та пам’ять»;</li>
+            <li>застосунок показує приблизний загальний обсяг, який займають його локальні дані та PWA-кеш на поточному пристрої;</li>
+            <li>додано окремі значення для даних і кешу та кнопку повторного вимірювання.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.49</h3>
           <ul>
@@ -8027,7 +8080,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.49";
+  const APP_VERSION = "2.50";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12333,11 +12386,84 @@
     showAboutCard();
   }
 
+  function appStorageByteLength(value) {
+    const text = String(value || "");
+    if ("TextEncoder" in window) return new TextEncoder().encode(text).byteLength;
+    return text.length * 2;
+  }
+
+  function calculateAppLocalStorageBytes() {
+    let bytes = 0;
+    try {
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (!key || !key.startsWith("warehouseJournal")) continue;
+        bytes += appStorageByteLength(key);
+        bytes += appStorageByteLength(localStorage.getItem(key));
+      }
+    } catch (error) {}
+    return bytes;
+  }
+
+  async function calculateAppCacheBytes() {
+    if (!("caches" in window)) return 0;
+    let bytes = 0;
+    try {
+      const cacheNames = (await caches.keys()).filter(name => name.startsWith("oblik-zalyshkiv-"));
+      for (const cacheName of cacheNames) {
+        const cache = await caches.open(cacheName);
+        const requests = await cache.keys();
+        for (const request of requests) {
+          const response = await cache.match(request);
+          if (!response) continue;
+          try {
+            bytes += (await response.clone().blob()).size;
+          } catch (error) {
+            bytes += Number(response.headers.get("content-length")) || 0;
+          }
+        }
+      }
+    } catch (error) {}
+    return bytes;
+  }
+
+  function formatAppStorageBytes(bytes) {
+    const value = Math.max(0, Number(bytes) || 0);
+    const units = ["Б", "КБ", "МБ", "ГБ"];
+    let amount = value;
+    let unitIndex = 0;
+    while (amount >= 1024 && unitIndex < units.length - 1) {
+      amount /= 1024;
+      unitIndex += 1;
+    }
+    const maximumFractionDigits = unitIndex === 0 ? 0 : (amount < 10 ? 2 : 1);
+    return `${new Intl.NumberFormat("uk-UA", { maximumFractionDigits }).format(amount)} ${units[unitIndex]}`;
+  }
+
+  async function updateAppStorageUsage() {
+    const value = document.getElementById("appStorageUsageValue");
+    const details = document.getElementById("appStorageUsageDetails");
+    const refreshButton = document.getElementById("refreshAppStorageUsageBtn");
+    if (!value || !details) return;
+    value.textContent = "Обчислення…";
+    details.textContent = "Перевіряю збережені дані та кеш застосунку.";
+    if (refreshButton) refreshButton.disabled = true;
+
+    const localDataBytes = calculateAppLocalStorageBytes();
+    const cacheBytes = await calculateAppCacheBytes();
+    const totalBytes = localDataBytes + cacheBytes;
+
+    value.textContent = formatAppStorageBytes(totalBytes);
+    details.textContent = `Локальні дані: ${formatAppStorageBytes(localDataBytes)} · кеш застосунку: ${formatAppStorageBytes(cacheBytes)}. Значення приблизне й може трохи відрізнятися від системного показника телефона.`;
+    if (refreshButton) refreshButton.disabled = false;
+  }
+
   const OTHER_SETTINGS_CATEGORY_TITLES = {
     navigation: "Навігація",
     menu: "Меню та керування",
     buttons: "Кнопки навігації",
-    entry: "Введення даних"
+    entry: "Введення даних",
+    storage: "Дані та пам’ять"
   };
   let activeOtherSettingsCategory = "";
 
@@ -12368,6 +12494,7 @@
       item.classList.toggle("hidden", item !== panel);
     });
     updateOtherSettingsHeader(OTHER_SETTINGS_CATEGORY_TITLES[category]);
+    if (category === "storage") updateAppStorageUsage();
     scrollAppToTop();
   }
 
@@ -12375,6 +12502,7 @@
     document.querySelectorAll("[data-other-settings-category]").forEach(button => {
       button.addEventListener("click", () => openOtherSettingsCategory(button.dataset.otherSettingsCategory));
     });
+    document.getElementById("refreshAppStorageUsageBtn")?.addEventListener("click", updateAppStorageUsage);
     activeOtherSettingsCategory = "";
     document.getElementById("otherSettingsCategoryView").classList.remove("hidden");
     document.getElementById("otherSettingsPanelView").classList.add("hidden");
