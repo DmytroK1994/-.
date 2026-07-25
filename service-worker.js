@@ -1,11 +1,13 @@
-const CACHE_NAME = "oblik-zalyshkiv-v2-70";
+const CACHE_NAME = "oblik-zalyshkiv-v2-71";
 const APP_ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json?v=270",
+  "./manifest.json?v=271",
   "./icon.svg?v=264",
   "./icon-192.png?v=264",
   "./icon-512.png?v=264",
+  "./assets/qrcode-generator.js?v=271",
+  "./assets/jsQR.js?v=271",
   "./banner.png"
 ];
 

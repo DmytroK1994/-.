@@ -6701,7 +6701,7 @@
     }
   </style>
 
-<link rel="manifest" href="manifest.json?v=270">
+<link rel="manifest" href="manifest.json?v=271">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6740,7 +6740,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.70</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.71</span></div>
     </div>
   </div>
 
@@ -7718,7 +7718,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.70</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.71</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7743,6 +7743,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.71</h3>
+          <ul>
+            <li>підключено локальні модулі створення та сканування QR-кодів;</li>
+            <li>QR одного найменування містить лише назву, одиницю, типову кількість у піддоні та в одиниці;</li>
+            <li>одне найменування завжди формується одним QR без кнопок переходу між частинами;</li>
+            <li>копіювання й поширення передають саме PNG-зображення QR, а не службовий текст.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.70</h3>
           <ul>
@@ -8234,9 +8243,9 @@
         <div class="qr-transfer-actions">
           <button type="button" class="secondary" id="previousQrPartBtn">Попередній</button>
           <button type="button" id="nextQrPartBtn">Наступний</button>
-          <button type="button" class="secondary" id="copyQrPartBtn">Скопіювати QR-код</button>
+          <button type="button" class="secondary" id="copyQrPartBtn">Скопіювати зображення QR</button>
           <button type="button" class="secondary" id="copyQrSubjectBtn">Скопіювати назву</button>
-          <button type="button" id="shareQrPartBtn">Поділитися QR-кодом</button>
+          <button type="button" id="shareQrPartBtn">Поділитися зображенням QR</button>
         </div>
       </div>
       <div class="qr-transfer-body hidden" id="qrReceiveView">
@@ -8446,12 +8455,14 @@
     </div>
   </div>
 
+<script src="./assets/qrcode-generator.js?v=271"></script>
+<script src="./assets/jsQR.js?v=271"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.70";
+  const APP_VERSION = "2.71";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14518,6 +14529,17 @@
   }
 
   function buildQrTransferParts(kind, products = []) {
+    if (kind === "product") {
+      const product = products[0] || {};
+      return [JSON.stringify({
+        f: "oblik-item",
+        v: QR_TRANSFER_VERSION,
+        n: String(product.name || "").trim(),
+        u: normalizeMeasurementUnit(product.defaultUnit),
+        p: Number(product.defaultPalletKg || 0),
+        e: Number(product.defaultPieceKg || 0)
+      })];
+    }
     const payload = kind === "full"
       ? createBackupPayload("full")
       : createProductsBackup(products);
@@ -14531,9 +14553,8 @@
     const transferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
     const checksum = transferChecksum(encoded);
     const chunks = [];
-    const chunkSize = kind === "product" ? 1800 : QR_TRANSFER_CHUNK_SIZE;
-    for (let offset = 0; offset < encoded.length; offset += chunkSize) {
-      chunks.push(encoded.slice(offset, offset + chunkSize));
+    for (let offset = 0; offset < encoded.length; offset += QR_TRANSFER_CHUNK_SIZE) {
+      chunks.push(encoded.slice(offset, offset + QR_TRANSFER_CHUNK_SIZE));
     }
     return chunks.map((data, index) => JSON.stringify({
       f: "ozqr",
@@ -14568,6 +14589,8 @@
       progress.textContent = total === 1
         ? "Один QR-код · відскануй його на іншому пристрої"
         : `QR-код ${qrTransferPartIndex + 1} із ${total} · сканувати можна в будь-якому порядку`;
+      previousButton.classList.toggle("hidden", total <= 1);
+      nextButton.classList.toggle("hidden", total <= 1);
       previousButton.disabled = qrTransferPartIndex === 0;
       nextButton.disabled = qrTransferPartIndex === total - 1;
     } catch (error) {
@@ -14589,10 +14612,10 @@
     }
     if (shareButton) {
       shareButton.textContent = qrTransferActiveKind === "product"
-        ? "Поділитися QR-кодом найменування"
+        ? "Поділитися зображенням QR"
         : qrTransferActiveKind === "products"
-          ? "Поділитися QR-кодом списку"
-          : "Поділитися QR-кодом копії";
+          ? "Поділитися зображенням QR списку"
+          : "Поділитися зображенням QR копії";
     }
   }
 
@@ -14921,9 +14944,28 @@
   }
 
   async function acceptQrTransferPart(rawValue) {
+    const rawText = String(rawValue || "").trim();
+    try {
+      const compactProduct = JSON.parse(rawText);
+      if (
+        compactProduct?.f === "oblik-item"
+        && compactProduct.v === QR_TRANSFER_VERSION
+        && String(compactProduct.n || "").trim()
+      ) {
+        closeQrTransfer();
+        await importTransferredProducts([{
+          name: String(compactProduct.n).trim(),
+          defaultUnit: normalizeMeasurementUnit(compactProduct.u),
+          defaultPalletKg: Number(compactProduct.p || 0),
+          defaultPieceKg: Number(compactProduct.e || 0)
+        }], true);
+        return true;
+      }
+    } catch (error) {}
+
     let part;
     try {
-      part = JSON.parse(String(rawValue || "").trim());
+      part = JSON.parse(rawText);
       if (part.f !== "ozqr" || part.v !== QR_TRANSFER_VERSION || !part.id || !part.d ||
           !Number.isInteger(part.p) || !Number.isInteger(part.n) || part.p < 1 || part.p > part.n) {
         throw new Error("bad-part");
@@ -15017,10 +15059,48 @@
     }
   }
 
+  async function currentQrPngBlob() {
+    const image = document.getElementById("qrTransferImage");
+    if (!image?.src) throw new Error("missing-qr-image");
+    if (!image.complete || !image.naturalWidth) {
+      try { await image.decode(); } catch (error) {}
+    }
+    if (!image.naturalWidth || !image.naturalHeight) throw new Error("bad-qr-image");
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext("2d");
+    context.imageSmoothingEnabled = false;
+    context.drawImage(image, 0, 0);
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("qr-png-error")), "image/png");
+    });
+  }
+
+  function downloadQrImage(blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `qr-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 800);
+  }
+
   async function copyCurrentQrPart() {
-    const value = qrTransferParts[qrTransferPartIndex] || "";
-    const copied = await copyTextToClipboard(value);
-    toast(copied ? "Текст поточного QR-коду скопійовано" : "Не вдалося скопіювати код", !copied);
+    try {
+      const blob = await currentQrPngBlob();
+      if (navigator.clipboard?.write && typeof ClipboardItem === "function") {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        toast("Зображення QR скопійовано");
+        return;
+      }
+      downloadQrImage(blob);
+      toast("Копіювання зображення недоступне — QR збережено як PNG");
+    } catch (error) {
+      toast("Не вдалося скопіювати зображення QR", true);
+    }
   }
 
   async function copyCurrentQrSubject() {
@@ -15039,17 +15119,22 @@
   }
 
   async function shareCurrentQrPart() {
-    const value = qrTransferParts[qrTransferPartIndex] || "";
-    if (!value) return;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: qrTransferSubjectText, text: value });
-        return;
-      } catch (error) {
-        if (error?.name === "AbortError") return;
+    try {
+      const blob = await currentQrPngBlob();
+      const file = new File([blob], "qr-najmenuvannia.png", { type: "image/png" });
+      if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+        try {
+          await navigator.share({ title: qrTransferSubjectText, files: [file] });
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") return;
+        }
       }
+      downloadQrImage(blob);
+      toast("Поширення зображення недоступне — QR збережено як PNG");
+    } catch (error) {
+      toast("Не вдалося підготувати зображення QR", true);
     }
-    await copyCurrentQrPart();
   }
 
   function parseBackupPayload(raw) {
