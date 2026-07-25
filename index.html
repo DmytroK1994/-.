@@ -1146,6 +1146,12 @@
       min-width: 0;
       margin: 0;
     }
+    .product-search-heading-actions {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 6px;
+    }
     #openProductAddBtn {
       display: inline-flex;
       align-items: center;
@@ -1164,6 +1170,25 @@
       box-shadow: none;
       font-size: 13px;
       white-space: nowrap;
+    }
+    #scanProductQrBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 42px;
+      width: 42px;
+      min-width: 42px;
+      min-height: 38px;
+      margin: 0;
+      padding: 7px 5px;
+      border: 1px solid var(--primary-bg);
+      border-radius: 11px;
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      box-shadow: none;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
     }
     .product-add-plus {
       font-size: 20px;
@@ -6731,7 +6756,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=274">
+<link rel="manifest" href="manifest.json?v=275">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6765,7 +6790,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.74</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.75</span></div>
     </div>
   </div>
 
@@ -7219,7 +7244,10 @@
     <div class="card product-list-search-card">
       <div class="product-search-heading">
         <h2>Пошук у найменуваннях</h2>
-        <button class="green" id="openProductAddBtn"><span class="product-add-plus" aria-hidden="true">+</span><span>Додати</span></button>
+        <div class="product-search-heading-actions">
+          <button type="button" id="scanProductQrBtn" aria-label="Сканувати QR-код найменування" title="Сканувати QR-код">QR</button>
+          <button class="green" id="openProductAddBtn"><span class="product-add-plus" aria-hidden="true">+</span><span>Додати</span></button>
+        </div>
       </div>
       <p class="small">Швидко знайди потрібну позицію.</p>
       <div class="combo-wrap">
@@ -7743,7 +7771,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.74</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.75</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7768,6 +7796,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.75</h3>
+          <ul>
+            <li>у розділі «Найменування» додано окрему кнопку QR поруч із кнопкою додавання;</li>
+            <li>кнопка одразу відкриває камеру для сканування найменування;</li>
+            <li>після сканування додається або оновлюється назва, одиниця та типові кількості.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.74</h3>
           <ul>
@@ -8512,7 +8548,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.74";
+  const APP_VERSION = "2.75";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14929,15 +14965,20 @@
     qrScanBusy = false;
   }
 
-  function openQrReceiver() {
+  function openQrReceiver(mode = "transfer") {
     qrReceivedTransfer = null;
     qrScannerLastValue = "";
     qrScannerLastValueAt = 0;
-    document.getElementById("qrTransferTitle").textContent = "Отримати дані через QR";
+    const productMode = mode === "product";
+    document.getElementById("qrTransferTitle").textContent =
+      productMode ? "Сканувати найменування" : "Отримати дані через QR";
     document.getElementById("qrSendView").classList.add("hidden");
     document.getElementById("qrReceiveView").classList.remove("hidden");
-    document.getElementById("qrReceiveProgress").textContent = "Наведи камеру на будь-який QR-код серії.";
+    document.getElementById("qrReceiveProgress").textContent = productMode
+      ? "Наведи камеру на QR-код найменування."
+      : "Наведи камеру на будь-який QR-код серії.";
     document.getElementById("qrTransferOverlay").classList.remove("hidden");
+    if (productMode) startQrScanner();
   }
 
   async function importTransferredProducts(products, singleProduct) {
@@ -16523,6 +16564,7 @@
   });
 
   document.getElementById("openProductAddBtn").addEventListener("click", openProductAddChoice);
+  document.getElementById("scanProductQrBtn").addEventListener("click", () => openQrReceiver("product"));
   document.getElementById("shareProductNameBtn").addEventListener("click", shareCurrentProductName);
   document.getElementById("copyProductNameBtn").addEventListener("click", copyCurrentProductName);
   document.getElementById("editProductFromInfoBtn").addEventListener("click", editProductFromInfo);
