@@ -5406,17 +5406,20 @@
       outline: 2px solid var(--selection-outline);
       outline-offset: -2px;
     }
-    body.workspace-orders.order-entry-dialog-mode .entry-form-card > .entry-collapsible-section,
-    body.workspace-orders.order-entry-dialog-mode .entry-form-card > #selectedProductLabel,
-    body.workspace-orders.order-entry-dialog-mode .entry-form-card > #saveEntryBtn,
-    body.workspace-orders.order-entry-dialog-mode .entry-form-card > #cancelEditBtn {
+    body.entry-dialog-mode .entry-form-card > .entry-collapsible-section,
+    body.entry-dialog-mode .entry-form-card > #selectedProductLabel,
+    body.entry-dialog-mode .entry-form-card > #saveEntryBtn,
+    body.entry-dialog-mode .entry-form-card > #cancelEditBtn {
       display: none !important;
     }
-    body.workspace-orders.order-entry-dialog-mode .entry-form-card {
+    body.entry-dialog-mode .entry-form-card {
       padding-bottom: 14px;
     }
-    body.workspace-orders.order-entry-dialog-mode .entry-product-search-block > label {
+    body.entry-dialog-mode .entry-product-search-block > label {
       margin-top: 0;
+    }
+    body:not(.workspace-orders) #orderEntryOverlay .order-only-entry-field {
+      display: none;
     }
     @media (max-width: 420px) {
       .order-entry-dialog-grid {
@@ -6026,7 +6029,7 @@
       #pageToday #todayList {
         min-width: 0;
       }
-      body.workspace-orders.order-entry-dialog-mode #pageToday .desktop-order-toolbar {
+      body.workspace-orders.entry-dialog-mode #pageToday .desktop-order-toolbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -6083,16 +6086,16 @@
         color: var(--field-text, var(--text));
         font-size: 12px;
       }
-      body.workspace-orders.order-entry-dialog-mode #pageToday .entry-form-heading-row {
+      body.entry-dialog-mode #pageToday .entry-form-heading-row {
         display: none;
       }
-      body.workspace-orders.order-entry-dialog-mode #pageToday .entry-form-card {
+      body.entry-dialog-mode #pageToday .entry-form-card {
         padding: 13px 15px;
       }
-      body.workspace-orders.order-entry-dialog-mode #pageToday .document-actions-card {
+      body.workspace-orders.entry-dialog-mode #pageToday .document-actions-card {
         display: none;
       }
-      body.workspace-orders.order-entry-dialog-mode #pageToday .entry-product-search-block {
+      body.entry-dialog-mode #pageToday .entry-product-search-block {
         max-width: 760px;
         margin-inline: auto;
       }
@@ -6241,7 +6244,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.25</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.26</span></div>
     </div>
   </div>
 
@@ -7094,12 +7097,18 @@
           <option value="visible">Показувати</option>
         </select>
         <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
-        <label for="orderEntryModeSelect">Додавання позицій у замовленнях на телефоні</label>
+        <label for="inventoryEntryModeSelect">Додавання позицій в інвентаризації</label>
+        <select id="inventoryEntryModeSelect">
+          <option value="classic">Поточна розгорнута форма</option>
+          <option value="dialog">Компактний пошук і окреме вікно</option>
+        </select>
+        <p class="small">Налаштування діє окремо на цьому пристрої — як на телефоні, так і на комп’ютері.</p>
+        <label for="orderEntryModeSelect">Додавання позицій у замовленнях</label>
         <select id="orderEntryModeSelect">
           <option value="classic">Поточна розгорнута форма</option>
           <option value="dialog">Компактний пошук і окреме вікно</option>
         </select>
-        <p class="small" id="orderEntryModeDescription">На комп’ютері завжди використовується компактний пошук і окреме вікно. Це налаштування змінює лише телефонну версію.</p>
+        <p class="small" id="orderEntryModeDescription">Інвентаризація та замовлення налаштовуються незалежно одне від одного.</p>
       </section>
     </div>
   </div>
@@ -7142,7 +7151,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.25</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.26</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7167,6 +7176,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.26</h3>
+          <ul>
+            <li>для інвентаризації додано вибір між розгорнутою формою та компактним пошуком з окремим вікном;</li>
+            <li>режими введення для інвентаризації та замовлень налаштовуються незалежно;</li>
+            <li>обидва режими тепер працюють і на телефоні, і на комп’ютері.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.25</h3>
           <ul>
@@ -7402,7 +7419,7 @@
     <div class="order-entry-dialog">
       <div class="order-entry-dialog-header">
         <div>
-          <div class="small">Додати в замовлення</div>
+          <div class="small" id="orderEntryDialogEyebrow">Додати в замовлення</div>
           <h2 id="orderEntryDialogTitle">Найменування</h2>
         </div>
         <button type="button" class="dialog-icon-close" id="closeOrderEntryDialogBtn" aria-label="Закрити">×</button>
@@ -7428,7 +7445,7 @@
             <option value="packs">Упаковки (уп.)</option>
           </select>
         </div>
-        <div>
+        <div class="order-only-entry-field">
           <label for="orderEntryStatus">Терміновість</label>
           <select id="orderEntryStatus">
             <option value="normal">Звичайно</option>
@@ -7437,7 +7454,7 @@
             <option value="critical">Критично</option>
           </select>
         </div>
-        <div>
+        <div class="order-only-entry-field">
           <label for="orderEntryNeedDate">Дата потреби</label>
           <input id="orderEntryNeedDate" type="date" />
         </div>
@@ -7460,7 +7477,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.25";
+  const APP_VERSION = "2.26";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7489,6 +7506,7 @@
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
   const ORDER_ENTRY_MODE_KEY = "warehouseJournalOrderEntryMode";
+  const INVENTORY_ENTRY_MODE_KEY = "warehouseJournalInventoryEntryMode";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
@@ -7529,6 +7547,7 @@
     ENTRY_UNIT_VISIBILITY_KEY,
     ENTRY_SECTION_STATE_KEY,
     ORDER_ENTRY_MODE_KEY,
+    INVENTORY_ENTRY_MODE_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
   ];
@@ -11365,38 +11384,45 @@
 
   function getOrderEntryMode() {
     try {
-      return localStorage.getItem(ORDER_ENTRY_MODE_KEY) === "dialog" ? "dialog" : "classic";
+      const saved = localStorage.getItem(ORDER_ENTRY_MODE_KEY);
+      if (saved === "dialog" || saved === "classic") return saved;
+      return isMobileDevice ? "classic" : "dialog";
+    } catch (error) {
+      return isMobileDevice ? "classic" : "dialog";
+    }
+  }
+
+  function getInventoryEntryMode() {
+    try {
+      return localStorage.getItem(INVENTORY_ENTRY_MODE_KEY) === "dialog" ? "dialog" : "classic";
     } catch (error) {
       return "classic";
     }
   }
 
-  function usesOrderEntryDialogMode() {
-    if (!workspaceIsOrders()) return false;
-    return !isMobileDevice || getOrderEntryMode() === "dialog";
+  function usesEntryDialogMode() {
+    return (workspaceIsOrders() ? getOrderEntryMode() : getInventoryEntryMode()) === "dialog";
   }
 
   function updateCurrentOrderSearchVisibility() {
     const card = document.querySelector("#pageToday .current-list-search-card");
     if (!card) return;
-    const shouldHide = usesOrderEntryDialogMode() && getActiveDay().entries.length === 0;
+    const shouldHide = usesEntryDialogMode() && getActiveDay().entries.length === 0;
     card.classList.toggle("hidden", shouldHide);
     if (shouldHide) resetTodayListSearch();
   }
 
   function applyOrderEntryMode() {
-    const dialogMode = usesOrderEntryDialogMode();
-    document.body.classList.toggle("order-entry-dialog-mode", dialogMode);
-    const select = document.getElementById("orderEntryModeSelect");
+    const dialogMode = usesEntryDialogMode();
+    document.body.classList.toggle("entry-dialog-mode", dialogMode);
+    document.body.classList.remove("order-entry-dialog-mode");
+    const orderSelect = document.getElementById("orderEntryModeSelect");
+    const inventorySelect = document.getElementById("inventoryEntryModeSelect");
     const description = document.getElementById("orderEntryModeDescription");
-    if (select) {
-      select.value = isMobileDevice ? getOrderEntryMode() : "dialog";
-      select.disabled = !isMobileDevice;
-    }
+    if (orderSelect) orderSelect.value = getOrderEntryMode();
+    if (inventorySelect) inventorySelect.value = getInventoryEntryMode();
     if (description) {
-      description.textContent = isMobileDevice
-        ? "Зміна стосується лише телефона. На комп’ютері завжди використовується компактний пошук і окреме вікно."
-        : "На комп’ютері автоматично використовується компактний пошук і окреме вікно. Телефонне налаштування збережено окремо.";
+      description.textContent = "Інвентаризація та замовлення налаштовуються незалежно. Вибір зберігається окремо на кожному пристрої.";
     }
     updateCurrentOrderSearchVisibility();
   }
@@ -12245,19 +12271,26 @@
   }
 
   function openOrderEntryDialog(productId) {
-    if (!usesOrderEntryDialogMode()) return;
+    if (!usesEntryDialogMode()) return;
     const product = state.products.find(item => item.id === productId);
     if (!product) {
       toast("Найменування не знайдено", true);
       return;
     }
     document.getElementById("orderEntryProductId").value = product.id;
+    const orders = workspaceIsOrders();
+    document.getElementById("orderEntryDialogEyebrow").textContent = orders
+      ? "Додати в замовлення"
+      : "Додати в інвентаризацію";
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
     document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
     document.getElementById("orderEntryStatus").value = "normal";
     document.getElementById("orderEntryNeedDate").value = getActiveDay().date || todayISO();
     document.getElementById("orderEntryComment").value = "";
+    document.getElementById("saveOrderEntryDialogBtn").textContent = orders
+      ? "Додати в замовлення"
+      : "Додати в інвентаризацію";
     document.getElementById("orderEntryOverlay").classList.remove("hidden");
     document.body.classList.add("order-entry-open");
     window.setTimeout(() => document.getElementById("orderEntryQuantity").focus(), 80);
@@ -12284,8 +12317,11 @@
       closeOrderEntryDialog();
       return;
     }
-    const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
-    if (!warehouse) {
+    const orders = workspaceIsOrders();
+    const warehouse = orders
+      ? state.warehouses.find(item => item.id === state.activeWarehouseId)
+      : null;
+    if (orders && !warehouse) {
       toast("Спочатку обери або додай склад", true);
       return;
     }
@@ -12296,7 +12332,6 @@
       return;
     }
     const unit = normalizeMeasurementUnit(document.getElementById("orderEntryUnit").value);
-    const needDate = document.getElementById("orderEntryNeedDate").value || getActiveDay().date || todayISO();
     const entry = {
       id: uid(),
       createdAt: nowText(),
@@ -12309,12 +12344,16 @@
       kgPerPiece: 0,
       directKg: quantity.value,
       directKgExpression: quantity.display,
-      comment: document.getElementById("orderEntryComment").value.trim(),
-      warehouseId: warehouse.id,
-      warehouseName: warehouse.name,
-      orderStatus: normalizeOrderStatus(document.getElementById("orderEntryStatus").value),
-      needDate
+      comment: document.getElementById("orderEntryComment").value.trim()
     };
+    if (orders) {
+      Object.assign(entry, {
+        warehouseId: warehouse.id,
+        warehouseName: warehouse.name,
+        orderStatus: normalizeOrderStatus(document.getElementById("orderEntryStatus").value),
+        needDate: document.getElementById("orderEntryNeedDate").value || getActiveDay().date || todayISO()
+      });
+    }
     recalcEntry(entry);
     product.defaultUnit = unit;
     rememberEntryUnit(unit);
@@ -14070,7 +14109,7 @@
     document.getElementById("productSearchResults").innerHTML = "";
     document.getElementById("productSearchResults").classList.add("hidden");
     fillDefaultWeights();
-    if (usesOrderEntryDialogMode()) openOrderEntryDialog(id);
+    if (usesEntryDialogMode()) openOrderEntryDialog(id);
   }
 
   function updateApp() {
@@ -14559,16 +14598,28 @@
     toast(mode === "visible" ? "Вибір одиниці показано" : "Вибір одиниці приховано");
   });
   const orderEntryModeSelect = document.getElementById("orderEntryModeSelect");
-  orderEntryModeSelect.value = isMobileDevice ? getOrderEntryMode() : "dialog";
-  orderEntryModeSelect.disabled = !isMobileDevice;
+  orderEntryModeSelect.value = getOrderEntryMode();
   orderEntryModeSelect.addEventListener("change", event => {
-    if (!isMobileDevice) return;
     const mode = event.target.value === "dialog" ? "dialog" : "classic";
     try { localStorage.setItem(ORDER_ENTRY_MODE_KEY, mode); } catch (error) {}
     clearEntryForm();
     applyOrderEntryMode();
     renderToday();
-    toast(mode === "dialog" ? "Увімкнено компактне додавання" : "Увімкнено розгорнуту форму");
+    toast(mode === "dialog"
+      ? "Для замовлень увімкнено компактне додавання"
+      : "Для замовлень увімкнено розгорнуту форму");
+  });
+  const inventoryEntryModeSelect = document.getElementById("inventoryEntryModeSelect");
+  inventoryEntryModeSelect.value = getInventoryEntryMode();
+  inventoryEntryModeSelect.addEventListener("change", event => {
+    const mode = event.target.value === "dialog" ? "dialog" : "classic";
+    try { localStorage.setItem(INVENTORY_ENTRY_MODE_KEY, mode); } catch (error) {}
+    clearEntryForm();
+    applyOrderEntryMode();
+    renderToday();
+    toast(mode === "dialog"
+      ? "Для інвентаризації увімкнено компактне додавання"
+      : "Для інвентаризації увімкнено розгорнуту форму");
   });
   document.querySelectorAll("[data-entry-section-toggle]").forEach(button => {
     button.addEventListener("click", () => toggleEntrySection(button.dataset.entrySectionToggle));
