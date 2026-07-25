@@ -6982,7 +6982,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=280">
+<link rel="manifest" href="manifest.json?v=281">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7016,7 +7016,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.80</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.81</span></div>
     </div>
   </div>
 
@@ -8007,7 +8007,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.80</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.81</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8032,6 +8032,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.81</h3>
+          <ul>
+            <li>обрана у вікні додавання одиниця може окремо запам’ятовуватися для кожного найменування;</li>
+            <li>одиниця та стан перемикача зберігаються після закриття вікна або додавання позиції;</li>
+            <li>робочий вибір в інвентаризації та замовленнях більше не змінює основну одиницю в розділі «Найменування».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.80</h3>
           <ul>
@@ -8825,7 +8833,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.80";
+  const APP_VERSION = "2.81";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8870,6 +8878,7 @@
   const WORKSPACE_MODE_KEY = "warehouseJournalWorkspaceMode";
   const INITIAL_WORKSPACE_CHOICE_KEY = "warehouseJournalInitialWorkspaceChoice";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
+  const ENTRY_PRODUCT_UNIT_PREFERENCES_KEY = "warehouseJournalEntryProductUnitPreferences";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
   const ORDER_ENTRY_MODE_KEY = "warehouseJournalOrderEntryMode";
@@ -8914,6 +8923,7 @@
     ...BUTTON_SIZE_CONFIGS.map(config => `${config.key}${CUSTOM_BUTTON_SIZE_SUFFIX}`),
     WORKSPACE_MODE_KEY,
     LAST_ENTRY_UNIT_KEY,
+    ENTRY_PRODUCT_UNIT_PREFERENCES_KEY,
     ENTRY_UNIT_VISIBILITY_KEY,
     ENTRY_SECTION_STATE_KEY,
     ORDER_ENTRY_MODE_KEY,
@@ -11295,6 +11305,54 @@
     try { localStorage.setItem(LAST_ENTRY_UNIT_KEY, normalizeMeasurementUnit(unit)); } catch (error) {}
   }
 
+  function getEntryProductUnitPreferences() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(ENTRY_PRODUCT_UNIT_PREFERENCES_KEY) || "{}");
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function getEntryProductUnitPreference(productId) {
+    if (!productId) return null;
+    const unit = getEntryProductUnitPreferences()[productId];
+    return MEASUREMENT_UNITS[unit] ? unit : null;
+  }
+
+  function setEntryProductUnitPreference(productId, unit) {
+    if (!productId) return;
+    const preferences = getEntryProductUnitPreferences();
+    if (unit && MEASUREMENT_UNITS[unit]) preferences[productId] = normalizeMeasurementUnit(unit);
+    else delete preferences[productId];
+    try {
+      if (Object.keys(preferences).length) {
+        localStorage.setItem(ENTRY_PRODUCT_UNIT_PREFERENCES_KEY, JSON.stringify(preferences));
+      } else {
+        localStorage.removeItem(ENTRY_PRODUCT_UNIT_PREFERENCES_KEY);
+      }
+    } catch (error) {}
+  }
+
+  function getEntryUnitPickerProductId(selectId) {
+    if (selectId === "orderEntryUnit") {
+      return document.getElementById("orderEntryProductId")?.value || "";
+    }
+    return document.getElementById("productSelect")?.value || "";
+  }
+
+  function applyEntryProductUnitPreference(product, selectId, rememberCheckboxId, fallbackUnit = null) {
+    const select = document.getElementById(selectId);
+    const rememberCheckbox = document.getElementById(rememberCheckboxId);
+    if (!select) return normalizeMeasurementUnit(fallbackUnit || product?.defaultUnit);
+    const savedUnit = getEntryProductUnitPreference(product?.id);
+    const unit = normalizeMeasurementUnit(savedUnit || fallbackUnit || product?.defaultUnit);
+    select.value = unit;
+    if (rememberCheckbox) rememberCheckbox.checked = Boolean(savedUnit);
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    return unit;
+  }
+
   function formatQuantity(value, unit = "kg") {
     const normalizedUnit = normalizeMeasurementUnit(unit);
     const number = new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 2 })
@@ -11387,6 +11445,17 @@
     rememberLabel.append(rememberCheckbox, rememberText);
     popover.appendChild(rememberLabel);
 
+    const saveRememberedUnit = () => {
+      const productId = getEntryUnitPickerProductId(selectId);
+      if (!productId) return;
+      if (rememberCheckbox.checked) {
+        setEntryProductUnitPreference(productId, select.value);
+        rememberEntryUnit(select.value);
+      } else {
+        setEntryProductUnitPreference(productId, null);
+      }
+    };
+
     trigger.addEventListener("click", event => {
       event.stopPropagation();
       const willOpen = popover.classList.contains("hidden");
@@ -11402,7 +11471,11 @@
       if (willOpen) sync();
     });
     popover.addEventListener("click", event => event.stopPropagation());
-    select.addEventListener("change", sync);
+    select.addEventListener("change", () => {
+      sync();
+      if (rememberCheckbox.checked) saveRememberedUnit();
+    });
+    rememberCheckbox.addEventListener("change", saveRememberedUnit);
 
     select.parentNode.insertBefore(picker, select);
     picker.append(trigger, select, popover);
@@ -14398,9 +14471,7 @@
     document.getElementById("orderEntryQuantityLabel").textContent = "Окрема кількість";
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
-    document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
-    document.getElementById("rememberOrderEntryUnitForProduct").checked = false;
-    document.getElementById("orderEntryUnit").dispatchEvent(new Event("change", { bubbles: true }));
+    applyEntryProductUnitPreference(product, "orderEntryUnit", "rememberOrderEntryUnitForProduct");
     document.getElementById("inventoryDialogPallets").value = "";
     document.getElementById("inventoryDialogPerPallet").value = product.defaultPalletKg || "";
     document.getElementById("inventoryDialogPieces").value = "";
@@ -14499,10 +14570,6 @@
       toast("Введи кількість", true);
       return;
     }
-    if (document.getElementById("rememberOrderEntryUnitForProduct").checked) {
-      product.defaultUnit = unit;
-      rememberEntryUnit(unit);
-    }
     getActiveDay().entries.push(entry);
     document.getElementById("productSearch").value = "";
     document.getElementById("productSelect").value = "";
@@ -14599,11 +14666,6 @@
       toast("Введи кількість", true);
       return;
     }
-    if (document.getElementById("rememberEntryUnitForProduct").checked) {
-      product.defaultUnit = entryData.unit;
-      rememberEntryUnit(entryData.unit);
-    }
-
     const day = getActiveDay();
 
     if (editingId) {
@@ -14710,10 +14772,14 @@
 
   function fillDefaultWeights() {
     const product = state.products.find(p => p.id === document.getElementById("productSelect").value);
-    const unit = product ? normalizeMeasurementUnit(product.defaultUnit) : getLastEntryUnit();
-    document.getElementById("entryUnit").value = unit;
-    document.getElementById("rememberEntryUnitForProduct").checked = false;
-    document.getElementById("entryUnit").dispatchEvent(new Event("change", { bubbles: true }));
+    const unit = product
+      ? applyEntryProductUnitPreference(product, "entryUnit", "rememberEntryUnitForProduct")
+      : getLastEntryUnit();
+    if (!product) {
+      document.getElementById("entryUnit").value = unit;
+      document.getElementById("rememberEntryUnitForProduct").checked = false;
+      document.getElementById("entryUnit").dispatchEvent(new Event("change", { bubbles: true }));
+    }
     document.getElementById("kgPerPallet").value = product?.defaultPalletKg || "";
     document.getElementById("kgPerPiece").value = product?.defaultPieceKg || "";
     updateEntryUnitLabels(unit);
