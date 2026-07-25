@@ -7261,27 +7261,28 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=300">
-<link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
-<link rel="apple-touch-icon" href="icon-512.png?v=264">
+<link rel="manifest" href="manifest.json?v=302">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=302">
+<link rel="apple-touch-icon" href="icon-512.png?v=302">
 <meta name="application-name" content="Облік">
 
 <!-- Preview banner for Telegram / Viber / Facebook / Discord -->
 <meta property="og:title" content="Облік">
-<meta property="og:description" content="Інвентаризація, замовлення та робота зі складськими найменуваннями">
-<meta property="og:image" content="https://dmytrok1994.github.io/-./banner.png">
-<meta property="og:image:secure_url" content="https://dmytrok1994.github.io/-./banner.png">
+<meta property="og:description" content="Інвентаризація, замовлення, здача продукції та складський облік">
+<meta property="og:image" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
+<meta property="og:image:secure_url" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Облік — застосунок для складського обліку">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dmytrok1994.github.io/-./">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Облік">
-<meta name="twitter:description" content="Інвентаризація, замовлення та робота зі складськими найменуваннями">
-<meta name="twitter:image" content="https://dmytrok1994.github.io/-./banner.png">
+<meta name="twitter:description" content="Інвентаризація, замовлення, здача продукції та складський облік">
+<meta name="twitter:image" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
+<meta name="twitter:image:alt" content="Облік — застосунок для складського обліку">
 
 </head>
 <body class="splash-active page-today">
@@ -7295,7 +7296,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.00</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.02</span></div>
     </div>
   </div>
 
@@ -8342,7 +8343,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.00</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.02</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8367,6 +8368,22 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.02</h3>
+          <ul>
+            <li>застосунок отримав новий нейтральний абстрактний значок без буквальних складських предметів;</li>
+            <li>створено новий світлий банер із напрямами «Інвентаризація», «Замовлення» та «Здача продукції»;</li>
+            <li>оновлено іконки PWA, прев’ю посилань і кешування графічних файлів.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.01</h3>
+          <ul>
+            <li>створено нове нейтральне прев’ю посилання з чинним значком застосунку;</li>
+            <li>у прев’ю залишено одну назву «Облік» без зайвих підписів;</li>
+            <li>оновлено зображення для Telegram, Viber, Facebook, Discord та інших сервісів.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.00</h3>
           <ul>
@@ -9375,7 +9392,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.00";
+  const APP_VERSION = "3.02";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
