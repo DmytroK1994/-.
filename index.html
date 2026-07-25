@@ -6618,7 +6618,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.57</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.58</span></div>
     </div>
   </div>
 
@@ -7576,7 +7576,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.57</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.58</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7601,6 +7601,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.58</h3>
+          <ul>
+            <li>кнопка «Додати» тепер розташовується за фактичною видимою межею екрана над клавіатурою;</li>
+            <li>додано окреме врахування системної віртуальної клавіатури Android;</li>
+            <li>позиція кнопки автоматично оновлюється під час появи, зміни або переміщення клавіатури.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.57</h3>
           <ul>
@@ -8177,7 +8185,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.57";
+  const APP_VERSION = "2.58";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9618,6 +9626,21 @@
     button.textContent = normalButton?.textContent || "Додати";
     button.classList.toggle("hidden", !shouldShow);
     normalButton?.classList.toggle("keyboard-action-replaced", shouldShow);
+    if (shouldShow) {
+      const keyboardRect = navigator.virtualKeyboard?.boundingRect;
+      const viewportBottom = viewport
+        ? viewport.offsetTop + viewport.height
+        : window.innerHeight;
+      const visibleBottom = keyboardRect?.height > 0
+        ? Math.min(viewportBottom, keyboardRect.top)
+        : viewportBottom;
+      const buttonHeight = Math.max(46, button.getBoundingClientRect().height || 0);
+      button.style.bottom = "auto";
+      button.style.top = `${Math.max(4, Math.round(visibleBottom - buttonHeight - 4))}px`;
+    } else {
+      button.style.removeProperty("top");
+      button.style.removeProperty("bottom");
+    }
   }
 
   function initKeyboardEntryAction() {
@@ -9643,6 +9666,9 @@
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", updateKeyboardEntryAction, { passive: true });
       window.visualViewport.addEventListener("scroll", updateKeyboardEntryAction, { passive: true });
+    }
+    if (navigator.virtualKeyboard) {
+      navigator.virtualKeyboard.addEventListener("geometrychange", updateKeyboardEntryAction);
     }
     window.addEventListener("resize", updateKeyboardEntryAction, { passive: true });
   }
