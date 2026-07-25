@@ -1400,6 +1400,16 @@
       border-radius: 14px;
       background: var(--surface-deep);
     }
+    .inventory-warehouse-screen-row {
+      margin-bottom: 8px;
+      padding: 9px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      background: var(--surface-deep);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+    }
     .trash-retention-settings label:first-child {
       margin-top: 0;
     }
@@ -5675,6 +5685,7 @@
     .order-report-table .preview-table-header-row > div:last-child,
     .order-print-row > div:last-child { border-left:0; border-right:0; text-align:left; }
     .order-warehouse-report-row { padding:5px 7px; border:1px solid #999; border-bottom:0; background:#ececec; color:#111; font-weight:800; text-align:left; break-inside:avoid; page-break-inside:avoid; }
+    .inventory-warehouse-report-row { padding:5px 7px; border:1px solid #999; border-bottom:0; background:#ececec; color:#111; font-weight:800; text-align:left; break-inside:avoid; page-break-inside:avoid; }
     .print-report-header h1.order-document-title,
     .preview-report-title.order-document-title {
       width:100%;
@@ -6510,7 +6521,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.44</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.45</span></div>
     </div>
   </div>
 
@@ -6810,6 +6821,7 @@
     <div id="todayList" class="screen-only"></div>
 
     <div class="print-only print-report-table">
+      <div class="inventory-warehouse-report-row hidden" id="printInventoryWarehouseRow"></div>
       <div class="print-table-header">
         <div class="print-table-header-row" id="printTableHeaderRow">
           <div>Позиція та підрахунки</div>
@@ -6832,6 +6844,7 @@
       <h1 class="preview-report-title" id="previewReportTitle"></h1>
       <div class="order-report-meta hidden" id="previewOrderMeta"></div>
       <div class="preview-report-table" id="previewReportTable">
+        <div class="inventory-warehouse-report-row hidden" id="previewInventoryWarehouseRow"></div>
         <div class="preview-table-header-row" id="previewTableHeaderRow">
           <div>Позиція та підрахунки</div>
           <div>Загальна кількість</div>
@@ -7454,7 +7467,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.44</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.45</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7479,6 +7492,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.45</h3>
+          <ul>
+            <li>перед списком позицій інвентаризації додано окремий рядок із назвою складу;</li>
+            <li>склад відображається у поточному списку, попередньому перегляді та друці/PDF;</li>
+            <li>для інвентаризацій без вибраного складу порожній рядок не показується.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.44</h3>
           <ul>
@@ -7949,7 +7970,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.44";
+  const APP_VERSION = "2.45";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10482,6 +10503,12 @@
     const warehouse = state.warehouses.find(item => item.id === id);
     day.warehouseId = warehouse?.id || null;
     day.warehouseName = warehouse?.name || "";
+  }
+
+  function inventoryDocumentWarehouseName(day) {
+    if (!day) return "";
+    const warehouse = state.warehouses.find(item => item.id === day.warehouseId);
+    return String(warehouse?.name || day.warehouseName || "").trim();
   }
 
   function renderWarehouseOptions() {
@@ -14623,6 +14650,12 @@
     document.getElementById("previewTableHeaderRow").innerHTML = headerHtml;
     document.getElementById("printTableHeaderRow").classList.toggle("hidden", orders);
     document.getElementById("previewTableHeaderRow").classList.toggle("hidden", orders);
+    const inventoryWarehouseName = orders ? "" : inventoryDocumentWarehouseName(documentData);
+    ["printInventoryWarehouseRow", "previewInventoryWarehouseRow"].forEach(id => {
+      const row = document.getElementById(id);
+      row.textContent = inventoryWarehouseName ? `Склад: ${inventoryWarehouseName}` : "";
+      row.classList.toggle("hidden", !inventoryWarehouseName);
+    });
     const longestNameLength = orders
       ? documentData.entries.reduce((max, entry) => Math.max(max, String(entry.productName || "").length), 0)
       : 0;
@@ -14667,9 +14700,19 @@
     }
     updateTodayListSearchClearButton();
 
+    if (!orders) {
+      const warehouseName = inventoryDocumentWarehouseName(day);
+      if (warehouseName) {
+        const warehouseRow = document.createElement("div");
+        warehouseRow.className = "inventory-warehouse-screen-row";
+        warehouseRow.textContent = `Склад: ${warehouseName}`;
+        list.appendChild(warehouseRow);
+      }
+    }
+
     const allGroups = groupEntries(day);
     if (!allGroups.length) {
-      list.innerHTML = `<div class="card empty">Записів ще немає.</div>`;
+      list.insertAdjacentHTML("beforeend", `<div class="card empty">Записів ще немає.</div>`);
       return;
     }
 
@@ -14683,7 +14726,7 @@
     );
 
     if (!groups.length) {
-      list.innerHTML = `<div class="card empty">${orders ? "У поточному замовленні" : "У поточній інвентаризації"} нічого не знайдено.</div>`;
+      list.insertAdjacentHTML("beforeend", `<div class="card empty">${orders ? "У поточному замовленні" : "У поточній інвентаризації"} нічого не знайдено.</div>`);
       return;
     }
 
