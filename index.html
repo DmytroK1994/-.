@@ -3018,7 +3018,7 @@
       right: max(6px, env(safe-area-inset-right));
       bottom: calc(var(--keyboard-action-inset, 0px) + 6px);
       left: max(6px, env(safe-area-inset-left));
-      z-index: 1080;
+      z-index: 1400;
       width: auto;
       max-width: none;
       min-height: 46px;
@@ -6579,7 +6579,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.50</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.51</span></div>
     </div>
   </div>
 
@@ -7537,7 +7537,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.50</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.51</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7562,6 +7562,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.51</h3>
+          <ul>
+            <li>у вікні додавання позиції кнопка «Закрити» розташована зліва, а «Додати» — справа;</li>
+            <li>після відкриття вікна числове поле більше не отримує фокус автоматично, тому обидві кнопки залишаються видимими;</li>
+            <li>кнопка «Додати» переноситься над клавіатурою лише після натискання на числові поля та відображається поверх усіх елементів вікна.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.50</h3>
           <ul>
@@ -8069,8 +8077,8 @@
         </div>
       </div>
       <div class="order-entry-dialog-actions">
-        <button type="button" id="saveOrderEntryDialogBtn">Додати в замовлення</button>
         <button type="button" class="secondary" id="cancelOrderEntryDialogBtn">Закрити</button>
+        <button type="button" id="saveOrderEntryDialogBtn">Додати в замовлення</button>
       </div>
     </div>
   </div>
@@ -8080,7 +8088,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.50";
+  const APP_VERSION = "2.51";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9477,13 +9485,10 @@
     if (element.closest("#orderEntryOverlay")) {
       return Boolean(element.matches([
         "#orderEntryQuantity",
-        "#orderEntryUnit",
         "#inventoryDialogPallets",
         "#inventoryDialogPerPallet",
         "#inventoryDialogPieces",
-        "#inventoryDialogPerPiece",
-        "#orderEntryStatus",
-        "#orderEntryComment"
+        "#inventoryDialogPerPiece"
       ].join(", ")));
     }
     if (!element.closest("#pageToday .entry-form-card")) return false;
@@ -9492,9 +9497,7 @@
       "#kgPerPallet",
       "#pieces",
       "#kgPerPiece",
-      "#directKg",
-      "#comment",
-      "#entryUnit"
+      "#directKg"
     ].join(", ")));
   }
 
@@ -13125,16 +13128,20 @@
     document.getElementById("inventoryDialogPerPiece").value = product.defaultPieceKg || "";
     document.getElementById("orderEntryStatus").value = "normal";
     document.getElementById("orderEntryComment").value = "";
-    document.getElementById("saveOrderEntryDialogBtn").textContent = "Додати";
+    const saveButton = document.getElementById("saveOrderEntryDialogBtn");
+    saveButton.textContent = "Додати";
+    saveButton.classList.remove("keyboard-action-replaced");
+    document.getElementById("keyboardSaveEntryBtn")?.classList.add("hidden");
     document.getElementById("orderEntryOverlay").classList.remove("hidden");
     document.body.classList.add("order-entry-open");
-    window.setTimeout(() => document.getElementById("orderEntryQuantity").focus(), 80);
   }
 
   function closeOrderEntryDialog({ returnFocus = false } = {}) {
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     document.getElementById("orderEntryOverlay").classList.add("hidden");
     document.body.classList.remove("order-entry-open");
+    document.getElementById("saveOrderEntryDialogBtn").classList.remove("keyboard-action-replaced");
+    document.getElementById("keyboardSaveEntryBtn")?.classList.add("hidden");
     const searchResults = document.getElementById("productSearchResults");
     searchResults.innerHTML = "";
     searchResults.classList.add("hidden");
