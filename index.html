@@ -2702,6 +2702,38 @@
       line-height: 1;
       transform: translateY(-3px);
     }
+    body.page-today.demo-mode .app-header {
+      padding: calc(env(safe-area-inset-top) + 2px) max(10px, env(safe-area-inset-right)) 2px max(10px, env(safe-area-inset-left));
+    }
+    body.page-today.demo-mode .topbar {
+      margin-bottom: 0;
+      transform: translateY(-2px);
+    }
+    body.page-today.demo-mode .date-line {
+      display: grid;
+      max-height: 20px;
+      gap: 1px;
+      align-content: center;
+      transform: translateY(-2px);
+    }
+    .demo-header-mode,
+    .demo-header-document {
+      display: block;
+      white-space: nowrap;
+    }
+    .demo-header-mode {
+      color: var(--accent-soft);
+      font-size: 9px;
+      font-weight: 850;
+      line-height: 1;
+      letter-spacing: .12px;
+    }
+    .demo-header-document {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
     .menu-open-swipe-hint {
       display: none;
       margin: 4px 0 0;
@@ -4964,6 +4996,15 @@
       min-height: inherit;
       align-content: center;
     }
+    #otherSettingsCategoryView .management-heading {
+      width: min(calc(100% - 36px), 430px);
+      margin: 0 auto 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface-strong);
+      box-shadow: 0 8px 20px var(--card-shadow);
+    }
     .other-settings-category-list {
       position: static;
       inset: auto;
@@ -6811,16 +6852,19 @@
       #otherSettingsCategoryView .management-heading {
         position: absolute;
         top: 0;
-        right: 0;
-        left: 0;
+        right: auto;
+        left: 50%;
         z-index: 9;
         display: flex;
-        min-height: 52px;
+        width: min(calc(100% - 36px), 430px);
+        min-height: 40px;
         align-items: flex-start;
         justify-content: center;
-        padding: 2px 12px 12px;
-        background:
-          linear-gradient(to bottom, var(--bg) 76%, transparent);
+        margin: 0;
+        padding: 8px 12px;
+        border-radius: 16px;
+        background: var(--surface-strong);
+        transform: translateX(-50%);
         pointer-events: none;
       }
       #otherSettingsCategoryView .other-settings-category-list {
@@ -6857,7 +6901,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=277">
+<link rel="manifest" href="manifest.json?v=278">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6891,7 +6935,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.77</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.78</span></div>
     </div>
   </div>
 
@@ -7882,7 +7926,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.77</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.78</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7907,6 +7951,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.78</h3>
+          <ul>
+            <li>під час відкриття меню системна зона телефона використовує фон самого меню, а після закриття повертає колір шапки;</li>
+            <li>підказку в «Інших налаштуваннях» оформлено як акуратний заокруглений блок;</li>
+            <li>демонстраційний режим доповнено складами, трьома інвентаризаціями, трьома замовленнями та довшими списками позицій;</li>
+            <li>підписи демонстраційного режиму в шапці розділено на два компактні рядки без збільшення її висоти.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.77</h3>
           <ul>
@@ -8675,7 +8728,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.77";
+  const APP_VERSION = "2.78";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8729,7 +8782,7 @@
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
-  const DEMO_DATA_VERSION = "2";
+  const DEMO_DATA_VERSION = "3";
   const TRASH_KEY = "warehouseJournalTrashV1";
   const DEMO_TRASH_KEY = "warehouseJournalDemoTrashV1";
   const TRASH_RETENTION_KEY = "warehouseJournalTrashRetention";
@@ -9066,6 +9119,22 @@
     window.requestAnimationFrame(() => {
       document.getElementById("themeColorMeta")?.setAttribute("content", normalized);
     });
+  }
+
+  function syncSystemAreaToCurrentSurface() {
+    const drawerOpen = document.body.classList.contains("drawer-open")
+      && document.getElementById("drawer")?.classList.contains("open");
+    const surface = drawerOpen
+      ? document.getElementById("drawer")
+      : document.querySelector(".app-header");
+    if (!surface) return;
+    const styles = getComputedStyle(surface);
+    const backgroundColor = normalizeThemeColor(
+      styles.backgroundColor,
+      normalizeThemeColor(getComputedStyle(document.documentElement).getPropertyValue("--surface"), "#ffffff")
+    );
+    document.documentElement.style.setProperty("--app-header-safe-background", backgroundColor);
+    syncSystemThemeColor(backgroundColor);
   }
 
   function captureCurrentThemePalette() {
@@ -9769,27 +9838,7 @@
     if (select) select.value = selected;
     updateCustomThemeControls(customPalette, selected === "custom" && customThemeEditorOpen);
 
-    const themeColors = {
-      dark: "#0f172a",
-      beige: "#f3ecdf",
-      white: "#ffffff",
-      graphite: "#0b0d12",
-      aurora: "#06131e",
-      stone: "#e8e4dc",
-      lavender: "#f1efff",
-      mint: "#e9f8f3",
-      copper: "#101219",
-      custom: customPalette.customBg
-    };
-    const header = document.querySelector(".app-header");
-    const headerStyles = header ? getComputedStyle(header) : null;
-    const headerBackground = headerStyles?.background || "var(--surface)";
-    const headerColor = normalizeThemeColor(
-      headerStyles?.backgroundColor,
-      EXTRA_THEME_PALETTES[selected]?.surface || themeColors[selected]
-    );
-    document.documentElement.style.setProperty("--app-header-safe-background", headerBackground);
-    syncSystemThemeColor(headerColor);
+    syncSystemAreaToCurrentSurface();
 
     if (persist) {
       try {
@@ -10549,39 +10598,161 @@
       defaultPalletKg: name === "Олія соняшникова" ? 1000 : 500,
       defaultPieceKg: 25
     }));
+    const warehouses = [
+      { id: "demo-warehouse-main", name: "Основний склад" },
+      { id: "demo-warehouse-1711", name: "1711" },
+      { id: "demo-warehouse-1719", name: "1719" }
+    ];
+    const makeDemoEntries = (prefix, specifications, orderDate = "") => specifications.map((specification, index) => {
+      const [productIndex, warehouseIndex, values] = specification;
+      const warehouse = warehouses[warehouseIndex];
+      return createDemoEntry(`${prefix}-${index + 1}`, products[productIndex], {
+        warehouseId: warehouse.id,
+        warehouseName: warehouse.name,
+        ...(orderDate ? { orderStatus: "normal", needDate: orderDate } : {}),
+        ...values
+      });
+    });
     const currentDayId = "demo-current-day";
     const previousDayId = "demo-previous-day";
+    const olderDayId = "demo-older-day";
+    const currentOrderId = "demo-current-order";
+    const previousOrderId = "demo-previous-order";
+    const olderOrderId = "demo-older-order";
+    const currentDate = demoDateISO(0);
+    const previousDate = demoDateISO(1);
+    const olderDate = demoDateISO(3);
     return {
       products,
       activeDayId: currentDayId,
-      activeOrderId: null,
-      orders: [],
-      warehouses: [],
-      activeWarehouseId: null,
+      activeOrderId: currentOrderId,
+      warehouses,
+      activeWarehouseId: warehouses[0].id,
       days: [
         {
           id: currentDayId,
           documentNumber: 1,
-          date: demoDateISO(0),
+          date: currentDate,
           createdAt: nowText(),
-          entries: [
-            createDemoEntry("demo-entry-1", products[0], { pallets: 4, kgPerPallet: 500 }),
-            createDemoEntry("demo-entry-2", products[2], { directKgExpression: "600+250" }),
-            createDemoEntry("demo-entry-3", products[4], { pallets: 2, kgPerPallet: 500 }),
-            createDemoEntry("demo-entry-4", products[11], { directKgExpression: "320" }),
-            createDemoEntry("demo-entry-5", products[36], { directKgExpression: "150+75" })
-          ]
+          warehouseId: warehouses[0].id,
+          warehouseName: warehouses[0].name,
+          entries: makeDemoEntries("demo-inventory-current", [
+            [0, 0, { pallets: 4, kgPerPallet: 500, comment: "Партія 24-07" }],
+            [1, 0, { pallets: 2, kgPerPallet: 450 }],
+            [2, 0, { directKgExpression: "600+250" }],
+            [4, 1, { pallets: 2, kgPerPallet: 500 }],
+            [5, 1, { pieces: 18, kgPerPiece: 25 }],
+            [6, 1, { directKgExpression: "140+65" }],
+            [7, 1, { pallets: 3, kgPerPallet: 400 }],
+            [9, 2, { pallets: 3, kgPerPallet: 200 }],
+            [11, 2, { directKgExpression: "320" }],
+            [14, 2, { pieces: 12, kgPerPiece: 20 }],
+            [18, 0, { directKgExpression: "95" }],
+            [24, 1, { directKgExpression: "180" }],
+            [36, 2, { directKgExpression: "150+75" }],
+            [37, 2, { pieces: 24, kgPerPiece: 5 }],
+            [48, 0, { pallets: 2, kgPerPallet: 300, comment: "Перевірено" }]
+          ])
         },
         {
           id: previousDayId,
           documentNumber: 1,
-          date: demoDateISO(1),
+          date: previousDate,
           createdAt: nowText(),
-          entries: [
-            createDemoEntry("demo-entry-6", products[7], { pallets: 2, kgPerPallet: 400 }),
-            createDemoEntry("demo-entry-7", products[9], { pallets: 3, kgPerPallet: 200 }),
-            createDemoEntry("demo-entry-8", products[24], { directKgExpression: "180" })
-          ]
+          warehouseId: warehouses[1].id,
+          warehouseName: warehouses[1].name,
+          entries: makeDemoEntries("demo-inventory-previous", [
+            [3, 1, { pallets: 2, kgPerPallet: 500 }],
+            [8, 1, { directKgExpression: "210" }],
+            [10, 1, { pieces: 16, kgPerPiece: 20 }],
+            [12, 2, { directKgExpression: "480" }],
+            [15, 2, { pieces: 20, kgPerPiece: 10 }],
+            [20, 0, { directKgExpression: "135" }],
+            [28, 0, { pieces: 30, kgPerPiece: 1 }],
+            [31, 1, { directKgExpression: "75" }],
+            [38, 2, { directKgExpression: "260" }],
+            [41, 2, { directKgExpression: "190" }]
+          ])
+        },
+        {
+          id: olderDayId,
+          documentNumber: 1,
+          date: olderDate,
+          createdAt: nowText(),
+          warehouseId: warehouses[2].id,
+          warehouseName: warehouses[2].name,
+          entries: makeDemoEntries("demo-inventory-older", [
+            [13, 2, { directKgExpression: "85" }],
+            [16, 2, { directKgExpression: "120" }],
+            [21, 2, { directKgExpression: "90" }],
+            [25, 0, { directKgExpression: "55" }],
+            [33, 0, { pallets: 2, kgPerPallet: 250 }],
+            [42, 1, { directKgExpression: "310" }],
+            [45, 1, { directKgExpression: "145" }],
+            [49, 2, { directKgExpression: "200" }]
+          ])
+        }
+      ],
+      orders: [
+        {
+          id: currentOrderId,
+          documentNumber: 1,
+          date: currentDate,
+          createdAt: nowText(),
+          responsible: "Іваненко О. М.",
+          notes: "Демонстраційне замовлення для перевірки поділу за складами.",
+          entries: makeDemoEntries("demo-order-current", [
+            [0, 0, { pallets: 3, kgPerPallet: 500, orderStatus: "urgent", comment: "Потрібно до першої зміни" }],
+            [2, 0, { directKgExpression: "900", orderStatus: "critical" }],
+            [4, 0, { pieces: 20, kgPerPiece: 25 }],
+            [6, 1, { directKgExpression: "180", orderStatus: "important" }],
+            [7, 1, { pallets: 2, kgPerPallet: 400 }],
+            [9, 1, { directKgExpression: "240", comment: "Температурний режим" }],
+            [11, 2, { directKgExpression: "500", orderStatus: "urgent" }],
+            [14, 2, { pieces: 16, kgPerPiece: 20 }],
+            [24, 2, { directKgExpression: "125" }],
+            [29, 0, { directKgExpression: "60" }],
+            [36, 1, { directKgExpression: "220", orderStatus: "important" }],
+            [37, 1, { directKgExpression: "160" }],
+            [43, 2, { directKgExpression: "280", orderStatus: "critical" }],
+            [49, 2, { directKgExpression: "350" }]
+          ], currentDate)
+        },
+        {
+          id: previousOrderId,
+          documentNumber: 1,
+          date: previousDate,
+          createdAt: nowText(),
+          responsible: "Петренко Н. В.",
+          notes: "Позиції для планового поповнення.",
+          entries: makeDemoEntries("demo-order-previous", [
+            [1, 0, { pallets: 2, kgPerPallet: 450 }],
+            [3, 0, { directKgExpression: "700", orderStatus: "important" }],
+            [5, 1, { pieces: 24, kgPerPiece: 25 }],
+            [8, 1, { directKgExpression: "130" }],
+            [10, 1, { directKgExpression: "260", orderStatus: "urgent" }],
+            [15, 2, { directKgExpression: "90" }],
+            [20, 2, { directKgExpression: "105" }],
+            [33, 0, { directKgExpression: "400" }],
+            [41, 2, { directKgExpression: "210", comment: "Уточнити партію" }]
+          ], previousDate)
+        },
+        {
+          id: olderOrderId,
+          documentNumber: 1,
+          date: olderDate,
+          createdAt: nowText(),
+          responsible: "Коваленко І. С.",
+          notes: "",
+          entries: makeDemoEntries("demo-order-older", [
+            [12, 0, { directKgExpression: "300" }],
+            [16, 1, { directKgExpression: "110" }],
+            [18, 1, { directKgExpression: "95" }],
+            [21, 2, { directKgExpression: "80" }],
+            [28, 0, { directKgExpression: "40" }],
+            [38, 2, { directKgExpression: "240", orderStatus: "important" }],
+            [48, 2, { directKgExpression: "175" }]
+          ], olderDate)
         }
       ]
     };
@@ -12712,6 +12883,7 @@
     document.body.classList.add("drawer-open");
     drawer.classList.add("open");
     drawerBg.classList.add("open");
+    syncSystemAreaToCurrentSurface();
     initializeGestureMenuSelection();
     requestAnimationFrame(updateMenuOverflowIndicator);
   }
@@ -12727,6 +12899,7 @@
     document.body.classList.remove("drawer-open");
     drawer.classList.remove("open");
     drawerBg.classList.remove("open");
+    syncSystemAreaToCurrentSurface();
     getGestureMenuItems().forEach(item => item.classList.remove("gesture-selected"));
     const overflowIndicator = document.getElementById("menuMoreIndicator");
     if (overflowIndicator) overflowIndicator.classList.add("hidden");
@@ -16127,7 +16300,20 @@
     const listOnly = options.listOnly === true;
     if (!listOnly) {
       updateWorkspaceUI();
-      document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}${orders ? "Поточне замовлення" : "Поточна інвентаризація"} ${documentNumberText(day)}: ${niceDate(day.date)}`;
+      const activeDateLabel = document.getElementById("activeDateLabel");
+      const documentLabel = `${orders ? "Поточне замовлення" : "Поточна інвентаризація"} ${documentNumberText(day)}: ${niceDate(day.date)}`;
+      if (activeDateLabel) {
+        if (demoModeActive) {
+          activeDateLabel.innerHTML = `
+            <span class="demo-header-mode">Демонстраційний режим</span>
+            <span class="demo-header-document">${documentLabel}</span>
+          `;
+          activeDateLabel.setAttribute("aria-label", `Демонстраційний режим. ${documentLabel}`);
+        } else {
+          activeDateLabel.textContent = documentLabel;
+          activeDateLabel.removeAttribute("aria-label");
+        }
+      }
       document.getElementById("printReportTitle").textContent = orders
         ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
         : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`;
