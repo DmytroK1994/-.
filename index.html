@@ -7060,7 +7060,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=291">
+<link rel="manifest" href="manifest.json?v=292">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7094,7 +7094,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.91</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.92</span></div>
     </div>
   </div>
 
@@ -7494,6 +7494,7 @@
         <div class="management-options" id="historyModeWheel">
           <button class="management-option nav-choice" id="openInventoryHistoryBtn">Історія інвентаризації</button>
           <button class="management-option nav-choice" id="openOrdersHistoryBtn">Історія замовлень</button>
+          <button class="management-option nav-choice" id="openProductionHistoryBtn">Історія здачі ГП</button>
         </div>
         <div class="management-gesture-pad" id="historyGesturePad" role="button" tabindex="0" aria-label="Сенсорне керування історією">
           <span class="gesture-pad-handle"></span>
@@ -8116,7 +8117,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.91</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.92</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8141,6 +8142,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.92</h3>
+          <ul>
+            <li>додано окремий розділ «Історія здачі ГП»;</li>
+            <li>історія підтримує відкриття, попередній перегляд, вибір і видалення документів;</li>
+            <li>назва історії автоматично змінюється разом із назвою процесу;</li>
+            <li>видалені документи й позиції здачі ГП правильно відновлюються з кошика.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.91</h3>
           <ul>
@@ -9071,7 +9081,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.91";
+  const APP_VERSION = "2.92";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9355,6 +9365,7 @@
   const PAGE_PARENTS = {
     historyInventory: "history",
     historyOrders: "history",
+    historyProduction: "history",
     products: "management",
     themes: "management",
     backup: "management",
@@ -9368,6 +9379,7 @@
     history: "Історія",
     historyInventory: "Історія інвентаризації",
     historyOrders: "Історія замовлень",
+    historyProduction: "Історія здачі ГП",
     management: "Налаштування",
     products: "Найменування",
     themes: "Теми оформлення",
@@ -11356,9 +11368,10 @@
     if (item?.type !== "entries") return "";
     const day = item.payload?.day || {};
     const orders = item.payload?.workspace === "orders";
+    const production = item.payload?.workspace === "production";
     const entry = Array.isArray(item.payload?.entries) ? item.payload.entries[0] : null;
     const warehouseName = String(entry?.warehouseName || day.warehouseName || "").trim();
-    const documentName = orders ? "Замовлення" : "Інвентаризація";
+    const documentName = production ? getProductionWorkspaceName() : (orders ? "Замовлення" : "Інвентаризація");
     const dateText = day.date ? ` від ${niceDate(day.date)}` : "";
     return `${documentName} ${documentNumberText(day)}${dateText}${warehouseName ? ` · склад «${warehouseName}»` : ""}`;
   }
@@ -11391,7 +11404,10 @@
     } else if (item.type === "entries") {
       const dayData = item.payload?.day || {};
       const restoreToOrders = item.payload?.workspace === "orders";
-      const documents = restoreToOrders ? state.orders : state.days;
+      const restoreToProduction = item.payload?.workspace === "production";
+      const documents = restoreToProduction
+        ? state.productionDeliveries
+        : (restoreToOrders ? state.orders : state.days);
       let day = documents.find(existing => existing.id === dayData.id);
       if (!day) {
         day = {
@@ -11420,6 +11436,18 @@
       if (!state.orders.some(order => order.id === state.activeOrderId)) {
         state.activeOrderId = orders[0]?.id || state.orders[0]?.id || null;
       }
+    } else if (item.type === "production") {
+      const deliveries = Array.isArray(item.payload?.productionDeliveries)
+        ? item.payload.productionDeliveries
+        : [];
+      deliveries.slice().reverse().forEach(delivery => {
+        if (!state.productionDeliveries.some(existing => existing.id === delivery.id)) {
+          state.productionDeliveries.unshift(delivery);
+        }
+      });
+      if (!state.productionDeliveries.some(delivery => delivery.id === state.activeProductionDeliveryId)) {
+        state.activeProductionDeliveryId = deliveries[0]?.id || state.productionDeliveries[0]?.id || null;
+      }
     } else if (item.type === "backup" && item.payload?.backup) {
       const backup = parseBackupPayload(item.payload.backup);
       state = normalizeState(cloneData(backup.state));
@@ -11431,6 +11459,7 @@
 
     assignDocumentNumbers(state.days);
     assignDocumentNumbers(state.orders);
+    assignDocumentNumbers(state.productionDeliveries);
     saveTrashItems(items.filter(entry => entry.id !== id));
     save();
     renderTrash();
@@ -12197,9 +12226,27 @@
     }
   }
 
+  function getProductionHistorySubjectName() {
+    const name = getProductionWorkspaceName();
+    const [firstWord = "", ...rest] = name.split(/\s+/);
+    const forms = {
+      "здача": "здачі",
+      "передача": "передачі",
+      "видача": "видачі",
+      "відправка": "відправки"
+    };
+    const adjustedFirstWord = forms[firstWord.toLocaleLowerCase("uk-UA")]
+      || firstWord.toLocaleLowerCase("uk-UA");
+    return [adjustedFirstWord, ...rest].filter(Boolean).join(" ");
+  }
+
   function syncProductionWorkspaceNameControl() {
     const input = document.getElementById("productionWorkspaceNameInput");
     if (input) input.value = getProductionWorkspaceName();
+    const historyButton = document.getElementById("openProductionHistoryBtn");
+    const historyTitle = `Історія ${getProductionHistorySubjectName()}`;
+    if (historyButton) historyButton.textContent = historyTitle;
+    PAGE_TITLES.historyProduction = historyTitle;
   }
 
   function saveProductionWorkspaceName() {
@@ -14428,7 +14475,7 @@
     document.getElementById("pageInstall").classList.add("hidden");
 
     if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
-    if (["history", "historyInventory", "historyOrders"].includes(page)) {
+    if (["history", "historyInventory", "historyOrders", "historyProduction"].includes(page)) {
       document.getElementById("pageHistory").classList.remove("hidden");
       const navigation = document.getElementById("historyNavigation");
       const records = document.getElementById("historyRecordsView");
@@ -14473,7 +14520,7 @@
       ? "management"
       : (page === "install"
           ? "about"
-          : (["historyInventory", "historyOrders"].includes(page) ? "history" : page));
+          : (["historyInventory", "historyOrders", "historyProduction"].includes(page) ? "history" : page));
     document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.page === activeMenuPage);
     });
@@ -14605,15 +14652,32 @@
     return currentPage === "historyOrders";
   }
 
+  function historyUsesProduction() {
+    return currentPage === "historyProduction";
+  }
+
+  function currentHistoryKind() {
+    if (historyUsesProduction()) return "production";
+    return historyUsesOrders() ? "orders" : "inventory";
+  }
+
+  function historyCollectionName() {
+    if (historyUsesProduction()) return getProductionHistorySubjectName();
+    return historyUsesOrders() ? "замовлень" : "інвентаризацій";
+  }
+
   function getHistoryDocuments() {
+    if (historyUsesProduction()) return state.productionDeliveries;
     return historyUsesOrders() ? state.orders : state.days;
   }
 
-  function selectDay(id, kind = historyUsesOrders() ? "orders" : "inventory") {
+  function selectDay(id, kind = currentHistoryKind()) {
+    const production = kind === "production";
     const orders = kind === "orders";
-    workspaceMode = orders ? "orders" : "inventory";
+    workspaceMode = production ? "production" : (orders ? "orders" : "inventory");
     try { localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode); } catch (error) {}
-    if (orders) state.activeOrderId = id;
+    if (production) state.activeProductionDeliveryId = id;
+    else if (orders) state.activeOrderId = id;
     else state.activeDayId = id;
     resetTodayListSearch();
     clearEntryForm();
@@ -14621,34 +14685,39 @@
     showPage("today");
   }
 
-  async function deleteDay(id, kind = historyUsesOrders() ? "orders" : "inventory") {
+  async function deleteDay(id, kind = currentHistoryKind()) {
+    const production = kind === "production";
     const orders = kind === "orders";
-    const documents = orders ? state.orders : state.days;
+    const documents = production ? state.productionDeliveries : (orders ? state.orders : state.days);
     const day = documents.find(d => d.id === id);
     if (!day) {
-      toast(orders ? "Замовлення не знайдено" : "Інвентаризацію не знайдено", true);
+      toast(production ? `${getProductionWorkspaceName()} не знайдено` : (orders ? "Замовлення не знайдено" : "Інвентаризацію не знайдено"), true);
       return;
     }
+    const singularName = production ? getProductionWorkspaceName() : (orders ? "Замовлення" : "Інвентаризація");
 
     const confirmed = await showAppDialog({
       label: "Видалення",
-      title: orders ? "Видалити замовлення?" : "Видалити інвентаризацію?",
-      message: `${orders ? "Замовлення" : "Інвентаризація"} ${documentNumberText(day)} від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
+      title: `Видалити «${singularName}»?`,
+      message: `${singularName} ${documentNumberText(day)} від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
 
     if (!putInTrash(
-      orders ? "orders" : "days",
-      `${orders ? "Замовлення" : "Інвентаризація"} ${documentNumberText(day)} від ${niceDate(day.date)}`,
-      orders ? { orders: [day] } : { days: [day] }
+      production ? "production" : (orders ? "orders" : "days"),
+      `${singularName} ${documentNumberText(day)} від ${niceDate(day.date)}`,
+      production ? { productionDeliveries: [day] } : (orders ? { orders: [day] } : { days: [day] })
     )) return;
-    if (orders) state.orders = state.orders.filter(d => d.id !== id);
+    if (production) state.productionDeliveries = state.productionDeliveries.filter(d => d.id !== id);
+    else if (orders) state.orders = state.orders.filter(d => d.id !== id);
     else state.days = state.days.filter(d => d.id !== id);
     selectedHistoryIds.delete(id);
 
-    if (orders && state.activeOrderId === id) {
+    if (production && state.activeProductionDeliveryId === id) {
+      state.activeProductionDeliveryId = state.productionDeliveries[0]?.id || null;
+    } else if (orders && state.activeOrderId === id) {
       state.activeOrderId = state.orders[0]?.id || null;
     } else if (!orders && state.activeDayId === id) {
       state.activeDayId = state.days[0]?.id || null;
@@ -14751,11 +14820,13 @@
       return;
     }
 
+    const production = historyUsesProduction();
     const orders = historyUsesOrders();
+    const collectionName = historyCollectionName();
     const documents = getHistoryDocuments();
     const confirmed = await showAppDialog({
       label: "Видалення",
-      title: orders ? "Видалити вибрані замовлення?" : "Видалити вибрані інвентаризації?",
+      title: `Видалити вибрані записи історії «${collectionName}»?`,
       message: `Буде переміщено в кошик на ${trashRetentionDurationText()}: ${ids.length}.`,
       confirmText: "Видалити",
       danger: true
@@ -14764,13 +14835,16 @@
 
     const deletedDays = documents.filter(day => selectedHistoryIds.has(day.id));
     if (!putInTrash(
-      orders ? "orders" : "days",
-      `Вибрані ${orders ? "замовлення" : "інвентаризації"} (${deletedDays.length})`,
-      orders ? { orders: deletedDays } : { days: deletedDays }
+      production ? "production" : (orders ? "orders" : "days"),
+      `Вибрані записи історії «${collectionName}» (${deletedDays.length})`,
+      production ? { productionDeliveries: deletedDays } : (orders ? { orders: deletedDays } : { days: deletedDays })
     )) return;
-    if (orders) state.orders = state.orders.filter(d => !selectedHistoryIds.has(d.id));
+    if (production) state.productionDeliveries = state.productionDeliveries.filter(d => !selectedHistoryIds.has(d.id));
+    else if (orders) state.orders = state.orders.filter(d => !selectedHistoryIds.has(d.id));
     else state.days = state.days.filter(d => !selectedHistoryIds.has(d.id));
-    if (orders && !state.orders.some(d => d.id === state.activeOrderId)) {
+    if (production && !state.productionDeliveries.some(d => d.id === state.activeProductionDeliveryId)) {
+      state.activeProductionDeliveryId = state.productionDeliveries[0]?.id || null;
+    } else if (orders && !state.orders.some(d => d.id === state.activeOrderId)) {
       state.activeOrderId = state.orders[0]?.id || null;
     } else if (!orders && !state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
@@ -14784,17 +14858,19 @@
   }
 
   async function deleteEmptyDays() {
+    const production = historyUsesProduction();
     const orders = historyUsesOrders();
+    const collectionName = historyCollectionName();
     const documents = getHistoryDocuments();
     const count = documents.filter(d => !d.entries.length).length;
     if (!count) {
-      toast(`Порожніх ${orders ? "замовлень" : "інвентаризацій"} немає`);
+      toast(`Порожніх записів історії «${collectionName}» немає`);
       return;
     }
 
     const confirmed = await showAppDialog({
       label: "Видалення",
-      title: `Видалити порожні ${orders ? "замовлення" : "інвентаризації"}?`,
+      title: `Видалити порожні записи історії «${collectionName}»?`,
       message: `У кошик на ${trashRetentionDurationText()} буде переміщено порожніх записів: ${count}.`,
       confirmText: "Видалити",
       danger: true
@@ -14803,13 +14879,16 @@
 
     const deletedDays = documents.filter(day => !day.entries.length);
     if (!putInTrash(
-      orders ? "orders" : "days",
-      `Порожні ${orders ? "замовлення" : "інвентаризації"} (${deletedDays.length})`,
-      orders ? { orders: deletedDays } : { days: deletedDays }
+      production ? "production" : (orders ? "orders" : "days"),
+      `Порожні записи історії «${collectionName}» (${deletedDays.length})`,
+      production ? { productionDeliveries: deletedDays } : (orders ? { orders: deletedDays } : { days: deletedDays })
     )) return;
-    if (orders) state.orders = state.orders.filter(d => d.entries.length > 0);
+    if (production) state.productionDeliveries = state.productionDeliveries.filter(d => d.entries.length > 0);
+    else if (orders) state.orders = state.orders.filter(d => d.entries.length > 0);
     else state.days = state.days.filter(d => d.entries.length > 0);
-    if (orders && !state.orders.some(d => d.id === state.activeOrderId)) {
+    if (production && !state.productionDeliveries.some(d => d.id === state.activeProductionDeliveryId)) {
+      state.activeProductionDeliveryId = state.productionDeliveries[0]?.id || null;
+    } else if (orders && !state.orders.some(d => d.id === state.activeOrderId)) {
       state.activeOrderId = state.orders[0]?.id || null;
     } else if (!orders && !state.days.some(d => d.id === state.activeDayId)) {
       state.activeDayId = state.days[0]?.id || null;
@@ -14821,7 +14900,9 @@
   }
 
   async function deleteAllHistory() {
+    const production = historyUsesProduction();
     const orders = historyUsesOrders();
+    const collectionName = historyCollectionName();
     const documents = getHistoryDocuments();
     if (!documents.length) {
       toast("Історії ще немає", true);
@@ -14830,19 +14911,22 @@
 
     const confirmed = await showAppDialog({
       label: "Увага",
-      title: `Очистити всю історію ${orders ? "замовлень" : "інвентаризацій"}?`,
-      message: `Усі збережені ${orders ? "замовлення" : "інвентаризації"} буде переміщено в кошик на ${trashRetentionDurationText()}.`,
+      title: `Очистити всю історію «${collectionName}»?`,
+      message: `Усі збережені записи буде переміщено в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Очистити історію",
       danger: true
     });
     if (!confirmed) return;
 
     if (!putInTrash(
-      orders ? "orders" : "days",
-      `Уся історія ${orders ? "замовлень" : "інвентаризацій"} (${documents.length})`,
-      orders ? { orders: documents } : { days: documents }
+      production ? "production" : (orders ? "orders" : "days"),
+      `Уся історія «${collectionName}» (${documents.length})`,
+      production ? { productionDeliveries: documents } : (orders ? { orders: documents } : { days: documents })
     )) return;
-    if (orders) {
+    if (production) {
+      state.productionDeliveries = [];
+      state.activeProductionDeliveryId = null;
+    } else if (orders) {
       state.orders = [];
       state.activeOrderId = null;
     } else {
@@ -17524,11 +17608,14 @@
     const normalActions = document.getElementById("historyNormalActions");
     const selectActions = document.getElementById("historySelectActions");
     const filteredDays = getFilteredHistoryDays();
+    const production = historyUsesProduction();
     const orders = historyUsesOrders();
+    const kind = currentHistoryKind();
+    const collectionName = historyCollectionName();
     const documents = getHistoryDocuments();
 
     list.innerHTML = "";
-    if (!["historyInventory", "historyOrders"].includes(currentPage)) return;
+    if (!["historyInventory", "historyOrders", "historyProduction"].includes(currentPage)) return;
     updateHistoryDateSearchClearButton();
 
     if (normalActions && selectActions) {
@@ -17538,12 +17625,12 @@
     updateSelectAllHistoryButton();
 
     if (!documents.length) {
-      list.innerHTML = `<div class="empty">Історії ${orders ? "замовлень" : "інвентаризацій"} ще немає.</div>`;
+      list.innerHTML = `<div class="empty">Історії «${escapeHtml(collectionName)}» ще немає.</div>`;
       return;
     }
 
     if (!filteredDays.length) {
-      list.innerHTML = `<div class="empty">За цією датою ${orders ? "замовлень" : "інвентаризацій"} не знайдено.</div>`;
+      list.innerHTML = `<div class="empty">За цією датою в історії «${escapeHtml(collectionName)}» нічого не знайдено.</div>`;
       return;
     }
 
@@ -17558,9 +17645,9 @@
       const buttonsHtml = historySelectMode
         ? ""
         : `<div class="actions">
-            <button class="smallbtn" data-action="select-day" data-kind="${orders ? "orders" : "inventory"}" data-id="${day.id}">Відкрити</button>
-            <button class="smallbtn" data-action="preview-day" data-kind="${orders ? "orders" : "inventory"}" data-id="${day.id}" aria-label="Попередній перегляд документа">Перегляд</button>
-            <button class="smallbtn danger" data-action="delete-day" data-kind="${orders ? "orders" : "inventory"}" data-id="${day.id}">Видалити</button>
+            <button class="smallbtn" data-action="select-day" data-kind="${kind}" data-id="${day.id}">Відкрити</button>
+            <button class="smallbtn" data-action="preview-day" data-kind="${kind}" data-id="${day.id}" aria-label="Попередній перегляд документа">Перегляд</button>
+            <button class="smallbtn danger" data-action="delete-day" data-kind="${kind}" data-id="${day.id}">Видалити</button>
           </div>`;
 
       div.innerHTML = `
@@ -17750,6 +17837,7 @@
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
   document.getElementById("openInventoryHistoryBtn").addEventListener("click", () => showPage("historyInventory"));
   document.getElementById("openOrdersHistoryBtn").addEventListener("click", () => showPage("historyOrders"));
+  document.getElementById("openProductionHistoryBtn").addEventListener("click", () => showPage("historyProduction"));
   document.getElementById("toggleHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(true));
   document.getElementById("selectAllHistoryBtn").addEventListener("click", toggleSelectAllHistory);
   document.getElementById("cancelHistorySelectBtn").addEventListener("click", () => toggleHistorySelectMode(false));
