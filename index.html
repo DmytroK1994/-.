@@ -6,7 +6,18 @@
   <title>Облік</title>
   <script>
     try {
-      const savedTheme = localStorage.getItem("warehouseJournalTheme");
+      const defaultThemeMigrationKey = "warehouseJournalDefaultThemeWhiteV1";
+      const userThemeChoiceKey = "warehouseJournalThemeChosenByUser";
+      let savedTheme = localStorage.getItem("warehouseJournalTheme") || "white";
+      if (
+        localStorage.getItem(defaultThemeMigrationKey) !== "done"
+        && localStorage.getItem(userThemeChoiceKey) !== "yes"
+        && savedTheme === "dark"
+      ) {
+        savedTheme = "white";
+        localStorage.setItem("warehouseJournalTheme", "white");
+      }
+      localStorage.setItem(defaultThemeMigrationKey, "done");
       if (["dark", "beige", "white", "graphite", "aurora", "stone", "lavender", "mint", "copper", "citrus", "sakura", "atlantic", "forest", "cyber", "ruby", "arctic", "matcha", "terracotta", "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave", "slate", "obsidian", "paper", "sage", "dusk", "nightblue", "latte", "mist", "calmsea", "olive", "sepia", "moonstone", "limepop", "pinkpop", "mango", "ultraviolet", "turquoise", "comic", "sunset", "bubblegum", "gamer", "lemonade", "custom"].includes(savedTheme)) {
         document.documentElement.dataset.theme = savedTheme;
       }
@@ -6640,11 +6651,11 @@
     }
   </style>
 
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json?v=267">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
-<meta name="theme-color" id="themeColorMeta" content="#0f172a">
+<meta name="theme-color" id="themeColorMeta" content="#ffffff">
 <meta name="application-name" content="Облік">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6679,7 +6690,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.64</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.67</span></div>
     </div>
   </div>
 
@@ -7655,7 +7666,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.64</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.67</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7680,6 +7691,30 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.67</h3>
+          <ul>
+            <li>окремо оновлено системний екран запуску встановленого PWA на iPhone;</li>
+            <li>маніфест отримав нову адресу, щоб Safari не використовував старий темний фон із кешу;</li>
+            <li>до завантаження самої сторінки PWA тепер запитує білий фон запуску.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.66</h3>
+          <ul>
+            <li>додано одноразове виправлення старої автоматичної темної теми на «Чисто білу»;</li>
+            <li>враховано, що видалення ярлика PWA на iPhone не очищає дані Safari;</li>
+            <li>після ручного вибору тема позначається як вибір користувача й більше не замінюється автоматично.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.65</h3>
+          <ul>
+            <li>«Чисто біла» стала стандартною темою першого запуску;</li>
+            <li>заставка й системний фон запуску нового встановлення одразу використовують біле оформлення;</li>
+            <li>вже вибрана користувачем тема зберігається без змін.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.64</h3>
           <ul>
@@ -8337,10 +8372,12 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.64";
+  const APP_VERSION = "2.67";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
+  const THEME_USER_SELECTED_KEY = "warehouseJournalThemeChosenByUser";
+  const DEFAULT_THEME_MIGRATION_KEY = "warehouseJournalDefaultThemeWhiteV1";
   const CUSTOM_THEME_KEY = "warehouseJournalCustomTheme";
   const CUSTOM_COMPONENT_STYLES_KEY = "warehouseJournalCustomComponentStyles";
   const CUSTOM_THEME_LIBRARY_KEY = "warehouseJournalCustomThemeLibrary";
@@ -9414,7 +9451,11 @@
     if (themeMeta) themeMeta.setAttribute("content", EXTRA_THEME_PALETTES[selected]?.bg || themeColors[selected]);
 
     if (persist) {
-      try { localStorage.setItem(THEME_KEY, selected); } catch (e) {}
+      try {
+        localStorage.setItem(THEME_KEY, selected);
+        localStorage.setItem(THEME_USER_SELECTED_KEY, "yes");
+        localStorage.setItem(DEFAULT_THEME_MIGRATION_KEY, "done");
+      } catch (e) {}
     }
   }
 
@@ -9425,7 +9466,11 @@
       if (input) palette[id] = input.value;
     });
     saveCustomThemePalette(palette);
-    try { localStorage.setItem(THEME_KEY, "custom"); } catch (error) {}
+    try {
+      localStorage.setItem(THEME_KEY, "custom");
+      localStorage.setItem(THEME_USER_SELECTED_KEY, "yes");
+      localStorage.setItem(DEFAULT_THEME_MIGRATION_KEY, "done");
+    } catch (error) {}
     applyTheme("custom", false);
     updateCustomThemePreview(activeCustomPreviewId);
   }
@@ -9626,8 +9671,8 @@
     syncModalScrollLock();
   }
 
-  let savedTheme = "dark";
-  try { savedTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (e) {}
+  let savedTheme = "white";
+  try { savedTheme = localStorage.getItem(THEME_KEY) || "white"; } catch (e) {}
   if (savedTheme === "custom") {
     try {
       const savedActiveTheme = JSON.parse(localStorage.getItem(ACTIVE_NAMED_CUSTOM_THEME_KEY) || "null");
