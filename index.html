@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Облік залишків</title>
+  <title>Облік</title>
   <script>
     try {
       const savedTheme = localStorage.getItem("warehouseJournalTheme");
@@ -2588,32 +2588,6 @@
     .compact-header-spacer {
       display: none;
     }
-    .header-about-version {
-      position: absolute;
-      top: 50%;
-      right: 0;
-      display: inline-flex;
-      width: auto;
-      min-width: 0;
-      min-height: 30px;
-      margin: 0;
-      padding: 5px 8px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: var(--surface-deep);
-      color: var(--muted);
-      box-shadow: none;
-      font-size: 11px;
-      font-weight: 800;
-      line-height: 1;
-      white-space: nowrap;
-      transform: translateY(-50%);
-    }
-    .header-about-version:not(.hidden) + .compact-header-spacer {
-      display: none !important;
-    }
     .compact-menu-btn {
       display: none;
       width: auto;
@@ -4155,6 +4129,9 @@
       margin-bottom: 4px;
       font-size: 23px;
     }
+    .about-heading-row.about-version-row {
+      justify-content: flex-end;
+    }
     .about-version {
       display: inline-flex;
       align-items: center;
@@ -5666,13 +5643,10 @@
       body:not(.page-today) .compact-header-content {
         text-align: left;
       }
-      .header-about-version {
-        position: static;
+      #pageAbout .about-version {
         min-height: 38px;
         padding: 8px 13px;
-        color: var(--text);
         font-size: 14px;
-        transform: none;
       }
       body:not(.page-today) .section-header-title {
         font-size: 22px;
@@ -6233,15 +6207,15 @@
 <link rel="icon" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-512.png">
 <meta name="theme-color" id="themeColorMeta" content="#0f172a">
-<meta name="application-name" content="Облік залишків">
+<meta name="application-name" content="Облік">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Облік залишків">
+<meta name="apple-mobile-web-app-title" content="Облік">
 
 <!-- Preview banner for Telegram / Viber / Facebook / Discord -->
-<meta property="og:title" content="Облік залишків">
-<meta property="og:description" content="Облік сировини, піддонів та складських залишків">
+<meta property="og:title" content="Облік">
+<meta property="og:description" content="Інвентаризація, замовлення та робота зі складськими найменуваннями">
 <meta property="og:image" content="https://dmytrok1994.github.io/-./banner.png">
 <meta property="og:image:secure_url" content="https://dmytrok1994.github.io/-./banner.png">
 <meta property="og:image:type" content="image/png">
@@ -6251,23 +6225,23 @@
 <meta property="og:url" content="https://dmytrok1994.github.io/-./">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Облік залишків">
-<meta name="twitter:description" content="Облік сировини, піддонів та складських залишків">
+<meta name="twitter:title" content="Облік">
+<meta name="twitter:description" content="Інвентаризація, замовлення та робота зі складськими найменуваннями">
 <meta name="twitter:image" content="https://dmytrok1994.github.io/-./banner.png">
 
 </head>
 <body class="splash-active page-today">
-  <div class="app-splash" id="appSplash" aria-label="Запуск Обліку залишків">
+  <div class="app-splash" id="appSplash" aria-label="Запуск застосунку Облік">
     <div class="splash-content">
       <div class="splash-mark" aria-hidden="true">
         <span class="splash-shelf"></span>
         <span class="splash-shelf"></span>
         <span class="splash-shelf"></span>
       </div>
-      <h1 class="splash-title">Облік залишків</h1>
+      <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.24</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.25</span></div>
     </div>
   </div>
 
@@ -6277,7 +6251,7 @@
       <div class="menu-header">
         <div class="menu-title">
           <span class="mobile-menu-title">Меню</span>
-          <span class="desktop-sidebar-title">Облік залишків</span>
+          <span class="desktop-sidebar-title">Облік</span>
         </div>
         <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
       </div>
@@ -6329,7 +6303,6 @@
           <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
         </div>
       </div>
-      <button type="button" class="header-about-version hidden" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.24</span></button>
       <div class="compact-header-spacer" aria-hidden="true"></div>
     </div>
   </div>
@@ -7147,7 +7120,7 @@
         3. Обери “На початковий екран”.<br>
         4. Натисни “Додати”.<br><br>
 
-        Після цього “Облік залишків” з’явиться на екрані телефона як звичайний додаток.<br><br>
+        Після цього “Облік” з’явиться на екрані телефона як звичайний додаток.<br><br>
 
         <b>Android</b><br>
         1. Відкрий опублікований застосунок через HTTPS у Google Chrome.<br>
@@ -7168,8 +7141,11 @@
     <div class="about-deck" id="aboutDeck" aria-label="Інформація про додаток">
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
+          <div class="about-heading-row about-version-row">
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.25</span></button>
+          </div>
           <div class="about-single-description">
-            <p><strong>Облік залишків</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
+            <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
             <p>Застосунок допомагає швидко додавати кількість піддонами, поштучно або окремим значенням, розділяти замовлення за складами, шукати й редагувати позиції, переглядати історію та формувати документи для друку або PDF.</p>
             <p>Усі дані зберігаються локально на твоєму пристрої. Для перенесення доступні файли резервної копії та автономна передача через один QR-код або їх нумеровану серію.</p>
           </div>
@@ -7191,6 +7167,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.25</h3>
+          <ul>
+            <li>застосунок перейменовано на «Облік» у заставці, заголовках, описах і даних встановлення;</li>
+            <li>кнопку версії перенесено у верхній правий кут картки з описом застосунку.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.24</h3>
           <ul>
@@ -7477,7 +7460,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.24";
+  const APP_VERSION = "2.25";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10100,7 +10083,7 @@
     if (currentPage === "today") {
       const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
       if (sectionHeaderTitle) sectionHeaderTitle.textContent = label;
-      document.title = `${label} — Облік залишків`;
+      document.title = `${label} — Облік`;
     }
     const gestureSelection = document.getElementById("gesturePadSelection");
     if (gestureSelection && todayMenuButton?.classList.contains("gesture-selected")) {
@@ -11637,7 +11620,7 @@
     const sectionTitle = document.getElementById("sectionHeaderTitle");
     const resolvedTitle = title || PAGE_TITLES.otherSettings;
     if (sectionTitle) sectionTitle.textContent = resolvedTitle;
-    document.title = `${resolvedTitle} — Облік залишків`;
+    document.title = `${resolvedTitle} — Облік`;
   }
 
   function showOtherSettingsCategories() {
@@ -11749,11 +11732,10 @@
     }
 
     document.body.classList.toggle("page-today", page === "today");
-    const sectionTitle = page === "today" ? workspaceLabel() : (PAGE_TITLES[page] || "Облік залишків");
+    const sectionTitle = page === "today" ? workspaceLabel() : (PAGE_TITLES[page] || "Облік");
     document.getElementById("sectionHeaderTitle").textContent = sectionTitle;
-    document.getElementById("openChangelogBtn").classList.toggle("hidden", page !== "about");
     if (page !== "backup") document.getElementById("backupActionMenu").removeAttribute("open");
-    document.title = page === "today" ? `${sectionTitle} — Облік залишків` : `${sectionTitle} — Облік залишків`;
+    document.title = `${sectionTitle} — Облік`;
 
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
