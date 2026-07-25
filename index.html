@@ -5630,6 +5630,15 @@
     .order-entry-dialog-grid .order-entry-comment-field {
       grid-column: 1 / -1;
     }
+    .order-entry-dialog-grid .order-entry-top-fields {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    body:not(.workspace-orders) .order-entry-dialog-grid .order-entry-top-fields {
+      grid-template-columns: 1fr;
+    }
     .order-entry-dialog-grid .entry-breakdown-field {
       grid-column: 1 / -1;
       padding: 11px;
@@ -6609,7 +6618,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.56</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.57</span></div>
     </div>
   </div>
 
@@ -7567,7 +7576,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.56</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.57</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7592,6 +7601,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.57</h3>
+          <ul>
+            <li>на комп’ютері Enter у кількості піддонів або коробок переводить курсор у парне поле;</li>
+            <li>Enter у другому полі або в «Окремій кількості» одразу додає позицію та закриває вікно;</li>
+            <li>«Одиницю виміру» і «Терміновість» розташовано поруч в одному верхньому рядку.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.56</h3>
           <ul>
@@ -8091,20 +8108,31 @@
           <label id="orderEntryQuantityLabel" for="orderEntryQuantity">Кількість</label>
           <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
         </div>
-        <div>
-          <label for="orderEntryUnit">Одиниця виміру</label>
-          <select id="orderEntryUnit">
-            <option value="kg">Кілограми (кг)</option>
-            <option value="g">Грами (г)</option>
-            <option value="t">Тонни (т)</option>
-            <option value="pcs">Штуки (шт)</option>
-            <option value="boxes">Коробки (кор.)</option>
-            <option value="bags">Мішки (міш.)</option>
-            <option value="pallets">Піддони (підд.)</option>
-            <option value="l">Літри (л)</option>
-            <option value="m">Метри (м)</option>
-            <option value="packs">Упаковки (уп.)</option>
-          </select>
+        <div class="order-entry-top-fields">
+          <div>
+            <label for="orderEntryUnit">Одиниця виміру</label>
+            <select id="orderEntryUnit">
+              <option value="kg">Кілограми (кг)</option>
+              <option value="g">Грами (г)</option>
+              <option value="t">Тонни (т)</option>
+              <option value="pcs">Штуки (шт)</option>
+              <option value="boxes">Коробки (кор.)</option>
+              <option value="bags">Мішки (міш.)</option>
+              <option value="pallets">Піддони (підд.)</option>
+              <option value="l">Літри (л)</option>
+              <option value="m">Метри (м)</option>
+              <option value="packs">Упаковки (уп.)</option>
+            </select>
+          </div>
+          <div class="order-only-entry-field">
+            <label for="orderEntryStatus">Терміновість</label>
+            <select id="orderEntryStatus">
+              <option value="normal">Звичайно</option>
+              <option value="important">Важливо</option>
+              <option value="urgent">Терміново</option>
+              <option value="critical">Критично</option>
+            </select>
+          </div>
         </div>
         <div class="entry-breakdown-field">
           <div class="inventory-entry-section-title">Піддони</div>
@@ -8132,15 +8160,6 @@
             </div>
           </div>
         </div>
-        <div class="order-only-entry-field">
-          <label for="orderEntryStatus">Терміновість</label>
-          <select id="orderEntryStatus">
-            <option value="normal">Звичайно</option>
-            <option value="important">Важливо</option>
-            <option value="urgent">Терміново</option>
-            <option value="critical">Критично</option>
-          </select>
-        </div>
         <div class="order-entry-comment-field">
           <label for="orderEntryComment">Коментар</label>
           <textarea id="orderEntryComment" rows="3" placeholder="Додаткова інформація до позиції"></textarea>
@@ -8158,7 +8177,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.56";
+  const APP_VERSION = "2.57";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13308,6 +13327,37 @@
     showSuccessCheck();
   }
 
+  function initDesktopOrderEntryKeyboardFlow() {
+    const desktopEntryFlow = () => window.matchMedia("(min-width: 901px) and (hover: hover)").matches;
+    const focusNextField = id => {
+      const field = document.getElementById(id);
+      field.focus({ preventScroll: true });
+      if (typeof field.select === "function") field.select();
+    };
+    const firstFields = new Map([
+      ["inventoryDialogPallets", "inventoryDialogPerPallet"],
+      ["inventoryDialogPieces", "inventoryDialogPerPiece"]
+    ]);
+    const submitFields = new Set([
+      "inventoryDialogPerPallet",
+      "inventoryDialogPerPiece",
+      "orderEntryQuantity"
+    ]);
+
+    document.getElementById("orderEntryOverlay").addEventListener("keydown", event => {
+      if (event.key !== "Enter" || event.shiftKey || event.isComposing || !desktopEntryFlow()) return;
+      const fieldId = event.target?.id;
+      if (firstFields.has(fieldId)) {
+        event.preventDefault();
+        focusNextField(firstFields.get(fieldId));
+        return;
+      }
+      if (!submitFields.has(fieldId)) return;
+      event.preventDefault();
+      saveOrderEntryFromDialog();
+    });
+  }
+
   function saveEntry() {
     const productId = document.getElementById("productSelect").value;
     const product = state.products.find(p => p.id === productId);
@@ -15682,6 +15732,7 @@
     if (event.target === event.currentTarget) closeWarehouseManager();
   });
   document.getElementById("saveOrderEntryDialogBtn").addEventListener("click", saveOrderEntryFromDialog);
+  initDesktopOrderEntryKeyboardFlow();
   document.getElementById("closeOrderEntryDialogBtn").addEventListener("click", () => closeOrderEntryDialog({ returnFocus: false }));
   document.getElementById("cancelOrderEntryDialogBtn").addEventListener("click", () => closeOrderEntryDialog({ returnFocus: false }));
   document.getElementById("orderEntryOverlay").addEventListener("click", event => {
