@@ -3321,34 +3321,82 @@
     .button-layout-grid label {
       margin-top: 4px;
     }
+    .button-layout-grid > .custom-size-expanded {
+      grid-column: 1 / -1;
+    }
     .custom-button-size-control {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 3px 8px;
+      gap: 7px 10px;
+      width: 100%;
       margin-top: 7px;
-      padding: 8px 10px;
+      padding: 10px 12px 12px;
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       background: var(--surface-deep);
+      touch-action: none;
+      overscroll-behavior: contain;
     }
     .custom-button-size-control.hidden { display: none; }
     .custom-button-size-control label {
-      grid-column: 1 / -1;
+      grid-column: 1;
+      grid-row: 1;
       margin: 0;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 12px;
     }
     .custom-button-size-control input[type="range"] {
+      grid-column: 1 / -1;
+      grid-row: 2;
       width: 100%;
+      height: 34px;
       min-width: 0;
       margin: 0;
       padding: 0;
+      accent-color: var(--primary-bg);
+      cursor: ew-resize;
+      touch-action: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .custom-button-size-control input[type="range"]::-webkit-slider-runnable-track {
+      height: 9px;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      background: var(--surface-strong);
+    }
+    .custom-button-size-control input[type="range"]::-webkit-slider-thumb {
+      width: 28px;
+      height: 28px;
+      margin-top: -10px;
+      border: 2px solid var(--surface-strong);
+      border-radius: 50%;
+      background: var(--primary-bg);
+      box-shadow: 0 3px 9px var(--card-shadow);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .custom-button-size-control input[type="range"]::-moz-range-track {
+      height: 9px;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      background: var(--surface-strong);
+    }
+    .custom-button-size-control input[type="range"]::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--surface-strong);
+      border-radius: 50%;
+      background: var(--primary-bg);
+      box-shadow: 0 3px 9px var(--card-shadow);
     }
     .custom-button-size-value {
+      grid-column: 2;
+      grid-row: 1;
       min-width: 42px;
       align-self: center;
       color: var(--text);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       text-align: right;
     }
@@ -6901,7 +6949,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=278">
+<link rel="manifest" href="manifest.json?v=279">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6935,7 +6983,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.78</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.79</span></div>
     </div>
   </div>
 
@@ -7926,7 +7974,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.78</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.79</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7951,6 +7999,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.79</h3>
+          <ul>
+            <li>повзунок власного розміру кнопок розтягується на всю ширину панелі налаштування;</li>
+            <li>доріжку та рухомий елемент збільшено для зручного керування пальцем;</li>
+            <li>жест повзунка відокремлено від свайпу назад і свайпу відкриття меню.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.78</h3>
           <ul>
@@ -8728,7 +8784,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.78";
+  const APP_VERSION = "2.79";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12663,6 +12719,10 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
+      if (gestureStartsOnHorizontalControl(event.target)) {
+        swipeMode = "";
+        return;
+      }
       const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
@@ -13127,7 +13187,9 @@
       const control = document.querySelector(`[data-custom-button-size="${config.selectId}"]`);
       if (!select || !control) return;
       const value = getCustomButtonSize(config.key);
-      control.classList.toggle("hidden", select.value !== "custom");
+      const customSelected = select.value === "custom";
+      control.classList.toggle("hidden", !customSelected);
+      select.parentElement?.classList.toggle("custom-size-expanded", customSelected);
       const range = control.querySelector("input");
       const output = control.querySelector(".custom-button-size-value");
       if (range) range.value = String(value);
@@ -13631,6 +13693,11 @@
       .some(id => !document.getElementById(id).classList.contains("hidden"));
   }
 
+  function gestureStartsOnHorizontalControl(target) {
+    return target instanceof Element
+      && Boolean(target.closest('input[type="range"], .custom-button-size-control'));
+  }
+
   function initPageBackSwipe() {
     let tracking = false;
     let horizontal = false;
@@ -13642,6 +13709,7 @@
       tracking = false;
       horizontal = false;
       distanceX = 0;
+      if (gestureStartsOnHorizontalControl(event.target)) return;
       if (event.touches.length !== 1 || !canUsePageBackSwipe() || isVirtualKeyboardVisible()) return;
       const touch = event.touches[0];
       if (touch.clientX < window.innerWidth - 36) return;
