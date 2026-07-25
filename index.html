@@ -981,7 +981,8 @@
       color: var(--soft-success-text);
       box-shadow: none;
     }
-    #saveEntryBtn.keyboard-action-replaced {
+    #saveEntryBtn.keyboard-action-replaced,
+    #saveOrderEntryDialogBtn.keyboard-action-replaced {
       visibility: hidden;
       pointer-events: none;
     }
@@ -3011,13 +3012,14 @@
     }
     .keyboard-entry-action {
       position: fixed;
-      right: max(12px, env(safe-area-inset-right));
-      bottom: calc(var(--keyboard-action-inset, 0px) + 10px);
-      left: max(12px, env(safe-area-inset-left));
+      right: max(6px, env(safe-area-inset-right));
+      bottom: calc(var(--keyboard-action-inset, 0px) + 6px);
+      left: max(6px, env(safe-area-inset-left));
       z-index: 1080;
-      width: min(520px, calc(100% - 24px));
+      width: auto;
+      max-width: none;
       min-height: 46px;
-      margin: 0 auto;
+      margin: 0;
       padding: 10px 16px;
       border: 1px solid var(--soft-success-border);
       border-radius: 15px;
@@ -6541,7 +6543,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.47</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.48</span></div>
     </div>
   </div>
 
@@ -7487,7 +7489,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.47</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.48</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7512,6 +7514,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.48</h3>
+          <ul>
+            <li>список результатів пошуку тепер гарантовано закривається після вибору позиції;</li>
+            <li>після додавання запису пошук не отримує фокус повторно і не відкриває список самостійно;</li>
+            <li>широка кнопка «Додати» надійніше визначає клавіатуру Android, займає доступну ширину над нею та тимчасово замінює звичайну кнопку форми.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.47</h3>
           <ul>
@@ -8006,7 +8016,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.47";
+  const APP_VERSION = "2.48";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9389,9 +9399,13 @@
   }
 
   function isVirtualKeyboardVisible() {
-    if (!window.visualViewport) return keyboardWasDetected && isAppKeyboardField(document.activeElement);
+    const focusedField = isAppKeyboardField(document.activeElement);
+    if (!window.visualViewport) {
+      return focusedField && (keyboardWasDetected || window.matchMedia("(pointer: coarse)").matches);
+    }
     const baselineHeight = keyboardViewportHeight || window.innerHeight;
-    return keyboardWasDetected && baselineHeight - window.visualViewport.height > 80;
+    const heightDifference = baselineHeight - window.visualViewport.height;
+    return focusedField && (keyboardWasDetected || heightDifference > 80);
   }
 
   function isEntryKeyboardActionField(element) {
@@ -9456,7 +9470,11 @@
       else saveEntry();
       scheduleKeyboardScrollRestore();
     });
-    document.addEventListener("focusin", () => requestAnimationFrame(updateKeyboardEntryAction));
+    document.addEventListener("focusin", () => {
+      requestAnimationFrame(updateKeyboardEntryAction);
+      setTimeout(updateKeyboardEntryAction, 80);
+      setTimeout(updateKeyboardEntryAction, 260);
+    });
     document.addEventListener("focusout", () => setTimeout(updateKeyboardEntryAction, 100));
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", updateKeyboardEntryAction, { passive: true });
@@ -12974,10 +12992,14 @@
     window.setTimeout(() => document.getElementById("orderEntryQuantity").focus(), 80);
   }
 
-  function closeOrderEntryDialog({ returnFocus = true } = {}) {
+  function closeOrderEntryDialog({ returnFocus = false } = {}) {
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     document.getElementById("orderEntryOverlay").classList.add("hidden");
     document.body.classList.remove("order-entry-open");
+    const searchResults = document.getElementById("productSearchResults");
+    searchResults.innerHTML = "";
+    searchResults.classList.add("hidden");
+    productSearchKeyboardIndex = -1;
     document.getElementById("orderEntryProductId").value = "";
     document.getElementById("orderEntryQuantity").value = "";
     document.getElementById("inventoryDialogPallets").value = "";
@@ -13060,7 +13082,6 @@
     save();
     closeOrderEntryDialog({ returnFocus: false });
     showSuccessCheck();
-    window.setTimeout(() => document.getElementById("productSearch").focus({ preventScroll: true }), 120);
   }
 
   function saveEntry() {
@@ -15201,12 +15222,16 @@
     const p = state.products.find(x => x.id === id);
     if (!p) return;
 
+    const searchInput = document.getElementById("productSearch");
+    const searchResults = document.getElementById("productSearchResults");
     document.getElementById("productSelect").value = id;
-    document.getElementById("productSearch").value = p.name;
+    searchInput.value = p.name;
     updateClearSearchButton();
     document.getElementById("selectedProductLabel").textContent = "Вибрано: " + p.name;
-    document.getElementById("productSearchResults").innerHTML = "";
-    document.getElementById("productSearchResults").classList.add("hidden");
+    searchResults.innerHTML = "";
+    searchResults.classList.add("hidden");
+    productSearchKeyboardIndex = -1;
+    searchInput.blur();
     fillDefaultWeights();
     if (usesEntryDialogMode()) openOrderEntryDialog(id);
   }
