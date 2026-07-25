@@ -1362,6 +1362,13 @@
       font-weight: 850;
       line-height: 1.25;
     }
+    .trash-item-context {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
     .trash-item-expiry {
       margin-top: 3px;
       color: var(--muted-soft);
@@ -5742,13 +5749,13 @@
       }
     }
     @media (max-width:600px) {
-      .entry-form-heading-row { align-items:center; }
-      body.workspace-orders .entry-form-heading-row {
+      .entry-form-heading-row {
         display:grid;
         grid-template-columns:max-content minmax(0,1fr);
         gap:8px;
+        align-items:center;
       }
-      body.workspace-orders #formTitle {
+      #formTitle {
         min-width:0;
         margin:0;
         font-size:clamp(16px,4.5vw,19px);
@@ -5756,18 +5763,18 @@
         line-height:1.1;
         white-space:nowrap;
       }
-      body.workspace-orders .order-warehouse-control {
+      .order-warehouse-control {
         width:100%;
         min-width:0;
       }
-      body.workspace-orders .order-warehouse-dropdown summary {
+      .order-warehouse-dropdown summary {
         width:100%;
         min-width:0;
         min-height:36px;
         padding:7px 24px;
         font-size:14px;
       }
-      body.workspace-orders .order-warehouse-dropdown summary::after { top:8px; }
+      .order-warehouse-dropdown summary::after { top:8px; }
     }
     /*
       Комп'ютерний інтерфейс.
@@ -6499,7 +6506,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.41</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.43</span></div>
     </div>
   </div>
 
@@ -6643,7 +6650,7 @@
 
     <div class="card no-print entry-form-card">
       <div class="entry-form-heading-row">
-        <h2 id="formTitle">Додати до підрахунку</h2>
+        <h2 id="formTitle">Додати</h2>
         <div class="order-warehouse-control hidden" id="orderWarehouseControl">
           <select id="orderWarehouseSelect" class="hidden" aria-label="Склад замовлення"></select>
           <details class="order-warehouse-dropdown" id="orderWarehouseDropdown">
@@ -7443,7 +7450,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.41</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.43</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7468,6 +7475,22 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.43</h3>
+          <ul>
+            <li>на телефоні до інвентаризації додано такий самий випадаючий список складів, як у замовленнях;</li>
+            <li>заголовок інвентаризації скорочено до «Додати», щоб звільнити місце для складу;</li>
+            <li>вибраний склад зберігається окремо для поточної інвентаризації, а довідник складів залишається спільним.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.42</h3>
+          <ul>
+            <li>видалені з інвентаризації або замовлення позиції гарантовано переміщуються в кошик;</li>
+            <li>в кошику тепер показано тип документа, дату та склад видаленої позиції;</li>
+            <li>під час відновлення позиція повертається у свій початковий документ разом із його службовими даними.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.41</h3>
           <ul>
@@ -7915,7 +7938,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.41";
+  const APP_VERSION = "2.43";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9884,6 +9907,17 @@
     return hours > 0 ? `Залишилось: ${hours} год ${minutes} хв` : `Залишилось: ${minutes} хв`;
   }
 
+  function trashItemContext(item) {
+    if (item?.type !== "entries") return "";
+    const day = item.payload?.day || {};
+    const orders = item.payload?.workspace === "orders";
+    const entry = Array.isArray(item.payload?.entries) ? item.payload.entries[0] : null;
+    const warehouseName = String(entry?.warehouseName || day.warehouseName || "").trim();
+    const documentName = orders ? "Замовлення" : "Інвентаризація";
+    const dateText = day.date ? ` від ${niceDate(day.date)}` : "";
+    return `${documentName}${dateText}${warehouseName ? ` · склад «${warehouseName}»` : ""}`;
+  }
+
   async function restoreTrashItem(id) {
     const items = loadTrashItems();
     const item = items.find(entry => entry.id === id);
@@ -9893,10 +9927,11 @@
       return;
     }
 
+    const context = trashItemContext(item);
     const confirmed = await showAppDialog({
       label: "Кошик",
       title: "Відновити дані?",
-      message: `Буде відновлено: ${item.label}.`,
+      message: `Буде відновлено: ${item.label}.${context ? ` Джерело: ${context}.` : ""}`,
       confirmText: "Відновити"
     });
     if (!confirmed) return;
@@ -9914,7 +9949,13 @@
       const documents = restoreToOrders ? state.orders : state.days;
       let day = documents.find(existing => existing.id === dayData.id);
       if (!day) {
-        day = { id: dayData.id || uid(), date: dayData.date || todayISO(), createdAt: dayData.createdAt || nowText(), entries: [] };
+        day = {
+          ...cloneData(dayData),
+          id: dayData.id || uid(),
+          date: dayData.date || todayISO(),
+          createdAt: dayData.createdAt || nowText(),
+          entries: []
+        };
         documents.unshift(day);
       }
       const entries = Array.isArray(item.payload?.entries) ? item.payload.entries : [];
@@ -9993,16 +10034,20 @@
       list.innerHTML = `<div class="empty">Кошик порожній.</div>`;
       return;
     }
-    list.innerHTML = items.map(item => `
+    list.innerHTML = items.map(item => {
+      const context = trashItemContext(item);
+      return `
       <div class="trash-item">
         <div class="trash-item-title">${escapeHtml(item.label)}</div>
+        ${context ? `<div class="trash-item-context">${escapeHtml(context)}</div>` : ""}
         <div class="trash-item-expiry">${trashRemainingText(item.expiresAt)}</div>
         <div class="trash-item-actions">
           <button data-action="restore-trash" data-id="${item.id}">Відновити</button>
           <button class="trash-delete-forever" data-action="delete-trash" data-id="${item.id}" aria-label="Видалити назавжди">×</button>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   function uid() {
@@ -10436,22 +10481,21 @@
     ["orderWarehouseSelect", "desktopOrderWarehouseSelect", "quickEditWarehouse"].forEach(id => {
       const select = document.getElementById(id);
       if (!select) return;
-      const current = id === "desktopOrderWarehouseSelect"
+      const current = id === "desktopOrderWarehouseSelect" || id === "orderWarehouseSelect"
         ? getWorkspaceWarehouseId()
-        : id === "orderWarehouseSelect"
-          ? (state.activeWarehouseId || "")
         : (select.value || state.activeWarehouseId || "");
       select.innerHTML = empty + options;
       select.value = state.warehouses.some(warehouse => warehouse.id === current) ? current : "";
     });
-    const activeWarehouse = state.warehouses.find(warehouse => warehouse.id === state.activeWarehouseId);
+    const workspaceWarehouseId = getWorkspaceWarehouseId();
+    const activeWarehouse = state.warehouses.find(warehouse => warehouse.id === workspaceWarehouseId);
     const summary = document.getElementById("orderWarehouseSummary");
     if (summary) summary.textContent = activeWarehouse ? activeWarehouse.name : "Оберіть склад";
     const dropdownOptions = document.getElementById("orderWarehouseDropdownOptions");
     if (dropdownOptions) {
       dropdownOptions.innerHTML = state.warehouses.length
         ? state.warehouses.map(warehouse => `
-            <button type="button" class="order-warehouse-option${warehouse.id === state.activeWarehouseId ? " active" : ""}"
+            <button type="button" class="order-warehouse-option${warehouse.id === workspaceWarehouseId ? " active" : ""}"
               data-action="select-order-warehouse" data-id="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.name)}</button>
           `).join("")
         : `<div class="small" style="padding:5px 8px;">Складів ще немає</div>`;
@@ -10595,9 +10639,8 @@
     const orders = workspaceIsOrders();
     const label = workspaceLabel();
     document.body.classList.toggle("workspace-orders", orders);
-    ["orderWarehouseControl", "orderDocumentFields"].forEach(id => {
-      document.getElementById(id)?.classList.toggle("hidden", !orders);
-    });
+    document.getElementById("orderWarehouseControl")?.classList.remove("hidden");
+    document.getElementById("orderDocumentFields")?.classList.toggle("hidden", !orders);
     const unitVisible = orders || getEntryUnitVisibility() === "visible";
     document.getElementById("entryUnitControl")?.classList.toggle("hidden", !unitVisible);
     document.getElementById("orderAdditionalSection")?.classList.toggle("hidden", !unitVisible);
@@ -10647,7 +10690,7 @@
     if (newButton) newButton.setAttribute("aria-label", orders ? "Створити нове замовлення" : "Створити нову інвентаризацію");
     const formTitle = document.getElementById("formTitle");
     if (formTitle && !document.getElementById("editingEntryId")?.value) {
-      formTitle.textContent = orders ? "Замовлення на:" : "Додати до інвентаризації";
+      formTitle.textContent = orders ? "Замовлення на:" : "Додати";
     }
     const searchLabel = document.querySelector("label[for='todayListSearch']");
     if (searchLabel) searchLabel.textContent = orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації";
@@ -13044,16 +13087,18 @@
       return;
     }
 
+    const orders = workspaceIsOrders();
+    const documentName = orders ? "замовлення" : "інвентаризації";
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити позицію?",
-      message: `Запис «${entry.productName}» буде видалено ${workspaceIsOrders() ? "з поточного замовлення" : "з поточної інвентаризації"}.`,
+      message: `Запис «${entry.productName}» буде переміщено в кошик із ${documentName} від ${niceDate(day.date)}.`,
       confirmText: "Видалити",
       danger: true
     });
     if (!confirmed) return;
     if (!putInTrash("entries", `Позиція «${entry.productName}»`, {
-      day: { id: day.id, date: day.date, createdAt: day.createdAt },
+      day: { ...cloneData(day), entries: [] },
       workspace: workspaceMode,
       entries: [entry]
     })) return;
@@ -13062,7 +13107,7 @@
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
 
     save();
-    toast("Запис видалено");
+    toast(`Позицію переміщено в кошик · ${niceDate(day.date)}`);
   }
 
   function clearEntryForm() {
@@ -13073,7 +13118,7 @@
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
     document.getElementById("comment").value = "";
-    document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Замовлення на:" : "Додати до інвентаризації";
+    document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Замовлення на:" : "Додати";
     document.getElementById("saveEntryBtn").textContent = "Додати";
     fillDefaultWeights();
   }
@@ -15057,9 +15102,10 @@
     if (action === "choose-saved-custom-theme") applyNamedCustomTheme(id);
     if (action === "delete-saved-custom-theme") deleteNamedCustomTheme(id);
     if (action === "select-order-warehouse") {
-      state.activeWarehouseId = id || null;
+      setWorkspaceWarehouse(id || null);
       saveOnly();
       renderWarehouseOptions();
+      renderToday();
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
     if (action === "remove-warehouse-row") {
@@ -15163,9 +15209,10 @@
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
   document.getElementById("entryUnit").addEventListener("change", changeEntryMeasurementUnit);
   document.getElementById("orderWarehouseSelect").addEventListener("change", event => {
-    state.activeWarehouseId = event.target.value || null;
+    setWorkspaceWarehouse(event.target.value || null);
     saveOnly();
     renderWarehouseOptions();
+    renderToday();
   });
   document.getElementById("desktopOrderWarehouseSelect").addEventListener("change", event => {
     setWorkspaceWarehouse(event.target.value || null);
