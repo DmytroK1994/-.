@@ -38,8 +38,8 @@
     * { box-sizing: border-box; }
     html {
       min-height: 100%;
-      background: var(--bg);
-      background-color: var(--bg);
+      background: var(--surface);
+      background-color: var(--surface);
       touch-action: pan-y;
       overscroll-behavior-x: none;
     }
@@ -3081,27 +3081,20 @@
       box-shadow: none;
     }
     #pageBackup {
-      --backup-edge-gap: 14px;
-      position: fixed;
-      top: calc(var(--app-header-bottom, 68px) + var(--backup-edge-gap));
-      right: 0;
-      bottom: calc(var(--app-bottom-obstruction, env(safe-area-inset-bottom)) + var(--backup-edge-gap));
-      left: 0;
-      display: grid;
-      width: 100%;
+      position: static;
+      display: block;
+      width: min(100%, 720px);
       min-height: 0;
-      padding-inline: var(--backup-edge-gap);
-      place-items: center;
-      overflow: hidden;
+      padding: 0;
+      overflow: visible;
     }
     #settingsBackupSection {
       position: relative;
       z-index: 8;
-      width: min(100%, 640px);
-      margin: 0;
+      width: 100%;
+      margin: 0 0 12px;
       overflow: visible;
-      transform: translateY(var(--backup-fit-shift, 0px)) scale(var(--backup-fit-scale, 1));
-      transform-origin: center;
+      transform: none;
     }
     .backup-action-menu {
       position: relative;
@@ -3468,39 +3461,6 @@
     .backup-file-name {
       margin: -2px 0 10px;
       overflow-wrap: anywhere;
-    }
-    @media (max-height: 700px) {
-      #pageBackup {
-        --backup-edge-gap: 10px;
-      }
-      #settingsBackupSection {
-        padding: 10px 12px;
-        border-radius: 16px;
-      }
-      #settingsBackupSection .small {
-        margin: 3px 0;
-        font-size: 11px;
-        line-height: 1.2;
-      }
-      #settingsBackupSection label {
-        margin: 5px 0 3px;
-        font-size: 11px;
-      }
-      #settingsBackupSection button {
-        min-height: 34px;
-        margin-top: 4px;
-        padding: 6px 8px;
-        font-size: 12px;
-      }
-      #settingsBackupSection textarea {
-        height: clamp(62px, 12dvh, 86px);
-        min-height: 62px;
-        padding: 7px 8px;
-        font-size: 13px;
-      }
-      #settingsBackupSection .backup-file-name {
-        margin: 0 0 4px;
-      }
     }
     .custom-theme-panel {
       margin-top: 14px;
@@ -6650,21 +6610,6 @@
         padding: 6px 10px;
         font-size: 12px;
       }
-      #pageBackup {
-        position: relative;
-        inset: auto;
-        display: grid;
-        width: 100%;
-        min-height: calc(100vh - var(--desktop-header-height) - 52px);
-        padding: 22px 0;
-        place-items: center;
-        overflow: visible;
-      }
-      #settingsBackupSection {
-        width: min(100%, 680px);
-        margin: 0 auto;
-        transform: none !important;
-      }
       #pageAbout {
         position: relative;
         inset: auto;
@@ -6756,7 +6701,7 @@
     }
   </style>
 
-<link rel="manifest" href="manifest.json?v=269">
+<link rel="manifest" href="manifest.json?v=270">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6764,7 +6709,7 @@
 <meta name="application-name" content="Облік">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Облік">
 
 <!-- Preview banner for Telegram / Viber / Facebook / Discord -->
@@ -6795,7 +6740,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.69</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.70</span></div>
     </div>
   </div>
 
@@ -7773,7 +7718,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.69</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.70</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7798,6 +7743,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.70</h3>
+          <ul>
+            <li>системна зона iPhone з годинником і батареєю тепер прозора та показує продовження шапки;</li>
+            <li>додано резервний колір верхньої системної зони безпосередньо від поверхні шапки;</li>
+            <li>сторінка резервної копії більше не зафіксована й не масштабується штучно;</li>
+            <li>резервна копія тепер прокручується та розташовується як звичайні сторінки застосунку.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.69</h3>
           <ul>
@@ -8497,7 +8451,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.69";
+  const APP_VERSION = "2.70";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12893,49 +12847,26 @@
     }
   }
 
-  let backupFitFrame = 0;
-  let backupPositionFrame = 0;
   let backupFitObserver = null;
   function updateAppBottomObstructionMetric() {
     const nav = document.getElementById("appBottomNav");
     const navIsVisible = nav && !nav.classList.contains("hidden");
     if (!navIsVisible) {
       document.documentElement.style.removeProperty("--app-bottom-obstruction");
-      fitBackupSection();
       return;
     }
     const navTop = nav.getBoundingClientRect().top;
     const viewportHeight = window.innerHeight;
     const obstruction = Math.max(0, Math.ceil(viewportHeight - navTop));
     document.documentElement.style.setProperty("--app-bottom-obstruction", `${obstruction}px`);
-    fitBackupSection();
   }
 
   function fitBackupSection() {
-    cancelAnimationFrame(backupFitFrame);
-    cancelAnimationFrame(backupPositionFrame);
-    backupFitFrame = requestAnimationFrame(() => {
-      const page = document.getElementById("pageBackup");
-      const section = document.getElementById("settingsBackupSection");
-      if (!page || !section || page.classList.contains("hidden")) return;
-      section.style.setProperty("--backup-fit-scale", "1");
-      section.style.setProperty("--backup-fit-shift", "0px");
-      const availableHeight = Math.max(1, page.clientHeight - 20);
-      const naturalHeight = Math.max(1, section.offsetHeight);
-      const scale = Math.min(1, availableHeight / naturalHeight);
-      section.style.setProperty("--backup-fit-scale", scale.toFixed(4));
-      backupPositionFrame = requestAnimationFrame(() => {
-        if (page.classList.contains("hidden")) return;
-        const pageRect = page.getBoundingClientRect();
-        const sectionRect = section.getBoundingClientRect();
-        const topLimit = pageRect.top + 8;
-        const bottomLimit = pageRect.bottom - 12;
-        let shift = 0;
-        if (sectionRect.bottom > bottomLimit) shift -= sectionRect.bottom - bottomLimit;
-        if (sectionRect.top + shift < topLimit) shift += topLimit - (sectionRect.top + shift);
-        section.style.setProperty("--backup-fit-shift", `${Math.floor(shift)}px`);
-      });
-    });
+    const section = document.getElementById("settingsBackupSection");
+    if (!section) return;
+    section.style.removeProperty("--backup-fit-scale");
+    section.style.removeProperty("--backup-fit-shift");
+    section.style.removeProperty("transform");
   }
 
   function initBackupSectionFit() {
@@ -12944,12 +12875,8 @@
       window.visualViewport.addEventListener("resize", updateAppBottomObstructionMetric, { passive: true });
     }
     if ("ResizeObserver" in window) {
-      const page = document.getElementById("pageBackup");
-      const section = document.getElementById("settingsBackupSection");
       const nav = document.getElementById("appBottomNav");
       backupFitObserver = new ResizeObserver(updateAppBottomObstructionMetric);
-      if (page) backupFitObserver.observe(page);
-      if (section) backupFitObserver.observe(section);
       if (nav) backupFitObserver.observe(nav);
     }
   }
