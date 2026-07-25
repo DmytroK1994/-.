@@ -3935,16 +3935,28 @@
       font-weight: 800 !important;
       line-height: 1 !important;
     }
+    #orderEntryOverlay .entry-section-toggle {
+      flex-basis: 24px;
+      width: 24px !important;
+      min-width: 24px !important;
+      height: 20px !important;
+      min-height: 20px !important;
+      border-radius: 7px !important;
+      font-size: 14px !important;
+    }
     #orderEntryOverlay .order-entry-dialog-section .entry-section-header {
-      min-height: 26px;
-      margin-bottom: 6px;
+      min-height: 22px;
+      margin-bottom: 3px;
     }
     #orderEntryOverlay .order-entry-dialog-section.is-collapsed .entry-section-header {
       margin-bottom: 0;
     }
     #orderEntryOverlay .order-entry-dialog-section .inventory-entry-section-title {
+      flex: 1;
+      min-width: 0;
       margin: 0;
-      line-height: 1.15;
+      overflow-wrap: anywhere;
+      line-height: 1.1;
     }
     .entry-collapsible-section.is-collapsed .entry-section-content {
       display: none;
@@ -5884,7 +5896,7 @@
     .order-entry-dialog-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 7px 10px;
+      gap: 5px 8px;
     }
     .order-entry-dialog-grid > div {
       min-width: 0;
@@ -5914,23 +5926,44 @@
     .order-entry-dialog-grid .order-entry-dialog-section {
       grid-column: 1 / -1;
       min-width: 0;
-      padding: 8px 10px;
+      margin-top: 0;
+      padding: 5px 8px;
       border: 1px solid var(--border);
-      border-radius: 13px;
+      border-radius: 12px;
       background: var(--surface-deep);
+    }
+    .order-entry-dialog-grid .order-entry-dialog-section.is-collapsed {
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
     .inventory-entry-section-title {
       margin-bottom: 0;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 850;
     }
     .inventory-entry-section-fields {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 9px 10px;
+      gap: 5px 8px;
     }
     .order-entry-dialog-grid label {
-      margin-top: 0;
+      margin: 0 0 2px;
+      font-size: 11px;
+      line-height: 1.15;
+    }
+    #orderEntryOverlay .order-entry-dialog-grid input,
+    #orderEntryOverlay .order-entry-dialog-grid select {
+      min-height: 42px;
+      padding: 8px 9px;
+      font-size: 15px;
+    }
+    #orderEntryOverlay #orderEntryComment {
+      min-height: 58px;
+      height: 58px;
+      padding: 8px 9px;
+      font-size: 14px;
+      line-height: 1.25;
+      resize: vertical;
     }
     .entry-unit-picker {
       position: relative;
@@ -6949,7 +6982,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=279">
+<link rel="manifest" href="manifest.json?v=280">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6983,7 +7016,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.79</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.80</span></div>
     </div>
   </div>
 
@@ -7974,7 +8007,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.79</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.80</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7999,6 +8032,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.80</h3>
+          <ul>
+            <li>секції «Піддони», «Поштучно / коробками», «Окрема кількість» і «Коментар» у вікні додавання стали компактнішими;</li>
+            <li>кнопки згортання зменшено по висоті;</li>
+            <li>відступи, підписи та поля ущільнено без накладання тексту й виходу елементів за межі.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.79</h3>
           <ul>
@@ -8784,7 +8825,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.79";
+  const APP_VERSION = "2.80";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
