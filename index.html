@@ -6618,7 +6618,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.58</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.60</span></div>
     </div>
   </div>
 
@@ -7405,7 +7405,7 @@
           <div>
             <label for="navButtonWidthSelect">Ширина кнопок</label>
             <select id="navButtonWidthSelect">
-              <option value="current">Як зараз</option>
+              <option value="current">Стандартна — з відступами від країв</option>
               <option value="edge">Майже до країв екрана</option>
             </select>
           </div>
@@ -7576,7 +7576,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.58</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.60</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7601,6 +7601,22 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.60</h3>
+          <ul>
+            <li>через секунду після відкриття застосунок перевіряє дату активної інвентаризації або замовлення;</li>
+            <li>якщо настав новий день, можна створити чи відкрити документ за сьогодні або свідомо продовжити попередній;</li>
+            <li>у повідомленні показуються обидві дати та пояснюється, чому потрібен вибір;</li>
+            <li>поточна дата тепер визначається за місцевим часом пристрою, зокрема біля опівночі.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.59</h3>
+          <ul>
+            <li>незрозумілий варіант ширини кнопок «Як зараз» перейменовано на «Стандартна — з відступами від країв»;</li>
+            <li>назви обох варіантів тепер одразу пояснюють різницю в ширині кнопок.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.58</h3>
           <ul>
@@ -8185,7 +8201,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.58";
+  const APP_VERSION = "2.60";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9438,6 +9454,7 @@
     const splash = document.getElementById("appSplash");
     if (splash) splash.remove();
     scrollAppToTop();
+    window.setTimeout(promptForCurrentDayOnStartup, 1000);
   }
 
   let modalScrollPosition = 0;
@@ -9924,7 +9941,7 @@
   function demoDateISO(daysAgo = 0) {
     const date = new Date();
     date.setDate(date.getDate() - daysAgo);
-    return date.toISOString().slice(0, 10);
+    return localDateISO(date);
   }
 
   function createDemoEntry(id, product, values) {
@@ -10330,8 +10347,15 @@
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
 
+  function localDateISO(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
   function todayISO() {
-    return new Date().toISOString().slice(0, 10);
+    return localDateISO();
   }
 
   function nowText() {
@@ -12820,6 +12844,63 @@
     save();
     showPage("today");
     toast(orders ? "Створено нове замовлення" : "Створено нову інвентаризацію");
+  }
+
+  async function promptForCurrentDayOnStartup() {
+    if (demoModeActive || appDialogResolver) return;
+    const orders = workspaceIsOrders();
+    const documents = orders ? state.orders : state.days;
+    const activeId = orders ? state.activeOrderId : state.activeDayId;
+    const activeDocument = documents.find(document => document.id === activeId);
+    const currentDate = todayISO();
+    if (!activeDocument || activeDocument.date === currentDate) return;
+
+    const todayDocument = documents.find(document => document.date === currentDate);
+    const documentName = orders ? "замовлення" : "інвентаризацію";
+    const confirmed = await showAppDialog({
+      label: "Перевірка дати",
+      title: "Настав новий день",
+      message: `Зараз відкрито ${documentName} за ${niceDate(activeDocument.date)}, а сьогодні ${niceDate(currentDate)}. Щоб випадково не додати нові позиції до попереднього документа, ${todayDocument ? "відкрий документ за сьогодні" : "створи окремий документ за сьогодні"} або свідомо продовж попередній.`,
+      confirmText: todayDocument ? "Відкрити за сьогодні" : "Створити за сьогодні",
+      cancelText: `Продовжити ${niceDate(activeDocument.date)}`
+    });
+    if (!confirmed) {
+      toast(`Продовжено ${documentName} за ${niceDate(activeDocument.date)}`);
+      return;
+    }
+
+    if (todayDocument) {
+      if (orders) state.activeOrderId = todayDocument.id;
+      else state.activeDayId = todayDocument.id;
+    } else {
+      const id = uid();
+      const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+      const documentData = {
+        id,
+        date: currentDate,
+        createdAt: nowText(),
+        responsible: "",
+        notes: "",
+        warehouseId: orders ? null : (warehouse?.id || null),
+        warehouseName: orders ? "" : (warehouse?.name || ""),
+        entries: []
+      };
+      if (orders) {
+        state.orders.unshift(documentData);
+        state.activeOrderId = id;
+      } else {
+        state.days.unshift(documentData);
+        state.activeDayId = id;
+      }
+    }
+
+    resetTodayListSearch();
+    clearEntryForm();
+    save();
+    showPage("today");
+    toast(todayDocument
+      ? `${orders ? "Замовлення" : "Інвентаризацію"} за сьогодні відкрито`
+      : `${orders ? "Замовлення" : "Інвентаризацію"} за сьогодні створено`);
   }
 
   function historyUsesOrders() {
