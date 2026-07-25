@@ -584,65 +584,40 @@
       background: var(--surface-deep);
     }
     .workspace-switcher-arrow {
-      position: relative;
       display: inline-block;
-      width: 18px;
+      width: 20px;
       height: 20px;
-      flex: 0 0 18px;
+      flex: 0 0 20px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 950;
-      line-height: .72;
+      line-height: 1;
       transform-origin: center;
-      transition: transform .22s ease;
-    }
-    .workspace-switcher-arrow > span {
-      position: absolute;
-      left: 50%;
-      opacity: .18;
-      transform: translateX(-50%);
-      animation: workspace-arrow-cascade 1.25s ease-in-out infinite;
-    }
-    .workspace-switcher-arrow > span:nth-child(1) {
-      top: -2px;
-      animation-delay: 0s;
-    }
-    .workspace-switcher-arrow > span:nth-child(2) {
-      top: 3px;
-      animation-delay: .15s;
-    }
-    .workspace-switcher-arrow > span:nth-child(3) {
-      top: 8px;
-      animation-delay: .3s;
-    }
-    .workspace-switcher-arrow > span:nth-child(4) {
-      top: 13px;
-      animation-delay: .45s;
+      animation: workspace-arrow-down-nudge 3.2s ease-in-out infinite;
     }
     .workspace-switcher-button[aria-expanded="true"] .workspace-switcher-arrow {
-      transform: rotate(180deg);
+      animation-name: workspace-arrow-up-nudge;
     }
-    @keyframes workspace-arrow-cascade {
-      0%, 18%, 100% {
-        opacity: .14;
-        color: var(--muted);
-        filter: none;
-      }
-      38%, 56% {
-        opacity: 1;
-        color: var(--text);
-        filter: drop-shadow(0 0 3px var(--selection-outline));
-      }
-      72% {
-        opacity: .28;
-        color: var(--muted);
-        filter: none;
-      }
+    @keyframes workspace-arrow-down-nudge {
+      0%, 56%, 100% { transform: translateY(0); }
+      66% { transform: translateY(5px); }
+      74% { transform: translateY(1px); }
+      82% { transform: translateY(4px); }
+      90% { transform: translateY(0); }
+    }
+    @keyframes workspace-arrow-up-nudge {
+      0%, 56%, 100% { transform: rotate(180deg) translateY(0); }
+      66% { transform: rotate(180deg) translateY(5px); }
+      74% { transform: rotate(180deg) translateY(1px); }
+      82% { transform: rotate(180deg) translateY(4px); }
+      90% { transform: rotate(180deg) translateY(0); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .workspace-switcher-arrow > span {
+      .workspace-switcher-arrow {
         animation: none;
-        opacity: .8;
+      }
+      .workspace-switcher-button[aria-expanded="true"] .workspace-switcher-arrow {
+        transform: rotate(180deg);
       }
     }
     .workspace-dropdown {
@@ -7244,7 +7219,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=298">
+<link rel="manifest" href="manifest.json?v=299">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7278,7 +7253,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.98</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.99</span></div>
     </div>
   </div>
 
@@ -7314,9 +7289,7 @@
       <div class="workspace-switcher">
         <button type="button" class="workspace-switcher-button" id="workspaceSwitcherBtn" aria-expanded="false" aria-haspopup="true">
           <span id="workspaceSwitcherLabel">Інвентаризація</span>
-          <span class="workspace-switcher-arrow" aria-hidden="true">
-            <span>⌄</span><span>⌄</span><span>⌄</span><span>⌄</span>
-          </span>
+          <span class="workspace-switcher-arrow" aria-hidden="true">⌄</span>
         </button>
         <div class="workspace-dropdown hidden" id="workspaceDropdown">
           <button type="button" class="workspace-option active" data-workspace="inventory">
@@ -8327,7 +8300,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.98</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.99</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8352,6 +8325,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.99</h3>
+          <ul>
+            <li>миготливий каскад замінено однією великою зрозумілою стрілкою;</li>
+            <li>більшість часу стрілка нерухома й лише періодично м’яко вказує напрямок;</li>
+            <li>у відкритому стані стрілка повертається та робить короткий рух угору.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.98</h3>
           <ul>
@@ -9344,7 +9325,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.98";
+  const APP_VERSION = "2.99";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
