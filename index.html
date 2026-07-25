@@ -4521,10 +4521,48 @@
     }
     .qr-transfer-dialog {
       padding: 16px;
-      overflow: hidden;
+      overflow-y: auto;
     }
     .qr-transfer-body {
       margin-top: 12px;
+    }
+    .qr-product-search {
+      margin-bottom: 10px;
+    }
+    .qr-product-search label {
+      margin-top: 0;
+    }
+    .qr-product-search-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    #qrSendAllProductsBtn {
+      width: auto;
+      min-height: 34px;
+      margin: 0;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .qr-transfer-subject {
+      margin-bottom: 9px;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      text-align: center;
+    }
+    .qr-transfer-subject span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .qr-transfer-subject strong {
+      display: block;
+      margin-top: 2px;
+      overflow-wrap: anywhere;
+      font-size: 14px;
     }
     .qr-display {
       display: grid;
@@ -6354,7 +6392,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.34</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.35</span></div>
     </div>
   </div>
 
@@ -7285,7 +7323,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.34</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.35</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7310,6 +7348,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.35</h3>
+          <ul>
+            <li>над QR-кодом тепер чітко вказано, які дані або яке найменування передається;</li>
+            <li>до передачі найменувань додано пошук і вибір однієї конкретної позиції;</li>
+            <li>додано швидке повернення до передачі всього списку найменувань.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.34</h3>
           <ul>
@@ -7489,6 +7535,21 @@
         <button type="button" class="dialog-icon-close" id="closeQrTransferBtn" aria-label="Закрити">×</button>
       </div>
       <div class="qr-transfer-body" id="qrSendView">
+        <div class="qr-product-search hidden" id="qrProductSearchPanel">
+          <label for="qrProductSearchInput">Пошук найменування</label>
+          <div class="combo-wrap">
+            <input id="qrProductSearchInput" placeholder="Введи назву..." autocomplete="off" />
+            <button type="button" id="clearQrProductSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
+            <div class="combo-list hidden" id="qrProductSearchResults"></div>
+          </div>
+          <div class="qr-product-search-actions">
+            <button type="button" class="secondary" id="qrSendAllProductsBtn">Передати весь список</button>
+          </div>
+        </div>
+        <div class="qr-transfer-subject">
+          <span>Передається</span>
+          <strong id="qrTransferSubject">Повна резервна копія</strong>
+        </div>
         <div class="qr-display"><img id="qrTransferImage" alt="QR-код для передачі даних"></div>
         <p class="qr-transfer-progress" id="qrTransferProgress"></p>
         <div class="qr-transfer-actions">
@@ -7687,7 +7748,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.34";
+  const APP_VERSION = "2.35";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13172,6 +13233,8 @@
 
   let qrTransferParts = [];
   let qrTransferPartIndex = 0;
+  let qrTransferSourceProducts = [];
+  let qrTransferSendScope = "full";
   let qrScannerStream = null;
   let qrScannerFrame = 0;
   let qrScannerLastTime = 0;
@@ -13267,21 +13330,96 @@
     }
   }
 
-  function openQrSend(kind, products) {
+  function setQrTransferSubject(text) {
+    document.getElementById("qrTransferSubject").textContent = text;
+  }
+
+  function prepareQrSendParts(kind, products, subject) {
     try {
       qrTransferParts = buildQrTransferParts(kind, products);
     } catch (error) {
       toast("Не вдалося підготувати дані для QR", true);
-      return;
+      return false;
     }
     qrTransferPartIndex = 0;
+    setQrTransferSubject(subject);
+    renderQrTransferPart();
+    return true;
+  }
+
+  function renderQrProductSearchResults(show = true) {
+    const input = document.getElementById("qrProductSearchInput");
+    const results = document.getElementById("qrProductSearchResults");
+    const clearButton = document.getElementById("clearQrProductSearchBtn");
+    const query = String(input.value || "").trim().toLocaleLowerCase("uk-UA");
+    clearButton.classList.toggle("hidden", !query);
+    results.innerHTML = "";
+
+    if (!show || !query || qrTransferSendScope !== "products") {
+      results.classList.add("hidden");
+      return;
+    }
+
+    const matches = qrTransferSourceProducts
+      .filter(product => String(product.name || "").toLocaleLowerCase("uk-UA").includes(query))
+      .sort((a, b) => compareCurrentListNames(a.name, b.name))
+      .slice(0, 60);
+    results.classList.remove("hidden");
+    if (!matches.length) {
+      results.innerHTML = '<div class="small" style="padding:10px;">Нічого не знайдено</div>';
+      return;
+    }
+    matches.forEach(product => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "combo-option";
+      button.dataset.qrProductId = product.id;
+      button.textContent = product.name;
+      results.appendChild(button);
+    });
+  }
+
+  function selectQrTransferProduct(productId) {
+    const product = qrTransferSourceProducts.find(item => item.id === productId);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+    if (!prepareQrSendParts("product", [product], `Найменування: ${product.name}`)) return;
+    document.getElementById("qrProductSearchInput").value = product.name;
+    document.getElementById("qrProductSearchResults").classList.add("hidden");
+    document.getElementById("clearQrProductSearchBtn").classList.remove("hidden");
+  }
+
+  function selectAllQrTransferProducts() {
+    if (!prepareQrSendParts(
+      "products",
+      qrTransferSourceProducts,
+      `Усі найменування (${qrTransferSourceProducts.length})`
+    )) return;
+    document.getElementById("qrProductSearchInput").value = "";
+    renderQrProductSearchResults(false);
+  }
+
+  function openQrSend(kind, products) {
+    qrTransferSendScope = kind;
+    qrTransferSourceProducts = Array.isArray(products) ? [...products] : [];
+    const subject = kind === "product"
+      ? `Найменування: ${qrTransferSourceProducts[0]?.name || "Без назви"}`
+      : kind === "products"
+        ? `Усі найменування (${qrTransferSourceProducts.length})`
+        : "Повна резервна копія застосунку";
+    if (!prepareQrSendParts(kind, products, subject)) return;
     document.getElementById("qrTransferTitle").textContent =
       kind === "product" ? "Поділитися найменуванням" :
       kind === "products" ? "Передати найменування" : "Передати повну копію";
+    const searchPanel = document.getElementById("qrProductSearchPanel");
+    searchPanel.classList.toggle("hidden", kind !== "products");
+    document.getElementById("qrProductSearchInput").value = "";
+    renderQrProductSearchResults(false);
     document.getElementById("qrSendView").classList.remove("hidden");
     document.getElementById("qrReceiveView").classList.add("hidden");
     document.getElementById("qrTransferOverlay").classList.remove("hidden");
-    renderQrTransferPart();
   }
 
   async function chooseQrBackupScope() {
@@ -13358,6 +13496,10 @@
     stopQrScanner();
     document.getElementById("qrTransferOverlay").classList.add("hidden");
     document.getElementById("qrManualInput").value = "";
+    document.getElementById("qrProductSearchInput").value = "";
+    document.getElementById("qrProductSearchResults").classList.add("hidden");
+    qrTransferSourceProducts = [];
+    qrTransferSendScope = "full";
     qrScanBusy = false;
   }
 
@@ -14831,6 +14973,26 @@
     openQrReceiver();
   });
   document.getElementById("closeQrTransferBtn").addEventListener("click", closeQrTransfer);
+  document.getElementById("qrProductSearchInput").addEventListener("input", () => renderQrProductSearchResults(true));
+  document.getElementById("qrProductSearchInput").addEventListener("focus", () => renderQrProductSearchResults(true));
+  document.getElementById("qrProductSearchInput").addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    const firstResult = document.querySelector("#qrProductSearchResults [data-qr-product-id]");
+    if (!firstResult) return;
+    event.preventDefault();
+    selectQrTransferProduct(firstResult.dataset.qrProductId);
+  });
+  document.getElementById("clearQrProductSearchBtn").addEventListener("click", () => {
+    const input = document.getElementById("qrProductSearchInput");
+    input.value = "";
+    renderQrProductSearchResults(false);
+    input.focus();
+  });
+  document.getElementById("qrProductSearchResults").addEventListener("click", event => {
+    const button = event.target.closest("[data-qr-product-id]");
+    if (button) selectQrTransferProduct(button.dataset.qrProductId);
+  });
+  document.getElementById("qrSendAllProductsBtn").addEventListener("click", selectAllQrTransferProducts);
   document.getElementById("previousQrPartBtn").addEventListener("click", () => {
     qrTransferPartIndex = Math.max(0, qrTransferPartIndex - 1);
     renderQrTransferPart();
@@ -15101,6 +15263,9 @@
     if (themeDesignerActive && themeDesignerPicking) return;
     if (!event.target.closest(".current-list-sort-menu")) {
       document.querySelectorAll(".current-list-sort-menu").forEach(menu => menu.removeAttribute("open"));
+    }
+    if (!event.target.closest("#qrProductSearchPanel")) {
+      document.getElementById("qrProductSearchResults")?.classList.add("hidden");
     }
     const combo = event.target.closest(".combo-wrap");
     const isOption = event.target.closest("[data-action='select-product']");
