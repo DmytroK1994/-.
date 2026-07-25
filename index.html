@@ -28,6 +28,7 @@
     html {
       min-height: 100%;
       background: var(--bg);
+      background-color: var(--bg);
       touch-action: pan-y;
       overscroll-behavior-x: none;
     }
@@ -1002,6 +1003,17 @@
     #printBtn:active {
       border-color: var(--border-strong);
       filter: saturate(1.12) brightness(.97);
+    }
+    .document-tools-shell {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .document-tools-shell > .card {
+      margin: 0;
+    }
+    .current-list-sort-card {
+      padding: 12px;
     }
     .current-list-sort-control {
       position: relative;
@@ -3097,6 +3109,53 @@
       font-size: 12px;
       box-shadow: none;
     }
+    .backup-product-copy {
+      display: grid;
+      gap: 6px;
+      padding-top: 7px;
+      border-top: 1px solid var(--border);
+    }
+    .backup-product-copy label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .backup-product-copy select {
+      min-height: 38px;
+      margin: 0;
+    }
+    .backup-import-text-wrap {
+      position: relative;
+    }
+    #settingsBackupSection .backup-import-text-wrap textarea {
+      padding-right: 50px;
+    }
+    #clearImportDataBtn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: grid;
+      width: 34px;
+      min-width: 34px;
+      min-height: 34px;
+      margin: 0;
+      padding: 0;
+      place-items: center;
+      border: 1px solid var(--soft-danger-border);
+      border-radius: 10px;
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+      box-shadow: 0 4px 12px rgba(127, 29, 29, .22);
+      z-index: 2;
+    }
+    #clearImportDataBtn:hover,
+    #clearImportDataBtn:active {
+      border-color: var(--soft-danger-border);
+      background: var(--soft-danger-bg);
+      color: var(--soft-danger-text);
+    }
     .other-settings-stack {
       display: grid;
       gap: 12px;
@@ -4453,10 +4512,15 @@
       position: fixed;
       inset-inline: 0;
       width: 100%;
+      min-height: 100dvh;
+      background-color: var(--bg);
       overflow: hidden !important;
       overscroll-behavior: none;
     }
     [role="dialog"][aria-modal="true"] {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
       overscroll-behavior: contain;
     }
     .changelog-dialog,
@@ -6159,12 +6223,30 @@
         margin-bottom: 12px;
         overflow: visible;
       }
-      #pageToday .document-actions-card {
-        display: block;
+      #pageToday .document-tools-shell {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
         margin-bottom: 12px;
       }
+      #pageToday .document-actions-card {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+        margin: 0;
+        padding: 10px 12px;
+      }
       #pageToday .document-actions-card button {
-        margin-top: 8px;
+        width: auto;
+        min-height: 38px;
+        margin: 0;
+        padding: 7px 13px;
+        font-size: 13px;
+      }
+      #pageToday .current-list-sort-card {
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 10px 12px;
       }
       #pageToday .current-list-search-card {
         position: sticky;
@@ -6175,6 +6257,7 @@
       }
       body.entry-dialog-mode #pageToday .desktop-order-toolbar {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         gap: 18px;
@@ -6184,7 +6267,7 @@
       .desktop-order-document-actions {
         display: flex;
         flex: 0 0 auto;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 8px;
       }
       .desktop-order-document-actions button {
@@ -6195,7 +6278,31 @@
         font-size: 13px;
       }
       .desktop-order-document-actions .current-list-sort-control {
-        flex: 1 0 100%;
+        flex: 0 0 auto;
+        width: auto;
+      }
+      .desktop-order-document-actions .current-list-sort-menu,
+      #pageToday .current-list-sort-card .current-list-sort-menu {
+        width: auto;
+        min-width: 154px;
+      }
+      .desktop-order-document-actions .current-list-sort-menu > summary,
+      #pageToday .current-list-sort-card .current-list-sort-menu > summary {
+        min-height: 38px;
+        padding: 8px 29px 8px 11px;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+      .desktop-order-document-actions .current-list-sort-menu > summary::after,
+      #pageToday .current-list-sort-card .current-list-sort-menu > summary::after {
+        top: 8px;
+        right: 10px;
+      }
+      .desktop-order-document-actions .current-list-sort-options,
+      #pageToday .current-list-sort-card .current-list-sort-options {
+        right: 0;
+        left: auto;
+        width: 230px;
       }
       .desktop-order-destination {
         display: flex;
@@ -6240,7 +6347,7 @@
       body.entry-dialog-mode #pageToday .entry-form-card {
         padding: 13px 15px;
       }
-      body.entry-dialog-mode #pageToday .document-actions-card {
+      body.entry-dialog-mode #pageToday .document-tools-shell {
         display: none;
       }
       body.entry-dialog-mode #pageToday .entry-product-search-block {
@@ -6392,7 +6499,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.37</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.40</span></div>
     </div>
   </div>
 
@@ -6659,10 +6766,13 @@
       <button class="secondary" id="cancelEditBtn">Очистити / скасувати</button>
     </div>
 
-    <div class="card no-print document-actions-card">
-      <button id="previewDocumentBtn">Попередній перегляд документа</button>
-      <button id="printBtn">Друк / PDF</button>
-      <div class="current-list-sort-control">
+    <div class="document-tools-shell no-print">
+      <div class="card document-actions-card">
+        <button id="previewDocumentBtn">Попередній перегляд документа</button>
+        <button id="printBtn">Друк / PDF</button>
+      </div>
+      <div class="card current-list-sort-card">
+        <div class="current-list-sort-control">
         <details class="current-list-sort-menu">
           <summary class="current-list-sort-summary">Сортування: за додаванням</summary>
           <div class="current-list-sort-options">
@@ -6672,6 +6782,7 @@
             <button type="button" data-current-list-sort="name-desc">За назвою: Я–А</button>
           </div>
         </details>
+        </div>
       </div>
     </div>
 
@@ -6922,7 +7033,7 @@
           </div>
         </div>
         <div class="product-info-actions">
-          <button type="button" class="secondary" id="shareProductQrBtn">Поділитися QR-кодом</button>
+          <button type="button" class="secondary" id="shareProductNameBtn">Поділитися найменуванням</button>
           <button type="button" class="secondary" id="copyProductNameBtn">Скопіювати назву</button>
           <button type="button" id="editProductFromInfoBtn">Редагувати</button>
           <button type="button" class="secondary" id="closeProductInfoBtn">Закрити</button>
@@ -7052,12 +7163,16 @@
       </p>
       <p class="small">Копіювання збереже текст резервної копії в буфері обміну. Завантаження створить окремий файл на пристрої.</p>
       <details class="backup-action-menu" id="backupActionMenu">
-        <summary>Зберегти або передати дані</summary>
+        <summary>Зберегти або скопіювати дані</summary>
         <div class="backup-action-options">
           <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
           <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
-          <button type="button" id="sendBackupQrBtn">Передати дані через QR</button>
-          <button type="button" id="receiveBackupQrBtn">Отримати дані через QR</button>
+          <div class="backup-product-copy">
+            <label for="backupProductNameSelect">Окреме найменування</label>
+            <select id="backupProductNameSelect" aria-label="Оберіть найменування для копіювання"></select>
+            <button type="button" id="copyBackupProductNameBtn">Скопіювати обране найменування</button>
+            <button type="button" id="copyAllBackupProductNamesBtn">Скопіювати всі найменування списком</button>
+          </div>
         </div>
       </details>
 
@@ -7067,7 +7182,12 @@
       <p class="small backup-file-name hidden" id="selectedBackupFileName"></p>
 
       <label for="importData">Або встав текст резервної копії</label>
-      <textarea id="importData" rows="5" placeholder="Встав сюди JSON"></textarea>
+      <div class="backup-import-text-wrap">
+        <textarea id="importData" rows="5" placeholder="Встав сюди JSON"></textarea>
+        <button type="button" id="clearImportDataBtn" aria-label="Очистити текст резервної копії" title="Очистити поле">
+          <span class="product-trash-icon" aria-hidden="true"></span>
+        </button>
+      </div>
       <button class="yellow" id="importBtn">Імпортувати</button>
       <button class="danger" id="resetBtn">Повне очищення програми</button>
     </div>
@@ -7323,12 +7443,12 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.37</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.40</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
             <p>Застосунок допомагає швидко додавати кількість піддонами, поштучно або окремим значенням, розділяти замовлення за складами, шукати й редагувати позиції, переглядати історію та формувати документи для друку або PDF.</p>
-            <p>Усі дані зберігаються локально на твоєму пристрої. Для перенесення доступні файли резервної копії та автономна передача через один QR-код або їх нумеровану серію.</p>
+            <p>Усі дані зберігаються локально на твоєму пристрої. Для перенесення доступні файли резервної копії, а найменування можна копіювати окремо або всім списком.</p>
           </div>
           <div class="about-card-actions">
             <button id="toggleDemoModeBtn">Увійти в демонстраційний режим</button>
@@ -7348,6 +7468,30 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.40</h3>
+          <ul>
+            <li>на телефоні сортування винесено в окремий блок із відступом від перегляду та друку;</li>
+            <li>на комп’ютері перегляд, друк і компактне сортування розташовано в один рядок;</li>
+            <li>зміни однаково застосовано до інвентаризації та замовлень.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.39</h3>
+          <ul>
+            <li>до поля вставлення резервної копії додано червону кнопку очищення зі значком кошика;</li>
+            <li>кнопка видаляє весь вставлений текст одним натисканням і повертає курсор у поле.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.38</h3>
+          <ul>
+            <li>QR-передачу прибрано з інтерфейсу резервного копіювання та картки найменування;</li>
+            <li>додано копіювання конкретної назви або всього довідника, де кожне найменування розташоване в окремому рядку;</li>
+            <li>поширення окремої позиції тепер передає її назву звичайним текстом;</li>
+            <li>модальні вікна перекривають повну динамічну висоту екрана без білої смуги знизу.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.37</h3>
           <ul>
@@ -7759,14 +7903,12 @@
     </div>
   </div>
 
-<script src="./assets/qrcode-generator.js"></script>
-<script src="./assets/jsQR.js"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.37";
+  const APP_VERSION = "2.40";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13168,6 +13310,15 @@
     }[mode] || "Додані раніше";
   }
 
+  function currentListSortCompactLabel(mode = getCurrentListSortMode()) {
+    return {
+      "added-asc": "Раніше",
+      "added-desc": "Останні",
+      "name-asc": "А–Я",
+      "name-desc": "Я–А"
+    }[mode] || "Раніше";
+  }
+
   function compareCurrentListNames(a, b) {
     return String(a || "").localeCompare(String(b || ""), "uk", {
       sensitivity: "base",
@@ -13195,7 +13346,9 @@
     const mode = getCurrentListSortMode();
     const label = `Сортування: ${currentListSortLabel(mode)}`;
     document.querySelectorAll(".current-list-sort-summary").forEach(summary => {
-      summary.textContent = label;
+      const compactDesktop = window.matchMedia("(min-width: 760px) and (hover: hover) and (pointer: fine)").matches;
+      summary.textContent = compactDesktop ? `Сортування · ${currentListSortCompactLabel(mode)}` : label;
+      summary.title = label;
     });
     document.querySelectorAll("[data-current-list-sort]").forEach(button => {
       const active = button.dataset.currentListSort === mode;
@@ -13546,14 +13699,26 @@
     else openQrSend("full");
   }
 
-  function shareCurrentProductQr() {
+  async function shareCurrentProductName() {
     const id = document.getElementById("productInfoView").dataset.productId;
     const product = state.products.find(item => item.id === id);
     if (!product) {
       toast("Найменування не знайдено", true);
       return;
     }
-    openQrSend("product", [product]);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Найменування", text: product.name });
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+    }
+    const copied = await copyTextToClipboard(product.name);
+    toast(
+      copied ? "Системне поширення недоступне — назву скопійовано" : "Не вдалося поділитися найменуванням",
+      !copied
+    );
   }
 
   async function copyTextToClipboard(value) {
@@ -13586,6 +13751,50 @@
     }
     const copied = await copyTextToClipboard(product.name);
     toast(copied ? "Назву скопійовано" : "Не вдалося скопіювати назву", !copied);
+  }
+
+  function renderBackupProductCopyOptions() {
+    const select = document.getElementById("backupProductNameSelect");
+    if (!select) return;
+    const previousValue = select.value;
+    const products = sortedProducts();
+    select.innerHTML = "";
+    const placeholder = new Option(
+      products.length ? "Оберіть найменування" : "Найменувань ще немає",
+      ""
+    );
+    select.add(placeholder);
+    products.forEach(product => select.add(new Option(product.name, product.id)));
+    select.value = products.some(product => product.id === previousValue) ? previousValue : "";
+    select.disabled = products.length === 0;
+    document.getElementById("copyBackupProductNameBtn").disabled = products.length === 0;
+    document.getElementById("copyAllBackupProductNamesBtn").disabled = products.length === 0;
+  }
+
+  async function copyBackupProductName() {
+    const productId = document.getElementById("backupProductNameSelect").value;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Спочатку обери найменування", true);
+      return;
+    }
+    const copied = await copyTextToClipboard(product.name);
+    if (copied) closeBackupActionMenu();
+    toast(copied ? `Назву «${product.name}» скопійовано` : "Не вдалося скопіювати назву", !copied);
+  }
+
+  async function copyAllBackupProductNames() {
+    const names = sortedProducts().map(product => String(product.name || "").trim()).filter(Boolean);
+    if (!names.length) {
+      toast("Найменувань для копіювання ще немає", true);
+      return;
+    }
+    const copied = await copyTextToClipboard(names.join("\n"));
+    if (copied) closeBackupActionMenu();
+    toast(
+      copied ? `Скопійовано найменувань: ${names.length}` : "Не вдалося скопіювати список",
+      !copied
+    );
   }
 
   function stopQrScanner() {
@@ -13963,6 +14172,13 @@
     }
 
     await restoreBackup(raw, "вставленого тексту");
+  }
+
+  function clearImportData() {
+    const input = document.getElementById("importData");
+    input.value = "";
+    input.focus({ preventScroll: true });
+    toast("Поле резервної копії очищено");
   }
 
   async function importBackupFile(event) {
@@ -14714,6 +14930,7 @@
     renderSelect();
     renderToday();
     renderProducts();
+    renderBackupProductCopyOptions();
     renderHistory();
     renderTrash();
   }
@@ -15013,6 +15230,7 @@
   document.querySelectorAll("[data-current-list-sort]").forEach(button => {
     button.addEventListener("click", () => setCurrentListSortMode(button.dataset.currentListSort));
   });
+  window.addEventListener("resize", updateCurrentListSortUI, { passive: true });
   document.getElementById("todayListSearch").addEventListener("input", () => {
     updateTodayListSearchClearButton();
     renderToday({ listOnly: true });
@@ -15025,7 +15243,7 @@
   });
 
   document.getElementById("openProductAddBtn").addEventListener("click", openProductAddChoice);
-  document.getElementById("shareProductQrBtn").addEventListener("click", shareCurrentProductQr);
+  document.getElementById("shareProductNameBtn").addEventListener("click", shareCurrentProductName);
   document.getElementById("copyProductNameBtn").addEventListener("click", copyCurrentProductName);
   document.getElementById("editProductFromInfoBtn").addEventListener("click", editProductFromInfo);
   document.getElementById("closeProductInfoBtn").addEventListener("click", dismissProductAddModal);
@@ -15075,14 +15293,8 @@
     closeBackupActionMenu();
     downloadBackup();
   });
-  document.getElementById("sendBackupQrBtn").addEventListener("click", () => {
-    closeBackupActionMenu();
-    chooseQrBackupScope();
-  });
-  document.getElementById("receiveBackupQrBtn").addEventListener("click", () => {
-    closeBackupActionMenu();
-    openQrReceiver();
-  });
+  document.getElementById("copyBackupProductNameBtn").addEventListener("click", copyBackupProductName);
+  document.getElementById("copyAllBackupProductNamesBtn").addEventListener("click", copyAllBackupProductNames);
   document.getElementById("closeQrTransferBtn").addEventListener("click", closeQrTransfer);
   document.getElementById("qrProductSearchInput").addEventListener("input", () => renderQrProductSearchResults(true));
   document.getElementById("qrProductSearchInput").addEventListener("focus", () => renderQrProductSearchResults(true));
@@ -15134,6 +15346,7 @@
     input.click();
   });
   document.getElementById("backupFileInput").addEventListener("change", importBackupFile);
+  document.getElementById("clearImportDataBtn").addEventListener("click", clearImportData);
   document.getElementById("importBtn").addEventListener("click", importBackup);
   document.getElementById("resetBtn").addEventListener("click", openResetConfirmation);
   document.getElementById("appDialogCancelBtn").addEventListener("click", () => closeAppDialog(false));

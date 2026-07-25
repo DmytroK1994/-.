@@ -1,13 +1,11 @@
-const CACHE_NAME = "oblik-zalyshkiv-v2-37";
+const CACHE_NAME = "oblik-zalyshkiv-v2-40";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  "./banner.png",
-  "./assets/qrcode-generator.js",
-  "./assets/jsQR.js"
+  "./banner.png"
 ];
 
 self.addEventListener("install", event => {
