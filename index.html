@@ -7354,7 +7354,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=304">
+<link rel="manifest" href="manifest.json?v=305">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -7409,7 +7409,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.04</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.05</span></div>
     </div>
   </div>
 
@@ -7765,16 +7765,7 @@
       <div class="app-dialog-label">Перший запуск</div>
       <h2 id="workspaceStartTitle">Що відкрити спочатку?</h2>
       <p class="app-dialog-message" id="workspaceStartMessage">Обери основний розділ для початку роботи. Надалі застосунок відкриватиме останній використаний розділ.</p>
-      <div class="workspace-start-list">
-        <button type="button" class="workspace-start-option" data-initial-workspace="inventory">
-          <strong>Інвентаризація</strong>
-          <span>Порахувати фактичні залишки на складах.</span>
-        </button>
-        <button type="button" class="workspace-start-option" data-initial-workspace="orders">
-          <strong>Замовлення</strong>
-          <span>Сформувати нове замовлення на потрібний склад.</span>
-        </button>
-      </div>
+      <div class="workspace-start-list" id="workspaceStartList"></div>
     </div>
   </div>
 
@@ -8456,7 +8447,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.04</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.05</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8481,6 +8472,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.05</h3>
+          <ul>
+            <li>до вибору першого розділу додано «Здачу ГП»;</li>
+            <li>перейменована користувачем назва цього процесу відображається і під час першого запуску;</li>
+            <li>список першого запуску тепер автоматично формується з усіх процесів, доступних у перемикачі шапки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.04</h3>
           <ul>
@@ -9522,7 +9521,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.04";
+  const APP_VERSION = "3.05";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12630,8 +12629,37 @@
     }
   }
 
+  function getInitialWorkspaceDescription(mode, name) {
+    if (mode === "inventory") return "Порахувати фактичні залишки на складах.";
+    if (mode === "orders") return "Сформувати нове замовлення на потрібний склад.";
+    if (mode === "production") return "Порахувати піддони й автоматично визначити загальну кількість продукції.";
+    return `Почати роботу в розділі «${name}».`;
+  }
+
+  function renderInitialWorkspaceOptions() {
+    const list = document.getElementById("workspaceStartList");
+    if (!list) return;
+    const definitions = Array.from(document.querySelectorAll(".workspace-option[data-workspace]"))
+      .map(option => {
+        const mode = option.dataset.workspace;
+        const name = mode === "production"
+          ? getProductionWorkspaceName()
+          : (option.querySelector(".workspace-option-name")?.textContent.trim() || mode);
+        return { mode, name };
+      })
+      .filter(item => item.mode && item.name);
+
+    list.innerHTML = definitions.map(({ mode, name }) => `
+      <button type="button" class="workspace-start-option" data-initial-workspace="${escapeHtml(mode)}">
+        <strong>${escapeHtml(name)}</strong>
+        <span>${escapeHtml(getInitialWorkspaceDescription(mode, name))}</span>
+      </button>
+    `).join("");
+  }
+
   function promptForInitialWorkspaceChoice() {
     if (!initialWorkspaceChoiceNeeded) return Promise.resolve(workspaceMode);
+    renderInitialWorkspaceOptions();
     document.getElementById("workspaceStartOverlay").classList.remove("hidden");
     document.querySelector("[data-initial-workspace]")?.focus({ preventScroll: true });
     return new Promise(resolve => {
@@ -12641,8 +12669,12 @@
 
   function chooseInitialWorkspace(mode) {
     if (!initialWorkspaceChoiceNeeded) return;
-    const nextMode = mode === "orders" ? "orders" : "inventory";
-    const removeProvisionalInventory = nextMode === "orders"
+    const availableModes = new Set(
+      Array.from(document.querySelectorAll(".workspace-option[data-workspace]"))
+        .map(option => option.dataset.workspace)
+    );
+    const nextMode = availableModes.has(mode) ? mode : "inventory";
+    const removeProvisionalInventory = nextMode !== "inventory"
       && state.orders.length === 0
       && state.days.length === 1
       && state.days[0].date === todayISO()
@@ -12663,7 +12695,9 @@
     document.getElementById("workspaceStartOverlay").classList.add("hidden");
     updateWorkspaceUI();
     showPage("today");
-    toast(nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію");
+    toast(nextMode === "production"
+      ? `Відкрито «${getProductionWorkspaceName()}»`
+      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію"));
     const resolve = initialWorkspaceChoiceResolver;
     initialWorkspaceChoiceResolver = null;
     if (resolve) resolve(nextMode);
@@ -18670,8 +18704,9 @@
   document.getElementById("appDialogOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeAppDialog(false);
   });
-  document.querySelectorAll("[data-initial-workspace]").forEach(button => {
-    button.addEventListener("click", () => chooseInitialWorkspace(button.dataset.initialWorkspace));
+  document.getElementById("workspaceStartList").addEventListener("click", event => {
+    const button = event.target.closest("[data-initial-workspace]");
+    if (button) chooseInitialWorkspace(button.dataset.initialWorkspace);
   });
   document.getElementById("cancelResetBtn").addEventListener("click", closeResetConfirmation);
   document.getElementById("resetConfirmationInput").addEventListener("input", event => {
