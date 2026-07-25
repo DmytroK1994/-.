@@ -839,6 +839,8 @@
     #todayList .order-warehouse-list-group > summary {
       position: relative;
       display: grid;
+      width: 100%;
+      box-sizing: border-box;
       grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
       gap: 10px;
@@ -852,6 +854,7 @@
       cursor: pointer;
       list-style: none;
       touch-action: manipulation;
+      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
     #todayList .order-warehouse-list-group > summary > * {
@@ -6543,7 +6546,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.48</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.49</span></div>
     </div>
   </div>
 
@@ -7489,7 +7492,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.48</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.49</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7514,6 +7517,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.49</h3>
+          <ul>
+            <li>весь заголовок групи складу став єдиною активною зоною згортання та розгортання;</li>
+            <li>стрілка, назва складу, лічильник і краї рядка тепер однаково реагують на дотик;</li>
+            <li>захист від крайових браузерних жестів більше не блокує натискання на складські групи.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.48</h3>
           <ul>
@@ -8016,7 +8027,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.48";
+  const APP_VERSION = "2.49";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8316,7 +8327,7 @@
       const viewportWidth = window.visualViewport?.width || window.innerWidth;
       edgeGestureActive = touch.clientX <= edgeWidth || touch.clientX >= viewportWidth - edgeWidth;
       const interactiveTarget = event.target instanceof Element
-        && event.target.closest("button, input, textarea, select, a, label, [contenteditable='true']");
+        && event.target.closest("button, input, textarea, select, a, label, summary, details, [contenteditable='true']");
       if (edgeGestureActive && !interactiveTarget) event.preventDefault();
     }, { capture: true, passive: false });
 
@@ -14927,10 +14938,16 @@
       details.open = query ? true : orderWarehouseGroupOpenState.get(stateKey) !== false;
 
       const summary = document.createElement("summary");
+      summary.setAttribute("role", "button");
+      summary.setAttribute("aria-expanded", String(details.open));
       summary.innerHTML = `
         <span class="order-warehouse-group-title">Склад: ${escapeHtml(warehouseGroup.name)}</span>
         <span class="order-warehouse-group-count">${warehouseGroup.groups.length} поз. · ${entryCount} зап.</span>
       `;
+      summary.addEventListener("click", event => {
+        event.preventDefault();
+        details.open = !details.open;
+      });
 
       const content = document.createElement("div");
       content.className = "order-warehouse-group-content";
@@ -14938,6 +14955,7 @@
 
       details.append(summary, content);
       details.addEventListener("toggle", () => {
+        summary.setAttribute("aria-expanded", String(details.open));
         if (!query) orderWarehouseGroupOpenState.set(stateKey, details.open);
       });
       list.appendChild(details);
