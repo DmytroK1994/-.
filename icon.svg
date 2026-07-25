@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="backgroundGlow" cx="50%" cy="38%" r="68%">
+      <stop offset="0" stop-color="#1d4ed8" stop-opacity=".34"/>
+      <stop offset=".58" stop-color="#0f172a" stop-opacity=".96"/>
+      <stop offset="1" stop-color="#070d1c"/>
+    </radialGradient>
+    <linearGradient id="tileSurface" x1="128" y1="104" x2="388" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#27364d"/>
+      <stop offset=".52" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="shelfBlue" x1="144" y1="0" x2="368" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60a5fa"/>
+      <stop offset=".5" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="tileShadow" x="-40%" y="-40%" width="180%" height="190%">
+      <feDropShadow dx="0" dy="28" stdDeviation="28" flood-color="#020617" flood-opacity=".62"/>
+    </filter>
+    <filter id="markGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#2563eb" flood-opacity=".32"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#backgroundGlow)"/>
+  <circle cx="256" cy="204" r="174" fill="#2563eb" opacity=".06"/>
+
+  <g filter="url(#tileShadow)">
+    <rect x="88" y="82" width="336" height="336" rx="96" fill="url(#tileSurface)"/>
+    <rect x="89.5" y="83.5" width="333" height="333" rx="94.5" fill="none" stroke="#475569" stroke-width="3"/>
+  </g>
+
+  <g filter="url(#markGlow)" stroke-linecap="round" stroke-linejoin="round">
+    <g>
+      <rect x="136" y="190" width="240" height="15" rx="7.5" fill="url(#shelfBlue)"/>
+      <path d="M160 189v-35c0-7 5-12 12-12h41c7 0 12 5 12 12v35" fill="none" stroke="#93c5fd" stroke-width="9"/>
+      <path d="M287 189v-35c0-7 5-12 12-12h41c7 0 12 5 12 12v35" fill="none" stroke="#93c5fd" stroke-width="9"/>
+    </g>
+    <g>
+      <rect x="136" y="263" width="240" height="15" rx="7.5" fill="url(#shelfBlue)"/>
+      <path d="M160 262v-35c0-7 5-12 12-12h41c7 0 12 5 12 12v35" fill="none" stroke="#93c5fd" stroke-width="9"/>
+      <path d="M287 262v-35c0-7 5-12 12-12h41c7 0 12 5 12 12v35" fill="none" stroke="#93c5fd" stroke-width="9"/>
+    </g>
+    <g>
+      <rect x="136" y="336" width="240" height="15" rx="7.5" fill="url(#shelfBlue)"/>
+      <path d="M160 335v-35c0-7 5-12 12-12h41c7 0 12 5 12 12v35" fill="none" stroke="#93c5fd" stroke-width="9"/>
+      <path d="M287 335v-35c0-7 5-12 12-12h41c7 0 12 5 12 12v35" fill="none" stroke="#93c5fd" stroke-width="9"/>
+    </g>
+  </g>
+</svg>
