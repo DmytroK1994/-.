@@ -4021,6 +4021,38 @@
       border-radius: 7px !important;
       font-size: 14px !important;
     }
+    #productAddOverlay .entry-section-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+      width: 28px !important;
+      min-width: 28px !important;
+      height: 24px !important;
+      min-height: 24px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 8px !important;
+      background: var(--surface-deep) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 16px !important;
+      line-height: 1 !important;
+    }
+    #productAddOverlay .product-editor-section {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    #productAddOverlay .product-editor-section .entry-section-header {
+      min-height: 28px;
+    }
+    #productAddOverlay .product-editor-section-title {
+      font-weight: 850;
+    }
+    #productAddOverlay .product-editor-section .entry-section-content {
+      padding-top: 6px;
+    }
     #orderEntryOverlay .order-entry-dialog-section .entry-section-header {
       min-height: 22px;
       margin-bottom: 3px;
@@ -5971,6 +6003,26 @@
       margin: 0;
       overflow-wrap: anywhere;
     }
+    .order-entry-dialog-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+    #saveProductionDefaultsBtn {
+      width: auto;
+      min-width: 0;
+      min-height: 30px;
+      margin: 0;
+      padding: 5px 9px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 11px;
+      font-weight: 750;
+    }
     .order-entry-dialog-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -7060,7 +7112,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=292">
+<link rel="manifest" href="manifest.json?v=293">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7094,7 +7146,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.92</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.93</span></div>
     </div>
   </div>
 
@@ -7596,34 +7648,58 @@
         </div>
         <input type="hidden" id="editingProductId" />
 
-        <label for="newProductName">Назва</label>
-        <input id="newProductName" placeholder="Наприклад: Молоко 26%" />
+        <section class="entry-collapsible-section product-editor-section" data-entry-section="productMain">
+          <div class="entry-section-header">
+            <div class="product-editor-section-title">Основні дані</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="productMain" data-entry-section-label="Основні дані" aria-expanded="true" aria-controls="productMainFields">−</button>
+          </div>
+          <div class="entry-section-content" id="productMainFields">
+            <label for="newProductName">Назва</label>
+            <input id="newProductName" placeholder="Наприклад: Молоко 26%" />
 
-        <label for="newDefaultUnit">Типова одиниця виміру</label>
-        <select id="newDefaultUnit">
-          <option value="kg">Кілограми (кг)</option>
-          <option value="g">Грами (г)</option>
-          <option value="t">Тонни (т)</option>
-          <option value="pcs">Штуки (шт)</option>
-          <option value="boxes">Коробки (кор.)</option>
-          <option value="bags">Мішки (міш.)</option>
-          <option value="pallets">Піддони (підд.)</option>
-          <option value="l">Літри (л)</option>
-          <option value="m">Метри (м)</option>
-          <option value="packs">Упаковки (уп.)</option>
-        </select>
+            <label for="newDefaultUnit">Типова одиниця виміру</label>
+            <select id="newDefaultUnit">
+              <option value="kg">Кілограми (кг)</option>
+              <option value="g">Грами (г)</option>
+              <option value="t">Тонни (т)</option>
+              <option value="pcs">Штуки (шт)</option>
+              <option value="boxes">Коробки (кор.)</option>
+              <option value="bags">Мішки (міш.)</option>
+              <option value="pallets">Піддони (підд.)</option>
+              <option value="l">Літри (л)</option>
+              <option value="m">Метри (м)</option>
+              <option value="packs">Упаковки (уп.)</option>
+            </select>
+          </div>
+        </section>
 
-        <label for="newDefaultPalletKg">Типова кількість у піддоні</label>
-        <input id="newDefaultPalletKg" type="number" inputmode="decimal" placeholder="" />
+        <section class="entry-collapsible-section product-editor-section" data-entry-section="productAmounts">
+          <div class="entry-section-header">
+            <div class="product-editor-section-title">Типові кількості</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="productAmounts" data-entry-section-label="Типові кількості" aria-expanded="false" aria-controls="productAmountFields">+</button>
+          </div>
+          <div class="entry-section-content" id="productAmountFields">
+            <label for="newDefaultPalletKg">Типова кількість у піддоні</label>
+            <input id="newDefaultPalletKg" type="number" inputmode="decimal" placeholder="" />
 
-        <label for="newDefaultPieceKg">Типова кількість в одній одиниці</label>
-        <input id="newDefaultPieceKg" type="number" inputmode="decimal" placeholder="" />
+            <label for="newDefaultPieceKg">Типова кількість в одній одиниці</label>
+            <input id="newDefaultPieceKg" type="number" inputmode="decimal" placeholder="" />
+          </div>
+        </section>
 
-        <label for="newDefaultBoxesPerPallet">Коробок у піддоні для здачі продукції</label>
-        <input id="newDefaultBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
+        <section class="entry-collapsible-section product-editor-section" data-entry-section="productProduction">
+          <div class="entry-section-header">
+            <div class="product-editor-section-title">Здача продукції</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="productProduction" data-entry-section-label="Здача продукції" aria-expanded="false" aria-controls="productProductionFields">+</button>
+          </div>
+          <div class="entry-section-content" id="productProductionFields">
+            <label for="newDefaultBoxesPerPallet">Коробок у піддоні</label>
+            <input id="newDefaultBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
 
-        <label for="newDefaultPacksPerBox">Пачок у коробці для здачі продукції</label>
-        <input id="newDefaultPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+            <label for="newDefaultPacksPerBox">Пачок у коробці</label>
+            <input id="newDefaultPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+          </div>
+        </section>
 
         <div class="product-add-form-actions">
           <button class="green" id="saveProductBtn">Зберегти найменування</button>
@@ -8117,7 +8193,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.92</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.93</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8142,6 +8218,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.93</h3>
+          <ul>
+            <li>у вікні здачі продукції додано швидке збереження коробок і пачок як типових значень найменування;</li>
+            <li>редактор найменувань розділено на згортані секції з вирівняними кнопками;</li>
+            <li>поля для здачі продукції об’єднано в один спільний блок, який відкривається згорнутим.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.92</h3>
           <ul>
@@ -8956,7 +9040,10 @@
           <div class="small" id="orderEntryDialogEyebrow">Додати в замовлення</div>
           <h2 id="orderEntryDialogTitle">Найменування</h2>
         </div>
-        <button type="button" class="dialog-icon-close" id="closeOrderEntryDialogBtn" aria-label="Закрити">×</button>
+        <div class="order-entry-dialog-header-actions">
+          <button type="button" class="hidden" id="saveProductionDefaultsBtn">Редагувати типові</button>
+          <button type="button" class="dialog-icon-close" id="closeOrderEntryDialogBtn" aria-label="Закрити">×</button>
+        </div>
       </div>
       <input type="hidden" id="orderEntryProductId" />
       <div class="production-entry-fields hidden" id="productionEntryFields">
@@ -9081,7 +9168,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.92";
+  const APP_VERSION = "2.93";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14072,7 +14159,10 @@
       dialogPallets: true,
       dialogPieces: true,
       dialogDirect: true,
-      dialogComment: true
+      dialogComment: true,
+      productMain: true,
+      productAmounts: false,
+      productProduction: false
     };
     try {
       const saved = JSON.parse(localStorage.getItem(ENTRY_SECTION_STATE_KEY) || "{}");
@@ -14101,6 +14191,15 @@
     const state = getEntrySectionState();
     if (!(key in state)) return;
     state[key] = !state[key];
+    try { localStorage.setItem(ENTRY_SECTION_STATE_KEY, JSON.stringify(state)); } catch (error) {}
+    applyEntrySectionState(state);
+  }
+
+  function prepareProductEditorSections() {
+    const state = getEntrySectionState();
+    state.productMain = true;
+    state.productAmounts = false;
+    state.productProduction = false;
     try { localStorage.setItem(ENTRY_SECTION_STATE_KEY, JSON.stringify(state)); } catch (error) {}
     applyEntrySectionState(state);
   }
@@ -15148,6 +15247,33 @@
     if (output) output.textContent = `${formatPlainNumber(pallets * boxesPerPallet * packsPerBox)} пач.`;
   }
 
+  async function saveProductionDefaultsFromDialog() {
+    const productId = document.getElementById("orderEntryProductId").value;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+    const boxesPerPallet = Math.max(0, Number(document.getElementById("productionDialogBoxesPerPallet").value) || 0);
+    const packsPerBox = Math.max(0, Number(document.getElementById("productionDialogPacksPerBox").value) || 0);
+    if (boxesPerPallet <= 0 || packsPerBox <= 0) {
+      toast("Введи коробки в піддоні та пачки в коробці", true);
+      return;
+    }
+    const confirmed = await showAppDialog({
+      label: "Типові значення",
+      title: `Змінити типові значення для «${product.name}»?`,
+      message: `Надалі автоматично підставлятиметься: ${formatPlainNumber(boxesPerPallet)} коробок у піддоні та ${formatPlainNumber(packsPerBox)} пачок у коробці.`,
+      confirmText: "Зберегти",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    product.defaultBoxesPerPallet = boxesPerPallet;
+    product.defaultPacksPerBox = packsPerBox;
+    save();
+    toast("Типові значення збережено");
+  }
+
   function openOrderEntryDialog(productId) {
     if (!usesEntryDialogMode()) return;
     const product = state.products.find(item => item.id === productId);
@@ -15175,6 +15301,7 @@
     document.getElementById("productionDialogPacksPerBox").value = product.defaultPacksPerBox || "";
     document.getElementById("productionDialogComment").value = "";
     updateProductionDialogTotal();
+    document.getElementById("saveProductionDefaultsBtn").classList.toggle("hidden", !production);
     if (production) {
       document.getElementById("orderEntryDialogEyebrow").textContent = getProductionWorkspaceName();
     }
@@ -15709,6 +15836,7 @@
     document.getElementById("saveProductBtn").textContent = "Зберегти зміни";
     document.getElementById("cancelProductBtn").textContent = "Скасувати";
     document.getElementById("deleteProductFromEditorBtn").classList.remove("hidden");
+    prepareProductEditorSections();
     openProductAddModal("single");
   }
 
@@ -17985,6 +18113,7 @@
     }
   });
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
+  document.getElementById("saveProductionDefaultsBtn").addEventListener("click", saveProductionDefaultsFromDialog);
   ["productionDialogBoxesPerPallet", "productionDialogPacksPerBox", "productionDialogPallets"].forEach((id, index, ids) => {
     const input = document.getElementById(id);
     input.addEventListener("input", updateProductionDialogTotal);
@@ -18043,6 +18172,7 @@
   document.getElementById("closeProductInfoBtn").addEventListener("click", dismissProductAddModal);
   document.getElementById("chooseSingleProductBtn").addEventListener("click", () => {
     clearProductForm();
+    prepareProductEditorSections();
     showProductAddView("single");
     document.getElementById("newProductName").focus();
   });
