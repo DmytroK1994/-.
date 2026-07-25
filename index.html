@@ -5718,21 +5718,31 @@
     }
     .entry-unit-picker {
       position: relative;
+      min-width: 0;
     }
     .entry-unit-picker-trigger {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      min-height: 42px;
+      height: 48px;
+      min-height: 48px;
       margin: 0;
-      padding: 9px 11px;
+      padding: 11px;
       border: 1px solid var(--border-strong);
-      border-radius: 12px;
+      border-radius: 14px;
       background: var(--surface-deep);
       color: var(--text);
       box-shadow: none;
+      font-size: 14px;
       text-align: left;
+      white-space: nowrap;
+    }
+    .entry-unit-picker-trigger-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .entry-unit-picker-trigger::after {
       content: "⌄";
@@ -5742,6 +5752,10 @@
     }
     .entry-unit-picker.is-open .entry-unit-picker-trigger::after {
       content: "⌃";
+    }
+    #orderEntryOverlay #orderEntryStatus {
+      height: 48px;
+      min-height: 48px;
     }
     .entry-unit-picker-popover {
       position: absolute;
@@ -6716,7 +6730,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=272">
+<link rel="manifest" href="manifest.json?v=273">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6750,7 +6764,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.72</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.73</span></div>
     </div>
   </div>
 
@@ -7728,7 +7742,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.72</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.73</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7753,6 +7767,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.73</h3>
+          <ul>
+            <li>поля «Одиниця виміру» та «Терміновість» вирівняно за шириною й висотою;</li>
+            <li>назва одиниці завжди залишається в одному рядку;</li>
+            <li>для довгих назв одиниць використовується компактніший шрифт і акуратне скорочення по ширині.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.72</h3>
           <ul>
@@ -8481,7 +8503,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.72";
+  const APP_VERSION = "2.73";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10858,6 +10880,9 @@
     trigger.className = "entry-unit-picker-trigger";
     trigger.setAttribute("aria-haspopup", "listbox");
     trigger.setAttribute("aria-expanded", "false");
+    const triggerLabel = document.createElement("span");
+    triggerLabel.className = "entry-unit-picker-trigger-label";
+    trigger.appendChild(triggerLabel);
 
     const popover = document.createElement("div");
     popover.className = "entry-unit-picker-popover hidden";
@@ -10866,7 +10891,7 @@
     const options = [...select.options];
     const sync = () => {
       const selected = options.find(option => option.value === select.value) || options[0];
-      trigger.textContent = selected?.textContent || "Оберіть одиницю";
+      triggerLabel.textContent = selected?.textContent || "Оберіть одиницю";
       popover.querySelectorAll("[data-unit-value]").forEach(button => {
         const active = button.dataset.unitValue === select.value;
         button.classList.toggle("is-selected", active);
