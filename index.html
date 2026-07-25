@@ -43,6 +43,17 @@
       touch-action: pan-y;
       overscroll-behavior-x: none;
     }
+    html::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 99;
+      height: env(safe-area-inset-top);
+      background: var(--app-header-safe-background, var(--surface));
+      pointer-events: none;
+    }
     :root,
     :root[data-theme="dark"] {
       color-scheme: dark;
@@ -6651,7 +6662,7 @@
     }
   </style>
 
-<link rel="manifest" href="manifest.json?v=267">
+<link rel="manifest" href="manifest.json?v=268">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6690,7 +6701,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.67</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.68</span></div>
     </div>
   </div>
 
@@ -7666,7 +7677,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.67</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.68</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7691,6 +7702,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.68</h3>
+          <ul>
+            <li>верхня зона біля статус-бара телефона стала безшовним продовженням шапки;</li>
+            <li>колір safe-area тепер береться безпосередньо з фактичного фону шапки;</li>
+            <li>системний колір iPhone синхронізується із шапкою, а не з основним фоном сторінки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.67</h3>
           <ul>
@@ -8372,7 +8391,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.67";
+  const APP_VERSION = "2.68";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9447,8 +9466,16 @@
       copper: "#101219",
       custom: customPalette.customBg
     };
+    const header = document.querySelector(".app-header");
+    const headerStyles = header ? getComputedStyle(header) : null;
+    const headerBackground = headerStyles?.background || "var(--surface)";
+    const headerColor = normalizeThemeColor(
+      headerStyles?.backgroundColor,
+      EXTRA_THEME_PALETTES[selected]?.surface || themeColors[selected]
+    );
+    document.documentElement.style.setProperty("--app-header-safe-background", headerBackground);
     const themeMeta = document.getElementById("themeColorMeta");
-    if (themeMeta) themeMeta.setAttribute("content", EXTRA_THEME_PALETTES[selected]?.bg || themeColors[selected]);
+    if (themeMeta) themeMeta.setAttribute("content", headerColor);
 
     if (persist) {
       try {
