@@ -2957,7 +2957,7 @@
       text-align: center;
       font-weight: 800;
       line-height: 1.35;
-      z-index: 320;
+      z-index: 1900;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -2990,7 +2990,7 @@
     .success-check {
       position: fixed;
       inset: 0;
-      z-index: 260;
+      z-index: 1880;
       display: grid;
       place-items: center;
       pointer-events: none;
@@ -4935,7 +4935,7 @@
     .reset-confirmation-overlay {
       position: fixed;
       inset: 0;
-      z-index: 230;
+      z-index: 1840;
       display: grid;
       place-items: center;
       overflow: auto;
@@ -4947,7 +4947,7 @@
     .app-dialog-overlay {
       position: fixed;
       inset: 0;
-      z-index: 320;
+      z-index: 1850;
       display: grid;
       place-items: center;
       overflow: auto;
@@ -5516,6 +5516,7 @@
     .entry-form-heading-row h2 { margin:0; }
     .order-warehouse-control { width:min(48%,260px); min-width:0; }
     .order-warehouse-dropdown { position:relative; width:100%; }
+    .order-warehouse-dropdown[open] { z-index: 80; }
     .order-warehouse-dropdown summary {
       min-height:38px;
       padding:8px 26px;
@@ -5539,7 +5540,7 @@
       position:absolute;
       top:calc(100% + 4px);
       right:0;
-      z-index:25;
+      z-index:81;
       width:min(340px,92vw);
       padding:10px;
       border:1px solid var(--border-strong);
@@ -6608,7 +6609,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.54</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.55</span></div>
     </div>
   </div>
 
@@ -7566,7 +7567,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.54</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.55</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7591,6 +7592,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.55</h3>
+          <ul>
+            <li>спливаючі повідомлення, галочка успішної дії та системні підтвердження тепер відображаються поверх усіх вікон;</li>
+            <li>випадаючий список складів отримав вищий шар і більше не перекривається хрестиком пошуку;</li>
+            <li>під час відкриття складів результати пошуку позицій автоматично ховаються без очищення введеного тексту.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.54</h3>
           <ul>
@@ -8141,7 +8150,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.54";
+  const APP_VERSION = "2.55";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -15618,6 +15627,12 @@
     saveOnly();
     renderWarehouseOptions();
     renderToday();
+  });
+  document.getElementById("orderWarehouseDropdown").addEventListener("toggle", event => {
+    if (!event.currentTarget.open) return;
+    const productSearch = document.getElementById("productSearch");
+    document.getElementById("productSearchResults").classList.add("hidden");
+    if (document.activeElement === productSearch) productSearch.blur();
   });
   document.getElementById("desktopOrderWarehouseSelect").addEventListener("change", event => {
     setWorkspaceWarehouse(event.target.value || null);
