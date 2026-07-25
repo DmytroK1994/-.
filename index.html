@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" id="themeColorMeta" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Облік" />
   <title>Облік</title>
   <script>
     try {
@@ -5663,7 +5668,7 @@
     .order-entry-dialog-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 9px 10px;
+      gap: 7px 10px;
     }
     .order-entry-dialog-grid > div {
       min-width: 0;
@@ -6701,16 +6706,21 @@
     }
   </style>
 
-<link rel="manifest" href="manifest.json?v=271">
+<script>
+  try {
+    const initialRootStyles = getComputedStyle(document.documentElement);
+    const initialHeaderColor = initialRootStyles.getPropertyValue("--surface").trim() || "#ffffff";
+    document.getElementById("themeColorMeta")?.setAttribute("content", initialHeaderColor);
+    document.documentElement.style.background = initialHeaderColor;
+    document.documentElement.style.backgroundColor = initialHeaderColor;
+    document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
+  } catch (error) {}
+</script>
+<link rel="manifest" href="manifest.json?v=272">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
-<meta name="theme-color" id="themeColorMeta" content="#ffffff">
 <meta name="application-name" content="Облік">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Облік">
 
 <!-- Preview banner for Telegram / Viber / Facebook / Discord -->
 <meta property="og:title" content="Облік">
@@ -6740,7 +6750,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.71</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.72</span></div>
     </div>
   </div>
 
@@ -7718,7 +7728,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.71</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.72</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7743,6 +7753,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.72</h3>
+          <ul>
+            <li>метадані системної смуги iPhone перенесено на початок сторінки для раннього застосування;</li>
+            <li>системний колір примусово оновлюється після кожної зміни теми;</li>
+            <li>оновлено адресу запуску встановленого PWA, щоб iOS повторно прочитала його оформлення;</li>
+            <li>секції додавання позиції стали на два пікселі щільнішими, зберігши проміжки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.71</h3>
           <ul>
@@ -8462,7 +8481,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.71";
+  const APP_VERSION = "2.72";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8822,6 +8841,20 @@
     return "#" + rgb.slice(1, 4)
       .map(channel => Math.max(0, Math.min(255, Number(channel))).toString(16).padStart(2, "0"))
       .join("");
+  }
+
+  function syncSystemThemeColor(color) {
+    const normalized = normalizeThemeColor(color, "#ffffff");
+    const current = document.getElementById("themeColorMeta");
+    if (current) {
+      const replacement = current.cloneNode(false);
+      replacement.setAttribute("content", normalized);
+      current.replaceWith(replacement);
+    }
+    document.documentElement.style.backgroundColor = normalized;
+    window.requestAnimationFrame(() => {
+      document.getElementById("themeColorMeta")?.setAttribute("content", normalized);
+    });
   }
 
   function captureCurrentThemePalette() {
@@ -9545,8 +9578,7 @@
       EXTRA_THEME_PALETTES[selected]?.surface || themeColors[selected]
     );
     document.documentElement.style.setProperty("--app-header-safe-background", headerBackground);
-    const themeMeta = document.getElementById("themeColorMeta");
-    if (themeMeta) themeMeta.setAttribute("content", headerColor);
+    syncSystemThemeColor(headerColor);
 
     if (persist) {
       try {
