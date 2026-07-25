@@ -3730,7 +3730,8 @@
     .entry-section-header .form-section-title {
       flex: 1;
     }
-    #pageToday .entry-form-card .entry-section-toggle {
+    #pageToday .entry-form-card .entry-section-toggle,
+    #orderEntryOverlay .entry-section-toggle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -3749,6 +3750,15 @@
       font-size: 18px !important;
       font-weight: 800 !important;
       line-height: 1 !important;
+    }
+    #orderEntryOverlay .order-entry-dialog-section .entry-section-header {
+      margin-bottom: 8px;
+    }
+    #orderEntryOverlay .order-entry-dialog-section.is-collapsed .entry-section-header {
+      margin-bottom: 0;
+    }
+    #orderEntryOverlay .order-entry-dialog-section .inventory-entry-section-title {
+      margin: 0;
     }
     .entry-collapsible-section.is-collapsed .entry-section-content {
       display: none;
@@ -4955,6 +4965,56 @@
       background: rgba(2, 6, 23, .76);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+    }
+    .workspace-start-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1860;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 18px);
+      background: rgba(2, 6, 23, .8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .workspace-start-overlay.hidden {
+      display: none;
+    }
+    .workspace-start-dialog {
+      width: min(100%, 470px);
+      padding: 20px;
+      border: 1px solid var(--border-strong);
+      border-radius: 24px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .46);
+      animation: app-dialog-in .2s cubic-bezier(.2, .75, .25, 1) both;
+    }
+    .workspace-start-dialog h2 {
+      margin: 0 0 8px;
+    }
+    .workspace-start-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .workspace-start-option {
+      display: grid;
+      gap: 4px;
+      min-height: 64px;
+      margin: 0;
+      padding: 12px 14px;
+      text-align: left;
+    }
+    .workspace-start-option strong {
+      font-size: 16px;
+    }
+    .workspace-start-option span {
+      color: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      opacity: .76;
     }
     body.app-dialog-open {
       overflow: hidden;
@@ -6618,7 +6678,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.60</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.63</span></div>
     </div>
   </div>
 
@@ -6961,6 +7021,24 @@
         <button class="secondary" id="appDialogCancelBtn">Скасувати</button>
         <button class="secondary hidden" id="appDialogAlternativeBtn">Інший варіант</button>
         <button id="appDialogConfirmBtn">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace-start-overlay hidden" id="workspaceStartOverlay" role="dialog" aria-modal="true" aria-labelledby="workspaceStartTitle" aria-describedby="workspaceStartMessage">
+    <div class="workspace-start-dialog">
+      <div class="app-dialog-label">Перший запуск</div>
+      <h2 id="workspaceStartTitle">Що відкрити спочатку?</h2>
+      <p class="app-dialog-message" id="workspaceStartMessage">Обери основний розділ для початку роботи. Надалі застосунок відкриватиме останній використаний розділ.</p>
+      <div class="workspace-start-list">
+        <button type="button" class="workspace-start-option" data-initial-workspace="inventory">
+          <strong>Інвентаризація</strong>
+          <span>Порахувати фактичні залишки на складах.</span>
+        </button>
+        <button type="button" class="workspace-start-option" data-initial-workspace="orders">
+          <strong>Замовлення</strong>
+          <span>Сформувати нове замовлення на потрібний склад.</span>
+        </button>
       </div>
     </div>
   </div>
@@ -7576,7 +7654,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.60</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.63</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7601,6 +7679,32 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.63</h3>
+          <ul>
+            <li>під час першого запуску з’являється окремий список початкових розділів;</li>
+            <li>можна обрати інвентаризацію або замовлення з коротким поясненням кожного варіанта;</li>
+            <li>вибір зберігається, а надалі відкривається останній використаний розділ;</li>
+            <li>список підготовлено до додавання нових робочих розділів у майбутньому.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.62</h3>
+          <ul>
+            <li>у вікні додавання позиції можна окремо згортати піддони, поштучне додавання, окрему кількість і коментар;</li>
+            <li>кожен блок отримав власну компактну кнопку розгортання;</li>
+            <li>стан кожного блоку зберігається після закриття вікна та повторного запуску застосунку.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.61</h3>
+          <ul>
+            <li>кожна інвентаризація та кожне замовлення отримують окремий номер у межах своєї дати;</li>
+            <li>номер документа показується на головному екрані, в історії, PDF та кошику;</li>
+            <li>видалені позиції зберігають номер документа-джерела, дату та склад;</li>
+            <li>старі документи автоматично отримують номери за датою та порядком створення.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.60</h3>
           <ul>
@@ -8128,10 +8232,16 @@
       </div>
       <input type="hidden" id="orderEntryProductId" />
       <div class="order-entry-dialog-grid">
-        <div class="order-entry-direct-field">
-          <label id="orderEntryQuantityLabel" for="orderEntryQuantity">Кількість</label>
-          <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
-        </div>
+        <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogDirect">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Окрема кількість</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogDirect" data-entry-section-label="Окрема кількість" aria-expanded="true" aria-controls="orderEntryDirectContent" aria-label="Згорнути розділ Окрема кількість">−</button>
+          </div>
+          <div class="entry-section-content" id="orderEntryDirectContent">
+            <label id="orderEntryQuantityLabel" for="orderEntryQuantity">Окрема кількість</label>
+            <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+          </div>
+        </section>
         <div class="order-entry-top-fields">
           <div>
             <label for="orderEntryUnit">Одиниця виміру</label>
@@ -8158,36 +8268,52 @@
             </select>
           </div>
         </div>
-        <div class="entry-breakdown-field">
-          <div class="inventory-entry-section-title">Піддони</div>
-          <div class="inventory-entry-section-fields">
-            <div>
-              <label for="inventoryDialogPallets">Піддонів</label>
-              <input id="inventoryDialogPallets" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 5" />
-            </div>
-            <div>
-              <label for="inventoryDialogPerPallet">Кількість у піддоні</label>
-              <input id="inventoryDialogPerPallet" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 675" />
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPallets">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Піддони</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogPallets" data-entry-section-label="Піддони" aria-expanded="true" aria-controls="orderEntryPalletsContent" aria-label="Згорнути розділ Піддони">−</button>
+          </div>
+          <div class="entry-section-content" id="orderEntryPalletsContent">
+            <div class="inventory-entry-section-fields">
+              <div>
+                <label for="inventoryDialogPallets">Піддонів</label>
+                <input id="inventoryDialogPallets" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 5" />
+              </div>
+              <div>
+                <label for="inventoryDialogPerPallet">Кількість у піддоні</label>
+                <input id="inventoryDialogPerPallet" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 675" />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="entry-breakdown-field">
-          <div class="inventory-entry-section-title">Поштучно / коробками</div>
-          <div class="inventory-entry-section-fields">
-            <div>
-              <label for="inventoryDialogPieces">Кількість</label>
-              <input id="inventoryDialogPieces" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 10" />
-            </div>
-            <div>
-              <label for="inventoryDialogPerPiece">Кількість в одиниці</label>
-              <input id="inventoryDialogPerPiece" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 25" />
+        </section>
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPieces">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Поштучно / коробками</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogPieces" data-entry-section-label="Поштучно / коробками" aria-expanded="true" aria-controls="orderEntryPiecesContent" aria-label="Згорнути розділ Поштучно / коробками">−</button>
+          </div>
+          <div class="entry-section-content" id="orderEntryPiecesContent">
+            <div class="inventory-entry-section-fields">
+              <div>
+                <label for="inventoryDialogPieces">Кількість</label>
+                <input id="inventoryDialogPieces" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 10" />
+              </div>
+              <div>
+                <label for="inventoryDialogPerPiece">Кількість в одиниці</label>
+                <input id="inventoryDialogPerPiece" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 25" />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="order-entry-comment-field">
-          <label for="orderEntryComment">Коментар</label>
-          <textarea id="orderEntryComment" rows="3" placeholder="Додаткова інформація до позиції"></textarea>
-        </div>
+        </section>
+        <section class="order-entry-comment-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogComment">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Коментар</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogComment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="orderEntryCommentContent" aria-label="Згорнути розділ Коментар">−</button>
+          </div>
+          <div class="entry-section-content" id="orderEntryCommentContent">
+            <label for="orderEntryComment">Текст коментаря</label>
+            <textarea id="orderEntryComment" rows="3" placeholder="Додаткова інформація до позиції"></textarea>
+          </div>
+        </section>
       </div>
       <div class="order-entry-dialog-actions">
         <button type="button" class="secondary" id="cancelOrderEntryDialogBtn">Закрити</button>
@@ -8201,7 +8327,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.60";
+  const APP_VERSION = "2.63";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8226,6 +8352,7 @@
   const BOTTOM_NAV_BUTTON_SIZE_KEY = "warehouseJournalBottomNavigationButtonSize";
   const DIALOG_MENU_BUTTON_SIZE_KEY = "warehouseJournalDialogMenuButtonSize";
   const WORKSPACE_MODE_KEY = "warehouseJournalWorkspaceMode";
+  const INITIAL_WORKSPACE_CHOICE_KEY = "warehouseJournalInitialWorkspaceChoice";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
@@ -9454,7 +9581,7 @@
     const splash = document.getElementById("appSplash");
     if (splash) splash.remove();
     scrollAppToTop();
-    window.setTimeout(promptForCurrentDayOnStartup, 1000);
+    window.setTimeout(runStartupFlow, 1000);
   }
 
   let modalScrollPosition = 0;
@@ -9507,6 +9634,7 @@
 
   let demoModeActive = getDemoModePreference();
   let state = demoModeActive ? loadDemoState() : loadState();
+  let initialWorkspaceChoiceNeeded = !demoModeActive && shouldPromptInitialWorkspaceChoice();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
   let productSelectMode = false;
@@ -9555,6 +9683,7 @@
   let appDialogPreviousFocus = null;
   let appDialogPromptMode = false;
   let appDialogAlternativeResult = null;
+  let initialWorkspaceChoiceResolver = null;
   let toastTimer = 0;
   let successCheckTimer = 0;
   const editReturnScroll = { entry: null, product: null };
@@ -10036,6 +10165,7 @@
       days: [
         {
           id: currentDayId,
+          documentNumber: 1,
           date: demoDateISO(0),
           createdAt: nowText(),
           entries: [
@@ -10048,6 +10178,7 @@
         },
         {
           id: previousDayId,
+          documentNumber: 1,
           date: demoDateISO(1),
           createdAt: nowText(),
           entries: [
@@ -10208,7 +10339,7 @@
     const warehouseName = String(entry?.warehouseName || day.warehouseName || "").trim();
     const documentName = orders ? "Замовлення" : "Інвентаризація";
     const dateText = day.date ? ` від ${niceDate(day.date)}` : "";
-    return `${documentName}${dateText}${warehouseName ? ` · склад «${warehouseName}»` : ""}`;
+    return `${documentName} ${documentNumberText(day)}${dateText}${warehouseName ? ` · склад «${warehouseName}»` : ""}`;
   }
 
   async function restoreTrashItem(id) {
@@ -10277,6 +10408,8 @@
       state = normalizeState(cloneData(item.payload.state));
     }
 
+    assignDocumentNumbers(state.days);
+    assignDocumentNumbers(state.orders);
     saveTrashItems(items.filter(entry => entry.id !== id));
     save();
     renderTrash();
@@ -10387,6 +10520,32 @@
     return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString("uk-UA");
   }
 
+  function assignDocumentNumbers(documents) {
+    const usedByDate = new Map();
+    documents.slice().reverse().forEach(document => {
+      const date = String(document.date || todayISO());
+      if (!usedByDate.has(date)) usedByDate.set(date, new Set());
+      const used = usedByDate.get(date);
+      let number = Number.parseInt(document.documentNumber, 10);
+      if (!Number.isInteger(number) || number < 1 || used.has(number)) {
+        number = 1;
+        while (used.has(number)) number += 1;
+      }
+      document.documentNumber = number;
+      used.add(number);
+    });
+  }
+
+  function nextDocumentNumber(documents, date = todayISO()) {
+    return documents
+      .filter(document => document.date === date)
+      .reduce((maximum, document) => Math.max(maximum, Number(document.documentNumber) || 0), 0) + 1;
+  }
+
+  function documentNumberText(document) {
+    return `№${Math.max(1, Number(document?.documentNumber) || 1)}`;
+  }
+
   function normalizeMeasurementUnit(unit) {
     return MEASUREMENT_UNITS[unit] ? unit : "kg";
   }
@@ -10455,6 +10614,8 @@
         }
       });
     });
+    assignDocumentNumbers(normalized.days);
+    assignDocumentNumbers(normalized.orders);
     return normalized;
   }
 
@@ -10736,6 +10897,59 @@
     } catch (error) {
       return "inventory";
     }
+  }
+
+  function shouldPromptInitialWorkspaceChoice() {
+    try {
+      if (localStorage.getItem(INITIAL_WORKSPACE_CHOICE_KEY) === "done") return false;
+      return !localStorage.getItem(STORAGE_KEY) && !localStorage.getItem("warehouseJournalV2");
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function promptForInitialWorkspaceChoice() {
+    if (!initialWorkspaceChoiceNeeded) return Promise.resolve(workspaceMode);
+    document.getElementById("workspaceStartOverlay").classList.remove("hidden");
+    document.querySelector("[data-initial-workspace]")?.focus({ preventScroll: true });
+    return new Promise(resolve => {
+      initialWorkspaceChoiceResolver = resolve;
+    });
+  }
+
+  function chooseInitialWorkspace(mode) {
+    if (!initialWorkspaceChoiceNeeded) return;
+    const nextMode = mode === "orders" ? "orders" : "inventory";
+    const removeProvisionalInventory = nextMode === "orders"
+      && state.orders.length === 0
+      && state.days.length === 1
+      && state.days[0].date === todayISO()
+      && state.days[0].entries.length === 0;
+    if (removeProvisionalInventory) {
+      state.days = [];
+      state.activeDayId = null;
+    }
+
+    workspaceMode = nextMode;
+    initialWorkspaceChoiceNeeded = false;
+    try {
+      localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode);
+      localStorage.setItem(INITIAL_WORKSPACE_CHOICE_KEY, "done");
+    } catch (error) {}
+    ensureActiveDay();
+    saveOnly();
+    document.getElementById("workspaceStartOverlay").classList.add("hidden");
+    updateWorkspaceUI();
+    showPage("today");
+    toast(nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію");
+    const resolve = initialWorkspaceChoiceResolver;
+    initialWorkspaceChoiceResolver = null;
+    if (resolve) resolve(nextMode);
+  }
+
+  async function runStartupFlow() {
+    await promptForInitialWorkspaceChoice();
+    await promptForCurrentDayOnStartup();
   }
 
   function workspaceIsOrders() {
@@ -11038,7 +11252,16 @@
     if (workspaceIsOrders()) {
       if (!state.activeOrderId || !state.orders.some(order => order.id === state.activeOrderId)) {
         const id = uid();
-        state.orders.unshift({ id, date: todayISO(), createdAt: nowText(), responsible: "", notes: "", entries: [] });
+        const date = todayISO();
+        state.orders.unshift({
+          id,
+          documentNumber: nextDocumentNumber(state.orders, date),
+          date,
+          createdAt: nowText(),
+          responsible: "",
+          notes: "",
+          entries: []
+        });
         state.activeOrderId = id;
         saveOnly();
       }
@@ -11049,6 +11272,7 @@
       const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
       state.days.unshift({
         id,
+        documentNumber: nextDocumentNumber(state.days, todayISO()),
         date: todayISO(),
         createdAt: nowText(),
         warehouseId: warehouse?.id || null,
@@ -12330,7 +12554,17 @@
   }
 
   function getEntrySectionState() {
-    const defaults = { pallets: true, pieces: true, direct: true, comment: true, orderDetails: false };
+    const defaults = {
+      pallets: true,
+      pieces: true,
+      direct: true,
+      comment: true,
+      orderDetails: false,
+      dialogPallets: true,
+      dialogPieces: true,
+      dialogDirect: true,
+      dialogComment: true
+    };
     try {
       const saved = JSON.parse(localStorage.getItem(ENTRY_SECTION_STATE_KEY) || "{}");
       Object.keys(defaults).forEach(key => {
@@ -12824,6 +13058,7 @@
     const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
     const documentData = {
       id,
+      documentNumber: nextDocumentNumber(orders ? state.orders : state.days, todayISO()),
       date: todayISO(),
       createdAt: nowText(),
       responsible: "",
@@ -12877,6 +13112,7 @@
       const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
       const documentData = {
         id,
+        documentNumber: nextDocumentNumber(documents, currentDate),
         date: currentDate,
         createdAt: nowText(),
         responsible: "",
@@ -12935,7 +13171,7 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: orders ? "Видалити замовлення?" : "Видалити інвентаризацію?",
-      message: `${orders ? "Замовлення" : "Інвентаризація"} від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
+      message: `${orders ? "Замовлення" : "Інвентаризація"} ${documentNumberText(day)} від ${niceDate(day.date)} переміститься в кошик на ${trashRetentionDurationText()}.`,
       confirmText: "Видалити",
       danger: true
     });
@@ -12943,7 +13179,7 @@
 
     if (!putInTrash(
       orders ? "orders" : "days",
-      `${orders ? "Замовлення" : "Інвентаризація"} від ${niceDate(day.date)}`,
+      `${orders ? "Замовлення" : "Інвентаризація"} ${documentNumberText(day)} від ${niceDate(day.date)}`,
       orders ? { orders: [day] } : { days: [day] }
     )) return;
     if (orders) state.orders = state.orders.filter(d => d.id !== id);
@@ -13336,6 +13572,7 @@
     saveButton.textContent = "Додати";
     saveButton.classList.remove("keyboard-action-replaced");
     document.getElementById("keyboardSaveEntryBtn")?.classList.add("hidden");
+    applyEntrySectionState();
     document.getElementById("orderEntryOverlay").classList.remove("hidden");
     document.body.classList.add("order-entry-open");
   }
@@ -13594,7 +13831,7 @@
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити позицію?",
-      message: `Запис «${entry.productName}» буде переміщено в кошик із ${documentName} від ${niceDate(day.date)}.`,
+      message: `Запис «${entry.productName}» буде переміщено в кошик із ${documentName} ${documentNumberText(day)} від ${niceDate(day.date)}.`,
       confirmText: "Видалити",
       danger: true
     });
@@ -13609,7 +13846,7 @@
     if (document.getElementById("editingEntryId").value === id) clearEntryForm();
 
     save();
-    toast(`Позицію переміщено в кошик · ${niceDate(day.date)}`);
+    toast(`Позицію переміщено в кошик · ${documentNumberText(day)} · ${niceDate(day.date)}`);
   }
 
   function clearEntryForm() {
@@ -13948,8 +14185,8 @@
   function makeReport() {
     const day = getActiveDay();
     let text = workspaceIsOrders()
-      ? `Замовлення на ${niceDate(day.date)}\n\n`
-      : `Залишки на ${niceDate(day.date)}\n\n`;
+      ? `Замовлення ${documentNumberText(day)} на ${niceDate(day.date)}\n\n`
+      : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}\n\n`;
 
     const groups = sortCurrentListGroups(groupEntries(day));
     if (!groups.length) return text + "Записів немає.";
@@ -14799,16 +15036,21 @@
     }
     state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
     localStorage.removeItem("warehouseJournalV2");
+    localStorage.removeItem(INITIAL_WORKSPACE_CHOICE_KEY);
+    localStorage.removeItem(WORKSPACE_MODE_KEY);
     localStorage.removeItem(LAST_ENTRY_UNIT_KEY);
     localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
     localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
     applyEntryUnitVisibility("hidden");
     applyEntrySectionState();
+    workspaceMode = "inventory";
+    initialWorkspaceChoiceNeeded = true;
     save();
     clearEntryForm();
     clearProductForm();
     toast("Програму очищено");
     showPage("today");
+    window.setTimeout(runStartupFlow, 500);
   }
 
   function openResetConfirmation() {
@@ -15213,10 +15455,10 @@
     const listOnly = options.listOnly === true;
     if (!listOnly) {
       updateWorkspaceUI();
-      document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}${orders ? "Поточне замовлення" : "Поточна інвентаризація"}: ${niceDate(day.date)}`;
+      document.getElementById("activeDateLabel").textContent = `${demoModeActive ? "Демонстраційний режим · " : ""}${orders ? "Поточне замовлення" : "Поточна інвентаризація"} ${documentNumberText(day)}: ${niceDate(day.date)}`;
       document.getElementById("printReportTitle").textContent = orders
-        ? `ЗАМОВЛЕННЯ НА ${niceDate(day.date)}`
-        : `Залишки на ${niceDate(day.date)}`;
+        ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
+        : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`;
     }
     updateCurrentOrderSearchVisibility();
     updateCurrentListSortUI();
@@ -15557,7 +15799,7 @@
           ${checkboxHtml}
           <div>
             <div class="history-title-line">
-                <div class="name">${niceDate(day.date)}</div>
+                <div class="name">${documentNumberText(day)} · ${niceDate(day.date)}</div>
                 <div class="history-created">Створено: ${escapeHtml(day.createdAt)}</div>
             </div>
             <div class="small">Записів: ${day.entries.length}</div>
@@ -15589,8 +15831,8 @@
     }
 
     const reportTitle = orders
-      ? `ЗАМОВЛЕННЯ НА ${niceDate(day.date)}`
-      : `Залишки на ${niceDate(day.date)}`;
+      ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
+      : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`;
     const reportRows = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
     applyDocumentLayout(day, orders);
     document.getElementById("printReportTitle").textContent = reportTitle;
@@ -16018,6 +16260,9 @@
   });
   document.getElementById("appDialogOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeAppDialog(false);
+  });
+  document.querySelectorAll("[data-initial-workspace]").forEach(button => {
+    button.addEventListener("click", () => chooseInitialWorkspace(button.dataset.initialWorkspace));
   });
   document.getElementById("cancelResetBtn").addEventListener("click", closeResetConfirmation);
   document.getElementById("resetConfirmationInput").addEventListener("input", event => {
