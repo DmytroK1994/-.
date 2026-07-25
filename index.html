@@ -5403,6 +5403,23 @@
     .order-entry-dialog-grid .order-entry-comment-field {
       grid-column: 1 / -1;
     }
+    .order-entry-dialog-grid .inventory-only-entry-field {
+      grid-column: 1 / -1;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface-deep);
+    }
+    .inventory-entry-section-title {
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .inventory-entry-section-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 10px;
+    }
     .order-entry-dialog-grid label {
       margin-top: 0;
     }
@@ -5437,12 +5454,21 @@
     body:not(.workspace-orders) #orderEntryOverlay .order-only-entry-field {
       display: none;
     }
+    body.workspace-orders #orderEntryOverlay .inventory-only-entry-field {
+      display: none;
+    }
     @media (max-width: 420px) {
       .order-entry-dialog-grid {
         grid-template-columns: 1fr;
       }
       .order-entry-dialog-grid .order-entry-comment-field {
         grid-column: auto;
+      }
+      .order-entry-dialog-grid .inventory-only-entry-field {
+        grid-column: auto;
+      }
+      .inventory-entry-section-fields {
+        grid-template-columns: 1fr 1fr;
       }
     }
     .order-report-meta { display:grid; gap:3px; margin:0 0 10px; font-size:12px; text-align:left; }
@@ -6260,7 +6286,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.28</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.30</span></div>
     </div>
   </div>
 
@@ -7169,7 +7195,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.28</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.30</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7194,6 +7220,20 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.30</h3>
+          <ul>
+            <li>у вікні інвентаризації кнопку «Додати» повернено ліворуч, а «Закрити» — праворуч.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.29</h3>
+          <ul>
+            <li>компактне вікно інвентаризації доповнено розрахунком піддонів і поштучних або коробкових позицій;</li>
+            <li>універсальну кількість, піддони та поштучний розрахунок можна використовувати разом;</li>
+            <li>кнопку інвентаризації скорочено до «Додати» та розміщено праворуч.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.28</h3>
           <ul>
@@ -7477,6 +7517,32 @@
             <option value="packs">Упаковки (уп.)</option>
           </select>
         </div>
+        <div class="inventory-only-entry-field">
+          <div class="inventory-entry-section-title">Піддони</div>
+          <div class="inventory-entry-section-fields">
+            <div>
+              <label for="inventoryDialogPallets">Піддонів</label>
+              <input id="inventoryDialogPallets" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 5" />
+            </div>
+            <div>
+              <label for="inventoryDialogPerPallet">Кількість у піддоні</label>
+              <input id="inventoryDialogPerPallet" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 675" />
+            </div>
+          </div>
+        </div>
+        <div class="inventory-only-entry-field">
+          <div class="inventory-entry-section-title">Поштучно / коробками</div>
+          <div class="inventory-entry-section-fields">
+            <div>
+              <label for="inventoryDialogPieces">Кількість</label>
+              <input id="inventoryDialogPieces" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 10" />
+            </div>
+            <div>
+              <label for="inventoryDialogPerPiece">Кількість в одиниці</label>
+              <input id="inventoryDialogPerPiece" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 25" />
+            </div>
+          </div>
+        </div>
         <div class="order-only-entry-field">
           <label for="orderEntryStatus">Терміновість</label>
           <select id="orderEntryStatus">
@@ -7509,7 +7575,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.28";
+  const APP_VERSION = "2.30";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8896,7 +8962,17 @@
   function isEntryKeyboardActionField(element) {
     if (!(element instanceof Element)) return false;
     if (element.closest("#orderEntryOverlay")) {
-      return Boolean(element.matches("#orderEntryQuantity, #orderEntryUnit, #orderEntryStatus, #orderEntryNeedDate, #orderEntryComment"));
+      return Boolean(element.matches([
+        "#orderEntryQuantity",
+        "#orderEntryUnit",
+        "#inventoryDialogPallets",
+        "#inventoryDialogPerPallet",
+        "#inventoryDialogPieces",
+        "#inventoryDialogPerPiece",
+        "#orderEntryStatus",
+        "#orderEntryNeedDate",
+        "#orderEntryComment"
+      ].join(", ")));
     }
     if (!element.closest("#pageToday .entry-form-card")) return false;
     return Boolean(element.matches([
@@ -12345,12 +12421,16 @@
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
     document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
+    document.getElementById("inventoryDialogPallets").value = "";
+    document.getElementById("inventoryDialogPerPallet").value = product.defaultPalletKg || "";
+    document.getElementById("inventoryDialogPieces").value = "";
+    document.getElementById("inventoryDialogPerPiece").value = product.defaultPieceKg || "";
     document.getElementById("orderEntryStatus").value = "normal";
     document.getElementById("orderEntryNeedDate").value = getActiveDay().date || todayISO();
     document.getElementById("orderEntryComment").value = "";
     document.getElementById("saveOrderEntryDialogBtn").textContent = orders
       ? "Додати в замовлення"
-      : "Додати в інвентаризацію";
+      : "Додати";
     document.getElementById("orderEntryOverlay").classList.remove("hidden");
     document.body.classList.add("order-entry-open");
     window.setTimeout(() => document.getElementById("orderEntryQuantity").focus(), 80);
@@ -12362,6 +12442,10 @@
     document.body.classList.remove("order-entry-open");
     document.getElementById("orderEntryProductId").value = "";
     document.getElementById("orderEntryQuantity").value = "";
+    document.getElementById("inventoryDialogPallets").value = "";
+    document.getElementById("inventoryDialogPerPallet").value = "";
+    document.getElementById("inventoryDialogPieces").value = "";
+    document.getElementById("inventoryDialogPerPiece").value = "";
     document.getElementById("orderEntryComment").value = "";
     scheduleKeyboardScrollRestore();
     if (returnFocus) {
@@ -12387,23 +12471,35 @@
     }
     const quantityInput = document.getElementById("orderEntryQuantity").value.trim();
     const quantity = calculateWeightExpression(quantityInput);
-    if (!quantity.valid || quantity.value <= 0) {
+    if (quantityInput && (!quantity.valid || quantity.value <= 0)) {
+      toast("Введи правильну кількість", true);
+      return;
+    }
+    if (orders && (!quantity.valid || quantity.value <= 0)) {
       toast("Введи правильну кількість", true);
       return;
     }
     const unit = normalizeMeasurementUnit(document.getElementById("orderEntryUnit").value);
+    const readInventoryNumber = id => {
+      const value = Number(document.getElementById(id).value || 0);
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    };
+    const pallets = orders ? 0 : readInventoryNumber("inventoryDialogPallets");
+    const kgPerPallet = orders ? 0 : readInventoryNumber("inventoryDialogPerPallet");
+    const pieces = orders ? 0 : readInventoryNumber("inventoryDialogPieces");
+    const kgPerPiece = orders ? 0 : readInventoryNumber("inventoryDialogPerPiece");
     const entry = {
       id: uid(),
       createdAt: nowText(),
       productId: product.id,
       productName: product.name,
       unit,
-      pallets: 0,
-      kgPerPallet: 0,
-      pieces: 0,
-      kgPerPiece: 0,
-      directKg: quantity.value,
-      directKgExpression: quantity.display,
+      pallets,
+      kgPerPallet,
+      pieces,
+      kgPerPiece,
+      directKg: quantityInput ? quantity.value : 0,
+      directKgExpression: quantityInput ? quantity.display : "",
       comment: document.getElementById("orderEntryComment").value.trim()
     };
     if (orders) {
@@ -12415,6 +12511,10 @@
       });
     }
     recalcEntry(entry);
+    if (entry.totalKg <= 0) {
+      toast("Введи кількість", true);
+      return;
+    }
     product.defaultUnit = unit;
     rememberEntryUnit(unit);
     getActiveDay().entries.push(entry);
