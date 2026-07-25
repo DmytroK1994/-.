@@ -6392,7 +6392,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.36</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.37</span></div>
     </div>
   </div>
 
@@ -7323,7 +7323,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.36</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.37</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7348,6 +7348,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.37</h3>
+          <ul>
+            <li>назва конкретного найменування тепер залишається над кожною частиною його QR-коду під час перегортання;</li>
+            <li>дії з QR-кодом отримали однозначні назви для копіювання та поширення;</li>
+            <li>додано окреме копіювання однієї назви або всього списку найменувань.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.36</h3>
           <ul>
@@ -7563,7 +7571,9 @@
         <div class="qr-transfer-actions">
           <button type="button" class="secondary" id="previousQrPartBtn">Попередній</button>
           <button type="button" id="nextQrPartBtn">Наступний</button>
-          <button type="button" class="secondary" id="shareQrPartBtn">Поділитися / скопіювати код</button>
+          <button type="button" class="secondary" id="copyQrPartBtn">Скопіювати QR-код</button>
+          <button type="button" class="secondary" id="copyQrSubjectBtn">Скопіювати назву</button>
+          <button type="button" id="shareQrPartBtn">Поділитися QR-кодом</button>
         </div>
       </div>
       <div class="qr-transfer-body hidden" id="qrReceiveView">
@@ -7756,7 +7766,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.36";
+  const APP_VERSION = "2.37";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13310,7 +13320,10 @@
   let qrTransferParts = [];
   let qrTransferPartIndex = 0;
   let qrTransferSourceProducts = [];
+  let qrTransferActiveProducts = [];
   let qrTransferSendScope = "full";
+  let qrTransferActiveKind = "full";
+  let qrTransferSubjectText = "Повна резервна копія застосунку";
   let qrScannerStream = null;
   let qrScannerFrame = 0;
   let qrScannerLastTime = 0;
@@ -13395,6 +13408,8 @@
       qr.make();
       image.src = qr.createDataURL(5, 10);
       const total = qrTransferParts.length;
+      setQrTransferSubject(qrTransferSubjectText);
+      image.alt = `${qrTransferSubjectText}. QR-код ${qrTransferPartIndex + 1} із ${total}`;
       progress.textContent = total === 1
         ? "Один QR-код · відскануй його на іншому пристрої"
         : `QR-код ${qrTransferPartIndex + 1} із ${total} · сканувати можна в будь-якому порядку`;
@@ -13407,7 +13422,23 @@
   }
 
   function setQrTransferSubject(text) {
-    document.getElementById("qrTransferSubject").textContent = text;
+    qrTransferSubjectText = String(text || "Дані застосунку");
+    document.getElementById("qrTransferSubject").textContent = qrTransferSubjectText;
+    const copySubjectButton = document.getElementById("copyQrSubjectBtn");
+    const shareButton = document.getElementById("shareQrPartBtn");
+    if (copySubjectButton) {
+      copySubjectButton.classList.toggle("hidden", qrTransferActiveKind === "full");
+      copySubjectButton.textContent = qrTransferActiveKind === "product"
+        ? "Скопіювати назву"
+        : "Скопіювати список назв";
+    }
+    if (shareButton) {
+      shareButton.textContent = qrTransferActiveKind === "product"
+        ? "Поділитися QR-кодом найменування"
+        : qrTransferActiveKind === "products"
+          ? "Поділитися QR-кодом списку"
+          : "Поділитися QR-кодом копії";
+    }
   }
 
   function prepareQrSendParts(kind, products, subject) {
@@ -13418,6 +13449,8 @@
       return false;
     }
     qrTransferPartIndex = 0;
+    qrTransferActiveKind = kind;
+    qrTransferActiveProducts = Array.isArray(products) ? [...products] : [];
     setQrTransferSubject(subject);
     renderQrTransferPart();
     return true;
@@ -13762,26 +13795,27 @@
     toast(copied ? "Текст поточного QR-коду скопійовано" : "Не вдалося скопіювати код", !copied);
   }
 
+  async function copyCurrentQrSubject() {
+    const names = qrTransferActiveProducts
+      .map(product => String(product?.name || "").trim())
+      .filter(Boolean);
+    if (!names.length) {
+      toast("У цій передачі немає назв для копіювання", true);
+      return;
+    }
+    const copied = await copyTextToClipboard(names.join("\n"));
+    const successText = names.length === 1
+      ? `Назву «${names[0]}» скопійовано`
+      : `Список із ${names.length} найменувань скопійовано`;
+    toast(copied ? successText : "Не вдалося скопіювати назву", !copied);
+  }
+
   async function shareCurrentQrPart() {
     const value = qrTransferParts[qrTransferPartIndex] || "";
     if (!value) return;
     if (navigator.share) {
-      const action = await showAppDialog({
-        label: "QR-код",
-        title: "Що зробити з кодом?",
-        message: "Можна відкрити системне меню поширення або скопіювати текст цього QR-коду.",
-        confirmText: "Поділитися",
-        alternativeText: "Скопіювати",
-        alternativeResult: "copy",
-        cancelText: "Закрити"
-      });
-      if (!action) return;
-      if (action === "copy") {
-        await copyCurrentQrPart();
-        return;
-      }
       try {
-        await navigator.share({ title: "QR-передача даних", text: value });
+        await navigator.share({ title: qrTransferSubjectText, text: value });
         return;
       } catch (error) {
         if (error?.name === "AbortError") return;
@@ -15078,6 +15112,8 @@
     qrTransferPartIndex = Math.min(qrTransferParts.length - 1, qrTransferPartIndex + 1);
     renderQrTransferPart();
   });
+  document.getElementById("copyQrPartBtn").addEventListener("click", copyCurrentQrPart);
+  document.getElementById("copyQrSubjectBtn").addEventListener("click", copyCurrentQrSubject);
   document.getElementById("shareQrPartBtn").addEventListener("click", shareCurrentQrPart);
   document.getElementById("startQrScannerBtn").addEventListener("click", startQrScanner);
   document.getElementById("importQrTextBtn").addEventListener("click", async () => {
