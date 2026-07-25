@@ -6541,7 +6541,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.46</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.47</span></div>
     </div>
   </div>
 
@@ -7487,7 +7487,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.46</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.47</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7512,6 +7512,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.47</h3>
+          <ul>
+            <li>кожна позиція інвентаризації тепер зберігає склад, на якому її було додано;</li>
+            <li>поточний список інвентаризації розділено на згортні групи складів за аналогією із замовленнями;</li>
+            <li>у попередньому перегляді та PDF кожен склад має окремий заголовок і власну таблицю позицій.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.46</h3>
           <ul>
@@ -7998,7 +8006,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.46";
+  const APP_VERSION = "2.47";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10189,6 +10197,13 @@
         : [];
       day.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
+        if (!entry.warehouseId && day.warehouseId) {
+          entry.warehouseId = day.warehouseId;
+          entry.warehouseName = day.warehouseName;
+        } else if (entry.warehouseId) {
+          const warehouse = normalized.warehouses.find(item => item.id === entry.warehouseId);
+          if (warehouse) entry.warehouseName = warehouse.name;
+        }
       });
     });
     normalized.orders.forEach(order => {
@@ -10670,6 +10685,14 @@
       else if (!entry.warehouseName && previous.has(entry.warehouseId)) entry.warehouseName = previous.get(entry.warehouseId);
     }));
     state.days.forEach(day => {
+      day.entries.forEach(entry => {
+        const renamedEntryWarehouse = warehouses.find(warehouse => warehouse.id === entry.warehouseId);
+        if (renamedEntryWarehouse) {
+          entry.warehouseName = renamedEntryWarehouse.name;
+        } else if (!entry.warehouseName && previous.has(entry.warehouseId)) {
+          entry.warehouseName = previous.get(entry.warehouseId);
+        }
+      });
       const renamed = warehouses.find(warehouse => warehouse.id === day.warehouseId);
       if (renamed) {
         day.warehouseName = renamed.name;
@@ -12829,7 +12852,7 @@
     tabs.innerHTML = entries.map((entry, index) => `
       <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
         data-action="select-quick-edit-entry" data-id="${entry.id}">
-        ${index + 1}. ${formatQuantity(entry.totalKg, entry.unit)}${workspaceIsOrders() ? ` · ${escapeHtml(entry.warehouseName || "Без складу")}` : ""}
+        ${index + 1}. ${formatQuantity(entry.totalKg, entry.unit)}${entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
       </button>
     `).join("");
     tabs.classList.toggle("hidden", entries.length < 2);
@@ -12977,10 +13000,9 @@
       return;
     }
     const orders = workspaceIsOrders();
-    const warehouse = orders
-      ? state.warehouses.find(item => item.id === state.activeWarehouseId)
-      : null;
-    if (orders && !warehouse) {
+    const warehouseId = orders ? state.activeWarehouseId : getWorkspaceWarehouseId();
+    const warehouse = state.warehouses.find(item => item.id === warehouseId);
+    if (!warehouse) {
       toast("Спочатку обери або додай склад", true);
       return;
     }
@@ -13013,10 +13035,12 @@
       directKgExpression: quantityInput ? quantity.display : "",
       comment: document.getElementById("orderEntryComment").value.trim()
     };
+    Object.assign(entry, {
+      warehouseId: warehouse.id,
+      warehouseName: warehouse.name
+    });
     if (orders) {
       Object.assign(entry, {
-        warehouseId: warehouse.id,
-        warehouseName: warehouse.name,
         orderStatus: normalizeOrderStatus(document.getElementById("orderEntryStatus").value),
         needDate: getActiveDay().date || todayISO()
       });
@@ -13069,16 +13093,21 @@
       directKgExpression: directCalculation.display,
       comment: document.getElementById("comment").value.trim()
     };
-    if (workspaceIsOrders()) {
-      const warehouseId = document.getElementById("orderWarehouseSelect").value;
-      const warehouse = state.warehouses.find(item => item.id === warehouseId);
-      if (!warehouse) {
-        toast("Спочатку обери або додай склад", true);
-        return;
-      }
+    const orders = workspaceIsOrders();
+    const warehouseId = orders
+      ? document.getElementById("orderWarehouseSelect").value
+      : getWorkspaceWarehouseId();
+    const warehouse = state.warehouses.find(item => item.id === warehouseId);
+    if (!warehouse) {
+      toast("Спочатку обери або додай склад", true);
+      return;
+    }
+    Object.assign(entryData, {
+      warehouseId,
+      warehouseName: warehouse.name
+    });
+    if (orders) {
       Object.assign(entryData, {
-        warehouseId,
-        warehouseName: warehouse.name,
         orderStatus: "normal",
         needDate: getActiveDay().date || todayISO()
       });
@@ -13102,7 +13131,12 @@
         restoreEditPosition("entry");
         return;
       }
-      if (workspaceIsOrders()) entryData.orderStatus = normalizeOrderStatus(old.orderStatus);
+      if (orders) {
+        entryData.orderStatus = normalizeOrderStatus(old.orderStatus);
+      } else if (old.warehouseId || old.warehouseName) {
+        entryData.warehouseId = old.warehouseId || "";
+        entryData.warehouseName = old.warehouseName || "Без складу";
+      }
       Object.assign(old, entryData, { editedAt: nowText(), editedTimestamp: new Date().toISOString() });
       toast("Запис оновлено");
     } else {
@@ -13489,14 +13523,16 @@
     day.entries.forEach((e, entryIndex) => {
       const productId = e.productId || e.productName;
       const unit = normalizeMeasurementUnit(e.unit);
-      const warehouseKey = workspaceIsOrders() ? (e.warehouseId || e.warehouseName || "without-warehouse") : "";
+      const warehouseId = e.warehouseId || day.warehouseId || "";
+      const warehouseName = e.warehouseName || day.warehouseName || "Без складу";
+      const warehouseKey = warehouseId || warehouseName || "without-warehouse";
       const key = `${warehouseKey}::${productId}::${unit}`;
       if (!map[key]) map[key] = {
         productId,
         name: e.productName,
         unit,
-        warehouseId: e.warehouseId || "",
-        warehouseName: e.warehouseName || "Без складу",
+        warehouseId,
+        warehouseName,
         totalKg: 0,
         entries: [],
         firstEntryIndex: entryIndex
@@ -14562,7 +14598,7 @@
       return `<div class="print-report-row"><div class="print-position-cell">Записів немає.</div><div class="print-total-cell"></div></div>`;
     }
 
-    return groups.map(g => {
+    const buildInventoryGroupRow = g => {
       const directWeights = [];
       const otherDetails = [];
 
@@ -14606,6 +14642,30 @@
           <div class="print-total-cell">${formatQuantity(g.totalKg, g.unit)}</div>
         </div>
       `;
+    };
+
+    const warehouseGroups = new Map();
+    groups.forEach(group => {
+      const warehouseKey = group.warehouseId || `name:${group.warehouseName || "Без складу"}`;
+      if (!warehouseGroups.has(warehouseKey)) {
+        warehouseGroups.set(warehouseKey, {
+          name: group.warehouseName || "Без складу",
+          groups: []
+        });
+      }
+      warehouseGroups.get(warehouseKey).groups.push(group);
+    });
+
+    const columnHeader = `
+      <div class="print-table-header-row preview-table-header-row inventory-warehouse-column-header">
+        <div>Позиція та підрахунки</div>
+        <div>Загальна кількість</div>
+      </div>
+    `;
+    return Array.from(warehouseGroups.values()).map(warehouseGroup => {
+      const warehouseHeading = `<div class="inventory-warehouse-report-row">Склад: ${escapeHtml(warehouseGroup.name)}</div>`;
+      const rows = warehouseGroup.groups.map(buildInventoryGroupRow).join("");
+      return `${warehouseHeading}${columnHeader}${rows}`;
     }).join("");
   }
 
@@ -14705,13 +14765,12 @@
     const headerHtml = headers.map(header => `<div>${header}</div>`).join("");
     document.getElementById("printTableHeaderRow").innerHTML = headerHtml;
     document.getElementById("previewTableHeaderRow").innerHTML = headerHtml;
-    document.getElementById("printTableHeaderRow").classList.toggle("hidden", orders);
-    document.getElementById("previewTableHeaderRow").classList.toggle("hidden", orders);
-    const inventoryWarehouseName = orders ? "" : inventoryDocumentWarehouseName(documentData);
+    document.getElementById("printTableHeaderRow").classList.add("hidden");
+    document.getElementById("previewTableHeaderRow").classList.add("hidden");
     ["printInventoryWarehouseRow", "previewInventoryWarehouseRow"].forEach(id => {
       const row = document.getElementById(id);
-      row.textContent = inventoryWarehouseName ? `Склад: ${inventoryWarehouseName}` : "";
-      row.classList.toggle("hidden", !inventoryWarehouseName);
+      row.textContent = "";
+      row.classList.add("hidden");
     });
     const longestNameLength = orders
       ? documentData.entries.reduce((max, entry) => Math.max(max, String(entry.productName || "").length), 0)
@@ -14768,16 +14827,6 @@
       printList.innerHTML = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
     }
     updateTodayListSearchClearButton();
-
-    if (!orders) {
-      const warehouseName = inventoryDocumentWarehouseName(day);
-      if (warehouseName) {
-        const warehouseRow = document.createElement("div");
-        warehouseRow.className = "inventory-warehouse-screen-row";
-        warehouseRow.textContent = `Склад: ${warehouseName}`;
-        list.appendChild(warehouseRow);
-      }
-    }
 
     const allGroups = groupEntries(day);
     if (!allGroups.length) {
@@ -14836,12 +14885,6 @@
 
       target.appendChild(div);
     };
-
-    if (!orders) {
-      groups = sortCurrentListGroups(groups);
-      groups.forEach(group => appendProductGroup(group, list));
-      return;
-    }
 
     const warehouseGroups = new Map();
     groups.forEach(group => {
