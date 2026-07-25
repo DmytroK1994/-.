@@ -5999,9 +5999,25 @@
       gap: 12px;
       margin-bottom: 12px;
     }
+    .order-entry-dialog-header > div:first-child {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
     .order-entry-dialog-header h2 {
       margin: 0;
       overflow-wrap: anywhere;
+    }
+    body.workspace-production #orderEntryDialogTitle {
+      display: -webkit-box;
+      max-width: 100%;
+      overflow: hidden;
+      overflow-wrap: break-word;
+      word-break: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      line-height: 1.16;
+      text-overflow: ellipsis;
     }
     .order-entry-dialog-header-actions {
       display: flex;
@@ -6010,18 +6026,34 @@
       flex: 0 0 auto;
     }
     #saveProductionDefaultsBtn {
-      width: auto;
-      min-width: 0;
+      width: 112px;
+      min-width: 112px;
+      max-width: 112px;
       min-height: 30px;
       margin: 0;
-      padding: 5px 9px;
+      padding: 4px 7px;
       border: 1px solid var(--border);
       border-radius: 10px;
       background: var(--surface);
       color: var(--muted);
       box-shadow: none;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 750;
+      line-height: 1.1;
+    }
+    @media (max-width: 420px) {
+      .order-entry-dialog-header {
+        gap: 7px;
+      }
+      .order-entry-dialog-header-actions {
+        gap: 5px;
+      }
+      #saveProductionDefaultsBtn {
+        width: 104px;
+        min-width: 104px;
+        max-width: 104px;
+        font-size: 9px;
+      }
     }
     .order-entry-dialog-grid {
       display: grid;
@@ -7112,7 +7144,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=293">
+<link rel="manifest" href="manifest.json?v=294">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7146,7 +7178,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.93</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.94</span></div>
     </div>
   </div>
 
@@ -8193,7 +8225,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.93</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.94</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8218,6 +8250,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.94</h3>
+          <ul>
+            <li>кнопку перейменовано на «Редагувати типові значення»;</li>
+            <li>назва продукції у вікні додавання більше не стискається у вузьку колонку;</li>
+            <li>довга назва займає максимум два рядки й не розтягує вікно по висоті.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.93</h3>
           <ul>
@@ -9041,7 +9081,7 @@
           <h2 id="orderEntryDialogTitle">Найменування</h2>
         </div>
         <div class="order-entry-dialog-header-actions">
-          <button type="button" class="hidden" id="saveProductionDefaultsBtn">Редагувати типові</button>
+          <button type="button" class="hidden" id="saveProductionDefaultsBtn">Редагувати типові значення</button>
           <button type="button" class="dialog-icon-close" id="closeOrderEntryDialogBtn" aria-label="Закрити">×</button>
         </div>
       </div>
@@ -9168,7 +9208,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.93";
+  const APP_VERSION = "2.94";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
