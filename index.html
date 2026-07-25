@@ -1015,7 +1015,8 @@
       box-shadow: none;
     }
     #saveEntryBtn.keyboard-action-replaced,
-    #saveOrderEntryDialogBtn.keyboard-action-replaced {
+    #saveOrderEntryDialogBtn.keyboard-action-replaced,
+    .quick-edit-actions.keyboard-action-replaced {
       visibility: hidden;
       pointer-events: none;
     }
@@ -6989,7 +6990,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=283">
+<link rel="manifest" href="manifest.json?v=284">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7023,7 +7024,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.83</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.84</span></div>
     </div>
   </div>
 
@@ -8020,7 +8021,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.83</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.84</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8045,6 +8046,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.84</h3>
+          <ul>
+            <li>під час редагування кількості над клавіатурою з’являється кнопка «Зберегти зміни»;</li>
+            <li>звичайні кнопки вікна редагування тимчасово приховуються, поки відкрита клавіатура;</li>
+            <li>після закриття клавіатури стандартний ряд кнопок автоматично повертається.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.83</h3>
           <ul>
@@ -8862,7 +8871,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.83";
+  const APP_VERSION = "2.84";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10319,6 +10328,15 @@
 
   function isEntryKeyboardActionField(element) {
     if (!(element instanceof Element)) return false;
+    if (element.closest("#quickEditOverlay")) {
+      return Boolean(element.matches([
+        "#quickEditPallets",
+        "#quickEditKgPerPallet",
+        "#quickEditPieces",
+        "#quickEditKgPerPiece",
+        "#quickEditDirectKg"
+      ].join(", ")));
+    }
     if (element.closest("#orderEntryOverlay")) {
       return Boolean(element.matches([
         "#orderEntryQuantity",
@@ -10341,10 +10359,14 @@
   function updateKeyboardEntryAction() {
     const button = document.getElementById("keyboardSaveEntryBtn");
     if (!button) return;
+    const quickEditOpen = !document.getElementById("quickEditOverlay")?.classList.contains("hidden");
     const orderDialogOpen = !document.getElementById("orderEntryOverlay")?.classList.contains("hidden");
-    const normalButton = orderDialogOpen
-      ? document.getElementById("saveOrderEntryDialogBtn")
-      : document.getElementById("saveEntryBtn");
+    const normalButton = quickEditOpen
+      ? document.getElementById("saveQuickEditBtn")
+      : (orderDialogOpen
+          ? document.getElementById("saveOrderEntryDialogBtn")
+          : document.getElementById("saveEntryBtn"));
+    const quickEditActions = document.querySelector("#quickEditOverlay .quick-edit-actions");
     const viewport = window.visualViewport;
     const keyboardInset = viewport
       ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
@@ -10362,6 +10384,7 @@
     button.textContent = normalButton?.textContent || "Додати";
     button.classList.toggle("hidden", !shouldShow);
     normalButton?.classList.toggle("keyboard-action-replaced", shouldShow);
+    quickEditActions?.classList.toggle("keyboard-action-replaced", quickEditOpen && shouldShow);
     if (shouldShow) {
       const keyboardRect = navigator.virtualKeyboard?.boundingRect;
       const viewportBottom = viewport
@@ -10389,7 +10412,10 @@
       button.classList.add("hidden");
       document.getElementById("saveEntryBtn")?.classList.remove("keyboard-action-replaced");
       document.getElementById("saveOrderEntryDialogBtn")?.classList.remove("keyboard-action-replaced");
-      if (!document.getElementById("orderEntryOverlay")?.classList.contains("hidden")) saveOrderEntryFromDialog();
+      document.getElementById("saveQuickEditBtn")?.classList.remove("keyboard-action-replaced");
+      document.querySelector("#quickEditOverlay .quick-edit-actions")?.classList.remove("keyboard-action-replaced");
+      if (!document.getElementById("quickEditOverlay")?.classList.contains("hidden")) saveQuickEditEntry();
+      else if (!document.getElementById("orderEntryOverlay")?.classList.contains("hidden")) saveOrderEntryFromDialog();
       else saveEntry();
       scheduleKeyboardScrollRestore();
     });
@@ -14506,6 +14532,9 @@
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     document.getElementById("quickEditOverlay").classList.add("hidden");
     document.body.classList.remove("quick-edit-open");
+    document.querySelector("#quickEditOverlay .quick-edit-actions")?.classList.remove("keyboard-action-replaced");
+    document.getElementById("saveQuickEditBtn")?.classList.remove("keyboard-action-replaced");
+    document.getElementById("keyboardSaveEntryBtn")?.classList.add("hidden");
     document.getElementById("quickEditProductId").value = "";
     document.getElementById("quickEditEntryId").value = "";
     scheduleKeyboardScrollRestore();
