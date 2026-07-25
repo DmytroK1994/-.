@@ -4188,20 +4188,20 @@
     .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row,
     .preview-sheet.order-preview-sheet .order-report-table .order-print-row {
       grid-template-columns:
-        minmax(0, .4fr)
-        minmax(0, 1fr)
-        minmax(0, 1.75fr)
-        minmax(0, 1.05fr)
-        minmax(0, 3fr);
+        var(--order-col-number, 7mm)
+        var(--order-col-status, 18mm)
+        var(--order-col-name, 38mm)
+        var(--order-col-quantity, 20mm)
+        minmax(0, 1fr);
     }
     .preview-sheet.order-preview-sheet .order-report-table.order-long-names .print-table-header-row,
     .preview-sheet.order-preview-sheet .order-report-table.order-long-names .order-print-row {
       grid-template-columns:
-        minmax(0, .4fr)
-        minmax(0, .9fr)
-        minmax(0, 2.2fr)
-        minmax(0, 1fr)
-        minmax(0, 2.45fr);
+        var(--order-col-number, 7mm)
+        var(--order-col-status, 18mm)
+        var(--order-col-name, 38mm)
+        var(--order-col-quantity, 20mm)
+        minmax(0, 1fr);
     }
     .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row > div,
     .preview-sheet.order-preview-sheet .order-report-table .order-print-row > div {
@@ -5661,12 +5661,22 @@
       display:grid;
       width:100%;
       max-width:100%;
-      grid-template-columns:5% 13% 24% 13% 45%;
+      grid-template-columns:
+        var(--order-col-number, 7mm)
+        var(--order-col-status, 18mm)
+        var(--order-col-name, 38mm)
+        var(--order-col-quantity, 20mm)
+        minmax(0, 1fr);
     }
     .order-report-table.order-long-names .print-table-header-row,
     .order-report-table.order-long-names .preview-table-header-row,
     .order-report-table.order-long-names .order-print-row {
-      grid-template-columns:5% 12% 30% 12% 41%;
+      grid-template-columns:
+        var(--order-col-number, 7mm)
+        var(--order-col-status, 18mm)
+        var(--order-col-name, 38mm)
+        var(--order-col-quantity, 20mm)
+        minmax(0, 1fr);
     }
     .order-print-row { border:1px solid #aaa; break-inside:avoid; page-break-inside:avoid; }
     .order-report-table .print-table-header-row > div,
@@ -5747,11 +5757,21 @@
     @media print {
       .order-report-table .print-table-header-row,
       .order-report-table .order-print-row {
-        grid-template-columns:7mm 20mm minmax(38mm,1fr) 22mm minmax(78mm,2.1fr);
+        grid-template-columns:
+          var(--order-col-number, 7mm)
+          var(--order-col-status, 18mm)
+          var(--order-col-name, 38mm)
+          var(--order-col-quantity, 20mm)
+          minmax(0, 1fr);
       }
       .order-report-table.order-long-names .print-table-header-row,
       .order-report-table.order-long-names .order-print-row {
-        grid-template-columns:7mm 20mm minmax(48mm,1.2fr) 22mm minmax(68mm,1.8fr);
+        grid-template-columns:
+          var(--order-col-number, 7mm)
+          var(--order-col-status, 18mm)
+          var(--order-col-name, 38mm)
+          var(--order-col-quantity, 20mm)
+          minmax(0, 1fr);
       }
       .order-report-table .print-table-header-row > div,
       .order-report-table .order-print-row > div {
@@ -6521,7 +6541,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.45</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.46</span></div>
     </div>
   </div>
 
@@ -7467,7 +7487,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.45</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.46</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7492,6 +7512,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.46</h3>
+          <ul>
+            <li>ширини колонок замовлення у PDF та попередньому перегляді підлаштовуються під фактичні дані;</li>
+            <li>колонки кількості й найменування мають обмежену ширину, а весь вільний простір отримує поле коментаря;</li>
+            <li>у компактному варіанті заголовок «Кількість» автоматично скорочується до «К-сть».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.45</h3>
           <ul>
@@ -7970,7 +7998,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.45";
+  const APP_VERSION = "2.46";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14582,12 +14610,13 @@
   }
 
   function buildOrderDocumentRows(order) {
+    const orderColumnLayout = calculateOrderColumnLayout(order);
     const columnHeader = `
       <div class="print-table-header-row order-warehouse-column-header">
         <div>№</div>
         <div>Статус</div>
         <div>Найменування</div>
-        <div>Кількість</div>
+        <div title="Кількість">${orderColumnLayout.quantityHeader}</div>
         <div>Коментар</div>
       </div>
     `;
@@ -14641,9 +14670,37 @@
     return `${orderRows}${footer}`;
   }
 
+  function calculateOrderColumnLayout(order) {
+    const entries = Array.isArray(order?.entries) ? order.entries : [];
+    const longestNameLength = entries.reduce((max, entry) => {
+      return Math.max(max, Array.from(String(entry.productName || "")).length);
+    }, 0);
+    const longestQuantityLength = entries.reduce((max, entry) => {
+      const quantity = formatQuantity(entry.totalKg, entry.unit);
+      return Math.max(max, Array.from(String(quantity)).length);
+    }, 0);
+    const numberDigits = Math.max(1, String(Math.max(entries.length, 1)).length);
+
+    // Службові колонки займають лише стільки місця, скільки потрібно їхнім даним.
+    // Найменування має верхню межу, тому весь залишок ширини завжди отримує коментар.
+    const numberMm = Math.min(9, 5.5 + numberDigits * 1.15);
+    const statusMm = 18;
+    const nameMm = Math.max(28, Math.min(50, 18 + longestNameLength * 0.72));
+    const quantityMm = Math.max(15, Math.min(24, 8 + longestQuantityLength * 1.2));
+
+    return {
+      numberMm: Number(numberMm.toFixed(1)),
+      statusMm,
+      nameMm: Number(nameMm.toFixed(1)),
+      quantityMm: Number(quantityMm.toFixed(1)),
+      quantityHeader: quantityMm < 20 ? "К-сть" : "Кількість"
+    };
+  }
+
   function applyDocumentLayout(documentData, orders) {
+    const orderColumnLayout = orders ? calculateOrderColumnLayout(documentData) : null;
     const headers = orders
-      ? ["№", "Статус", "Найменування", "Кількість", "Коментар"]
+      ? ["№", "Статус", "Найменування", orderColumnLayout.quantityHeader, "Коментар"]
       : ["Позиція та підрахунки", "Загальна кількість"];
     const headerHtml = headers.map(header => `<div>${header}</div>`).join("");
     document.getElementById("printTableHeaderRow").innerHTML = headerHtml;
@@ -14666,6 +14723,18 @@
     [printTable, previewTable].forEach(table => {
       table?.classList.toggle("order-report-table", orders);
       table?.classList.toggle("order-long-names", hasLongNames);
+      if (!table) return;
+      if (orders) {
+        table.style.setProperty("--order-col-number", `${orderColumnLayout.numberMm}mm`);
+        table.style.setProperty("--order-col-status", `${orderColumnLayout.statusMm}mm`);
+        table.style.setProperty("--order-col-name", `${orderColumnLayout.nameMm}mm`);
+        table.style.setProperty("--order-col-quantity", `${orderColumnLayout.quantityMm}mm`);
+      } else {
+        table.style.removeProperty("--order-col-number");
+        table.style.removeProperty("--order-col-status");
+        table.style.removeProperty("--order-col-name");
+        table.style.removeProperty("--order-col-quantity");
+      }
     });
     previewSheet?.classList.toggle("order-preview-sheet", orders);
     document.getElementById("printReportTitle")?.classList.toggle("order-document-title", orders);
