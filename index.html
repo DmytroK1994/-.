@@ -641,6 +641,33 @@
       font-weight: 900;
       text-align: center;
     }
+    .production-entry-fields {
+      display: grid;
+      gap: 10px;
+    }
+    .production-entry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .production-entry-result {
+      padding: 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      background: var(--surface-strong);
+      color: var(--text);
+      text-align: center;
+    }
+    .production-entry-result strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 24px;
+    }
+    @media (max-width: 520px) {
+      .production-entry-grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .app-header.workspace-dropdown-open {
       overflow: visible !important;
     }
@@ -7033,7 +7060,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=289">
+<link rel="manifest" href="manifest.json?v=291">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7067,7 +7094,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.89</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.91</span></div>
     </div>
   </div>
 
@@ -7112,6 +7139,10 @@
           </button>
           <button type="button" class="workspace-option" data-workspace="orders">
             <span class="workspace-option-name">Замовлення</span>
+            <span class="workspace-option-mark"></span>
+          </button>
+          <button type="button" class="workspace-option" data-workspace="production">
+            <span class="workspace-option-name" id="productionWorkspaceOptionLabel">Здача ГП</span>
             <span class="workspace-option-mark"></span>
           </button>
         </div>
@@ -7587,6 +7618,12 @@
         <label for="newDefaultPieceKg">Типова кількість в одній одиниці</label>
         <input id="newDefaultPieceKg" type="number" inputmode="decimal" placeholder="" />
 
+        <label for="newDefaultBoxesPerPallet">Коробок у піддоні для здачі продукції</label>
+        <input id="newDefaultBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
+
+        <label for="newDefaultPacksPerBox">Пачок у коробці для здачі продукції</label>
+        <input id="newDefaultPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+
         <div class="product-add-form-actions">
           <button class="green" id="saveProductBtn">Зберегти найменування</button>
           <button class="secondary" id="cancelProductBtn">Закрити</button>
@@ -7621,6 +7658,14 @@
           <div class="product-info-row hidden" id="productInfoPieceRow">
             <div class="product-info-label">Типова кількість в одній одиниці</div>
             <div class="product-info-value" id="productInfoPiece"></div>
+          </div>
+          <div class="product-info-row hidden" id="productInfoBoxesPerPalletRow">
+            <div class="product-info-label">Коробок у піддоні</div>
+            <div class="product-info-value" id="productInfoBoxesPerPallet"></div>
+          </div>
+          <div class="product-info-row hidden" id="productInfoPacksPerBoxRow">
+            <div class="product-info-label">Пачок у коробці</div>
+            <div class="product-info-value" id="productInfoPacksPerBox"></div>
           </div>
         </div>
         <div class="product-info-actions">
@@ -8011,6 +8056,13 @@
           <option value="dialog">Компактний пошук і окреме вікно</option>
         </select>
         <p class="small" id="orderEntryModeDescription">Інвентаризація та замовлення налаштовуються незалежно одне від одного.</p>
+        <div class="other-settings-subsection">
+          <h2>Назва процесу готової продукції</h2>
+          <label for="productionWorkspaceNameInput">Назва в меню та шапці</label>
+          <input id="productionWorkspaceNameInput" maxlength="32" placeholder="Здача ГП" />
+          <p class="small">Наприклад: «Здача ГП», «Здача продукції» або «Передача на склад».</p>
+          <button type="button" id="saveProductionWorkspaceNameBtn">Зберегти назву</button>
+        </div>
       </section>
 
       <section class="card other-settings-group hidden" data-other-settings-panel="storage">
@@ -8064,7 +8116,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.89</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.91</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8089,6 +8141,23 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.91</h3>
+          <ul>
+            <li>у «Здачі ГП» додано повноцінне редагування раніше внесених позицій;</li>
+            <li>загальну кількість пачок перенесено на початок форми, а кількість піддонів — над коментарем;</li>
+            <li>кнопка збереження під час додавання і редагування з’являється над екранною клавіатурою.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.90</h3>
+          <ul>
+            <li>додано окремий процес «Здача ГП» із власними документами та вибором складу;</li>
+            <li>для кожного найменування можна задати коробки в піддоні й пачки в коробці;</li>
+            <li>кількість пачок автоматично рахується за кількістю піддонів, а результат доступний у списку, попередньому перегляді та PDF;</li>
+            <li>назву нового процесу можна змінити в розділі «Інші налаштування».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.89</h3>
           <ul>
@@ -8768,6 +8837,31 @@
       <div class="quick-edit-tabs configurable-dialog-menu" id="quickEditTabs"></div>
       <input type="hidden" id="quickEditProductId" />
       <input type="hidden" id="quickEditEntryId" />
+      <div class="production-entry-fields hidden" id="quickEditProductionFields">
+        <div class="production-entry-result" aria-live="polite">
+          Загальна кількість пачок
+          <strong id="quickEditProductionTotal">0 пач.</strong>
+        </div>
+        <div class="production-entry-grid">
+          <div>
+            <label for="quickEditBoxesPerPallet">Коробок у піддоні</label>
+            <input id="quickEditBoxesPerPallet" type="number" inputmode="numeric" min="0" />
+          </div>
+          <div>
+            <label for="quickEditPacksPerBox">Пачок у коробці</label>
+            <input id="quickEditPacksPerBox" type="number" inputmode="numeric" min="0" />
+          </div>
+        </div>
+        <div>
+          <label for="quickEditProductionPallets">Кількість піддонів</label>
+          <input id="quickEditProductionPallets" type="number" inputmode="decimal" min="0" />
+        </div>
+        <div>
+          <label for="quickEditProductionComment">Коментар</label>
+          <textarea id="quickEditProductionComment" rows="2" placeholder="Необов’язково"></textarea>
+        </div>
+      </div>
+      <div id="quickEditStandardFields">
       <label for="quickEditUnit">Одиниця виміру</label>
       <select id="quickEditUnit">
         <option value="kg">Кілограми (кг)</option>
@@ -8804,6 +8898,7 @@
         <input id="quickEditDirectKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
         <label for="quickEditComment">Коментар</label>
         <input id="quickEditComment" />
+      </div>
       </div>
       <div class="quick-edit-order-fields hidden" id="quickEditOrderFields">
         <div>
@@ -8854,7 +8949,31 @@
         <button type="button" class="dialog-icon-close" id="closeOrderEntryDialogBtn" aria-label="Закрити">×</button>
       </div>
       <input type="hidden" id="orderEntryProductId" />
-      <div class="order-entry-dialog-grid">
+      <div class="production-entry-fields hidden" id="productionEntryFields">
+        <div class="production-entry-result" aria-live="polite">
+          Загальна кількість пачок
+          <strong id="productionDialogTotal">0 пач.</strong>
+        </div>
+        <div class="production-entry-grid">
+          <div>
+            <label for="productionDialogBoxesPerPallet">Коробок у піддоні</label>
+            <input id="productionDialogBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
+          </div>
+          <div>
+            <label for="productionDialogPacksPerBox">Пачок у коробці</label>
+            <input id="productionDialogPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+          </div>
+        </div>
+        <div>
+          <label for="productionDialogPallets">Кількість піддонів</label>
+          <input id="productionDialogPallets" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 25" />
+        </div>
+        <div>
+          <label for="productionDialogComment">Коментар</label>
+          <textarea id="productionDialogComment" rows="2" placeholder="Необов’язково"></textarea>
+        </div>
+      </div>
+      <div class="order-entry-dialog-grid" id="standardEntryDialogFields">
         <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogDirect">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Окрема кількість</div>
@@ -8952,7 +9071,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.89";
+  const APP_VERSION = "2.91";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9004,10 +9123,12 @@
   const INVENTORY_ENTRY_MODE_KEY = "warehouseJournalInventoryEntryMode";
   const INVENTORY_LIST_SORT_KEY = "warehouseJournalInventoryListSort";
   const ORDER_LIST_SORT_KEY = "warehouseJournalOrderListSort";
+  const PRODUCTION_LIST_SORT_KEY = "warehouseJournalProductionListSort";
+  const PRODUCTION_WORKSPACE_NAME_KEY = "warehouseJournalProductionWorkspaceName";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
-  const DEMO_DATA_VERSION = "3";
+  const DEMO_DATA_VERSION = "4";
   const TRASH_KEY = "warehouseJournalTrashV1";
   const DEMO_TRASH_KEY = "warehouseJournalDemoTrashV1";
   const TRASH_RETENTION_KEY = "warehouseJournalTrashRetention";
@@ -9049,6 +9170,8 @@
     INVENTORY_ENTRY_MODE_KEY,
     INVENTORY_LIST_SORT_KEY,
     ORDER_LIST_SORT_KEY,
+    PRODUCTION_LIST_SORT_KEY,
+    PRODUCTION_WORKSPACE_NAME_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
   ];
@@ -10444,7 +10567,10 @@
         "#quickEditKgPerPallet",
         "#quickEditPieces",
         "#quickEditKgPerPiece",
-        "#quickEditDirectKg"
+        "#quickEditDirectKg",
+        "#quickEditProductionPallets",
+        "#quickEditBoxesPerPallet",
+        "#quickEditPacksPerBox"
       ].join(", ")));
     }
     if (element.closest("#orderEntryOverlay")) {
@@ -10453,7 +10579,10 @@
         "#inventoryDialogPallets",
         "#inventoryDialogPerPallet",
         "#inventoryDialogPieces",
-        "#inventoryDialogPerPiece"
+        "#inventoryDialogPerPiece",
+        "#productionDialogPallets",
+        "#productionDialogBoxesPerPallet",
+        "#productionDialogPacksPerBox"
       ].join(", ")));
     }
     if (!element.closest("#pageToday .entry-form-card")) return false;
@@ -10782,7 +10911,17 @@
       return old;
     }
 
-    return { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
+    return {
+      products: [],
+      days: [],
+      activeDayId: null,
+      orders: [],
+      activeOrderId: null,
+      productionDeliveries: [],
+      activeProductionDeliveryId: null,
+      warehouses: [],
+      activeWarehouseId: null
+    };
   }
 
   function getDemoModePreference() {
@@ -10877,7 +11016,9 @@
       name,
       defaultUnit: name === "Олія соняшникова" ? "l" : "kg",
       defaultPalletKg: name === "Олія соняшникова" ? 1000 : 500,
-      defaultPieceKg: 25
+      defaultPieceKg: 25,
+      defaultBoxesPerPallet: 84,
+      defaultPacksPerBox: 12
     }));
     const warehouses = [
       { id: "demo-warehouse-main", name: "Основний склад" },
@@ -10907,6 +11048,7 @@
       products,
       activeDayId: currentDayId,
       activeOrderId: currentOrderId,
+      activeProductionDeliveryId: "demo-production-current",
       warehouses,
       activeWarehouseId: warehouses[0].id,
       workspaceWarehouseIds: {
@@ -11038,6 +11180,33 @@
             [38, 2, { directKgExpression: "240", orderStatus: "important" }],
             [48, 2, { directKgExpression: "175" }]
           ], olderDate)
+        }
+      ],
+      productionDeliveries: [
+        {
+          id: "demo-production-current",
+          documentNumber: 1,
+          date: currentDate,
+          createdAt: nowText(),
+          warehouseId: warehouses[0].id,
+          warehouseName: warehouses[0].name,
+          entries: [
+            {
+              id: "demo-production-entry-1",
+              createdAt: nowText(),
+              productId: products[0].id,
+              productName: products[0].name,
+              unit: "packs",
+              pallets: 25,
+              boxesPerPallet: 84,
+              packsPerBox: 12,
+              totalKg: 25200,
+              parts: ["25 підд. × 84 кор. × 12 пач. = 25 200 пач."],
+              warehouseId: warehouses[0].id,
+              warehouseName: warehouses[0].name,
+              comment: ""
+            }
+          ]
         }
       ]
     };
@@ -11398,6 +11567,10 @@
     return `№${Math.max(1, Number(document?.documentNumber) || 1)}`;
   }
 
+  function formatPlainNumber(value) {
+    return new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 3 }).format(Number(value) || 0);
+  }
+
   function normalizeMeasurementUnit(unit) {
     return MEASUREMENT_UNITS[unit] ? unit : "kg";
   }
@@ -11413,6 +11586,9 @@
     normalized.orders = Array.isArray(normalized.orders)
       ? normalized.orders.filter(order => order && typeof order === "object")
       : [];
+    normalized.productionDeliveries = Array.isArray(normalized.productionDeliveries)
+      ? normalized.productionDeliveries.filter(delivery => delivery && typeof delivery === "object")
+      : [];
     normalized.warehouses = Array.isArray(normalized.warehouses)
       ? normalized.warehouses
           .filter(warehouse => warehouse && typeof warehouse === "object" && String(warehouse.name || "").trim())
@@ -11420,6 +11596,7 @@
       : [];
     normalized.activeDayId = normalized.activeDayId || null;
     normalized.activeOrderId = normalized.activeOrderId || null;
+    normalized.activeProductionDeliveryId = normalized.activeProductionDeliveryId || null;
     normalized.activeWarehouseId = normalized.warehouses.some(warehouse => warehouse.id === normalized.activeWarehouseId)
       ? normalized.activeWarehouseId
       : (normalized.warehouses[0]?.id || null);
@@ -11441,9 +11618,14 @@
     if (!normalized.workspaceWarehouseIds.orders && normalized.activeWarehouseId) {
       normalized.workspaceWarehouseIds.orders = normalized.activeWarehouseId;
     }
+    if (!normalized.workspaceWarehouseIds.production && normalized.activeWarehouseId) {
+      normalized.workspaceWarehouseIds.production = normalized.activeWarehouseId;
+    }
 
     normalized.products.forEach(product => {
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
+      product.defaultBoxesPerPallet = Math.max(0, Number(product.defaultBoxesPerPallet) || 0);
+      product.defaultPacksPerBox = Math.max(0, Number(product.defaultPacksPerBox) || 0);
     });
     normalized.days.forEach(day => {
       const inventoryWarehouse = normalized.warehouses.find(warehouse => warehouse.id === day.warehouseId);
@@ -11484,8 +11666,28 @@
         }
       });
     });
+    normalized.productionDeliveries.forEach(delivery => {
+      delivery.entries = Array.isArray(delivery.entries)
+        ? delivery.entries.filter(entry => entry && typeof entry === "object")
+        : [];
+      const warehouse = normalized.warehouses.find(item => item.id === delivery.warehouseId);
+      if (warehouse) delivery.warehouseName = warehouse.name;
+      delivery.entries.forEach(entry => {
+        entry.unit = "packs";
+        entry.pallets = Math.max(0, Number(entry.pallets) || 0);
+        entry.boxesPerPallet = Math.max(0, Number(entry.boxesPerPallet) || 0);
+        entry.packsPerBox = Math.max(0, Number(entry.packsPerBox) || 0);
+        entry.totalKg = entry.pallets * entry.boxesPerPallet * entry.packsPerBox;
+        entry.parts = [`${entry.pallets} підд. × ${entry.boxesPerPallet} кор. × ${entry.packsPerBox} пач. = ${formatPlainNumber(entry.totalKg)} пач.`];
+        if (entry.warehouseId) {
+          const entryWarehouse = normalized.warehouses.find(item => item.id === entry.warehouseId);
+          if (entryWarehouse) entry.warehouseName = entryWarehouse.name;
+        }
+      });
+    });
     assignDocumentNumbers(normalized.days);
     assignDocumentNumbers(normalized.orders);
+    assignDocumentNumbers(normalized.productionDeliveries);
     return normalized;
   }
 
@@ -11919,7 +12121,8 @@
 
   function getWorkspaceModePreference() {
     try {
-      return localStorage.getItem(WORKSPACE_MODE_KEY) === "orders" ? "orders" : "inventory";
+      const saved = localStorage.getItem(WORKSPACE_MODE_KEY);
+      return ["inventory", "orders", "production"].includes(saved) ? saved : "inventory";
     } catch (error) {
       return "inventory";
     }
@@ -11982,8 +12185,42 @@
     return workspaceMode === "orders";
   }
 
+  function workspaceIsProduction() {
+    return workspaceMode === "production";
+  }
+
+  function getProductionWorkspaceName() {
+    try {
+      return String(localStorage.getItem(PRODUCTION_WORKSPACE_NAME_KEY) || "Здача ГП").trim() || "Здача ГП";
+    } catch (error) {
+      return "Здача ГП";
+    }
+  }
+
+  function syncProductionWorkspaceNameControl() {
+    const input = document.getElementById("productionWorkspaceNameInput");
+    if (input) input.value = getProductionWorkspaceName();
+  }
+
+  function saveProductionWorkspaceName() {
+    const input = document.getElementById("productionWorkspaceNameInput");
+    const name = String(input?.value || "").trim().slice(0, 32);
+    if (!name) {
+      toast("Введи назву розділу", true);
+      input?.focus();
+      return;
+    }
+    try { localStorage.setItem(PRODUCTION_WORKSPACE_NAME_KEY, name); } catch (error) {}
+    syncProductionWorkspaceNameControl();
+    updateWorkspaceUI();
+    renderToday();
+    toast(`Назву змінено на «${name}»`);
+  }
+
   function workspaceLabel() {
-    return workspaceIsOrders() ? "Замовлення" : "Інвентаризація";
+    if (workspaceIsOrders()) return "Замовлення";
+    if (workspaceIsProduction()) return getProductionWorkspaceName();
+    return "Інвентаризація";
   }
 
   function normalizeOrderStatus(status) {
@@ -12001,7 +12238,7 @@
 
   function getWorkspaceWarehouseId() {
     const remembered = getRememberedWorkspaceWarehouseId(workspaceMode);
-    if (workspaceIsOrders()) {
+    if (workspaceIsOrders() || workspaceIsProduction()) {
       return remembered;
     }
     const day = state.days.find(item => item.id === state.activeDayId);
@@ -12013,7 +12250,7 @@
   function getRememberedWorkspaceWarehouseId(mode) {
     const savedId = state.workspaceWarehouseIds?.[mode];
     if (state.warehouses.some(warehouse => warehouse.id === savedId)) return savedId;
-    if (mode === "orders" && state.warehouses.some(warehouse => warehouse.id === state.activeWarehouseId)) {
+    if (["orders", "production"].includes(mode) && state.warehouses.some(warehouse => warehouse.id === state.activeWarehouseId)) {
       return state.activeWarehouseId;
     }
     if (mode === "inventory") {
@@ -12037,6 +12274,15 @@
     const id = rememberWorkspaceWarehouse(workspaceMode, warehouseId);
     if (workspaceIsOrders()) {
       state.activeWarehouseId = id;
+      return;
+    }
+    if (workspaceIsProduction()) {
+      const delivery = state.productionDeliveries.find(item => item.id === state.activeProductionDeliveryId);
+      const warehouse = state.warehouses.find(item => item.id === id);
+      if (delivery) {
+        delivery.warehouseId = warehouse?.id || null;
+        delivery.warehouseName = warehouse?.name || "";
+      }
       return;
     }
     const day = state.days.find(item => item.id === state.activeDayId);
@@ -12194,6 +12440,15 @@
       if (renamed) entry.warehouseName = renamed.name;
       else if (!entry.warehouseName && previous.has(entry.warehouseId)) entry.warehouseName = previous.get(entry.warehouseId);
     }));
+    state.productionDeliveries.forEach(delivery => {
+      const renamedDeliveryWarehouse = warehouses.find(warehouse => warehouse.id === delivery.warehouseId);
+      if (renamedDeliveryWarehouse) delivery.warehouseName = renamedDeliveryWarehouse.name;
+      delivery.entries.forEach(entry => {
+        const renamed = warehouses.find(warehouse => warehouse.id === entry.warehouseId);
+        if (renamed) entry.warehouseName = renamed.name;
+        else if (!entry.warehouseName && previous.has(entry.warehouseId)) entry.warehouseName = previous.get(entry.warehouseId);
+      });
+    });
     state.days.forEach(day => {
       day.entries.forEach(entry => {
         const renamedEntryWarehouse = warehouses.find(warehouse => warehouse.id === entry.warehouseId);
@@ -12236,17 +12491,21 @@
 
   function updateWorkspaceUI() {
     const orders = workspaceIsOrders();
+    const production = workspaceIsProduction();
     const label = workspaceLabel();
     document.body.classList.toggle("workspace-orders", orders);
+    document.body.classList.toggle("workspace-production", production);
     document.getElementById("orderWarehouseControl")?.classList.remove("hidden");
     document.getElementById("orderDocumentFields")?.classList.toggle("hidden", !orders);
-    const unitVisible = orders || getEntryUnitVisibility() === "visible";
+    const unitVisible = !production && (orders || getEntryUnitVisibility() === "visible");
     document.getElementById("entryUnitControl")?.classList.toggle("hidden", !unitVisible);
     document.getElementById("orderAdditionalSection")?.classList.toggle("hidden", !unitVisible);
     renderWarehouseOptions();
     const desktopWarehouseContextLabel = document.getElementById("desktopWarehouseContextLabel");
     if (desktopWarehouseContextLabel) {
-      desktopWarehouseContextLabel.textContent = orders ? "Замовлення на:" : "Інвентаризація складу:";
+      desktopWarehouseContextLabel.textContent = production
+        ? "Здача на склад:"
+        : (orders ? "Замовлення на:" : "Інвентаризація складу:");
     }
     const desktopWarehouseSelect = document.getElementById("desktopOrderWarehouseSelect");
     if (desktopWarehouseSelect) {
@@ -12286,18 +12545,24 @@
       if (mark) mark.textContent = active ? "✓" : "";
     });
     const newButton = document.getElementById("newDayBtn");
-    if (newButton) newButton.setAttribute("aria-label", orders ? "Створити нове замовлення" : "Створити нову інвентаризацію");
+    if (newButton) newButton.setAttribute("aria-label", production
+      ? `Створити новий документ «${label}»`
+      : (orders ? "Створити нове замовлення" : "Створити нову інвентаризацію"));
     const formTitle = document.getElementById("formTitle");
     if (formTitle && !document.getElementById("editingEntryId")?.value) {
-      formTitle.textContent = orders ? "Замовлення на:" : "Інвентаризація складу:";
+      formTitle.textContent = production ? "Здача на склад:" : (orders ? "Замовлення на:" : "Інвентаризація складу:");
     }
     const searchLabel = document.querySelector("label[for='todayListSearch']");
-    if (searchLabel) searchLabel.textContent = orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації";
+    if (searchLabel) searchLabel.textContent = production
+      ? `Пошук у поточному документі «${label}»`
+      : (orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації");
+    const productionOptionLabel = document.getElementById("productionWorkspaceOptionLabel");
+    if (productionOptionLabel) productionOptionLabel.textContent = getProductionWorkspaceName();
     applyOrderEntryMode();
   }
 
   function setWorkspaceMode(mode) {
-    const nextMode = mode === "orders" ? "orders" : "inventory";
+    const nextMode = ["inventory", "orders", "production"].includes(mode) ? mode : "inventory";
     closeWorkspaceDropdown();
     if (workspaceMode === nextMode) return;
     workspaceMode = nextMode;
@@ -12309,10 +12574,33 @@
     updateWorkspaceUI();
     render();
     scrollAppToTop();
-    toast(workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію");
+    toast(workspaceIsProduction()
+      ? `Відкрито розділ «${workspaceLabel()}»`
+      : (workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію"));
   }
 
   function ensureActiveDay() {
+    if (workspaceIsProduction()) {
+      if (!state.activeProductionDeliveryId
+        || !state.productionDeliveries.some(delivery => delivery.id === state.activeProductionDeliveryId)) {
+        const id = uid();
+        const date = todayISO();
+        const warehouseId = getRememberedWorkspaceWarehouseId("production") || state.warehouses[0]?.id || "";
+        const warehouse = state.warehouses.find(item => item.id === warehouseId);
+        state.productionDeliveries.unshift({
+          id,
+          documentNumber: nextDocumentNumber(state.productionDeliveries, date),
+          date,
+          createdAt: nowText(),
+          warehouseId: warehouse?.id || null,
+          warehouseName: warehouse?.name || "",
+          entries: []
+        });
+        state.activeProductionDeliveryId = id;
+        saveOnly();
+      }
+      return;
+    }
     if (workspaceIsOrders()) {
       if (!state.activeOrderId || !state.orders.some(order => order.id === state.activeOrderId)) {
         const id = uid();
@@ -12353,6 +12641,9 @@
 
   function getActiveDay() {
     ensureActiveDay();
+    if (workspaceIsProduction()) {
+      return state.productionDeliveries.find(delivery => delivery.id === state.activeProductionDeliveryId);
+    }
     return workspaceIsOrders()
       ? state.orders.find(order => order.id === state.activeOrderId)
       : state.days.find(day => day.id === state.activeDayId);
@@ -13671,7 +13962,7 @@
     const control = document.getElementById("entryUnitControl");
     const additionalSection = document.getElementById("orderAdditionalSection");
     const select = document.getElementById("entryUnitVisibilitySelect");
-    const shouldShow = workspaceIsOrders() || normalizedMode === "visible";
+    const shouldShow = !workspaceIsProduction() && (workspaceIsOrders() || normalizedMode === "visible");
     if (control) control.classList.toggle("hidden", !shouldShow);
     if (additionalSection) additionalSection.classList.toggle("hidden", !shouldShow);
     if (select) select.value = normalizedMode;
@@ -13697,6 +13988,7 @@
   }
 
   function usesEntryDialogMode() {
+    if (workspaceIsProduction()) return true;
     return (workspaceIsOrders() ? getOrderEntryMode() : getInventoryEntryMode()) === "dialog";
   }
 
@@ -14194,24 +14486,29 @@
 
   async function createNewDay() {
     const orders = workspaceIsOrders();
+    const production = workspaceIsProduction();
+    const productionLabel = getProductionWorkspaceName();
     const confirmed = await showAppDialog({
-      label: orders ? "Нове замовлення" : "Нова інвентаризація",
-      title: orders ? "Створити нове замовлення?" : "Створити нову інвентаризацію?",
-      message: orders
+      label: production ? `Новий документ «${productionLabel}»` : (orders ? "Нове замовлення" : "Нова інвентаризація"),
+      title: production ? `Створити новий документ «${productionLabel}»?` : (orders ? "Створити нове замовлення?" : "Створити нову інвентаризацію?"),
+      message: production
+        ? `Буде створено окремий документ «${productionLabel}» на ${niceDate(todayISO())}.`
+        : (orders
         ? `Буде створено окреме замовлення на ${niceDate(todayISO())}. Поточне замовлення залишиться збереженим у даних застосунку.`
-        : `Буде створено окрему інвентаризацію на ${niceDate(todayISO())}. Поточна інвентаризація залишиться збереженою в історії.`,
+        : `Буде створено окрему інвентаризацію на ${niceDate(todayISO())}. Поточна інвентаризація залишиться збереженою в історії.`),
       confirmText: "Створити"
     });
     if (!confirmed) return;
 
     const id = uid();
-    const inventoryWarehouseId = getRememberedWorkspaceWarehouseId("inventory")
+    const warehouseMode = production ? "production" : "inventory";
+    const inventoryWarehouseId = getRememberedWorkspaceWarehouseId(warehouseMode)
       || state.warehouses[0]?.id
       || "";
     const warehouse = state.warehouses.find(item => item.id === inventoryWarehouseId);
     const documentData = {
       id,
-      documentNumber: nextDocumentNumber(orders ? state.orders : state.days, todayISO()),
+      documentNumber: nextDocumentNumber(production ? state.productionDeliveries : (orders ? state.orders : state.days), todayISO()),
       date: todayISO(),
       createdAt: nowText(),
       responsible: "",
@@ -14220,7 +14517,10 @@
       warehouseName: orders ? "" : (warehouse?.name || ""),
       entries: []
     };
-    if (orders) {
+    if (production) {
+      state.productionDeliveries.unshift(documentData);
+      state.activeProductionDeliveryId = id;
+    } else if (orders) {
       state.orders.unshift(documentData);
       state.activeOrderId = id;
     } else {
@@ -14231,20 +14531,21 @@
     clearEntryForm();
     save();
     showPage("today");
-    toast(orders ? "Створено нове замовлення" : "Створено нову інвентаризацію");
+    toast(production ? `Створено новий документ «${productionLabel}»` : (orders ? "Створено нове замовлення" : "Створено нову інвентаризацію"));
   }
 
   async function promptForCurrentDayOnStartup() {
     if (demoModeActive || appDialogResolver) return;
     const orders = workspaceIsOrders();
-    const documents = orders ? state.orders : state.days;
-    const activeId = orders ? state.activeOrderId : state.activeDayId;
+    const production = workspaceIsProduction();
+    const documents = production ? state.productionDeliveries : (orders ? state.orders : state.days);
+    const activeId = production ? state.activeProductionDeliveryId : (orders ? state.activeOrderId : state.activeDayId);
     const activeDocument = documents.find(document => document.id === activeId);
     const currentDate = todayISO();
     if (!activeDocument || activeDocument.date === currentDate) return;
 
     const todayDocument = documents.find(document => document.date === currentDate);
-    const documentName = orders ? "замовлення" : "інвентаризацію";
+    const documentName = production ? `документ «${getProductionWorkspaceName()}»` : (orders ? "замовлення" : "інвентаризацію");
     const confirmed = await showAppDialog({
       label: "Перевірка дати",
       title: "Настав новий день",
@@ -14258,11 +14559,13 @@
     }
 
     if (todayDocument) {
-      if (orders) state.activeOrderId = todayDocument.id;
+      if (production) state.activeProductionDeliveryId = todayDocument.id;
+      else if (orders) state.activeOrderId = todayDocument.id;
       else state.activeDayId = todayDocument.id;
     } else {
       const id = uid();
-      const inventoryWarehouseId = getRememberedWorkspaceWarehouseId("inventory")
+      const warehouseMode = production ? "production" : "inventory";
+      const inventoryWarehouseId = getRememberedWorkspaceWarehouseId(warehouseMode)
         || state.warehouses[0]?.id
         || "";
       const warehouse = state.warehouses.find(item => item.id === inventoryWarehouseId);
@@ -14277,7 +14580,10 @@
         warehouseName: orders ? "" : (warehouse?.name || ""),
         entries: []
       };
-      if (orders) {
+      if (production) {
+        state.productionDeliveries.unshift(documentData);
+        state.activeProductionDeliveryId = id;
+      } else if (orders) {
         state.orders.unshift(documentData);
         state.activeOrderId = id;
       } else {
@@ -14291,8 +14597,8 @@
     save();
     showPage("today");
     toast(todayDocument
-      ? `${orders ? "Замовлення" : "Інвентаризацію"} за сьогодні відкрито`
-      : `${orders ? "Замовлення" : "Інвентаризацію"} за сьогодні створено`);
+      ? `${production ? getProductionWorkspaceName() : (orders ? "Замовлення" : "Інвентаризацію")} за сьогодні відкрито`
+      : `${production ? getProductionWorkspaceName() : (orders ? "Замовлення" : "Інвентаризацію")} за сьогодні створено`);
   }
 
   function historyUsesOrders() {
@@ -14587,8 +14893,11 @@
 
   function fillQuickEditForm(entry) {
     if (!entry) return;
+    const production = workspaceIsProduction();
     const unit = normalizeMeasurementUnit(entry.unit);
     document.getElementById("quickEditEntryId").value = entry.id;
+    document.getElementById("quickEditProductionFields").classList.toggle("hidden", !production);
+    document.getElementById("quickEditStandardFields").classList.toggle("hidden", production);
     document.getElementById("quickEditUnit").value = unit;
     updateEntryUnitLabels(unit, "quickEdit");
     document.getElementById("quickEditPallets").value = entry.pallets || "";
@@ -14597,7 +14906,12 @@
     document.getElementById("quickEditKgPerPiece").value = entry.kgPerPiece || "";
     document.getElementById("quickEditDirectKg").value = entry.directKgExpression || entry.directKg || "";
     document.getElementById("quickEditComment").value = entry.comment || "";
-    document.getElementById("quickEditOrderFields").classList.toggle("hidden", !workspaceIsOrders());
+    document.getElementById("quickEditProductionPallets").value = entry.pallets || "";
+    document.getElementById("quickEditBoxesPerPallet").value = entry.boxesPerPallet || "";
+    document.getElementById("quickEditPacksPerBox").value = entry.packsPerBox || "";
+    document.getElementById("quickEditProductionComment").value = entry.comment || "";
+    updateQuickEditProductionTotal();
+    document.getElementById("quickEditOrderFields").classList.toggle("hidden", !workspaceIsOrders() || production);
     renderWarehouseOptions();
     document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
     document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
@@ -14608,7 +14922,7 @@
     tabs.innerHTML = entries.map((entry, index) => `
       <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
         data-action="select-quick-edit-entry" data-id="${entry.id}">
-        ${index + 1}. ${formatQuantity(entry.totalKg, entry.unit)}${entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
+        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatQuantity(entry.totalKg, entry.unit)}${entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
       </button>
     `).join("");
     tabs.classList.toggle("hidden", entries.length < 2);
@@ -14660,6 +14974,33 @@
       closeQuickEdit();
       return;
     }
+    if (workspaceIsProduction()) {
+      const pallets = Math.max(0, Number(document.getElementById("quickEditProductionPallets").value) || 0);
+      const boxesPerPallet = Math.max(0, Number(document.getElementById("quickEditBoxesPerPallet").value) || 0);
+      const packsPerBox = Math.max(0, Number(document.getElementById("quickEditPacksPerBox").value) || 0);
+      const totalPacks = pallets * boxesPerPallet * packsPerBox;
+      if (pallets <= 0 || boxesPerPallet <= 0 || packsPerBox <= 0 || totalPacks <= 0) {
+        toast("Заповни піддони, коробки в піддоні та пачки в коробці", true);
+        return;
+      }
+      Object.assign(entry, {
+        unit: "packs",
+        pallets,
+        boxesPerPallet,
+        packsPerBox,
+        totalKg: totalPacks,
+        parts: [`${formatPlainNumber(pallets)} підд. × ${formatPlainNumber(boxesPerPallet)} кор. × ${formatPlainNumber(packsPerBox)} пач. = ${formatPlainNumber(totalPacks)} пач.`],
+        comment: document.getElementById("quickEditProductionComment").value.trim(),
+        editedAt: nowText(),
+        editedTimestamp: new Date().toISOString()
+      });
+      if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+      save();
+      closeQuickEdit();
+      showSuccessCheck();
+      scheduleKeyboardScrollRestore();
+      return;
+    }
 
     const directInput = document.getElementById("quickEditDirectKg").value.trim();
     const directCalculation = calculateWeightExpression(directInput);
@@ -14706,6 +15047,23 @@
     scheduleKeyboardScrollRestore();
   }
 
+  function updateProductionDialogTotal() {
+    const pallets = Math.max(0, Number(document.getElementById("productionDialogPallets")?.value) || 0);
+    const boxesPerPallet = Math.max(0, Number(document.getElementById("productionDialogBoxesPerPallet")?.value) || 0);
+    const packsPerBox = Math.max(0, Number(document.getElementById("productionDialogPacksPerBox")?.value) || 0);
+    const total = pallets * boxesPerPallet * packsPerBox;
+    const output = document.getElementById("productionDialogTotal");
+    if (output) output.textContent = `${formatPlainNumber(total)} пач.`;
+  }
+
+  function updateQuickEditProductionTotal() {
+    const pallets = Math.max(0, Number(document.getElementById("quickEditProductionPallets")?.value) || 0);
+    const boxesPerPallet = Math.max(0, Number(document.getElementById("quickEditBoxesPerPallet")?.value) || 0);
+    const packsPerBox = Math.max(0, Number(document.getElementById("quickEditPacksPerBox")?.value) || 0);
+    const output = document.getElementById("quickEditProductionTotal");
+    if (output) output.textContent = `${formatPlainNumber(pallets * boxesPerPallet * packsPerBox)} пач.`;
+  }
+
   function openOrderEntryDialog(productId) {
     if (!usesEntryDialogMode()) return;
     const product = state.products.find(item => item.id === productId);
@@ -14725,6 +15083,17 @@
     document.getElementById("inventoryDialogPerPiece").value = product.defaultPieceKg || "";
     document.getElementById("orderEntryStatus").value = "normal";
     document.getElementById("orderEntryComment").value = "";
+    const production = workspaceIsProduction();
+    document.getElementById("productionEntryFields").classList.toggle("hidden", !production);
+    document.getElementById("standardEntryDialogFields").classList.toggle("hidden", production);
+    document.getElementById("productionDialogPallets").value = "";
+    document.getElementById("productionDialogBoxesPerPallet").value = product.defaultBoxesPerPallet || "";
+    document.getElementById("productionDialogPacksPerBox").value = product.defaultPacksPerBox || "";
+    document.getElementById("productionDialogComment").value = "";
+    updateProductionDialogTotal();
+    if (production) {
+      document.getElementById("orderEntryDialogEyebrow").textContent = getProductionWorkspaceName();
+    }
     const saveButton = document.getElementById("saveOrderEntryDialogBtn");
     saveButton.textContent = "Додати";
     saveButton.classList.remove("keyboard-action-replaced");
@@ -14752,6 +15121,11 @@
     document.getElementById("inventoryDialogPieces").value = "";
     document.getElementById("inventoryDialogPerPiece").value = "";
     document.getElementById("orderEntryComment").value = "";
+    document.getElementById("productionDialogPallets").value = "";
+    document.getElementById("productionDialogBoxesPerPallet").value = "";
+    document.getElementById("productionDialogPacksPerBox").value = "";
+    document.getElementById("productionDialogComment").value = "";
+    updateProductionDialogTotal();
     scheduleKeyboardScrollRestore();
     if (returnFocus) {
       window.setTimeout(() => document.getElementById("productSearch").focus({ preventScroll: true }), 80);
@@ -14764,6 +15138,44 @@
     if (!product) {
       toast("Найменування не знайдено", true);
       closeOrderEntryDialog();
+      return;
+    }
+    if (workspaceIsProduction()) {
+      const warehouseId = getWorkspaceWarehouseId();
+      const warehouse = state.warehouses.find(item => item.id === warehouseId);
+      if (!warehouse) {
+        toast("Спочатку обери або додай склад", true);
+        return;
+      }
+      const pallets = Math.max(0, Number(document.getElementById("productionDialogPallets").value) || 0);
+      const boxesPerPallet = Math.max(0, Number(document.getElementById("productionDialogBoxesPerPallet").value) || 0);
+      const packsPerBox = Math.max(0, Number(document.getElementById("productionDialogPacksPerBox").value) || 0);
+      const totalPacks = pallets * boxesPerPallet * packsPerBox;
+      if (pallets <= 0 || boxesPerPallet <= 0 || packsPerBox <= 0 || totalPacks <= 0) {
+        toast("Заповни піддони, коробки в піддоні та пачки в коробці", true);
+        return;
+      }
+      getActiveDay().entries.push({
+        id: uid(),
+        createdAt: nowText(),
+        productId: product.id,
+        productName: product.name,
+        unit: "packs",
+        pallets,
+        boxesPerPallet,
+        packsPerBox,
+        totalKg: totalPacks,
+        parts: [`${formatPlainNumber(pallets)} підд. × ${formatPlainNumber(boxesPerPallet)} кор. × ${formatPlainNumber(packsPerBox)} пач. = ${formatPlainNumber(totalPacks)} пач.`],
+        warehouseId: warehouse.id,
+        warehouseName: warehouse.name,
+        comment: document.getElementById("productionDialogComment").value.trim()
+      });
+      document.getElementById("productSearch").value = "";
+      document.getElementById("productSelect").value = "";
+      document.getElementById("selectedProductLabel").textContent = "Позицію не вибрано";
+      closeOrderEntryDialog();
+      save();
+      showSuccessCheck();
       return;
     }
     const orders = workspaceIsOrders();
@@ -14982,7 +15394,9 @@
     }
 
     const orders = workspaceIsOrders();
-    const documentName = orders ? "замовлення" : "інвентаризації";
+    const documentName = workspaceIsProduction()
+      ? `документа «${getProductionWorkspaceName()}»`
+      : (orders ? "замовлення" : "інвентаризації");
     const confirmed = await showAppDialog({
       label: "Видалення",
       title: "Видалити позицію?",
@@ -15012,7 +15426,9 @@
     document.getElementById("kgPerPiece").value = "";
     document.getElementById("directKg").value = "";
     document.getElementById("comment").value = "";
-    document.getElementById("formTitle").textContent = workspaceIsOrders() ? "Замовлення на:" : "Інвентаризація складу:";
+    document.getElementById("formTitle").textContent = workspaceIsProduction()
+      ? `${getProductionWorkspaceName()}:`
+      : (workspaceIsOrders() ? "Замовлення на:" : "Інвентаризація складу:");
     document.getElementById("saveEntryBtn").textContent = "Додати";
     fillDefaultWeights();
   }
@@ -15042,7 +15458,9 @@
     day.entries = [];
     clearEntryForm();
     save();
-    toast(workspaceIsOrders() ? "Поточне замовлення очищено" : "Поточну інвентаризацію очищено");
+    toast(workspaceIsProduction()
+      ? `Поточний документ «${getProductionWorkspaceName()}» очищено`
+      : (workspaceIsOrders() ? "Поточне замовлення очищено" : "Поточну інвентаризацію очищено"));
   }
 
   function showProductAddView(view) {
@@ -15083,12 +15501,18 @@
 
     const palletValue = Number(product.defaultPalletKg || 0);
     const pieceValue = Number(product.defaultPieceKg || 0);
+    const boxesPerPalletValue = Number(product.defaultBoxesPerPallet || 0);
+    const packsPerBoxValue = Number(product.defaultPacksPerBox || 0);
     const palletRow = document.getElementById("productInfoPalletRow");
     const pieceRow = document.getElementById("productInfoPieceRow");
     palletRow.classList.toggle("hidden", palletValue <= 0);
     pieceRow.classList.toggle("hidden", pieceValue <= 0);
     document.getElementById("productInfoPallet").textContent = palletValue > 0 ? formatQuantity(palletValue, unit) : "";
     document.getElementById("productInfoPiece").textContent = pieceValue > 0 ? formatQuantity(pieceValue, unit) : "";
+    document.getElementById("productInfoBoxesPerPalletRow").classList.toggle("hidden", boxesPerPalletValue <= 0);
+    document.getElementById("productInfoPacksPerBoxRow").classList.toggle("hidden", packsPerBoxValue <= 0);
+    document.getElementById("productInfoBoxesPerPallet").textContent = boxesPerPalletValue > 0 ? `${formatPlainNumber(boxesPerPalletValue)} кор.` : "";
+    document.getElementById("productInfoPacksPerBox").textContent = packsPerBoxValue > 0 ? `${formatPlainNumber(packsPerBoxValue)} пач.` : "";
     document.getElementById("productInfoView").dataset.productId = product.id;
     openProductAddModal("info");
   }
@@ -15123,6 +15547,8 @@
     const defaultUnit = normalizeMeasurementUnit(document.getElementById("newDefaultUnit").value);
     const defaultPalletKg = Number(document.getElementById("newDefaultPalletKg").value || 0);
     const defaultPieceKg = Number(document.getElementById("newDefaultPieceKg").value || 0);
+    const defaultBoxesPerPallet = Math.max(0, Number(document.getElementById("newDefaultBoxesPerPallet").value) || 0);
+    const defaultPacksPerBox = Math.max(0, Number(document.getElementById("newDefaultPacksPerBox").value) || 0);
 
     if (!name) {
       toast("Введи назву", true);
@@ -15142,6 +15568,8 @@
       p.defaultUnit = defaultUnit;
       p.defaultPalletKg = defaultPalletKg;
       p.defaultPieceKg = defaultPieceKg;
+      p.defaultBoxesPerPallet = defaultBoxesPerPallet;
+      p.defaultPacksPerBox = defaultPacksPerBox;
 
       state.days.forEach(day => {
         day.entries.forEach(e => {
@@ -15153,10 +15581,23 @@
           if (entry.productId === editingId) entry.productName = name;
         });
       });
+      state.productionDeliveries.forEach(delivery => {
+        delivery.entries.forEach(entry => {
+          if (entry.productId === editingId) entry.productName = name;
+        });
+      });
 
       toast("Найменування оновлено");
     } else {
-      state.products.push({ id: uid(), name, defaultUnit, defaultPalletKg, defaultPieceKg });
+      state.products.push({
+        id: uid(),
+        name,
+        defaultUnit,
+        defaultPalletKg,
+        defaultPieceKg,
+        defaultBoxesPerPallet,
+        defaultPacksPerBox
+      });
       toast("Найменування додано");
     }
 
@@ -15178,6 +15619,8 @@
     document.getElementById("newDefaultUnit").value = normalizeMeasurementUnit(p.defaultUnit);
     document.getElementById("newDefaultPalletKg").value = p.defaultPalletKg || "";
     document.getElementById("newDefaultPieceKg").value = p.defaultPieceKg || "";
+    document.getElementById("newDefaultBoxesPerPallet").value = p.defaultBoxesPerPallet || "";
+    document.getElementById("newDefaultPacksPerBox").value = p.defaultPacksPerBox || "";
     document.getElementById("productFormTitle").textContent = "Редагувати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти зміни";
     document.getElementById("cancelProductBtn").textContent = "Скасувати";
@@ -15226,6 +15669,8 @@
     document.getElementById("newDefaultUnit").value = "kg";
     document.getElementById("newDefaultPalletKg").value = "";
     document.getElementById("newDefaultPieceKg").value = "";
+    document.getElementById("newDefaultBoxesPerPallet").value = "";
+    document.getElementById("newDefaultPacksPerBox").value = "";
     document.getElementById("productFormTitle").textContent = "Додати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти найменування";
     document.getElementById("cancelProductBtn").textContent = "Закрити";
@@ -15235,6 +15680,7 @@
   const CURRENT_LIST_SORT_MODES = ["added-asc", "added-desc", "name-asc", "name-desc"];
 
   function currentListSortStorageKey(orders = workspaceIsOrders()) {
+    if (workspaceIsProduction()) return PRODUCTION_LIST_SORT_KEY;
     return orders ? ORDER_LIST_SORT_KEY : INVENTORY_LIST_SORT_KEY;
   }
 
@@ -15339,15 +15785,17 @@
 
   function makeReport() {
     const day = getActiveDay();
-    let text = workspaceIsOrders()
-      ? `Замовлення ${documentNumberText(day)} на ${niceDate(day.date)}\n\n`
-      : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}\n\n`;
+    let text = workspaceIsProduction()
+      ? `${getProductionWorkspaceName()} ${documentNumberText(day)} від ${niceDate(day.date)}\n\n`
+      : (workspaceIsOrders()
+          ? `Замовлення ${documentNumberText(day)} на ${niceDate(day.date)}\n\n`
+          : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}\n\n`);
 
     const groups = sortCurrentListGroups(groupEntries(day));
     if (!groups.length) return text + "Записів немає.";
 
     groups.forEach((g, i) => {
-      text += `${i + 1}. ${g.name}: ${formatQuantity(g.totalKg, g.unit)}\n`;
+      text += `${i + 1}. ${g.name}: ${workspaceIsProduction() ? `${formatPlainNumber(g.totalKg)} пач.` : formatQuantity(g.totalKg, g.unit)}\n`;
       g.entries.forEach(e => {
         const line = e.parts && e.parts.length ? e.parts.join(" + ") : "";
         text += `   - ${line}`;
@@ -16278,7 +16726,7 @@
     const recoveryBackup = createBackupPayload();
     if (!putInTrash("backup", "Резервна копія до повного очищення програми", { backup: recoveryBackup })) return;
     if (demoModeActive) {
-      state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
+      state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, productionDeliveries: [], activeProductionDeliveryId: null, warehouses: [], activeWarehouseId: null };
       save();
       clearEntryForm();
       clearProductForm();
@@ -16286,7 +16734,7 @@
       showPage("today");
       return;
     }
-    state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, warehouses: [], activeWarehouseId: null };
+    state = { products: [], days: [], activeDayId: null, orders: [], activeOrderId: null, productionDeliveries: [], activeProductionDeliveryId: null, warehouses: [], activeWarehouseId: null };
     localStorage.removeItem("warehouseJournalV2");
     localStorage.removeItem(INITIAL_WORKSPACE_CHOICE_KEY);
     localStorage.removeItem(WORKSPACE_MODE_KEY);
@@ -16565,6 +17013,40 @@
     }).join("");
   }
 
+  function buildProductionDocumentRows(delivery) {
+    const entries = sortCurrentListEntries(delivery.entries, getCurrentListSortMode(false));
+    if (!entries.length) {
+      return `<div class="print-report-row"><div class="print-position-cell">Записів немає.</div><div class="print-total-cell"></div></div>`;
+    }
+    const warehouseGroups = new Map();
+    entries.forEach(entry => {
+      const key = entry.warehouseId || `name:${entry.warehouseName || "Без складу"}`;
+      if (!warehouseGroups.has(key)) {
+        warehouseGroups.set(key, { name: entry.warehouseName || "Без складу", entries: [] });
+      }
+      warehouseGroups.get(key).entries.push(entry);
+    });
+    const columnHeader = `
+      <div class="print-table-header-row preview-table-header-row inventory-warehouse-column-header">
+        <div>Продукція та розрахунок</div>
+        <div>Усього пачок</div>
+      </div>
+    `;
+    return Array.from(warehouseGroups.values()).map(group => {
+      const heading = `<div class="inventory-warehouse-report-row">Склад: ${escapeHtml(group.name)}</div>`;
+      const rows = group.entries.map(entry => `
+        <div class="print-report-row">
+          <div class="print-position-cell">
+            <div class="name">${escapeHtml(entry.productName)}</div>
+            <div class="compact-details">${escapeHtml((entry.parts || []).join(" + "))}${entry.comment ? ` — ${escapeHtml(entry.comment)}` : ""}</div>
+          </div>
+          <div class="print-total-cell">${formatPlainNumber(entry.totalKg)} пач.</div>
+        </div>
+      `).join("");
+      return `${heading}${columnHeader}${rows}`;
+    }).join("");
+  }
+
   function buildOrderDocumentRows(order) {
     const orderColumnLayout = calculateOrderColumnLayout(order);
     const columnHeader = `
@@ -16719,11 +17201,12 @@
   function renderToday(options = {}) {
     const day = getActiveDay();
     const orders = workspaceIsOrders();
+    const production = workspaceIsProduction();
     const listOnly = options.listOnly === true;
     if (!listOnly) {
       updateWorkspaceUI();
       const activeDateLabel = document.getElementById("activeDateLabel");
-      const documentLabel = `${orders ? "Поточне замовлення" : "Поточна інвентаризація"} ${documentNumberText(day)}: ${niceDate(day.date)}`;
+      const documentLabel = `${production ? `Поточний документ «${getProductionWorkspaceName()}»` : (orders ? "Поточне замовлення" : "Поточна інвентаризація")} ${documentNumberText(day)}: ${niceDate(day.date)}`;
       if (activeDateLabel) {
         if (demoModeActive) {
           activeDateLabel.innerHTML = `
@@ -16736,9 +17219,11 @@
           activeDateLabel.removeAttribute("aria-label");
         }
       }
-      document.getElementById("printReportTitle").textContent = orders
-        ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
-        : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`;
+      document.getElementById("printReportTitle").textContent = production
+        ? `${getProductionWorkspaceName().toLocaleUpperCase("uk-UA")} ${documentNumberText(day)} ВІД ${niceDate(day.date)}`
+        : (orders
+            ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
+            : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`);
     }
     updateCurrentOrderSearchVisibility();
     updateCurrentListSortUI();
@@ -16748,7 +17233,9 @@
     list.innerHTML = "";
     if (!listOnly) {
       applyDocumentLayout(day, orders);
-      printList.innerHTML = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
+      printList.innerHTML = production
+        ? buildProductionDocumentRows(day)
+        : (orders ? buildOrderDocumentRows(day) : buildDocumentRows(day));
     }
     updateTodayListSearchClearButton();
 
@@ -16768,7 +17255,7 @@
     );
 
     if (!groups.length) {
-      list.insertAdjacentHTML("beforeend", `<div class="card empty">${orders ? "У поточному замовленні" : "У поточній інвентаризації"} нічого не знайдено.</div>`);
+      list.insertAdjacentHTML("beforeend", `<div class="card empty">${production ? `У документі «${escapeHtml(getProductionWorkspaceName())}»` : (orders ? "У поточному замовленні" : "У поточній інвентаризації")} нічого не знайдено.</div>`);
       return;
     }
 
@@ -16802,7 +17289,7 @@
             <div class="name">${escapeHtml(g.name)}</div>
             <div class="report-edit-hint">Натисни позицію, щоб редагувати</div>
           </div>
-          <div class="total">${formatQuantity(g.totalKg, g.unit)}</div>
+          <div class="total">${production ? `${formatPlainNumber(g.totalKg)} пач.` : formatQuantity(g.totalKg, g.unit)}</div>
         </div>
         <div class="report-item-content">${entriesHtml}</div>
       `;
@@ -16883,7 +17370,9 @@
         name,
         defaultUnit: "kg",
         defaultPalletKg: 0,
-        defaultPieceKg: 0
+        defaultPieceKg: 0,
+        defaultBoxesPerPallet: 0,
+        defaultPacksPerBox: 0
       });
       added++;
     });
@@ -17102,18 +17591,23 @@
   }
 
   function openDocumentPreview(dayId = null, kind = "") {
-    const orders = dayId ? kind === "orders" : workspaceIsOrders();
-    const documents = orders ? state.orders : state.days;
+    const production = dayId ? kind === "production" : workspaceIsProduction();
+    const orders = !production && (dayId ? kind === "orders" : workspaceIsOrders());
+    const documents = production ? state.productionDeliveries : (orders ? state.orders : state.days);
     const day = dayId ? documents.find(item => item.id === dayId) : getActiveDay();
     if (!day) {
-      toast(orders ? "Замовлення не знайдено" : "Інвентаризацію не знайдено", true);
+      toast(production ? "Документ здачі продукції не знайдено" : (orders ? "Замовлення не знайдено" : "Інвентаризацію не знайдено"), true);
       return;
     }
 
-    const reportTitle = orders
-      ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
-      : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`;
-    const reportRows = orders ? buildOrderDocumentRows(day) : buildDocumentRows(day);
+    const reportTitle = production
+      ? `${getProductionWorkspaceName().toLocaleUpperCase("uk-UA")} ${documentNumberText(day)} ВІД ${niceDate(day.date)}`
+      : (orders
+          ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
+          : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`);
+    const reportRows = production
+      ? buildProductionDocumentRows(day)
+      : (orders ? buildOrderDocumentRows(day) : buildDocumentRows(day));
     applyDocumentLayout(day, orders);
     document.getElementById("printReportTitle").textContent = reportTitle;
     document.getElementById("printTodayList").innerHTML = reportRows;
@@ -17403,6 +17897,34 @@
     }
   });
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
+  ["productionDialogBoxesPerPallet", "productionDialogPacksPerBox", "productionDialogPallets"].forEach((id, index, ids) => {
+    const input = document.getElementById(id);
+    input.addEventListener("input", updateProductionDialogTotal);
+    input.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      const next = document.getElementById(ids[index + 1]);
+      if (next) next.focus();
+      else saveOrderEntryFromDialog();
+    });
+  });
+  ["quickEditBoxesPerPallet", "quickEditPacksPerBox", "quickEditProductionPallets"].forEach((id, index, ids) => {
+    const input = document.getElementById(id);
+    input.addEventListener("input", updateQuickEditProductionTotal);
+    input.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      const next = document.getElementById(ids[index + 1]);
+      if (next) next.focus();
+      else saveQuickEditEntry();
+    });
+  });
+  document.getElementById("saveProductionWorkspaceNameBtn").addEventListener("click", saveProductionWorkspaceName);
+  document.getElementById("productionWorkspaceNameInput").addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    saveProductionWorkspaceName();
+  });
 
   document.getElementById("previewDocumentBtn").addEventListener("click", () => openDocumentPreview());
   document.getElementById("desktopOrderPreviewBtn").addEventListener("click", () => openDocumentPreview());
@@ -17778,6 +18300,7 @@
   });
 
   renderAppVersion();
+  syncProductionWorkspaceNameControl();
   applyJoystickMode();
   applyMenuStyle();
   applyNavigationButtonLayout();
