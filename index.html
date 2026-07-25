@@ -3757,30 +3757,32 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex: 0 0 30px;
-      width: 30px !important;
-      min-width: 30px !important;
-      height: 28px !important;
-      min-height: 28px !important;
-      margin: 8px 0 0 !important;
+      flex: 0 0 28px;
+      width: 28px !important;
+      min-width: 28px !important;
+      height: 24px !important;
+      min-height: 24px !important;
+      margin: 0 !important;
       padding: 0 !important;
       border: 1px solid var(--border-strong) !important;
-      border-radius: 9px !important;
+      border-radius: 8px !important;
       background: var(--surface-deep) !important;
       color: var(--text) !important;
       box-shadow: none !important;
-      font-size: 18px !important;
+      font-size: 16px !important;
       font-weight: 800 !important;
       line-height: 1 !important;
     }
     #orderEntryOverlay .order-entry-dialog-section .entry-section-header {
-      margin-bottom: 8px;
+      min-height: 26px;
+      margin-bottom: 6px;
     }
     #orderEntryOverlay .order-entry-dialog-section.is-collapsed .entry-section-header {
       margin-bottom: 0;
     }
     #orderEntryOverlay .order-entry-dialog-section .inventory-entry-section-title {
       margin: 0;
+      line-height: 1.15;
     }
     .entry-collapsible-section.is-collapsed .entry-section-content {
       display: none;
@@ -4690,6 +4692,13 @@
       margin-top: 2px;
       overflow-wrap: anywhere;
       font-size: 14px;
+    }
+    .qr-transfer-subject small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
     }
     .qr-display {
       display: grid;
@@ -5721,15 +5730,16 @@
     body:not(.workspace-orders) .order-entry-dialog-grid .order-entry-top-fields {
       grid-template-columns: 1fr;
     }
-    .order-entry-dialog-grid .entry-breakdown-field {
+    .order-entry-dialog-grid .order-entry-dialog-section {
       grid-column: 1 / -1;
-      padding: 11px;
+      min-width: 0;
+      padding: 8px 10px;
       border: 1px solid var(--border);
-      border-radius: 15px;
+      border-radius: 13px;
       background: var(--surface-deep);
     }
     .inventory-entry-section-title {
-      margin-bottom: 8px;
+      margin-bottom: 0;
       font-size: 13px;
       font-weight: 850;
     }
@@ -5740,6 +5750,90 @@
     }
     .order-entry-dialog-grid label {
       margin-top: 0;
+    }
+    .entry-unit-picker {
+      position: relative;
+    }
+    .entry-unit-picker-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 42px;
+      margin: 0;
+      padding: 9px 11px;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+      text-align: left;
+    }
+    .entry-unit-picker-trigger::after {
+      content: "⌄";
+      margin-left: 8px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .entry-unit-picker.is-open .entry-unit-picker-trigger::after {
+      content: "⌃";
+    }
+    .entry-unit-picker-popover {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 430;
+      width: min(290px, calc(100vw - 44px));
+      max-height: min(320px, 48dvh);
+      overflow: auto;
+      padding: 7px;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      background: var(--surface-strong);
+      box-shadow: 0 18px 44px var(--popover-shadow);
+    }
+    .entry-unit-picker-option {
+      width: 100%;
+      min-height: 34px;
+      margin: 0 0 4px;
+      padding: 7px 9px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      text-align: left;
+    }
+    .entry-unit-picker-option.is-selected {
+      border-color: var(--selection-border);
+      background: var(--selection-bg);
+      color: var(--selection-text);
+    }
+    .entry-unit-remember {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 7px 2px 2px !important;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.3;
+    }
+    .entry-unit-remember input {
+      width: 18px !important;
+      min-width: 18px !important;
+      height: 18px;
+      margin: 0;
+    }
+    .entry-unit-native {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      overflow: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
     .order-entry-dialog-actions {
       display: grid;
@@ -6662,7 +6756,7 @@
     }
   </style>
 
-<link rel="manifest" href="manifest.json?v=268">
+<link rel="manifest" href="manifest.json?v=269">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6701,7 +6795,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.68</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.69</span></div>
     </div>
   </div>
 
@@ -7255,7 +7349,7 @@
           </div>
         </div>
         <div class="product-info-actions">
-          <button type="button" class="secondary" id="shareProductNameBtn">Поділитися найменуванням</button>
+          <button type="button" class="secondary" id="shareProductNameBtn">Поділитися через QR</button>
           <button type="button" class="secondary" id="copyProductNameBtn">Скопіювати назву</button>
           <button type="button" id="editProductFromInfoBtn">Редагувати</button>
           <button type="button" class="secondary" id="closeProductInfoBtn">Закрити</button>
@@ -7393,7 +7487,9 @@
             <label for="backupProductNameSelect">Окреме найменування</label>
             <select id="backupProductNameSelect" aria-label="Оберіть найменування для копіювання"></select>
             <button type="button" id="copyBackupProductNameBtn">Скопіювати обране найменування</button>
+            <button type="button" id="qrBackupProductNameBtn">Передати обране через QR</button>
             <button type="button" id="copyAllBackupProductNamesBtn">Скопіювати всі найменування списком</button>
+            <button type="button" class="secondary" id="receiveQrProductBtn">Отримати найменування через QR</button>
           </div>
         </div>
       </details>
@@ -7677,7 +7773,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.68</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.69</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7702,6 +7798,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.69</h3>
+          <ul>
+            <li>заголовки та кнопки згортання у вікні додавання вирівняно й зроблено компактнішими;</li>
+            <li>разова зміна одиниці виміру більше не змінює типові дані найменування;</li>
+            <li>додано явну галочку для збереження нової типової одиниці;</li>
+            <li>повернуто QR-передачу окремого найменування разом із типовою одиницею та типовими кількостями.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.68</h3>
           <ul>
@@ -8168,6 +8273,7 @@
         <div class="qr-transfer-subject">
           <span>Передається</span>
           <strong id="qrTransferSubject">Повна резервна копія</strong>
+          <small class="hidden" id="qrTransferDetails"></small>
         </div>
         <div class="qr-display"><img id="qrTransferImage" alt="QR-код для передачі даних"></div>
         <p class="qr-transfer-progress" id="qrTransferProgress"></p>
@@ -8391,7 +8497,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.68";
+  const APP_VERSION = "2.69";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10740,6 +10846,96 @@
     if (palletLabel) palletLabel.textContent = `${definition.amount} у піддоні`;
     if (pieceLabel) pieceLabel.textContent = `${definition.amount} в одиниці`;
     if (directLabel) directLabel.textContent = `Окрема кількість, ${definition.short}`;
+  }
+
+  function setupEntryUnitPicker(selectId, rememberCheckboxId) {
+    const select = document.getElementById(selectId);
+    if (!select || select.dataset.unitPickerReady === "yes") return;
+    select.dataset.unitPickerReady = "yes";
+    select.classList.add("entry-unit-native");
+
+    const picker = document.createElement("div");
+    picker.className = "entry-unit-picker";
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "entry-unit-picker-trigger";
+    trigger.setAttribute("aria-haspopup", "listbox");
+    trigger.setAttribute("aria-expanded", "false");
+
+    const popover = document.createElement("div");
+    popover.className = "entry-unit-picker-popover hidden";
+    popover.setAttribute("role", "listbox");
+
+    const options = [...select.options];
+    const sync = () => {
+      const selected = options.find(option => option.value === select.value) || options[0];
+      trigger.textContent = selected?.textContent || "Оберіть одиницю";
+      popover.querySelectorAll("[data-unit-value]").forEach(button => {
+        const active = button.dataset.unitValue === select.value;
+        button.classList.toggle("is-selected", active);
+        button.setAttribute("aria-selected", active ? "true" : "false");
+      });
+    };
+    const close = () => {
+      picker.classList.remove("is-open");
+      popover.classList.add("hidden");
+      trigger.setAttribute("aria-expanded", "false");
+    };
+
+    options.forEach(option => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "entry-unit-picker-option";
+      button.dataset.unitValue = option.value;
+      button.setAttribute("role", "option");
+      button.textContent = option.textContent;
+      button.addEventListener("click", () => {
+        select.value = option.value;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        sync();
+        close();
+      });
+      popover.appendChild(button);
+    });
+
+    const rememberLabel = document.createElement("label");
+    rememberLabel.className = "entry-unit-remember";
+    const rememberCheckbox = document.createElement("input");
+    rememberCheckbox.type = "checkbox";
+    rememberCheckbox.id = rememberCheckboxId;
+    const rememberText = document.createElement("span");
+    rememberText.textContent = "Застосовувати цю одиницю завжди для цього найменування";
+    rememberLabel.append(rememberCheckbox, rememberText);
+    popover.appendChild(rememberLabel);
+
+    trigger.addEventListener("click", event => {
+      event.stopPropagation();
+      const willOpen = popover.classList.contains("hidden");
+      document.querySelectorAll(".entry-unit-picker").forEach(otherPicker => {
+        if (otherPicker === picker) return;
+        otherPicker.classList.remove("is-open");
+        otherPicker.querySelector(".entry-unit-picker-popover")?.classList.add("hidden");
+        otherPicker.querySelector(".entry-unit-picker-trigger")?.setAttribute("aria-expanded", "false");
+      });
+      picker.classList.toggle("is-open", willOpen);
+      popover.classList.toggle("hidden", !willOpen);
+      trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      if (willOpen) sync();
+    });
+    popover.addEventListener("click", event => event.stopPropagation());
+    select.addEventListener("change", sync);
+
+    select.parentNode.insertBefore(picker, select);
+    picker.append(trigger, select, popover);
+    sync();
+  }
+
+  function closeEntryUnitPickers() {
+    document.querySelectorAll(".entry-unit-picker").forEach(picker => {
+      picker.classList.remove("is-open");
+      picker.querySelector(".entry-unit-picker-popover")?.classList.add("hidden");
+      picker.querySelector(".entry-unit-picker-trigger")?.setAttribute("aria-expanded", "false");
+    });
   }
 
   function interfaceText(source) {
@@ -13622,8 +13818,6 @@
     }
 
     Object.assign(entry, updated, { editedAt: nowText(), editedTimestamp: new Date().toISOString() });
-    const product = state.products.find(item => item.id === productId);
-    if (product) product.defaultUnit = updated.unit;
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     save();
     closeQuickEdit();
@@ -13644,6 +13838,8 @@
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
     document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
+    document.getElementById("rememberOrderEntryUnitForProduct").checked = false;
+    document.getElementById("orderEntryUnit").dispatchEvent(new Event("change", { bubbles: true }));
     document.getElementById("inventoryDialogPallets").value = "";
     document.getElementById("inventoryDialogPerPallet").value = product.defaultPalletKg || "";
     document.getElementById("inventoryDialogPieces").value = "";
@@ -13661,6 +13857,7 @@
 
   function closeOrderEntryDialog({ returnFocus = false } = {}) {
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
+    closeEntryUnitPickers();
     document.getElementById("orderEntryOverlay").classList.add("hidden");
     document.body.classList.remove("order-entry-open");
     document.getElementById("saveOrderEntryDialogBtn").classList.remove("keyboard-action-replaced");
@@ -13741,8 +13938,10 @@
       toast("Введи кількість", true);
       return;
     }
-    product.defaultUnit = unit;
-    rememberEntryUnit(unit);
+    if (document.getElementById("rememberOrderEntryUnitForProduct").checked) {
+      product.defaultUnit = unit;
+      rememberEntryUnit(unit);
+    }
     getActiveDay().entries.push(entry);
     document.getElementById("productSearch").value = "";
     document.getElementById("productSelect").value = "";
@@ -13835,11 +14034,13 @@
     }
 
     recalcEntry(entryData);
-    product.defaultUnit = entryData.unit;
-
     if (entryData.totalKg <= 0) {
       toast("Введи кількість", true);
       return;
+    }
+    if (document.getElementById("rememberEntryUnitForProduct").checked) {
+      product.defaultUnit = entryData.unit;
+      rememberEntryUnit(entryData.unit);
     }
 
     const day = getActiveDay();
@@ -13884,6 +14085,8 @@
     document.getElementById("editingEntryId").value = e.id;
     document.getElementById("productSelect").value = e.productId;
     document.getElementById("entryUnit").value = normalizeMeasurementUnit(e.unit);
+    document.getElementById("rememberEntryUnitForProduct").checked = false;
+    document.getElementById("entryUnit").dispatchEvent(new Event("change", { bubbles: true }));
     updateEntryUnitLabels(e.unit);
     document.getElementById("pallets").value = e.pallets || "";
     document.getElementById("kgPerPallet").value = e.kgPerPallet || "";
@@ -13948,6 +14151,8 @@
     const product = state.products.find(p => p.id === document.getElementById("productSelect").value);
     const unit = product ? normalizeMeasurementUnit(product.defaultUnit) : getLastEntryUnit();
     document.getElementById("entryUnit").value = unit;
+    document.getElementById("rememberEntryUnitForProduct").checked = false;
+    document.getElementById("entryUnit").dispatchEvent(new Event("change", { bubbles: true }));
     document.getElementById("kgPerPallet").value = product?.defaultPalletKg || "";
     document.getElementById("kgPerPiece").value = product?.defaultPieceKg || "";
     updateEntryUnitLabels(unit);
@@ -13956,12 +14161,6 @@
   function changeEntryMeasurementUnit() {
     const unit = normalizeMeasurementUnit(document.getElementById("entryUnit").value);
     updateEntryUnitLabels(unit);
-    rememberEntryUnit(unit);
-    const product = state.products.find(p => p.id === document.getElementById("productSelect").value);
-    if (product) {
-      product.defaultUnit = unit;
-      saveOnly();
-    }
   }
 
   function clearCurrentDay() {
@@ -14405,8 +14604,9 @@
     const transferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
     const checksum = transferChecksum(encoded);
     const chunks = [];
-    for (let offset = 0; offset < encoded.length; offset += QR_TRANSFER_CHUNK_SIZE) {
-      chunks.push(encoded.slice(offset, offset + QR_TRANSFER_CHUNK_SIZE));
+    const chunkSize = kind === "product" ? 1800 : QR_TRANSFER_CHUNK_SIZE;
+    for (let offset = 0; offset < encoded.length; offset += chunkSize) {
+      chunks.push(encoded.slice(offset, offset + chunkSize));
     }
     return chunks.map((data, index) => JSON.stringify({
       f: "ozqr",
@@ -14547,6 +14747,23 @@
         ? `Усі найменування (${qrTransferSourceProducts.length})`
         : "Повна резервна копія застосунку";
     if (!prepareQrSendParts(kind, products, subject)) return;
+    const details = document.getElementById("qrTransferDetails");
+    const product = kind === "product" ? qrTransferSourceProducts[0] : null;
+    if (product) {
+      const unit = normalizeMeasurementUnit(product.defaultUnit);
+      const parts = [`Типова одиниця: ${MEASUREMENT_UNITS[unit].amount}`];
+      if (Number(product.defaultPalletKg) > 0) {
+        parts.push(`у піддоні: ${formatQuantity(product.defaultPalletKg, unit)}`);
+      }
+      if (Number(product.defaultPieceKg) > 0) {
+        parts.push(`в одиниці: ${formatQuantity(product.defaultPieceKg, unit)}`);
+      }
+      details.textContent = parts.join(" · ");
+      details.classList.remove("hidden");
+    } else {
+      details.textContent = "";
+      details.classList.add("hidden");
+    }
     document.getElementById("qrTransferTitle").textContent =
       kind === "product" ? "Поділитися найменуванням" :
       kind === "products" ? "Передати найменування" : "Передати повну копію";
@@ -14574,26 +14791,14 @@
     else openQrSend("full");
   }
 
-  async function shareCurrentProductName() {
+  function shareCurrentProductName() {
     const id = document.getElementById("productInfoView").dataset.productId;
     const product = state.products.find(item => item.id === id);
     if (!product) {
       toast("Найменування не знайдено", true);
       return;
     }
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "Найменування", text: product.name });
-        return;
-      } catch (error) {
-        if (error?.name === "AbortError") return;
-      }
-    }
-    const copied = await copyTextToClipboard(product.name);
-    toast(
-      copied ? "Системне поширення недоступне — назву скопійовано" : "Не вдалося поділитися найменуванням",
-      !copied
-    );
+    openQrSend("product", [product]);
   }
 
   async function copyTextToClipboard(value) {
@@ -14643,6 +14848,7 @@
     select.value = products.some(product => product.id === previousValue) ? previousValue : "";
     select.disabled = products.length === 0;
     document.getElementById("copyBackupProductNameBtn").disabled = products.length === 0;
+    document.getElementById("qrBackupProductNameBtn").disabled = products.length === 0;
     document.getElementById("copyAllBackupProductNamesBtn").disabled = products.length === 0;
   }
 
@@ -14656,6 +14862,17 @@
     const copied = await copyTextToClipboard(product.name);
     if (copied) closeBackupActionMenu();
     toast(copied ? `Назву «${product.name}» скопійовано` : "Не вдалося скопіювати назву", !copied);
+  }
+
+  function shareBackupProductByQr() {
+    const productId = document.getElementById("backupProductNameSelect").value;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Спочатку обери найменування", true);
+      return;
+    }
+    closeBackupActionMenu();
+    openQrSend("product", [product]);
   }
 
   async function copyAllBackupProductNames() {
@@ -16097,6 +16314,10 @@
     btn.addEventListener("click", () => showPage(btn.dataset.page));
   });
 
+  setupEntryUnitPicker("entryUnit", "rememberEntryUnitForProduct");
+  setupEntryUnitPicker("orderEntryUnit", "rememberOrderEntryUnitForProduct");
+  document.addEventListener("click", closeEntryUnitPickers);
+
   document.getElementById("saveEntryBtn").addEventListener("click", () => {
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     saveEntry();
@@ -16275,7 +16496,12 @@
     downloadBackup();
   });
   document.getElementById("copyBackupProductNameBtn").addEventListener("click", copyBackupProductName);
+  document.getElementById("qrBackupProductNameBtn").addEventListener("click", shareBackupProductByQr);
   document.getElementById("copyAllBackupProductNamesBtn").addEventListener("click", copyAllBackupProductNames);
+  document.getElementById("receiveQrProductBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    openQrReceiver();
+  });
   document.getElementById("closeQrTransferBtn").addEventListener("click", closeQrTransfer);
   document.getElementById("qrProductSearchInput").addEventListener("input", () => renderQrProductSearchResults(true));
   document.getElementById("qrProductSearchInput").addEventListener("focus", () => renderQrProductSearchResults(true));
