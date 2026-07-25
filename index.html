@@ -5730,45 +5730,98 @@
       height: 100%;
       display: grid;
       place-items: center;
-      animation: splash-mark-breathe 2.25s ease-in-out .65s infinite;
-    }
-    .splash-mark::before,
-    .splash-mark::after {
-      content: "";
-      position: absolute;
-      inset: 7%;
-      z-index: -1;
-      border: 1px solid rgba(126, 147, 169, .22);
-      border-radius: 50%;
-      animation: splash-ring 2.4s ease-out .38s infinite;
-    }
-    .splash-mark::after {
-      inset: -7%;
-      border-color: rgba(255, 255, 255, .82);
-      animation-delay: 1.18s;
     }
     .splash-logo {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
       width: 100%;
       height: 100%;
       display: block;
       object-fit: contain;
+      opacity: 0;
       filter: drop-shadow(0 22px 24px rgba(59, 69, 82, .18));
       user-select: none;
       -webkit-user-drag: none;
+      animation: splash-logo-formed 3.05s cubic-bezier(.2, .72, .25, 1) both;
+    }
+    .splash-assembly {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 14px 18px rgba(59, 69, 82, .17));
+      animation: splash-assembly-fade 3.05s ease both;
+    }
+    .splash-spinner,
+    .splash-segment,
+    .splash-center-dot {
+      transform-box: view-box;
+      transform-origin: 80px 80px;
+    }
+    .splash-spinner {
+      animation: splash-assembly-spin 3.05s cubic-bezier(.48, .02, .24, 1) both;
+    }
+    .splash-segment {
+      opacity: 0;
+      animation: splash-segment-arrive 3.05s cubic-bezier(.18, .78, .28, 1) both;
+    }
+    .splash-segment-a {
+      --segment-from-x: 0px;
+      --segment-from-y: -150px;
+      --segment-entry-rotation: -34deg;
+    }
+    .splash-segment-b {
+      --segment-from-x: -132px;
+      --segment-from-y: 92px;
+      --segment-entry-rotation: 42deg;
+    }
+    .splash-segment-c {
+      --segment-from-x: 132px;
+      --segment-from-y: 92px;
+      --segment-entry-rotation: -48deg;
+    }
+    .splash-center-dot {
+      opacity: 0;
+      animation: splash-center-arrive 3.05s cubic-bezier(.18, .82, .25, 1) both;
     }
     @keyframes splash-content-in {
       from { opacity: 0; transform: translateY(24px) scale(.74) rotate(-7deg); }
       72% { opacity: 1; transform: translateY(-3px) scale(1.035) rotate(1deg); }
       to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
     }
-    @keyframes splash-mark-breathe {
-      0%, 100% { transform: translateY(0) scale(1) rotate(0); }
-      48% { transform: translateY(-7px) scale(1.035) rotate(1.2deg); }
+    @keyframes splash-segment-arrive {
+      0%, 8% {
+        opacity: 0;
+        transform:
+          translate3d(var(--segment-from-x), var(--segment-from-y), 0)
+          scale(.5)
+          rotate(var(--segment-entry-rotation));
+      }
+      18% { opacity: 1; }
+      52%, 100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1) rotate(0);
+      }
     }
-    @keyframes splash-ring {
-      0% { opacity: 0; transform: scale(.76); }
-      30% { opacity: .72; }
-      100% { opacity: 0; transform: scale(1.34); }
+    @keyframes splash-center-arrive {
+      0%, 28% { opacity: 0; transform: scale(.25); }
+      47%, 100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes splash-assembly-spin {
+      0%, 55% { transform: rotate(0); }
+      88%, 100% { transform: rotate(360deg); }
+    }
+    @keyframes splash-assembly-fade {
+      0%, 82% { opacity: 1; }
+      96%, 100% { opacity: 0; }
+    }
+    @keyframes splash-logo-formed {
+      0%, 77% { opacity: 0; transform: scale(.88) rotate(-10deg); }
+      91% { opacity: 1; transform: scale(1.025) rotate(0); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
     }
     @keyframes splash-wave-drift {
       from { translate: -1.5% -1%; rotate: -2deg; }
@@ -5784,9 +5837,13 @@
       .app-splash::before,
       .app-splash::after,
       .splash-content,
-      .splash-mark,
-      .splash-mark::before,
-      .splash-mark::after { animation: none; }
+      .splash-logo,
+      .splash-assembly,
+      .splash-spinner,
+      .splash-segment,
+      .splash-center-dot { animation: none; }
+      .splash-logo { opacity: 1; }
+      .splash-assembly { display: none; }
     }
 
     @media print {
@@ -7284,7 +7341,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=303">
+<link rel="manifest" href="manifest.json?v=304">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -7313,6 +7370,29 @@
     <div class="splash-content">
       <div class="splash-stage" id="splashStage">
         <div class="splash-mark" aria-hidden="true">
+          <svg class="splash-assembly" viewBox="0 0 160 160" aria-hidden="true">
+            <defs>
+              <filter id="splashSegmentShadow" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#3b4552" flood-opacity=".2"/>
+              </filter>
+            </defs>
+            <g class="splash-spinner" filter="url(#splashSegmentShadow)">
+              <g class="splash-segment splash-segment-a">
+                <path d="M80 32 A48 48 0 0 1 128 80" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round"/>
+                <path d="M80 32 A48 48 0 0 1 128 80" fill="none" stroke="#718ca6" stroke-width="29" stroke-linecap="round"/>
+              </g>
+              <g class="splash-segment splash-segment-b">
+                <path d="M80 32 A48 48 0 0 1 128 80" transform="rotate(120 80 80)" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round"/>
+                <path d="M80 32 A48 48 0 0 1 128 80" transform="rotate(120 80 80)" fill="none" stroke="#50565d" stroke-width="29" stroke-linecap="round"/>
+              </g>
+              <g class="splash-segment splash-segment-c">
+                <path d="M80 32 A48 48 0 0 1 128 80" transform="rotate(240 80 80)" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round"/>
+                <path d="M80 32 A48 48 0 0 1 128 80" transform="rotate(240 80 80)" fill="none" stroke="#c9cdd2" stroke-width="29" stroke-linecap="round"/>
+              </g>
+              <circle class="splash-center-dot" cx="80" cy="80" r="13" fill="#ffffff"/>
+              <circle class="splash-center-dot" cx="80" cy="80" r="9.5" fill="#d9dde2"/>
+            </g>
+          </svg>
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
@@ -8362,7 +8442,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.03</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.04</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8387,6 +8467,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.04</h3>
+          <ul>
+            <li>пульсування значка на заставці повністю прибрано;</li>
+            <li>три частини знака тепер прилітають із різних напрямків і сходяться біля центральної точки;</li>
+            <li>після складання знак робить спільний оберт, переходить у готову іконку та відкриває застосунок.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.03</h3>
           <ul>
@@ -9419,7 +9507,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.03";
+  const APP_VERSION = "3.04";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
