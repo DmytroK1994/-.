@@ -3,7 +3,7 @@
   "short_name": "Облік",
   "description": "Інвентаризація, замовлення та робота зі складськими найменуваннями",
   "id": "./",
-  "start_url": "./index.html?v=281",
+  "start_url": "./index.html?v=282",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],

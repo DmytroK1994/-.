@@ -6987,7 +6987,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=281">
+<link rel="manifest" href="manifest.json?v=282">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7021,7 +7021,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.81</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.82</span></div>
     </div>
   </div>
 
@@ -7652,6 +7652,12 @@
         <option value="bubblegum">Блакитна жуйка</option>
         <option value="gamer">Геймерський RGB</option>
         <option value="lemonade">Лимонад</option>
+        <option value="porcelain">Тепла порцеляна</option>
+        <option value="cloud">Ранкова хмара</option>
+        <option value="vanilla">Ванільний крем</option>
+        <option value="powderblue">Пудрове небо</option>
+        <option value="blush">Ніжний рум’янець</option>
+        <option value="eucalyptus">Світлий евкаліпт</option>
         <option value="custom">Власна тема</option>
       </select>
       <button type="button" class="hidden" id="openCustomThemeEditorBtn">Редагувати власну тему</button>
@@ -8012,7 +8018,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.81</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.82</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8037,6 +8043,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.82</h3>
+          <ul>
+            <li>додано шість нових світлих тем у категорію «Комфортні для очей»;</li>
+            <li>інвентаризація та замовлення тепер незалежно запам’ятовують вибраний склад;</li>
+            <li>нові документи використовують склад свого розділу, не підміняючи його вибором з іншого процесу.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.81</h3>
           <ul>
@@ -8838,7 +8852,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.81";
+  const APP_VERSION = "2.82";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8945,14 +8959,15 @@
     "indigo", "mono", "peach", "cobalt", "emerald", "coral", "plum", "sandsea", "vaporwave",
     "slate", "obsidian", "paper", "sage", "dusk", "nightblue", "latte", "mist", "calmsea",
     "olive", "sepia", "moonstone", "limepop", "pinkpop", "mango", "ultraviolet", "turquoise",
-    "comic", "sunset", "bubblegum", "gamer", "lemonade", "custom"
+    "comic", "sunset", "bubblegum", "gamer", "lemonade", "porcelain", "cloud", "vanilla",
+    "powderblue", "blush", "eucalyptus", "custom"
   ];
   const THEME_CATEGORIES = [
     { key: "basic", label: "Основні", themes: ["dark", "beige", "white"] },
     { key: "premium", label: "Преміальні 2026", themes: ["graphite", "aurora", "stone", "lavender", "mint", "copper"] },
     { key: "youth", label: "Яскраві та молодіжні", themes: ["limepop", "pinkpop", "mango", "ultraviolet", "turquoise", "comic", "sunset", "bubblegum", "gamer", "lemonade", "citrus", "sakura", "cyber", "vaporwave"] },
     { key: "natural", label: "Природні", themes: ["forest", "matcha", "terracotta", "emerald", "sandsea", "sage", "calmsea", "olive"] },
-    { key: "comfort", label: "Комфортні для очей", themes: ["paper", "dusk", "nightblue", "latte", "mist", "sepia", "moonstone", "slate", "arctic"] },
+    { key: "comfort", label: "Комфортні для очей", themes: ["paper", "latte", "mist", "sepia", "moonstone", "slate", "arctic", "porcelain", "cloud", "vanilla", "powderblue", "blush", "eucalyptus", "dusk", "nightblue"] },
     { key: "atmospheric", label: "Контрастні та атмосферні", themes: ["atlantic", "ruby", "indigo", "mono", "peach", "cobalt", "coral", "plum", "obsidian"] },
     { key: "custom", label: "Власне оформлення", themes: ["custom"] },
     { key: "favorites", label: "Улюблені теми", themes: [] }
@@ -9008,7 +9023,13 @@
     sunset: { scheme: "dark", bg: "#3d0a45", surface: "#6b1455", strong: "#97285a", deep: "#1d0524", text: "#fff1e8", muted: "#f0b6c8", border: "#b53c66", borderStrong: "#df6a77", primary: "#ff7a38", primaryDark: "#b43f18", selection: "#e8ef4a", action: "#80405f", success: "#20a96f", warning: "#e48a1b", danger: "#ec3f5d" },
     bubblegum: { scheme: "light", bg: "#8fdcff", surface: "#dff5ff", strong: "#fff5fb", deep: "#55bbe8", text: "#102b38", muted: "#3d6273", border: "#3298c4", borderStrong: "#16739b", primary: "#f552ad", primaryDark: "#a52b76", selection: "#8b5cf6", action: "#3f7187", success: "#16815d", warning: "#b45c00", danger: "#ca294f" },
     gamer: { scheme: "dark", bg: "#05070c", surface: "#10172a", strong: "#172440", deep: "#010204", text: "#eaffff", muted: "#9ebfd0", border: "#244967", borderStrong: "#39759a", primary: "#18ef72", primaryDark: "#079344", selection: "#f238ff", action: "#295675", success: "#12bd66", warning: "#f0a111", danger: "#f23c67" },
-    lemonade: { scheme: "light", bg: "#fff45e", surface: "#fffbd2", strong: "#ffffff", deep: "#e8db1c", text: "#302d00", muted: "#65600c", border: "#c6bb0d", borderStrong: "#8c8300", primary: "#00a6a0", primaryDark: "#006d6a", selection: "#ff4f91", action: "#6e6815", success: "#148054", warning: "#a95a00", danger: "#c92949" }
+    lemonade: { scheme: "light", bg: "#fff45e", surface: "#fffbd2", strong: "#ffffff", deep: "#e8db1c", text: "#302d00", muted: "#65600c", border: "#c6bb0d", borderStrong: "#8c8300", primary: "#00a6a0", primaryDark: "#006d6a", selection: "#ff4f91", action: "#6e6815", success: "#148054", warning: "#a95a00", danger: "#c92949" },
+    porcelain: { scheme: "light", bg: "#f7f4ee", surface: "#fcfaf6", strong: "#ffffff", deep: "#ebe6dc", text: "#32312e", muted: "#716e67", border: "#d7d0c4", borderStrong: "#a79f91", primary: "#6f827d", primaryDark: "#4b5f5a", selection: "#c6a67a", action: "#77736b", success: "#5a8069", warning: "#a8783d", danger: "#a95a5b" },
+    cloud: { scheme: "light", bg: "#f1f4f6", surface: "#f9fbfc", strong: "#ffffff", deep: "#e3e8ec", text: "#2f3940", muted: "#6d7a82", border: "#cbd4da", borderStrong: "#95a4ad", primary: "#688596", primaryDark: "#476474", selection: "#b79b83", action: "#707d84", success: "#527d69", warning: "#9e743d", danger: "#a6555f" },
+    vanilla: { scheme: "light", bg: "#fbf5df", surface: "#fffaf0", strong: "#ffffff", deep: "#eee5c9", text: "#383328", muted: "#786f5d", border: "#ddd0ad", borderStrong: "#a99a72", primary: "#8c7952", primaryDark: "#645638", selection: "#78a19a", action: "#7d7461", success: "#5b8064", warning: "#a87836", danger: "#aa5757" },
+    powderblue: { scheme: "light", bg: "#edf4fa", surface: "#f7fbfe", strong: "#ffffff", deep: "#dce8f1", text: "#2b3945", muted: "#657786", border: "#bfd1df", borderStrong: "#87a5ba", primary: "#5f87a4", primaryDark: "#3f627c", selection: "#bd967c", action: "#687c8b", success: "#4d7e69", warning: "#a1733a", danger: "#a65360" },
+    blush: { scheme: "light", bg: "#f9f0f1", surface: "#fdf8f8", strong: "#ffffff", deep: "#ecdde0", text: "#3b3033", muted: "#7b696e", border: "#dbc4ca", borderStrong: "#aa8d95", primary: "#9a707c", primaryDark: "#704d58", selection: "#7f9d96", action: "#7f7074", success: "#587e67", warning: "#a4773d", danger: "#ad5662" },
+    eucalyptus: { scheme: "light", bg: "#edf3ef", surface: "#f7faf8", strong: "#ffffff", deep: "#dce7df", text: "#2e3932", muted: "#69786e", border: "#c3d2c8", borderStrong: "#8fa699", primary: "#668777", primaryDark: "#456455", selection: "#bc9d78", action: "#6e7d73", success: "#4f7f64", warning: "#9f763b", danger: "#a45559" }
   };
   const MEASUREMENT_UNITS = {
     kg: { short: "кг", amount: "Кілограмів" },
@@ -10740,6 +10761,10 @@
       activeOrderId: currentOrderId,
       warehouses,
       activeWarehouseId: warehouses[0].id,
+      workspaceWarehouseIds: {
+        inventory: warehouses[0].id,
+        orders: warehouses[0].id
+      },
       days: [
         {
           id: currentDayId,
@@ -11250,6 +11275,24 @@
     normalized.activeWarehouseId = normalized.warehouses.some(warehouse => warehouse.id === normalized.activeWarehouseId)
       ? normalized.activeWarehouseId
       : (normalized.warehouses[0]?.id || null);
+    const savedWorkspaceWarehouses = normalized.workspaceWarehouseIds
+      && typeof normalized.workspaceWarehouseIds === "object"
+      && !Array.isArray(normalized.workspaceWarehouseIds)
+        ? normalized.workspaceWarehouseIds
+        : {};
+    normalized.workspaceWarehouseIds = {};
+    Object.entries(savedWorkspaceWarehouses).forEach(([mode, warehouseId]) => {
+      if (normalized.warehouses.some(warehouse => warehouse.id === warehouseId)) {
+        normalized.workspaceWarehouseIds[mode] = warehouseId;
+      }
+    });
+    const activeInventoryDocument = normalized.days.find(day => day.id === normalized.activeDayId);
+    if (!normalized.workspaceWarehouseIds.inventory && normalized.warehouses.some(warehouse => warehouse.id === activeInventoryDocument?.warehouseId)) {
+      normalized.workspaceWarehouseIds.inventory = activeInventoryDocument.warehouseId;
+    }
+    if (!normalized.workspaceWarehouseIds.orders && normalized.activeWarehouseId) {
+      normalized.workspaceWarehouseIds.orders = normalized.activeWarehouseId;
+    }
 
     normalized.products.forEach(product => {
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
@@ -11809,15 +11852,41 @@
   }
 
   function getWorkspaceWarehouseId() {
-    if (workspaceIsOrders()) return state.activeWarehouseId || "";
+    const remembered = getRememberedWorkspaceWarehouseId(workspaceMode);
+    if (workspaceIsOrders()) {
+      return remembered;
+    }
     const day = state.days.find(item => item.id === state.activeDayId);
     return state.warehouses.some(warehouse => warehouse.id === day?.warehouseId)
       ? day.warehouseId
-      : "";
+      : remembered;
+  }
+
+  function getRememberedWorkspaceWarehouseId(mode) {
+    const savedId = state.workspaceWarehouseIds?.[mode];
+    if (state.warehouses.some(warehouse => warehouse.id === savedId)) return savedId;
+    if (mode === "orders" && state.warehouses.some(warehouse => warehouse.id === state.activeWarehouseId)) {
+      return state.activeWarehouseId;
+    }
+    if (mode === "inventory") {
+      const day = state.days.find(item => item.id === state.activeDayId);
+      if (state.warehouses.some(warehouse => warehouse.id === day?.warehouseId)) return day.warehouseId;
+    }
+    return "";
+  }
+
+  function rememberWorkspaceWarehouse(mode, warehouseId) {
+    const id = state.warehouses.some(warehouse => warehouse.id === warehouseId) ? warehouseId : null;
+    if (!state.workspaceWarehouseIds || typeof state.workspaceWarehouseIds !== "object") {
+      state.workspaceWarehouseIds = {};
+    }
+    if (id) state.workspaceWarehouseIds[mode] = id;
+    else delete state.workspaceWarehouseIds[mode];
+    return id;
   }
 
   function setWorkspaceWarehouse(warehouseId) {
-    const id = state.warehouses.some(warehouse => warehouse.id === warehouseId) ? warehouseId : null;
+    const id = rememberWorkspaceWarehouse(workspaceMode, warehouseId);
     if (workspaceIsOrders()) {
       state.activeWarehouseId = id;
       return;
@@ -11845,7 +11914,7 @@
       if (!select) return;
       const current = id === "desktopOrderWarehouseSelect" || id === "orderWarehouseSelect"
         ? getWorkspaceWarehouseId()
-        : (select.value || state.activeWarehouseId || "");
+        : (select.value || getWorkspaceWarehouseId() || "");
       select.innerHTML = empty + options;
       select.value = state.warehouses.some(warehouse => warehouse.id === current) ? current : "";
     });
@@ -11919,6 +11988,7 @@
     document.getElementById("warehouseManagerList").appendChild(row);
     state.warehouses.push(warehouse);
     if (!state.activeWarehouseId) state.activeWarehouseId = warehouse.id;
+    if (!state.workspaceWarehouseIds?.orders) rememberWorkspaceWarehouse("orders", warehouse.id);
     if (!workspaceIsOrders() && !getWorkspaceWarehouseId()) {
       setWorkspaceWarehouse(warehouse.id);
     }
@@ -11959,6 +12029,17 @@
     state.warehouses = warehouses;
     if (!warehouses.some(warehouse => warehouse.id === state.activeWarehouseId)) {
       state.activeWarehouseId = warehouses[0]?.id || null;
+    }
+    if (!state.workspaceWarehouseIds || typeof state.workspaceWarehouseIds !== "object") {
+      state.workspaceWarehouseIds = {};
+    }
+    Object.keys(state.workspaceWarehouseIds).forEach(mode => {
+      if (!warehouses.some(warehouse => warehouse.id === state.workspaceWarehouseIds[mode])) {
+        delete state.workspaceWarehouseIds[mode];
+      }
+    });
+    if (!state.workspaceWarehouseIds.orders && state.activeWarehouseId) {
+      state.workspaceWarehouseIds.orders = state.activeWarehouseId;
     }
     state.orders.forEach(order => order.entries.forEach(entry => {
       const renamed = warehouses.find(warehouse => warehouse.id === entry.warehouseId);
@@ -12104,7 +12185,10 @@
     }
     if (!state.activeDayId || !state.days.some(d => d.id === state.activeDayId)) {
       const id = uid();
-      const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+      const rememberedInventoryWarehouseId = getRememberedWorkspaceWarehouseId("inventory")
+        || state.warehouses[0]?.id
+        || "";
+      const warehouse = state.warehouses.find(item => item.id === rememberedInventoryWarehouseId);
       state.days.unshift({
         id,
         documentNumber: nextDocumentNumber(state.days, todayISO()),
@@ -13972,7 +14056,10 @@
     if (!confirmed) return;
 
     const id = uid();
-    const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+    const inventoryWarehouseId = getRememberedWorkspaceWarehouseId("inventory")
+      || state.warehouses[0]?.id
+      || "";
+    const warehouse = state.warehouses.find(item => item.id === inventoryWarehouseId);
     const documentData = {
       id,
       documentNumber: nextDocumentNumber(orders ? state.orders : state.days, todayISO()),
@@ -14026,7 +14113,10 @@
       else state.activeDayId = todayDocument.id;
     } else {
       const id = uid();
-      const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+      const inventoryWarehouseId = getRememberedWorkspaceWarehouseId("inventory")
+        || state.warehouses[0]?.id
+        || "";
+      const warehouse = state.warehouses.find(item => item.id === inventoryWarehouseId);
       const documentData = {
         id,
         documentNumber: nextDocumentNumber(documents, currentDate),
@@ -14525,7 +14615,7 @@
       return;
     }
     const orders = workspaceIsOrders();
-    const warehouseId = orders ? state.activeWarehouseId : getWorkspaceWarehouseId();
+    const warehouseId = getWorkspaceWarehouseId();
     const warehouse = state.warehouses.find(item => item.id === warehouseId);
     if (!warehouse) {
       toast("Спочатку обери або додай склад", true);
