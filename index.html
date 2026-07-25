@@ -5724,6 +5724,19 @@
         scale(var(--splash-press-scale));
       transition: transform .18s ease-out;
     }
+    .splash-version {
+      position: absolute;
+      top: calc(100% + 17px);
+      left: 50%;
+      min-width: max-content;
+      transform: translateX(-50%);
+      color: #596675;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .09em;
+      line-height: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
+    }
     .splash-mark {
       position: relative;
       width: 100%;
@@ -7396,6 +7409,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.04</span></div>
     </div>
   </div>
 
@@ -8472,7 +8486,8 @@
           <ul>
             <li>пульсування значка на заставці повністю прибрано;</li>
             <li>три частини знака тепер прилітають із різних напрямків і сходяться біля центральної точки;</li>
-            <li>після складання знак робить спільний оберт, переходить у готову іконку та відкриває застосунок.</li>
+            <li>після складання знак робить спільний оберт, переходить у готову іконку та відкриває застосунок;</li>
+            <li>під анімацією знову постійно відображається актуальний номер версії.</li>
           </ul>
         </section>
         <section class="changelog-entry">
@@ -10783,7 +10798,7 @@
   }
 
   function renderAppVersion() {
-    ["aboutVersionLabel"].forEach(id => {
+    ["splashVersionLabel", "aboutVersionLabel"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = APP_VERSION;
     });
