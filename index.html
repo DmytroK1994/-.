@@ -3735,6 +3735,48 @@
       background: var(--soft-danger-bg);
       color: var(--soft-danger-text);
     }
+    #pageHistory .history-select-trigger,
+    #pageHistory #selectAllHistoryBtn,
+    #pageHistory .history-neutral-action {
+      border: 1px solid var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+    }
+    #pageHistory .history-select-trigger,
+    #pageHistory #selectAllHistoryBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    .history-select-square {
+      display: inline-grid;
+      width: 21px;
+      height: 21px;
+      flex: 0 0 21px;
+      place-items: center;
+      border: 1px solid var(--border-strong);
+      border-radius: 5px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 950;
+      line-height: 1;
+    }
+    #pageHistory #selectAllHistoryBtn[aria-pressed="false"] .history-select-square {
+      color: transparent;
+    }
+    #pageHistory .history-neutral-action {
+      color: var(--muted);
+      font-weight: 750;
+    }
+    #pageHistory .history-neutral-action:hover,
+    #pageHistory .history-neutral-action:active {
+      border-color: var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+    }
     #pageHistory .clear-search-btn {
       border-color: var(--border-strong);
       background: var(--border);
@@ -7219,7 +7261,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=299">
+<link rel="manifest" href="manifest.json?v=300">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7253,7 +7295,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.99</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.00</span></div>
     </div>
   </div>
 
@@ -7673,12 +7715,12 @@
           </div>
         </div>
         <div class="actions3 history-toolbar" id="historyNormalActions">
-          <button class="yellow" id="toggleHistorySelectBtn">Вибрати</button>
-          <button class="danger" id="deleteEmptyDaysBtn">Видалити порожні</button>
-          <button class="danger" id="deleteAllHistoryBtn">Очистити все</button>
+          <button class="history-select-trigger" id="toggleHistorySelectBtn"><span class="history-select-square" aria-hidden="true">✓</span><span>Обрати</span></button>
+          <button class="history-neutral-action" id="deleteEmptyDaysBtn">Видалити порожні</button>
+          <button class="history-neutral-action" id="deleteAllHistoryBtn">Очистити все</button>
         </div>
         <div class="actions history-toolbar hidden" id="historySelectActions">
-          <button id="selectAllHistoryBtn">Вибрати все</button>
+          <button id="selectAllHistoryBtn"><span class="history-select-square" aria-hidden="true">✓</span><span>Обрати все</span></button>
           <button class="danger" id="deleteSelectedHistoryBtn">Видалити вибране</button>
           <button class="secondary" id="cancelHistorySelectBtn">Скасувати</button>
         </div>
@@ -8300,7 +8342,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.99</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.00</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8325,6 +8367,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.00</h3>
+          <ul>
+            <li>панель керування всіма розділами історії переведено в нейтральний сірий стиль;</li>
+            <li>«Обрати» та «Обрати все» отримали квадратну позначку з галочкою зліва;</li>
+            <li>яскраво-червоне оформлення кнопок «Видалити порожні» й «Очистити все» прибрано.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.99</h3>
           <ul>
@@ -9325,7 +9375,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.99";
+  const APP_VERSION = "3.00";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -15048,8 +15098,7 @@
     const button = document.getElementById("selectAllHistoryBtn");
     if (!button) return;
     const allSelected = allHistoryDaysSelected();
-    button.textContent = allSelected ? "Зняти все" : "Вибрати все";
-    button.classList.toggle("yellow", allSelected);
+    button.innerHTML = `<span class="history-select-square" aria-hidden="true">✓</span><span>${allSelected ? "Зняти все" : "Обрати все"}</span>`;
     button.setAttribute("aria-pressed", String(allSelected));
   }
 
