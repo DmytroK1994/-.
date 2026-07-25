@@ -3289,6 +3289,37 @@
     .button-layout-grid label {
       margin-top: 4px;
     }
+    .custom-button-size-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 3px 8px;
+      margin-top: 7px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-deep);
+    }
+    .custom-button-size-control.hidden { display: none; }
+    .custom-button-size-control label {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .custom-button-size-control input[type="range"] {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+    }
+    .custom-button-size-value {
+      min-width: 42px;
+      align-self: center;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+    }
     @media (max-width: 350px) {
       .button-layout-grid { grid-template-columns: 1fr; }
     }
@@ -3320,6 +3351,12 @@
       --settings-list-width-reduction: 40px;
       --themes-list-width-reduction: 40px;
     }
+    html[data-nav-button-size="custom"] {
+      --navigation-button-min-height: var(--custom-nav-button-min-height);
+      --navigation-button-padding-y: var(--custom-nav-button-padding-y);
+      --navigation-button-padding-x: var(--custom-nav-button-padding-x);
+      --navigation-button-font-size: var(--custom-nav-button-font-size);
+    }
     html[data-menu-button-size="small"] .drawer,
     html[data-settings-button-size="small"] #pageManagement,
     html[data-themes-button-size="small"] #themeCategoryList {
@@ -3343,6 +3380,24 @@
       --navigation-button-padding-y: 7px;
       --navigation-button-padding-x: 14px;
       --navigation-button-font-size: 15px;
+    }
+    html[data-menu-button-size="custom"] .drawer {
+      --navigation-button-min-height: var(--custom-menu-button-min-height);
+      --navigation-button-padding-y: var(--custom-menu-button-padding-y);
+      --navigation-button-padding-x: var(--custom-menu-button-padding-x);
+      --navigation-button-font-size: var(--custom-menu-button-font-size);
+    }
+    html[data-settings-button-size="custom"] #pageManagement {
+      --navigation-button-min-height: var(--custom-settings-button-min-height);
+      --navigation-button-padding-y: var(--custom-settings-button-padding-y);
+      --navigation-button-padding-x: var(--custom-settings-button-padding-x);
+      --navigation-button-font-size: var(--custom-settings-button-font-size);
+    }
+    html[data-themes-button-size="custom"] #themeCategoryList {
+      --navigation-button-min-height: var(--custom-themes-button-min-height);
+      --navigation-button-padding-y: var(--custom-themes-button-padding-y);
+      --navigation-button-padding-x: var(--custom-themes-button-padding-x);
+      --navigation-button-font-size: var(--custom-themes-button-font-size);
     }
     html[data-history-button-size="small"] #historyNavigation,
     html[data-theme-items-button-size="small"] #themeCategoryView,
@@ -3376,6 +3431,42 @@
       --navigation-button-padding-y: 10px;
       --navigation-button-padding-x: 18px;
       --navigation-button-font-size: 16px;
+    }
+    html[data-history-button-size="custom"] #historyNavigation {
+      --navigation-button-min-height: var(--custom-history-button-min-height);
+      --navigation-button-padding-y: var(--custom-history-button-padding-y);
+      --navigation-button-padding-x: var(--custom-history-button-padding-x);
+      --navigation-button-font-size: var(--custom-history-button-font-size);
+    }
+    html[data-theme-items-button-size="custom"] #themeCategoryView {
+      --navigation-button-min-height: var(--custom-theme-items-button-min-height);
+      --navigation-button-padding-y: var(--custom-theme-items-button-padding-y);
+      --navigation-button-padding-x: var(--custom-theme-items-button-padding-x);
+      --navigation-button-font-size: var(--custom-theme-items-button-font-size);
+    }
+    html[data-other-settings-button-size="custom"] #otherSettingsCategoryView {
+      --navigation-button-min-height: var(--custom-other-settings-button-min-height);
+      --navigation-button-padding-y: var(--custom-other-settings-button-padding-y);
+      --navigation-button-padding-x: var(--custom-other-settings-button-padding-x);
+      --navigation-button-font-size: var(--custom-other-settings-button-font-size);
+    }
+    html[data-workspace-button-size="custom"] #workspaceDropdown {
+      --navigation-button-min-height: var(--custom-workspace-button-min-height);
+      --navigation-button-padding-y: var(--custom-workspace-button-padding-y);
+      --navigation-button-padding-x: var(--custom-workspace-button-padding-x);
+      --navigation-button-font-size: var(--custom-workspace-button-font-size);
+    }
+    html[data-bottom-nav-button-size="custom"] #appBottomNav {
+      --navigation-button-min-height: var(--custom-bottom-nav-button-min-height);
+      --navigation-button-padding-y: var(--custom-bottom-nav-button-padding-y);
+      --navigation-button-padding-x: var(--custom-bottom-nav-button-padding-x);
+      --navigation-button-font-size: var(--custom-bottom-nav-button-font-size);
+    }
+    html[data-dialog-menu-button-size="custom"] .configurable-dialog-menu {
+      --navigation-button-min-height: var(--custom-dialog-menu-button-min-height);
+      --navigation-button-padding-y: var(--custom-dialog-menu-button-padding-y);
+      --navigation-button-padding-x: var(--custom-dialog-menu-button-padding-x);
+      --navigation-button-font-size: var(--custom-dialog-menu-button-font-size);
     }
     html[data-menu-button-size="small"] .drawer { --menu-list-width-reduction: 104px; }
     html[data-menu-button-size="standard"] .drawer { --menu-list-width-reduction: 88px; }
@@ -6756,7 +6847,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=275">
+<link rel="manifest" href="manifest.json?v=276">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -6790,7 +6881,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.75</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.76</span></div>
     </div>
   </div>
 
@@ -7609,88 +7700,98 @@
             <select id="navButtonSizeSelect">
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший на один крок</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="menuButtonSizeSelect">Головне меню</label>
             <select id="menuButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="settingsButtonSizeSelect">Меню налаштувань</label>
             <select id="settingsButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="historyButtonSizeSelect">Меню історії</label>
             <select id="historyButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="themesButtonSizeSelect">Категорії тем</label>
             <select id="themesButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="themeItemsButtonSizeSelect">Список тем</label>
             <select id="themeItemsButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="otherSettingsButtonSizeSelect">Категорії інших налаштувань</label>
             <select id="otherSettingsButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="workspaceButtonSizeSelect">Перемикання розділів</label>
             <select id="workspaceButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="bottomNavButtonSizeSelect">Нижня навігація</label>
             <select id="bottomNavButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
           <div>
             <label for="dialogMenuButtonSizeSelect">Меню у вікнах</label>
             <select id="dialogMenuButtonSizeSelect">
-              <option value="inherit">Як загальний</option>
+              <option value="inherit">Загальний</option>
               <option value="small">Менший</option>
               <option value="standard">Стандартний</option>
-              <option value="large">Більший</option>
+              <option value="large">Великий</option>
+              <option value="custom">Власний</option>
             </select>
           </div>
         </div>
@@ -7771,7 +7872,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.75</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.76</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7796,6 +7897,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.76</h3>
+          <ul>
+            <li>варіант «Як загальний» перейменовано на зрозумілий «Загальний»;</li>
+            <li>готові розміри кнопок уніфіковано: менший, стандартний і великий;</li>
+            <li>для загального розміру й кожного окремого меню додано власне налаштування від 30 до 58 px з живим прикладом.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.75</h3>
           <ul>
@@ -8548,7 +8657,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.75";
+  const APP_VERSION = "2.76";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8574,6 +8683,22 @@
   const WORKSPACE_BUTTON_SIZE_KEY = "warehouseJournalWorkspaceButtonSize";
   const BOTTOM_NAV_BUTTON_SIZE_KEY = "warehouseJournalBottomNavigationButtonSize";
   const DIALOG_MENU_BUTTON_SIZE_KEY = "warehouseJournalDialogMenuButtonSize";
+  const CUSTOM_BUTTON_SIZE_SUFFIX = "CustomPx";
+  const CUSTOM_BUTTON_SIZE_MIN = 30;
+  const CUSTOM_BUTTON_SIZE_MAX = 58;
+  const CUSTOM_BUTTON_SIZE_DEFAULT = 39;
+  const BUTTON_SIZE_CONFIGS = [
+    { selectId: "navButtonSizeSelect", key: NAV_BUTTON_SIZE_KEY, css: "nav", label: "Загальний розмір кнопки" },
+    { selectId: "menuButtonSizeSelect", key: MENU_BUTTON_SIZE_KEY, css: "menu", label: "Приклад кнопки меню" },
+    { selectId: "settingsButtonSizeSelect", key: SETTINGS_BUTTON_SIZE_KEY, css: "settings", label: "Приклад кнопки налаштувань" },
+    { selectId: "historyButtonSizeSelect", key: HISTORY_BUTTON_SIZE_KEY, css: "history", label: "Приклад кнопки історії" },
+    { selectId: "themesButtonSizeSelect", key: THEMES_BUTTON_SIZE_KEY, css: "themes", label: "Приклад категорії тем" },
+    { selectId: "themeItemsButtonSizeSelect", key: THEME_ITEMS_BUTTON_SIZE_KEY, css: "theme-items", label: "Приклад окремої теми" },
+    { selectId: "otherSettingsButtonSizeSelect", key: OTHER_SETTINGS_BUTTON_SIZE_KEY, css: "other-settings", label: "Приклад категорії налаштувань" },
+    { selectId: "workspaceButtonSizeSelect", key: WORKSPACE_BUTTON_SIZE_KEY, css: "workspace", label: "Приклад перемикання розділу" },
+    { selectId: "bottomNavButtonSizeSelect", key: BOTTOM_NAV_BUTTON_SIZE_KEY, css: "bottom-nav", label: "Приклад нижньої навігації" },
+    { selectId: "dialogMenuButtonSizeSelect", key: DIALOG_MENU_BUTTON_SIZE_KEY, css: "dialog-menu", label: "Приклад меню у вікні" }
+  ];
   const WORKSPACE_MODE_KEY = "warehouseJournalWorkspaceMode";
   const INITIAL_WORKSPACE_CHOICE_KEY = "warehouseJournalInitialWorkspaceChoice";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
@@ -8618,6 +8743,7 @@
     WORKSPACE_BUTTON_SIZE_KEY,
     BOTTOM_NAV_BUTTON_SIZE_KEY,
     DIALOG_MENU_BUTTON_SIZE_KEY,
+    ...BUTTON_SIZE_CONFIGS.map(config => `${config.key}${CUSTOM_BUTTON_SIZE_SUFFIX}`),
     WORKSPACE_MODE_KEY,
     LAST_ENTRY_UNIT_KEY,
     ENTRY_UNIT_VISIBILITY_KEY,
@@ -12762,27 +12888,86 @@
   }
 
   function getNavigationButtonSize() {
-    return readNavigationButtonSetting(NAV_BUTTON_SIZE_KEY, ["small", "standard", "large"], "standard");
+    return readNavigationButtonSetting(NAV_BUTTON_SIZE_KEY, ["small", "standard", "large", "custom"], "standard");
   }
 
   function getSectionButtonSize(key) {
-    return readNavigationButtonSetting(key, ["inherit", "small", "standard", "large"], "inherit");
+    return readNavigationButtonSetting(key, ["inherit", "small", "standard", "large", "custom"], "inherit");
   }
 
   function resolveSectionButtonSize(value) {
     return value === "inherit" ? getNavigationButtonSize() : value;
   }
 
-  function updateNavigationButtonPreview(size = getNavigationButtonSize(), label = "Приклад пункту меню") {
+  function getCustomButtonSize(key) {
+    try {
+      const stored = Number(localStorage.getItem(`${key}${CUSTOM_BUTTON_SIZE_SUFFIX}`));
+      const value = Number.isFinite(stored) && stored > 0 ? stored : CUSTOM_BUTTON_SIZE_DEFAULT;
+      return Math.min(CUSTOM_BUTTON_SIZE_MAX, Math.max(CUSTOM_BUTTON_SIZE_MIN, Math.round(value)));
+    } catch (error) {
+      return CUSTOM_BUTTON_SIZE_DEFAULT;
+    }
+  }
+
+  function getCustomButtonMetrics(height) {
+    const normalizedHeight = Math.min(CUSTOM_BUTTON_SIZE_MAX, Math.max(CUSTOM_BUTTON_SIZE_MIN, Number(height) || CUSTOM_BUTTON_SIZE_DEFAULT));
+    return {
+      height: Math.round(normalizedHeight),
+      paddingY: Math.min(13, Math.max(4, Math.round((normalizedHeight - 20) / 3.2))),
+      paddingX: Math.min(22, Math.max(10, Math.round(normalizedHeight * .36))),
+      fontSize: Math.min(19, Math.max(13, Math.round(normalizedHeight * .37)))
+    };
+  }
+
+  function applyCustomButtonSizeVariables() {
+    const root = document.documentElement;
+    BUTTON_SIZE_CONFIGS.forEach(config => {
+      const metrics = getCustomButtonMetrics(getCustomButtonSize(config.key));
+      root.style.setProperty(`--custom-${config.css}-button-min-height`, `${metrics.height}px`);
+      root.style.setProperty(`--custom-${config.css}-button-padding-y`, `${metrics.paddingY}px`);
+      root.style.setProperty(`--custom-${config.css}-button-padding-x`, `${metrics.paddingX}px`);
+      root.style.setProperty(`--custom-${config.css}-button-font-size`, `${metrics.fontSize}px`);
+    });
+  }
+
+  function syncCustomButtonSizeControls() {
+    BUTTON_SIZE_CONFIGS.forEach(config => {
+      const select = document.getElementById(config.selectId);
+      const control = document.querySelector(`[data-custom-button-size="${config.selectId}"]`);
+      if (!select || !control) return;
+      const value = getCustomButtonSize(config.key);
+      control.classList.toggle("hidden", select.value !== "custom");
+      const range = control.querySelector("input");
+      const output = control.querySelector(".custom-button-size-value");
+      if (range) range.value = String(value);
+      if (output) output.textContent = `${value} px`;
+    });
+  }
+
+  function updateNavigationButtonPreview(size = getNavigationButtonSize(), label = "Приклад пункту меню", customKey = NAV_BUTTON_SIZE_KEY) {
     const preview = document.getElementById("buttonLayoutPreview");
     if (!preview) return;
     preview.dataset.width = getNavigationButtonWidth();
-    preview.dataset.size = resolveSectionButtonSize(size);
+    const resolvedSize = resolveSectionButtonSize(size);
+    preview.dataset.size = resolvedSize;
     const button = preview.querySelector("button");
-    if (button) button.textContent = label;
+    if (!button) return;
+    button.textContent = label;
+    button.style.removeProperty("min-height");
+    button.style.removeProperty("padding-block");
+    button.style.removeProperty("padding-inline");
+    button.style.removeProperty("font-size");
+    if (resolvedSize === "custom") {
+      const effectiveKey = size === "inherit" ? NAV_BUTTON_SIZE_KEY : customKey;
+      const metrics = getCustomButtonMetrics(getCustomButtonSize(effectiveKey));
+      button.style.minHeight = `${metrics.height}px`;
+      button.style.paddingBlock = `${metrics.paddingY}px`;
+      button.style.paddingInline = `${metrics.paddingX}px`;
+      button.style.fontSize = `${metrics.fontSize}px`;
+    }
   }
 
-  function applyNavigationButtonLayout(previewSize = getNavigationButtonSize(), previewLabel) {
+  function applyNavigationButtonLayout(previewSize = getNavigationButtonSize(), previewLabel, previewKey = NAV_BUTTON_SIZE_KEY) {
     const root = document.documentElement;
     const width = getNavigationButtonWidth();
     const globalSize = getNavigationButtonSize();
@@ -12806,6 +12991,7 @@
     root.dataset.workspaceButtonSize = workspaceSize;
     root.dataset.bottomNavButtonSize = bottomNavSize;
     root.dataset.dialogMenuButtonSize = dialogMenuSize;
+    applyCustomButtonSizeVariables();
 
     const values = {
       navButtonWidthSelect: width,
@@ -12824,13 +13010,48 @@
       const select = document.getElementById(id);
       if (select) select.value = value;
     });
-    updateNavigationButtonPreview(previewSize, previewLabel || "Приклад пункту меню");
+    syncCustomButtonSizeControls();
+    updateNavigationButtonPreview(previewSize, previewLabel || "Приклад пункту меню", previewKey);
     requestAnimationFrame(updateMenuOverflowIndicator);
   }
 
   function saveNavigationButtonSetting(key, value, previewSize, previewLabel) {
     try { localStorage.setItem(key, value); } catch (error) {}
-    applyNavigationButtonLayout(previewSize, previewLabel);
+    applyNavigationButtonLayout(previewSize, previewLabel, key);
+  }
+
+  function setupCustomButtonSizeControls() {
+    BUTTON_SIZE_CONFIGS.forEach(config => {
+      const select = document.getElementById(config.selectId);
+      if (!select || document.querySelector(`[data-custom-button-size="${config.selectId}"]`)) return;
+      const control = document.createElement("div");
+      control.className = "custom-button-size-control hidden";
+      control.dataset.customButtonSize = config.selectId;
+      const controlLabel = document.createElement("label");
+      controlLabel.htmlFor = `${config.selectId}CustomRange`;
+      controlLabel.textContent = `Власний розмір — від ${CUSTOM_BUTTON_SIZE_MIN} до ${CUSTOM_BUTTON_SIZE_MAX} px`;
+      const range = document.createElement("input");
+      range.type = "range";
+      range.id = `${config.selectId}CustomRange`;
+      range.min = String(CUSTOM_BUTTON_SIZE_MIN);
+      range.max = String(CUSTOM_BUTTON_SIZE_MAX);
+      range.step = "1";
+      range.value = String(getCustomButtonSize(config.key));
+      range.setAttribute("aria-label", `Власний розмір: ${config.label}`);
+      const output = document.createElement("output");
+      output.className = "custom-button-size-value";
+      output.htmlFor = range.id;
+      output.textContent = `${range.value} px`;
+      control.append(controlLabel, range, output);
+      select.insertAdjacentElement("afterend", control);
+      range.addEventListener("input", () => {
+        const value = Math.min(CUSTOM_BUTTON_SIZE_MAX, Math.max(CUSTOM_BUTTON_SIZE_MIN, Number(range.value)));
+        try { localStorage.setItem(`${config.key}${CUSTOM_BUTTON_SIZE_SUFFIX}`, String(value)); } catch (error) {}
+        output.textContent = `${value} px`;
+        applyNavigationButtonLayout("custom", config.label, config.key);
+      });
+    });
+    syncCustomButtonSizeControls();
   }
 
   function getEntryUnitVisibility() {
@@ -16776,35 +16997,13 @@
   document.getElementById("navButtonWidthSelect").addEventListener("change", event => {
     saveNavigationButtonSetting(NAV_BUTTON_WIDTH_KEY, event.target.value, getNavigationButtonSize(), "Приклад ширини кнопки");
   });
-  document.getElementById("navButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(NAV_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Загальний розмір кнопки");
-  });
-  document.getElementById("menuButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(MENU_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки меню");
-  });
-  document.getElementById("settingsButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(SETTINGS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки налаштувань");
-  });
-  document.getElementById("historyButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(HISTORY_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад кнопки історії");
-  });
-  document.getElementById("themesButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(THEMES_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад категорії тем");
-  });
-  document.getElementById("themeItemsButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(THEME_ITEMS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад окремої теми");
-  });
-  document.getElementById("otherSettingsButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(OTHER_SETTINGS_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад категорії налаштувань");
-  });
-  document.getElementById("workspaceButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(WORKSPACE_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад перемикання розділу");
-  });
-  document.getElementById("bottomNavButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(BOTTOM_NAV_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад нижньої навігації");
-  });
-  document.getElementById("dialogMenuButtonSizeSelect").addEventListener("change", event => {
-    saveNavigationButtonSetting(DIALOG_MENU_BUTTON_SIZE_KEY, event.target.value, event.target.value, "Приклад меню у вікні");
+  setupCustomButtonSizeControls();
+  BUTTON_SIZE_CONFIGS.forEach(config => {
+    const select = document.getElementById(config.selectId);
+    if (!select) return;
+    select.addEventListener("change", event => {
+      saveNavigationButtonSetting(config.key, event.target.value, event.target.value, config.label);
+    });
   });
   const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
   entryUnitVisibilitySelect.value = getEntryUnitVisibility();
