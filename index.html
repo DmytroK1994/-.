@@ -1003,6 +1003,71 @@
       border-color: var(--border-strong);
       filter: saturate(1.12) brightness(.97);
     }
+    .current-list-sort-control {
+      position: relative;
+      grid-column: 1 / -1;
+      min-width: 0;
+    }
+    .current-list-sort-menu {
+      position: relative;
+      width: 100%;
+    }
+    .current-list-sort-menu > summary {
+      min-height: 40px;
+      padding: 9px 34px 9px 13px;
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      background: var(--surface-deep);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      list-style: none;
+    }
+    .current-list-sort-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+    .current-list-sort-menu > summary::after {
+      content: "⌄";
+      position: absolute;
+      top: 9px;
+      right: 13px;
+      color: var(--muted);
+    }
+    .current-list-sort-menu[open] > summary::after {
+      content: "⌃";
+    }
+    .current-list-sort-options {
+      position: absolute;
+      top: calc(100% + 5px);
+      right: 0;
+      left: 0;
+      z-index: 45;
+      display: grid;
+      gap: 5px;
+      padding: 8px;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      background: var(--surface-strong);
+      box-shadow: 0 18px 46px var(--popover-shadow);
+    }
+    .current-list-sort-options button {
+      width: 100% !important;
+      min-height: 38px !important;
+      margin: 0 !important;
+      padding: 7px 10px !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 12px !important;
+    }
+    .current-list-sort-options button.active {
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text) !important;
+    }
     #todayList .entry-actions button.yellow {
       border: 1px solid var(--soft-warning-border);
       background: var(--soft-warning-bg);
@@ -5395,15 +5460,10 @@
       margin-right: 0;
       margin-left: 0;
     }
-    #orderEntryNeedDate {
-      padding-right: 10px;
-      padding-left: 10px;
-      text-align: center;
-    }
     .order-entry-dialog-grid .order-entry-comment-field {
       grid-column: 1 / -1;
     }
-    .order-entry-dialog-grid .inventory-only-entry-field {
+    .order-entry-dialog-grid .entry-breakdown-field {
       grid-column: 1 / -1;
       padding: 11px;
       border: 1px solid var(--border);
@@ -5454,14 +5514,11 @@
     body:not(.workspace-orders) #orderEntryOverlay .order-only-entry-field {
       display: none;
     }
-    body.workspace-orders #orderEntryOverlay .inventory-only-entry-field {
-      display: none;
-    }
-    body:not(.workspace-orders) #orderEntryOverlay .order-entry-direct-field {
+    #orderEntryOverlay .order-entry-direct-field {
       grid-column: 1 / -1;
       order: 1;
     }
-    body:not(.workspace-orders) #orderEntryOverlay .order-entry-comment-field {
+    #orderEntryOverlay .order-entry-comment-field {
       order: 2;
     }
     @media (max-width: 420px) {
@@ -5471,7 +5528,7 @@
       .order-entry-dialog-grid .order-entry-comment-field {
         grid-column: auto;
       }
-      .order-entry-dialog-grid .inventory-only-entry-field {
+      .order-entry-dialog-grid .entry-breakdown-field {
         grid-column: auto;
       }
       .inventory-entry-section-fields {
@@ -6089,6 +6146,7 @@
       .desktop-order-document-actions {
         display: flex;
         flex: 0 0 auto;
+        flex-wrap: wrap;
         gap: 8px;
       }
       .desktop-order-document-actions button {
@@ -6097,6 +6155,9 @@
         margin: 0;
         padding: 7px 13px;
         font-size: 13px;
+      }
+      .desktop-order-document-actions .current-list-sort-control {
+        flex: 1 0 100%;
       }
       .desktop-order-destination {
         display: flex;
@@ -6293,7 +6354,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.31</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.34</span></div>
     </div>
   </div>
 
@@ -6416,6 +6477,17 @@
       <div class="desktop-order-document-actions">
         <button type="button" id="desktopOrderPreviewBtn">Попередній перегляд</button>
         <button type="button" id="desktopOrderPrintBtn">Друк / PDF</button>
+        <div class="current-list-sort-control">
+          <details class="current-list-sort-menu">
+            <summary class="current-list-sort-summary">Сортування: за додаванням</summary>
+            <div class="current-list-sort-options">
+              <button type="button" data-current-list-sort="added-asc">Додані раніше</button>
+              <button type="button" data-current-list-sort="added-desc">Додані останні</button>
+              <button type="button" data-current-list-sort="name-asc">За назвою: А–Я</button>
+              <button type="button" data-current-list-sort="name-desc">За назвою: Я–А</button>
+            </div>
+          </details>
+        </div>
       </div>
       <div class="desktop-order-destination">
         <strong>Замовлення на:</strong>
@@ -6552,6 +6624,17 @@
     <div class="card no-print document-actions-card">
       <button id="previewDocumentBtn">Попередній перегляд документа</button>
       <button id="printBtn">Друк / PDF</button>
+      <div class="current-list-sort-control">
+        <details class="current-list-sort-menu">
+          <summary class="current-list-sort-summary">Сортування: за додаванням</summary>
+          <div class="current-list-sort-options">
+            <button type="button" data-current-list-sort="added-asc">Додані раніше</button>
+            <button type="button" data-current-list-sort="added-desc">Додані останні</button>
+            <button type="button" data-current-list-sort="name-asc">За назвою: А–Я</button>
+            <button type="button" data-current-list-sort="name-desc">За назвою: Я–А</button>
+          </div>
+        </details>
+      </div>
     </div>
 
     <div class="card no-print current-list-search-card">
@@ -7202,7 +7285,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.31</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.34</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7227,6 +7310,29 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.34</h3>
+          <ul>
+            <li>на новій установці компактний пошук з окремим вікном увімкнено за замовчуванням для інвентаризації та замовлень;</li>
+            <li>раніше збережений користувачем режим введення залишається без змін.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.33</h3>
+          <ul>
+            <li>до інвентаризації та замовлень додано меню сортування біля перегляду й друку;</li>
+            <li>доступне сортування за порядком додавання та за назвою в обох напрямках;</li>
+            <li>обраний порядок застосовується до списку, попереднього перегляду та PDF і зберігається окремо для кожного розділу.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.32</h3>
+          <ul>
+            <li>вікно замовлення отримало піддони, поштучний або коробковий розрахунок та окрему кількість;</li>
+            <li>кнопку й напис скорочено до «Додати»;</li>
+            <li>дату потреби прибрано з додавання та редагування — тепер використовується дата самого замовлення.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.31</h3>
           <ul>
@@ -7472,10 +7578,6 @@
             <option value="critical">Критично</option>
           </select>
         </div>
-        <div>
-          <label for="quickEditNeedDate">Дата потреби</label>
-          <input id="quickEditNeedDate" type="date" />
-        </div>
       </div>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
@@ -7531,7 +7633,7 @@
             <option value="packs">Упаковки (уп.)</option>
           </select>
         </div>
-        <div class="inventory-only-entry-field">
+        <div class="entry-breakdown-field">
           <div class="inventory-entry-section-title">Піддони</div>
           <div class="inventory-entry-section-fields">
             <div>
@@ -7544,7 +7646,7 @@
             </div>
           </div>
         </div>
-        <div class="inventory-only-entry-field">
+        <div class="entry-breakdown-field">
           <div class="inventory-entry-section-title">Поштучно / коробками</div>
           <div class="inventory-entry-section-fields">
             <div>
@@ -7566,10 +7668,6 @@
             <option value="critical">Критично</option>
           </select>
         </div>
-        <div class="order-only-entry-field">
-          <label for="orderEntryNeedDate">Дата потреби</label>
-          <input id="orderEntryNeedDate" type="date" />
-        </div>
         <div class="order-entry-comment-field">
           <label for="orderEntryComment">Коментар</label>
           <textarea id="orderEntryComment" rows="3" placeholder="Додаткова інформація до позиції"></textarea>
@@ -7589,7 +7687,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.31";
+  const APP_VERSION = "2.34";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -7619,6 +7717,8 @@
   const ENTRY_SECTION_STATE_KEY = "warehouseJournalEntrySectionState";
   const ORDER_ENTRY_MODE_KEY = "warehouseJournalOrderEntryMode";
   const INVENTORY_ENTRY_MODE_KEY = "warehouseJournalInventoryEntryMode";
+  const INVENTORY_LIST_SORT_KEY = "warehouseJournalInventoryListSort";
+  const ORDER_LIST_SORT_KEY = "warehouseJournalOrderListSort";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
@@ -7660,6 +7760,8 @@
     ENTRY_SECTION_STATE_KEY,
     ORDER_ENTRY_MODE_KEY,
     INVENTORY_ENTRY_MODE_KEY,
+    INVENTORY_LIST_SORT_KEY,
+    ORDER_LIST_SORT_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
   ];
@@ -8984,7 +9086,6 @@
         "#inventoryDialogPieces",
         "#inventoryDialogPerPiece",
         "#orderEntryStatus",
-        "#orderEntryNeedDate",
         "#orderEntryComment"
       ].join(", ")));
     }
@@ -11536,17 +11637,18 @@
     try {
       const saved = localStorage.getItem(ORDER_ENTRY_MODE_KEY);
       if (saved === "dialog" || saved === "classic") return saved;
-      return isMobileDevice ? "classic" : "dialog";
+      return "dialog";
     } catch (error) {
-      return isMobileDevice ? "classic" : "dialog";
+      return "dialog";
     }
   }
 
   function getInventoryEntryMode() {
     try {
-      return localStorage.getItem(INVENTORY_ENTRY_MODE_KEY) === "dialog" ? "dialog" : "classic";
+      const saved = localStorage.getItem(INVENTORY_ENTRY_MODE_KEY);
+      return saved === "classic" ? "classic" : "dialog";
     } catch (error) {
-      return "classic";
+      return "dialog";
     }
   }
 
@@ -12315,7 +12417,6 @@
     renderWarehouseOptions();
     document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
     document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
-    document.getElementById("quickEditNeedDate").value = entry.needDate || getActiveDay().date || todayISO();
   }
 
   function renderQuickEditTabs(entries, selectedId) {
@@ -12401,7 +12502,7 @@
         warehouseId,
         warehouseName: warehouse.name,
         orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value),
-        needDate: document.getElementById("quickEditNeedDate").value || getActiveDay().date || todayISO()
+        needDate: getActiveDay().date || todayISO()
       });
     }
     recalcEntry(updated);
@@ -12428,13 +12529,8 @@
       return;
     }
     document.getElementById("orderEntryProductId").value = product.id;
-    const orders = workspaceIsOrders();
-    document.getElementById("orderEntryDialogEyebrow").textContent = orders
-      ? "Додати в замовлення"
-      : "Додати в інвентаризацію";
-    document.getElementById("orderEntryQuantityLabel").textContent = orders
-      ? "Кількість"
-      : "Окрема кількість";
+    document.getElementById("orderEntryDialogEyebrow").textContent = "Додати";
+    document.getElementById("orderEntryQuantityLabel").textContent = "Окрема кількість";
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
     document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
@@ -12443,11 +12539,8 @@
     document.getElementById("inventoryDialogPieces").value = "";
     document.getElementById("inventoryDialogPerPiece").value = product.defaultPieceKg || "";
     document.getElementById("orderEntryStatus").value = "normal";
-    document.getElementById("orderEntryNeedDate").value = getActiveDay().date || todayISO();
     document.getElementById("orderEntryComment").value = "";
-    document.getElementById("saveOrderEntryDialogBtn").textContent = orders
-      ? "Додати в замовлення"
-      : "Додати";
+    document.getElementById("saveOrderEntryDialogBtn").textContent = "Додати";
     document.getElementById("orderEntryOverlay").classList.remove("hidden");
     document.body.classList.add("order-entry-open");
     window.setTimeout(() => document.getElementById("orderEntryQuantity").focus(), 80);
@@ -12492,19 +12585,15 @@
       toast("Введи правильну кількість", true);
       return;
     }
-    if (orders && (!quantity.valid || quantity.value <= 0)) {
-      toast("Введи правильну кількість", true);
-      return;
-    }
     const unit = normalizeMeasurementUnit(document.getElementById("orderEntryUnit").value);
-    const readInventoryNumber = id => {
+    const readEntryNumber = id => {
       const value = Number(document.getElementById(id).value || 0);
       return Number.isFinite(value) && value > 0 ? value : 0;
     };
-    const pallets = orders ? 0 : readInventoryNumber("inventoryDialogPallets");
-    const kgPerPallet = orders ? 0 : readInventoryNumber("inventoryDialogPerPallet");
-    const pieces = orders ? 0 : readInventoryNumber("inventoryDialogPieces");
-    const kgPerPiece = orders ? 0 : readInventoryNumber("inventoryDialogPerPiece");
+    const pallets = readEntryNumber("inventoryDialogPallets");
+    const kgPerPallet = readEntryNumber("inventoryDialogPerPallet");
+    const pieces = readEntryNumber("inventoryDialogPieces");
+    const kgPerPiece = readEntryNumber("inventoryDialogPerPiece");
     const entry = {
       id: uid(),
       createdAt: nowText(),
@@ -12524,7 +12613,7 @@
         warehouseId: warehouse.id,
         warehouseName: warehouse.name,
         orderStatus: normalizeOrderStatus(document.getElementById("orderEntryStatus").value),
-        needDate: document.getElementById("orderEntryNeedDate").value || getActiveDay().date || todayISO()
+        needDate: getActiveDay().date || todayISO()
       });
     }
     recalcEntry(entry);
@@ -12908,9 +12997,78 @@
     document.getElementById("deleteProductFromEditorBtn").classList.add("hidden");
   }
 
+  const CURRENT_LIST_SORT_MODES = ["added-asc", "added-desc", "name-asc", "name-desc"];
+
+  function currentListSortStorageKey(orders = workspaceIsOrders()) {
+    return orders ? ORDER_LIST_SORT_KEY : INVENTORY_LIST_SORT_KEY;
+  }
+
+  function getCurrentListSortMode(orders = workspaceIsOrders()) {
+    try {
+      const saved = localStorage.getItem(currentListSortStorageKey(orders));
+      return CURRENT_LIST_SORT_MODES.includes(saved) ? saved : "added-asc";
+    } catch (error) {
+      return "added-asc";
+    }
+  }
+
+  function currentListSortLabel(mode = getCurrentListSortMode()) {
+    return {
+      "added-asc": "Додані раніше",
+      "added-desc": "Додані останні",
+      "name-asc": "За назвою: А–Я",
+      "name-desc": "За назвою: Я–А"
+    }[mode] || "Додані раніше";
+  }
+
+  function compareCurrentListNames(a, b) {
+    return String(a || "").localeCompare(String(b || ""), "uk", {
+      sensitivity: "base",
+      numeric: true
+    });
+  }
+
+  function sortCurrentListGroups(groups, mode = getCurrentListSortMode()) {
+    const sorted = [...groups];
+    if (mode === "added-desc") return sorted.sort((a, b) => b.firstEntryIndex - a.firstEntryIndex);
+    if (mode === "name-asc") return sorted.sort((a, b) => compareCurrentListNames(a.name, b.name));
+    if (mode === "name-desc") return sorted.sort((a, b) => compareCurrentListNames(b.name, a.name));
+    return sorted.sort((a, b) => a.firstEntryIndex - b.firstEntryIndex);
+  }
+
+  function sortCurrentListEntries(entries, mode = getCurrentListSortMode()) {
+    const sorted = [...entries];
+    if (mode === "added-desc") return sorted.reverse();
+    if (mode === "name-asc") return sorted.sort((a, b) => compareCurrentListNames(a.productName, b.productName));
+    if (mode === "name-desc") return sorted.sort((a, b) => compareCurrentListNames(b.productName, a.productName));
+    return sorted;
+  }
+
+  function updateCurrentListSortUI() {
+    const mode = getCurrentListSortMode();
+    const label = `Сортування: ${currentListSortLabel(mode)}`;
+    document.querySelectorAll(".current-list-sort-summary").forEach(summary => {
+      summary.textContent = label;
+    });
+    document.querySelectorAll("[data-current-list-sort]").forEach(button => {
+      const active = button.dataset.currentListSort === mode;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function setCurrentListSortMode(mode) {
+    const normalized = CURRENT_LIST_SORT_MODES.includes(mode) ? mode : "added-asc";
+    try { localStorage.setItem(currentListSortStorageKey(), normalized); } catch (error) {}
+    document.querySelectorAll(".current-list-sort-menu").forEach(menu => menu.removeAttribute("open"));
+    updateCurrentListSortUI();
+    renderToday();
+    toast(`Сортування: ${currentListSortLabel(normalized)}`);
+  }
+
   function groupEntries(day) {
     const map = {};
-    day.entries.forEach(e => {
+    day.entries.forEach((e, entryIndex) => {
       const productId = e.productId || e.productName;
       const unit = normalizeMeasurementUnit(e.unit);
       const warehouseKey = workspaceIsOrders() ? (e.warehouseId || e.warehouseName || "without-warehouse") : "";
@@ -12922,7 +13080,8 @@
         warehouseId: e.warehouseId || "",
         warehouseName: e.warehouseName || "Без складу",
         totalKg: 0,
-        entries: []
+        entries: [],
+        firstEntryIndex: entryIndex
       };
       map[key].totalKg += Number(e.totalKg || 0);
       map[key].entries.push(e);
@@ -12936,7 +13095,7 @@
       ? `Замовлення на ${niceDate(day.date)}\n\n`
       : `Залишки на ${niceDate(day.date)}\n\n`;
 
-    const groups = groupEntries(day);
+    const groups = sortCurrentListGroups(groupEntries(day));
     if (!groups.length) return text + "Записів немає.";
 
     groups.forEach((g, i) => {
@@ -13795,7 +13954,7 @@
   }
 
   function buildDocumentRows(day) {
-    const groups = groupEntries(day);
+    const groups = sortCurrentListGroups(groupEntries(day), getCurrentListSortMode(false));
     if (!groups.length) {
       return `<div class="print-report-row"><div class="print-position-cell">Записів немає.</div><div class="print-total-cell"></div></div>`;
     }
@@ -13879,7 +14038,7 @@
     });
     const orderRows = Array.from(warehouseGroups.values()).map(group => {
       let index = 0;
-      const rows = group.entries.map(entry => {
+      const rows = sortCurrentListEntries(group.entries, getCurrentListSortMode(true)).map(entry => {
         index += 1;
         const commentParts = [];
         if (entry.comment) commentParts.push(entry.comment);
@@ -13949,6 +14108,7 @@
         : `Залишки на ${niceDate(day.date)}`;
     }
     updateCurrentOrderSearchVisibility();
+    updateCurrentListSortUI();
 
     const list = document.getElementById("todayList");
     const printList = document.getElementById("printTodayList");
@@ -13970,7 +14130,7 @@
       .trim()
       .toLocaleLowerCase("uk-UA");
     const query = normalizeSearchValue(document.getElementById("todayListSearch")?.value);
-    const groups = allGroups.filter(group =>
+    let groups = allGroups.filter(group =>
       !query || group.entries.some(entry => normalizeSearchValue(entry.productName).includes(query))
     );
 
@@ -13994,7 +14154,7 @@
         <div class="entry-row${isEditedEntry ? " recently-edited-entry" : ""}" data-entry-id="${e.id}">
           <div class="entry-row-details">
             <div class="small">${relativeEdited ? `<span class="edited-relative-label" data-edited-timestamp="${escapeHtml(e.editedTimestamp)}">${escapeHtml(relativeEdited)}</span>` : ""}• ${escapeHtml((e.parts || []).join(" + "))}${e.comment ? " — " + escapeHtml(e.comment) : ""}</div>
-            ${orders ? `<div class="order-entry-context"><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span><span>Потрібно до: ${escapeHtml(niceDate(e.needDate || day.date))}</span></div>` : ""}
+            ${orders ? `<div class="order-entry-context"><span>Статус: ${escapeHtml(orderStatusLabel(e.orderStatus))}</span></div>` : ""}
           </div>
           <div class="actions entry-actions">
             <button class="smallbtn danger" data-action="delete-entry" data-id="${e.id}">Видалити</button>
@@ -14018,6 +14178,7 @@
     };
 
     if (!orders) {
+      groups = sortCurrentListGroups(groups);
       groups.forEach(group => appendProductGroup(group, list));
       return;
     }
@@ -14049,7 +14210,7 @@
 
       const content = document.createElement("div");
       content.className = "order-warehouse-group-content";
-      warehouseGroup.groups.forEach(group => appendProductGroup(group, content));
+      sortCurrentListGroups(warehouseGroup.groups).forEach(group => appendProductGroup(group, content));
 
       details.append(summary, content);
       details.addEventListener("toggle", () => {
@@ -14596,6 +14757,9 @@
   document.getElementById("printPreviewBtn").addEventListener("click", () => window.print());
   document.getElementById("printBtn").addEventListener("click", () => window.print());
   document.getElementById("desktopOrderPrintBtn").addEventListener("click", () => window.print());
+  document.querySelectorAll("[data-current-list-sort]").forEach(button => {
+    button.addEventListener("click", () => setCurrentListSortMode(button.dataset.currentListSort));
+  });
   document.getElementById("todayListSearch").addEventListener("input", () => {
     updateTodayListSearchClearButton();
     renderToday({ listOnly: true });
@@ -14935,6 +15099,9 @@
 
   document.addEventListener("click", function (event) {
     if (themeDesignerActive && themeDesignerPicking) return;
+    if (!event.target.closest(".current-list-sort-menu")) {
+      document.querySelectorAll(".current-list-sort-menu").forEach(menu => menu.removeAttribute("open"));
+    }
     const combo = event.target.closest(".combo-wrap");
     const isOption = event.target.closest("[data-action='select-product']");
     if (!combo && !isOption) {
