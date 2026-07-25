@@ -496,7 +496,7 @@
       box-shadow: 0 14px 32px var(--header-shadow);
     }
     body.page-today {
-      padding-top: calc(var(--app-header-bottom, 98px) + 10px);
+      padding-top: calc(var(--app-header-bottom, 98px) + 4px);
     }
     body:not(.page-today) {
       padding-top: calc(env(safe-area-inset-top) + 82px);
@@ -2708,6 +2708,10 @@
     body.page-today.demo-mode .topbar {
       margin-bottom: 0;
       transform: translateY(-2px);
+    }
+    body.demo-mode .workspace-dropdown,
+    body.demo-mode .workspace-dropdown .workspace-option {
+      background: #ffffff;
     }
     body.page-today.demo-mode .date-line {
       display: grid;
