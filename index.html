@@ -5457,6 +5457,13 @@
     body.workspace-orders #orderEntryOverlay .inventory-only-entry-field {
       display: none;
     }
+    body:not(.workspace-orders) #orderEntryOverlay .order-entry-direct-field {
+      grid-column: 1 / -1;
+      order: 1;
+    }
+    body:not(.workspace-orders) #orderEntryOverlay .order-entry-comment-field {
+      order: 2;
+    }
     @media (max-width: 420px) {
       .order-entry-dialog-grid {
         grid-template-columns: 1fr;
@@ -6286,7 +6293,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.30</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.31</span></div>
     </div>
   </div>
 
@@ -7195,7 +7202,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.30</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.31</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7220,6 +7227,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.31</h3>
+          <ul>
+            <li>поле інвентаризації перейменовано на «Окрема кількість»;</li>
+            <li>його перенесено в нижню частину вікна безпосередньо над коментарем.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.30</h3>
           <ul>
@@ -7498,8 +7512,8 @@
       </div>
       <input type="hidden" id="orderEntryProductId" />
       <div class="order-entry-dialog-grid">
-        <div>
-          <label for="orderEntryQuantity">Кількість</label>
+        <div class="order-entry-direct-field">
+          <label id="orderEntryQuantityLabel" for="orderEntryQuantity">Кількість</label>
           <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
         </div>
         <div>
@@ -7575,7 +7589,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.30";
+  const APP_VERSION = "2.31";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12418,6 +12432,9 @@
     document.getElementById("orderEntryDialogEyebrow").textContent = orders
       ? "Додати в замовлення"
       : "Додати в інвентаризацію";
+    document.getElementById("orderEntryQuantityLabel").textContent = orders
+      ? "Кількість"
+      : "Окрема кількість";
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
     document.getElementById("orderEntryUnit").value = normalizeMeasurementUnit(product.defaultUnit);
