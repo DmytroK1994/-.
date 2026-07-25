@@ -4534,9 +4534,15 @@
       position: fixed;
       inset-inline: 0;
       width: 100%;
-      min-height: 100dvh;
-      background-color: var(--bg);
+      height: calc(100dvh + var(--modal-scroll-offset, 0px));
+      min-height: calc(100dvh + var(--modal-scroll-offset, 0px));
+      background: var(--bg);
       overflow: hidden !important;
+      overscroll-behavior: none;
+    }
+    html.modal-scroll-locked {
+      min-height: 100%;
+      background: var(--bg);
       overscroll-behavior: none;
     }
     [role="dialog"][aria-modal="true"] {
@@ -6539,6 +6545,14 @@
         transform: translateX(-50%) !important;
       }
     }
+    /* Суцільний тематичний фон під кожним модальним вікном не дає
+       браузеру або safe-area показати білу смугу знизу. */
+    body.modal-scroll-locked [role="dialog"][aria-modal="true"] {
+      background:
+        linear-gradient(var(--overlay), var(--overlay)),
+        var(--bg);
+      background-clip: border-box;
+    }
   </style>
 
 <link rel="manifest" href="manifest.json">
@@ -6579,7 +6593,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.51</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.52</span></div>
     </div>
   </div>
 
@@ -7537,7 +7551,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.51</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.52</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7562,6 +7576,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.52</h3>
+          <ul>
+            <li>прибрано білу смугу, яка могла з’являтися знизу під час відкриття вікон або клавіатури;</li>
+            <li>висота зафіксованої сторінки тепер компенсує її поточне прокручування;</li>
+            <li>усі модальні вікна отримали суцільний тематичний фон під затемненням, включно із системною нижньою safe-area.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.51</h3>
           <ul>
@@ -8088,7 +8110,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.51";
+  const APP_VERSION = "2.52";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9352,13 +9374,17 @@
 
     if (hasOpenModal && !isLocked) {
       modalScrollPosition = window.scrollY || window.pageYOffset || 0;
+      document.documentElement.style.setProperty("--modal-scroll-offset", `${modalScrollPosition}px`);
       document.body.style.top = `-${modalScrollPosition}px`;
       document.body.classList.add("modal-scroll-locked");
+      document.documentElement.classList.add("modal-scroll-locked");
       return;
     }
 
     if (!hasOpenModal && isLocked) {
       document.body.classList.remove("modal-scroll-locked");
+      document.documentElement.classList.remove("modal-scroll-locked");
+      document.documentElement.style.removeProperty("--modal-scroll-offset");
       document.body.style.removeProperty("top");
       window.scrollTo(0, modalScrollPosition);
     }
