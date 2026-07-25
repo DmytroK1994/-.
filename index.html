@@ -6173,7 +6173,7 @@
       #pageToday #todayList {
         min-width: 0;
       }
-      body.workspace-orders.entry-dialog-mode #pageToday .desktop-order-toolbar {
+      body.entry-dialog-mode #pageToday .desktop-order-toolbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -6240,7 +6240,7 @@
       body.entry-dialog-mode #pageToday .entry-form-card {
         padding: 13px 15px;
       }
-      body.workspace-orders.entry-dialog-mode #pageToday .document-actions-card {
+      body.entry-dialog-mode #pageToday .document-actions-card {
         display: none;
       }
       body.entry-dialog-mode #pageToday .entry-product-search-block {
@@ -6392,7 +6392,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.35</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.36</span></div>
     </div>
   </div>
 
@@ -6528,7 +6528,7 @@
         </div>
       </div>
       <div class="desktop-order-destination">
-        <strong>Замовлення на:</strong>
+        <strong id="desktopWarehouseContextLabel">Замовлення на:</strong>
         <select id="desktopOrderWarehouseSelect" aria-label="Склад замовлення"></select>
         <button type="button" class="secondary" id="desktopManageWarehousesBtn">Склади</button>
       </div>
@@ -7323,7 +7323,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.35</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.36</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7348,6 +7348,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.36</h3>
+          <ul>
+            <li>на комп’ютері інвентаризація отримала таку саму верхню панель перегляду, друку, сортування та вибору складу, як замовлення;</li>
+            <li>довідник складів став спільним для інвентаризації та замовлень;</li>
+            <li>обраний склад тепер зберігається разом із конкретною інвентаризацією.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.35</h3>
           <ul>
@@ -7748,7 +7756,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.35";
+  const APP_VERSION = "2.36";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9905,6 +9913,13 @@
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
     });
     normalized.days.forEach(day => {
+      const inventoryWarehouse = normalized.warehouses.find(warehouse => warehouse.id === day.warehouseId);
+      if (inventoryWarehouse) {
+        day.warehouseName = inventoryWarehouse.name;
+      } else {
+        day.warehouseId = null;
+        day.warehouseName = "";
+      }
       day.entries = Array.isArray(day.entries)
         ? day.entries.filter(entry => entry && typeof entry === "object")
         : [];
@@ -10233,6 +10248,27 @@
     }[normalizeOrderStatus(status)];
   }
 
+  function getWorkspaceWarehouseId() {
+    if (workspaceIsOrders()) return state.activeWarehouseId || "";
+    const day = state.days.find(item => item.id === state.activeDayId);
+    return state.warehouses.some(warehouse => warehouse.id === day?.warehouseId)
+      ? day.warehouseId
+      : "";
+  }
+
+  function setWorkspaceWarehouse(warehouseId) {
+    const id = state.warehouses.some(warehouse => warehouse.id === warehouseId) ? warehouseId : null;
+    if (workspaceIsOrders()) {
+      state.activeWarehouseId = id;
+      return;
+    }
+    const day = state.days.find(item => item.id === state.activeDayId);
+    if (!day) return;
+    const warehouse = state.warehouses.find(item => item.id === id);
+    day.warehouseId = warehouse?.id || null;
+    day.warehouseName = warehouse?.name || "";
+  }
+
   function renderWarehouseOptions() {
     const options = state.warehouses.map(warehouse =>
       `<option value="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.name)}</option>`
@@ -10241,8 +10277,10 @@
     ["orderWarehouseSelect", "desktopOrderWarehouseSelect", "quickEditWarehouse"].forEach(id => {
       const select = document.getElementById(id);
       if (!select) return;
-      const current = id === "orderWarehouseSelect" || id === "desktopOrderWarehouseSelect"
-        ? (state.activeWarehouseId || "")
+      const current = id === "desktopOrderWarehouseSelect"
+        ? getWorkspaceWarehouseId()
+        : id === "orderWarehouseSelect"
+          ? (state.activeWarehouseId || "")
         : (select.value || state.activeWarehouseId || "");
       select.innerHTML = empty + options;
       select.value = state.warehouses.some(warehouse => warehouse.id === current) ? current : "";
@@ -10316,6 +10354,9 @@
     document.getElementById("warehouseManagerList").appendChild(row);
     state.warehouses.push(warehouse);
     if (!state.activeWarehouseId) state.activeWarehouseId = warehouse.id;
+    if (!workspaceIsOrders() && !getWorkspaceWarehouseId()) {
+      setWorkspaceWarehouse(warehouse.id);
+    }
     saveOnly();
     renderWarehouseOptions();
     input.value = "";
@@ -10359,6 +10400,15 @@
       if (renamed) entry.warehouseName = renamed.name;
       else if (!entry.warehouseName && previous.has(entry.warehouseId)) entry.warehouseName = previous.get(entry.warehouseId);
     }));
+    state.days.forEach(day => {
+      const renamed = warehouses.find(warehouse => warehouse.id === day.warehouseId);
+      if (renamed) {
+        day.warehouseName = renamed.name;
+      } else {
+        day.warehouseId = null;
+        day.warehouseName = "";
+      }
+    });
     saveOnly();
     renderWarehouseOptions();
     closeWarehouseManager();
@@ -10393,6 +10443,14 @@
     document.getElementById("entryUnitControl")?.classList.toggle("hidden", !unitVisible);
     document.getElementById("orderAdditionalSection")?.classList.toggle("hidden", !unitVisible);
     renderWarehouseOptions();
+    const desktopWarehouseContextLabel = document.getElementById("desktopWarehouseContextLabel");
+    if (desktopWarehouseContextLabel) {
+      desktopWarehouseContextLabel.textContent = orders ? "Замовлення на:" : "Інвентаризація складу:";
+    }
+    const desktopWarehouseSelect = document.getElementById("desktopOrderWarehouseSelect");
+    if (desktopWarehouseSelect) {
+      desktopWarehouseSelect.setAttribute("aria-label", orders ? "Склад замовлення" : "Склад інвентаризації");
+    }
     const activeDocument = orders ? getActiveDay() : null;
     const responsibleInput = document.getElementById("orderResponsible");
     if (responsibleInput && document.activeElement !== responsibleInput) {
@@ -10465,7 +10523,15 @@
     }
     if (!state.activeDayId || !state.days.some(d => d.id === state.activeDayId)) {
       const id = uid();
-      state.days.unshift({ id, date: todayISO(), createdAt: nowText(), entries: [] });
+      const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+      state.days.unshift({
+        id,
+        date: todayISO(),
+        createdAt: nowText(),
+        warehouseId: warehouse?.id || null,
+        warehouseName: warehouse?.name || "",
+        entries: []
+      });
       state.activeDayId = id;
       saveOnly();
     }
@@ -12157,7 +12223,17 @@
     if (!confirmed) return;
 
     const id = uid();
-    const documentData = { id, date: todayISO(), createdAt: nowText(), responsible: "", notes: "", entries: [] };
+    const warehouse = state.warehouses.find(item => item.id === state.activeWarehouseId);
+    const documentData = {
+      id,
+      date: todayISO(),
+      createdAt: nowText(),
+      responsible: "",
+      notes: "",
+      warehouseId: orders ? null : (warehouse?.id || null),
+      warehouseName: orders ? "" : (warehouse?.name || ""),
+      entries: []
+    };
     if (orders) {
       state.orders.unshift(documentData);
       state.activeOrderId = id;
@@ -14817,9 +14893,10 @@
     renderWarehouseOptions();
   });
   document.getElementById("desktopOrderWarehouseSelect").addEventListener("change", event => {
-    state.activeWarehouseId = event.target.value || null;
+    setWorkspaceWarehouse(event.target.value || null);
     saveOnly();
     renderWarehouseOptions();
+    renderToday();
   });
   document.getElementById("orderResponsible").addEventListener("input", event => {
     if (!workspaceIsOrders()) return;
