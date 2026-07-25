@@ -6990,7 +6990,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=284">
+<link rel="manifest" href="manifest.json?v=285">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=264">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=264">
 <link rel="apple-touch-icon" href="icon-512.png?v=264">
@@ -7024,7 +7024,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.84</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.85</span></div>
     </div>
   </div>
 
@@ -8021,7 +8021,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.84</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.85</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8046,6 +8046,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.85</h3>
+          <ul>
+            <li>системна зона з годинником, мережею та батареєю тепер повторює фактичний колір шапки;</li>
+            <li>усунено появу чорної смуги через прозорий колір шапки;</li>
+            <li>колір повторно синхронізується після зміни теми, сторінки та повернення в застосунок.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.84</h3>
           <ul>
@@ -8871,7 +8879,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.84";
+  const APP_VERSION = "2.85";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9252,25 +9260,29 @@
     if (/^#[0-9a-f]{3}$/i.test(color)) {
       return "#" + color.slice(1).split("").map(character => character + character).join("").toLowerCase();
     }
-    const rgb = color.match(/^rgba?\(\s*(\d+)\D+(\d+)\D+(\d+)/i);
+    const rgb = color.match(/^rgba?\(\s*(\d+)\D+(\d+)\D+(\d+)(?:\D+([\d.]+))?/i);
     if (!rgb) return fallback;
-    return "#" + rgb.slice(1, 4)
-      .map(channel => Math.max(0, Math.min(255, Number(channel))).toString(16).padStart(2, "0"))
+    const foreground = rgb.slice(1, 4).map(channel => Math.max(0, Math.min(255, Number(channel))));
+    const alpha = color.toLowerCase().startsWith("rgba")
+      ? Math.max(0, Math.min(1, Number(rgb[4] ?? 1)))
+      : 1;
+    if (alpha <= 0.01) return fallback;
+    const fallbackHex = /^#[0-9a-f]{6}$/i.test(fallback || "") ? fallback : "#ffffff";
+    const background = [1, 3, 5].map(index => parseInt(fallbackHex.slice(index, index + 2), 16));
+    const channels = alpha >= 0.999
+      ? foreground
+      : foreground.map((channel, index) => Math.round(channel * alpha + background[index] * (1 - alpha)));
+    return "#" + channels
+      .map(channel => channel.toString(16).padStart(2, "0"))
       .join("");
   }
 
   function syncSystemThemeColor(color) {
     const normalized = normalizeThemeColor(color, "#ffffff");
-    const current = document.getElementById("themeColorMeta");
-    if (current) {
-      const replacement = current.cloneNode(false);
-      replacement.setAttribute("content", normalized);
-      current.replaceWith(replacement);
-    }
+    document.getElementById("themeColorMeta")?.setAttribute("content", normalized);
+    document.documentElement.style.background = normalized;
     document.documentElement.style.backgroundColor = normalized;
-    window.requestAnimationFrame(() => {
-      document.getElementById("themeColorMeta")?.setAttribute("content", normalized);
-    });
+    document.documentElement.style.setProperty("--app-header-safe-background", normalized);
   }
 
   function syncSystemAreaToCurrentSurface() {
@@ -9280,14 +9292,35 @@
       ? document.getElementById("drawer")
       : document.querySelector(".app-header");
     if (!surface) return;
+    const rootStyles = getComputedStyle(document.documentElement);
+    const fallbackVariable = drawerOpen
+      ? "--surface-deep"
+      : (document.body.classList.contains("page-today") ? "--app-header-background" : "--surface");
+    const fallbackColor = normalizeThemeColor(
+      rootStyles.getPropertyValue(fallbackVariable),
+      normalizeThemeColor(rootStyles.getPropertyValue("--surface"), "#ffffff")
+    );
     const styles = getComputedStyle(surface);
     const backgroundColor = normalizeThemeColor(
       styles.backgroundColor,
-      normalizeThemeColor(getComputedStyle(document.documentElement).getPropertyValue("--surface"), "#ffffff")
+      fallbackColor
     );
-    document.documentElement.style.setProperty("--app-header-safe-background", backgroundColor);
     syncSystemThemeColor(backgroundColor);
   }
+
+  let systemAreaSyncTimer = 0;
+  function scheduleSystemAreaSync() {
+    window.clearTimeout(systemAreaSyncTimer);
+    syncSystemAreaToCurrentSurface();
+    window.requestAnimationFrame(syncSystemAreaToCurrentSurface);
+    systemAreaSyncTimer = window.setTimeout(syncSystemAreaToCurrentSurface, 180);
+  }
+
+  window.addEventListener("pageshow", scheduleSystemAreaSync);
+  window.addEventListener("orientationchange", scheduleSystemAreaSync, { passive: true });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) scheduleSystemAreaSync();
+  });
 
   function captureCurrentThemePalette() {
     const styles = getComputedStyle(document.documentElement);
@@ -9992,7 +10025,7 @@
     if (select) select.value = selected;
     updateCustomThemeControls(customPalette, selected === "custom" && customThemeEditorOpen);
 
-    syncSystemAreaToCurrentSurface();
+    scheduleSystemAreaSync();
 
     if (persist) {
       try {
@@ -14079,6 +14112,7 @@
     updatePageBackButton();
     render();
     scrollAppToTop();
+    scheduleSystemAreaSync();
   }
 
   async function createNewDay() {
