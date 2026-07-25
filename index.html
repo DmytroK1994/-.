@@ -1180,7 +1180,7 @@
     }
     .product-info-actions {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
       margin-top: 10px;
     }
@@ -4381,6 +4381,19 @@
       place-items: center;
       background: var(--overlay);
     }
+    .qr-transfer-overlay {
+      z-index: 280;
+    }
+    body.modal-scroll-locked {
+      position: fixed;
+      inset-inline: 0;
+      width: 100%;
+      overflow: hidden !important;
+      overscroll-behavior: none;
+    }
+    [role="dialog"][aria-modal="true"] {
+      overscroll-behavior: contain;
+    }
     .changelog-dialog,
     .qr-transfer-dialog {
       width: min(100%, 620px);
@@ -4479,6 +4492,9 @@
     }
     .qr-transfer-actions button {
       margin: 0;
+    }
+    #shareQrPartBtn {
+      grid-column: 1 / -1;
     }
     .qr-scanner-frame {
       position: relative;
@@ -4700,7 +4716,7 @@
     .app-dialog-overlay {
       position: fixed;
       inset: 0;
-      z-index: 240;
+      z-index: 320;
       display: grid;
       place-items: center;
       overflow: auto;
@@ -6244,7 +6260,7 @@
       <h1 class="splash-title">Облік</h1>
       <div class="splash-subtitle">Швидкий підрахунок складу</div>
       <div class="splash-progress"><div class="splash-progress-bar"></div></div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">2.26</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">2.28</span></div>
     </div>
   </div>
 
@@ -6664,6 +6680,7 @@
       </div>
       <div class="product-selection-toolbar hidden" id="productSelectActions">
         <button id="selectAllProductsBtn">Вибрати все</button>
+        <button class="secondary" id="copySelectedProductsBtn">Копіювати вибране</button>
         <button class="danger" id="deleteSelectedProductsBtn">Видалити вибране</button>
         <button class="secondary" id="cancelProductSelectBtn">Скасувати</button>
       </div>
@@ -6751,7 +6768,8 @@
           </div>
         </div>
         <div class="product-info-actions">
-          <button type="button" class="secondary" id="shareProductQrBtn">Поділитися</button>
+          <button type="button" class="secondary" id="shareProductQrBtn">Поділитися QR-кодом</button>
+          <button type="button" class="secondary" id="copyProductNameBtn">Скопіювати назву</button>
           <button type="button" id="editProductFromInfoBtn">Редагувати</button>
           <button type="button" class="secondary" id="closeProductInfoBtn">Закрити</button>
         </div>
@@ -7099,13 +7117,13 @@
         <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
         <label for="inventoryEntryModeSelect">Додавання позицій в інвентаризації</label>
         <select id="inventoryEntryModeSelect">
-          <option value="classic">Поточна розгорнута форма</option>
+          <option value="classic">Розгорнута форма</option>
           <option value="dialog">Компактний пошук і окреме вікно</option>
         </select>
         <p class="small">Налаштування діє окремо на цьому пристрої — як на телефоні, так і на комп’ютері.</p>
         <label for="orderEntryModeSelect">Додавання позицій у замовленнях</label>
         <select id="orderEntryModeSelect">
-          <option value="classic">Поточна розгорнута форма</option>
+          <option value="classic">Розгорнута форма</option>
           <option value="dialog">Компактний пошук і окреме вікно</option>
         </select>
         <p class="small" id="orderEntryModeDescription">Інвентаризація та замовлення налаштовуються незалежно одне від одного.</p>
@@ -7151,7 +7169,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.26</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">2.28</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -7176,6 +7194,21 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 2.28</h3>
+          <ul>
+            <li>назву режиму введення уточнено до «Розгорнута форма» без неоднозначного слова «поточна».</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 2.27</h3>
+          <ul>
+            <li>QR-вікно найменування тепер відкривається поверх інформаційного вікна;</li>
+            <li>додано копіювання однієї назви та списку вибраних найменувань;</li>
+            <li>поширення і копіювання тексту QR-коду об’єднано в одну дію;</li>
+            <li>під відкритими діалоговими вікнами заблоковано прокручування сторінки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 2.26</h3>
           <ul>
@@ -7301,8 +7334,7 @@
         <div class="qr-transfer-actions">
           <button type="button" class="secondary" id="previousQrPartBtn">Попередній</button>
           <button type="button" id="nextQrPartBtn">Наступний</button>
-          <button type="button" class="secondary" id="copyQrPartBtn">Скопіювати код</button>
-          <button type="button" class="secondary" id="shareQrPartBtn">Поділитися кодом</button>
+          <button type="button" class="secondary" id="shareQrPartBtn">Поділитися / скопіювати код</button>
         </div>
       </div>
       <div class="qr-transfer-body hidden" id="qrReceiveView">
@@ -7477,7 +7509,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "2.26";
+  const APP_VERSION = "2.28";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -8726,6 +8758,34 @@
     const splash = document.getElementById("appSplash");
     if (splash) splash.remove();
     scrollAppToTop();
+  }
+
+  let modalScrollPosition = 0;
+
+  function syncModalScrollLock() {
+    const hasOpenModal = Array.from(document.querySelectorAll('[role="dialog"][aria-modal="true"]'))
+      .some(overlay => !overlay.classList.contains("hidden"));
+    const isLocked = document.body.classList.contains("modal-scroll-locked");
+
+    if (hasOpenModal && !isLocked) {
+      modalScrollPosition = window.scrollY || window.pageYOffset || 0;
+      document.body.style.top = `-${modalScrollPosition}px`;
+      document.body.classList.add("modal-scroll-locked");
+      return;
+    }
+
+    if (!hasOpenModal && isLocked) {
+      document.body.classList.remove("modal-scroll-locked");
+      document.body.style.removeProperty("top");
+      window.scrollTo(0, modalScrollPosition);
+    }
+  }
+
+  function initModalScrollLock() {
+    const overlays = document.querySelectorAll('[role="dialog"][aria-modal="true"]');
+    const observer = new MutationObserver(syncModalScrollLock);
+    overlays.forEach(overlay => observer.observe(overlay, { attributes: true, attributeFilter: ["class"] }));
+    syncModalScrollLock();
   }
 
   let savedTheme = "dark";
@@ -12973,6 +13033,38 @@
     openQrSend("product", [product]);
   }
 
+  async function copyTextToClipboard(value) {
+    const text = String(value || "");
+    if (!text) return false;
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (error) {
+      const input = document.createElement("textarea");
+      input.value = text;
+      input.setAttribute("readonly", "");
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      let copied = false;
+      try { copied = document.execCommand("copy"); } catch (copyError) {}
+      input.remove();
+      return copied;
+    }
+  }
+
+  async function copyCurrentProductName() {
+    const id = document.getElementById("productInfoView").dataset.productId;
+    const product = state.products.find(item => item.id === id);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+    const copied = await copyTextToClipboard(product.name);
+    toast(copied ? "Назву скопійовано" : "Не вдалося скопіювати назву", !copied);
+  }
+
   function stopQrScanner() {
     cancelAnimationFrame(qrScannerFrame);
     qrScannerFrame = 0;
@@ -13172,18 +13264,28 @@
 
   async function copyCurrentQrPart() {
     const value = qrTransferParts[qrTransferPartIndex] || "";
-    try {
-      await navigator.clipboard.writeText(value);
-      toast("Текст поточного QR-коду скопійовано");
-    } catch (error) {
-      toast("Не вдалося скопіювати код", true);
-    }
+    const copied = await copyTextToClipboard(value);
+    toast(copied ? "Текст поточного QR-коду скопійовано" : "Не вдалося скопіювати код", !copied);
   }
 
   async function shareCurrentQrPart() {
     const value = qrTransferParts[qrTransferPartIndex] || "";
     if (!value) return;
     if (navigator.share) {
+      const action = await showAppDialog({
+        label: "QR-код",
+        title: "Що зробити з кодом?",
+        message: "Можна відкрити системне меню поширення або скопіювати текст цього QR-коду.",
+        confirmText: "Поділитися",
+        alternativeText: "Скопіювати",
+        alternativeResult: "copy",
+        cancelText: "Закрити"
+      });
+      if (!action) return;
+      if (action === "copy") {
+        await copyCurrentQrPart();
+        return;
+      }
       try {
         await navigator.share({ title: "QR-передача даних", text: value });
         return;
@@ -13924,6 +14026,21 @@
     updateSelectAllProductsButton();
   }
 
+  async function copySelectedProductNames() {
+    const names = sortedProducts()
+      .filter(product => selectedProductIds.has(product.id))
+      .map(product => product.name);
+    if (!names.length) {
+      toast("Спочатку вибери хоча б одне найменування", true);
+      return;
+    }
+    const copied = await copyTextToClipboard(names.join("\n"));
+    toast(
+      copied ? `Скопійовано найменувань: ${names.length}` : "Не вдалося скопіювати найменування",
+      !copied
+    );
+  }
+
   async function deleteSelectedProducts() {
     const ids = Array.from(selectedProductIds);
     if (!ids.length) {
@@ -14246,6 +14363,7 @@
   });
   document.getElementById("toggleProductSelectBtn").addEventListener("click", () => toggleProductSelectMode(true));
   document.getElementById("selectAllProductsBtn").addEventListener("click", toggleSelectAllProducts);
+  document.getElementById("copySelectedProductsBtn").addEventListener("click", copySelectedProductNames);
   document.getElementById("deleteSelectedProductsBtn").addEventListener("click", deleteSelectedProducts);
   document.getElementById("cancelProductSelectBtn").addEventListener("click", () => toggleProductSelectMode(false));
   document.getElementById("historyDateSearch").addEventListener("input", () => {
@@ -14374,6 +14492,7 @@
 
   document.getElementById("openProductAddBtn").addEventListener("click", openProductAddChoice);
   document.getElementById("shareProductQrBtn").addEventListener("click", shareCurrentProductQr);
+  document.getElementById("copyProductNameBtn").addEventListener("click", copyCurrentProductName);
   document.getElementById("editProductFromInfoBtn").addEventListener("click", editProductFromInfo);
   document.getElementById("closeProductInfoBtn").addEventListener("click", dismissProductAddModal);
   document.getElementById("chooseSingleProductBtn").addEventListener("click", () => {
@@ -14439,7 +14558,6 @@
     qrTransferPartIndex = Math.min(qrTransferParts.length - 1, qrTransferPartIndex + 1);
     renderQrTransferPart();
   });
-  document.getElementById("copyQrPartBtn").addEventListener("click", copyCurrentQrPart);
   document.getElementById("shareQrPartBtn").addEventListener("click", shareCurrentQrPart);
   document.getElementById("startQrScannerBtn").addEventListener("click", startQrScanner);
   document.getElementById("importQrTextBtn").addEventListener("click", async () => {
@@ -14729,6 +14847,7 @@
   initBackupSectionFit();
   initAboutCardDeck();
   initOtherSettingsCategories();
+  initModalScrollLock();
   initAppKeyboardScrollRestore();
   initKeyboardEntryAction();
   initAppTopPosition();
