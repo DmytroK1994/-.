@@ -41,8 +41,8 @@
       @keyframes fgNotice{0%{opacity:0;transform:translateY(-12px)}12%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
       .fg-exit{position:absolute;top:max(10px,env(safe-area-inset-top));right:10px;z-index:13;width:70px;height:44px;padding:0 8px;border:1px solid rgba(255,255,255,.2);border-radius:13px;background:rgba(7,18,24,.86);color:#fff;font-size:12px;font-weight:900;cursor:pointer}
       .fg-controls{position:absolute;inset:auto 0 max(7px,env(safe-area-inset-bottom));z-index:12;display:none;align-items:end;justify-content:space-between;padding:7px 13px;pointer-events:none}
-      .fg-steering,.fg-drive{display:grid;grid-template-columns:repeat(2,64px);gap:9px;pointer-events:auto}
-      .fg-drive{grid-template-columns:64px}
+      .fg-left-controls{display:grid;gap:7px;pointer-events:auto}.fg-steering,.fg-fork-controls,.fg-drive{display:grid;grid-template-columns:repeat(2,64px);gap:9px;pointer-events:auto}.fg-fork-controls{gap:7px}.fg-fork-controls .fg-control{height:43px;font-size:9px}
+      .fg-drive-panel{display:flex;align-items:end;gap:8px;margin-right:24px;pointer-events:auto}.fg-drive{grid-template-columns:64px}.fg-drive-panel>.fg-control{height:54px}
       .fg-actions{position:absolute;left:50%;bottom:0;display:flex;gap:7px;pointer-events:auto;transform:translateX(-50%)}
       .fg-control{display:grid;width:64px;height:58px;padding:4px;place-items:center;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(12,31,39,.84);box-shadow:0 7px 20px rgba(0,0,0,.22);color:#fff;font-size:11px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg-control:active,.fg-control.active{background:#f0c450;color:#172029;transform:scale(.96)}.fg-control.drive{height:50px}.fg-control.horn{background:#325d6b}.fg-control.camera{background:#284650}.fg-control.arrow{font-size:27px}
       .fg-look-tip{position:absolute;right:76px;bottom:83px;z-index:9;padding:6px 9px;border-radius:10px;background:rgba(5,15,21,.62);color:#c5d5dc;font-size:10px;font-weight:800;pointer-events:none;animation:fgLookTip 5s both}@keyframes fgLookTip{0%,75%{opacity:.85}100%{opacity:0}}
@@ -50,8 +50,8 @@
       .fg-incident{position:absolute;inset:0;z-index:25;display:grid;padding:18px;place-items:center;background:rgba(84,5,9,.44);pointer-events:none}.fg-incident-box{max-width:440px;padding:20px;border:2px solid #ff9292;border-radius:20px;background:rgba(55,12,15,.94);box-shadow:0 20px 70px rgba(0,0,0,.6);text-align:center}.fg-incident-box strong{display:block;font-size:25px}.fg-incident-box span{display:block;margin-top:7px;color:#ffd2d2}
       .fg-loading{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:#030608}.fg-loading-box{text-align:center}.fg-loader{width:66px;height:66px;margin:0 auto 13px;border:4px solid #23363e;border-top-color:#f2c550;border-radius:50%;animation:fgSpin .75s linear infinite}@keyframes fgSpin{to{transform:rotate(360deg)}}
       .fg-glitch{animation:fgGlitch .48s both}@keyframes fgGlitch{15%{transform:translate(7px,-2px);filter:hue-rotate(40deg)}35%{transform:translate(-8px,3px)}58%{transform:translate(5px,5px);filter:contrast(1.7)}100%{transform:none;filter:none}}
-      @media(pointer:coarse),(max-width:900px){.fg-controls{display:flex}.fg-prompt{bottom:76px}.fg-hud{grid-template-columns:1fr auto}.fg-chip{min-width:66px;padding:5px 7px}.fg-minimap{width:96px;height:64px}.fg-goal{top:80px}.fg-notices{top:105px}}
-      @media(max-width:700px){.fg-hud-bar{max-width:300px}.fg-chip{min-width:62px}.fg-chip strong{font-size:11px}.fg-records{grid-template-columns:1fr}.fg-steering{grid-template-columns:repeat(2,58px)}.fg-drive{grid-template-columns:58px}.fg-control{width:58px;height:52px}.fg-control.drive{height:46px}.fg-actions .fg-control{width:56px;height:44px;font-size:9px}}
+      @media(pointer:coarse),(max-width:900px){.fg-controls{display:flex}.fg-prompt{bottom:116px}.fg-hud{grid-template-columns:1fr auto}.fg-chip{min-width:66px;padding:5px 7px}.fg-minimap{width:96px;height:64px}.fg-goal{top:80px}.fg-notices{top:105px}}
+      @media(max-width:700px){.fg-hud-bar{max-width:300px}.fg-chip{min-width:62px}.fg-chip strong{font-size:11px}.fg-records{grid-template-columns:1fr}.fg-steering,.fg-fork-controls{grid-template-columns:repeat(2,58px)}.fg-drive{grid-template-columns:58px}.fg-drive-panel{margin-right:14px}.fg-control{width:58px;height:52px}.fg-control.drive{height:46px}.fg-actions .fg-control{width:56px;height:44px;font-size:9px}}
       @media(pointer:coarse) and (orientation:portrait){.fg-root.fg-playing .fg-rotate-hint{display:grid}}
     `;
     document.head.appendChild(style);
@@ -116,6 +116,7 @@
       this.lookPointers = new Map();
       this.pinchDistance = 0;
       this.lastHornNoticeAt = -Infinity;
+      this.gameOverShown = false;
       this.pallets = [];
       this.npcs = [];
       this.obstacles = [];
@@ -152,19 +153,25 @@
         <div class="fg-notices"></div>
         <div class="fg-look-tip fg-hidden">Проведи пальцем по екрану, щоб оглянутися</div>
         <div class="fg-controls fg-hidden">
-          <div class="fg-steering" aria-label="Кнопки повороту">
-            <button class="fg-control arrow" data-control="left" aria-label="Повернути ліворуч">◀</button>
-            <button class="fg-control arrow" data-control="right" aria-label="Повернути праворуч">▶</button>
+          <div class="fg-left-controls">
+            <div class="fg-steering" aria-label="Кнопки повороту">
+              <button class="fg-control arrow" data-control="left" aria-label="Повернути ліворуч">◀</button>
+              <button class="fg-control arrow" data-control="right" aria-label="Повернути праворуч">▶</button>
+            </div>
+            <div class="fg-fork-controls">
+              <button class="fg-control" data-control="lift">Підняти вила</button>
+              <button class="fg-control" data-control="lower">Опустити вила</button>
+            </div>
           </div>
           <div class="fg-actions">
-            <button class="fg-control" data-control="lift">Підняти<br>вила</button>
-            <button class="fg-control horn" data-control="horn">📣<br>Сигнал</button>
             <button class="fg-control camera" data-control="camera">👁<br>Камера</button>
-            <button class="fg-control" data-control="lower">Опустити<br>вила</button>
           </div>
-          <div class="fg-drive" aria-label="Кнопки руху">
-            <button class="fg-control drive arrow" data-control="forward" aria-label="Їхати вперед">▲</button>
-            <button class="fg-control drive arrow" data-control="reverse" aria-label="Їхати назад">▼</button>
+          <div class="fg-drive-panel">
+            <button class="fg-control horn" data-control="horn">📣<br>Сигнал</button>
+            <div class="fg-drive" aria-label="Кнопки руху">
+              <button class="fg-control drive arrow" data-control="forward" aria-label="Їхати вперед">▲</button>
+              <button class="fg-control drive arrow" data-control="reverse" aria-label="Їхати назад">▼</button>
+            </div>
           </div>
         </div>
         <button class="fg-exit fg-hidden" type="button" aria-label="Пауза та вихід">☰ Пауза</button>
@@ -592,6 +599,7 @@
             this.cycleCamera();
             return;
           }
+          if (action === "lift" || action === "lower") this.playHydraulic(action);
           this.controls[action] = true;
           button.classList.add("active");
           button.setPointerCapture?.(event.pointerId);
@@ -613,6 +621,9 @@
       if (down) this.keys.add(event.code);
       else this.keys.delete(event.code);
       if (down && !event.repeat && ["KeyH", "KeyF"].includes(event.code)) this.horn();
+      if (down && !event.repeat && ["KeyQ", "KeyE"].includes(event.code)) {
+        this.playHydraulic(event.code === "KeyQ" ? "lift" : "lower");
+      }
       if (down && !event.repeat && event.code === "KeyC") this.cycleCamera();
       if (down && !event.repeat && event.code === "Escape") this.showPauseMenu();
     }
@@ -627,6 +638,12 @@
         overhead: "Камера: вигляд зверху"
       }[this.cameraMode];
       this.notice(label, "good");
+    }
+
+    playHydraulic(direction) {
+      const lifting = direction === "lift";
+      this.tone(lifting ? 175 : 128, .24, "sawtooth", .035);
+      setTimeout(() => this.tone(lifting ? 235 : 92, .2, "sine", .028), 90);
     }
 
     initAudio() {
@@ -728,9 +745,12 @@
       const hitBot = this.bots.some(bot => Math.hypot(this.vehicle.position.x - bot.object.position.x, this.vehicle.position.z - bot.object.position.z) < 1.55);
       if (hitWall || hitObstacle || hitPallet || hitNpc || hitBot) {
         this.vehicle.position.copy(previous);
-        if (hitNpc && this.incidentLock <= 0) this.triggerIncident(hitNpc);
-        else if (Math.abs(this.speed) > .9) this.damage(Math.min(12, Math.abs(this.speed) * 1.6), hitBot ? "Зіткнення з іншою електророклою" : "Зіткнення з перешкодою");
-        this.speed *= -.18;
+        if (hitNpc) {
+          if (this.incidentLock <= 0 && Math.abs(this.speed) > 1.8) this.triggerIncident(hitNpc);
+        } else if (Math.abs(this.speed) > .9) {
+          this.damage(Math.min(12, Math.abs(this.speed) * 1.6), hitBot ? "Зіткнення з іншою електророклою" : "Зіткнення з перешкодою");
+        }
+        this.speed = Math.abs(this.speed) > 1.8 ? this.speed * -.12 : 0;
       }
       const lateralForce = Math.abs(this.speed * this.speed * steeringForce);
       if (this.carrying && lateralForce > 13.5 && this.damageCooldown <= 0) {
@@ -812,7 +832,23 @@
       this.npcs.forEach((npc, index) => {
         const data = npc.userData;
         if (data.downUntil > this.elapsed) return;
-        const yielding = data.yieldUntil > this.elapsed;
+        const playerDistanceBeforeMove = Math.hypot(npc.position.x - this.vehicle.position.x, npc.position.z - this.vehicle.position.z);
+        const automaticallyAvoiding = playerDistanceBeforeMove < 4.4;
+        if (automaticallyAvoiding && (!data.avoidUntil || data.avoidUntil <= this.elapsed)) {
+          const away = npc.position.clone().sub(this.vehicle.position);
+          away.y = 0;
+          if (away.lengthSq() < .01) away.set(Math.random() - .5, 0, Math.random() - .5);
+          away.normalize();
+          const side = new THREE.Vector3(-away.z, 0, away.x).multiplyScalar((Math.random() - .5) * 3);
+          let avoidTarget = npc.position.clone().addScaledVector(away, 5.5).add(side);
+          avoidTarget.x = Math.max(-19, Math.min(19, avoidTarget.x));
+          avoidTarget.z = Math.max(-42, Math.min(42, avoidTarget.z));
+          if (this.isBlockedPosition(avoidTarget.x, avoidTarget.z, .75)) avoidTarget = this.randomFreePoint(.75);
+          data.target = avoidTarget;
+          data.avoidUntil = this.elapsed + 1.1;
+          data.changeTargetAt = this.elapsed + 2.4;
+        }
+        const yielding = data.yieldUntil > this.elapsed || automaticallyAvoiding;
         if (!data.target || this.elapsed >= data.changeTargetAt || npc.position.distanceTo(data.target) < .65) {
           data.target = this.randomFreePoint(.75);
           data.changeTargetAt = this.elapsed + 4 + Math.random() * 8;
@@ -841,7 +877,12 @@
           limb.rotation.x = Math.sin(data.phase + limbIndex * Math.PI) * (yielding ? .58 : .35);
         });
         const distance = Math.hypot(npc.position.x - this.vehicle.position.x, npc.position.z - this.vehicle.position.z);
-        if (distance < 1.05 && this.incidentLock <= 0) this.triggerIncident(npc);
+        if (distance < 1.12) {
+          npc.position.copy(previous);
+          data.avoidUntil = 0;
+          data.target = this.randomFreePoint(.75);
+          if (this.incidentLock <= 0 && Math.abs(this.speed) > 1.8) this.triggerIncident(npc);
+        }
         if (distance < 4.8 && !yielding && Math.abs(this.speed) > 2.4 && index % 2 === 0) {
           this.root.querySelector("[data-fg='prompt']").textContent = "Попереду працівник — подай сигнал!";
           this.root.querySelector("[data-fg='prompt']").classList.remove("fg-hidden");
@@ -870,20 +911,22 @@
         if (distance < 1.6 && this.damageCooldown <= 0) {
           bot.object.position.copy(previous);
           bot.target = this.randomFreePoint(1.5);
-          this.damage(10, "Зіткнення з іншою електророклою");
-          this.speed *= -.2;
+          if (Math.abs(this.speed) > .9) {
+            this.damage(10, "Зіткнення з іншою електророклою");
+            this.speed *= -.2;
+          }
         }
       });
     }
 
     triggerIncident(npc) {
       this.incidentLock = 6.2;
-      this.score = Math.max(0, this.score - 1000);
+      this.score = Math.max(0, this.score - 100);
       this.speed = 0;
       npc.userData.downUntil = this.elapsed + 6;
       npc.rotation.z = Math.PI / 2;
       this.root.querySelector(".fg-incident").classList.remove("fg-hidden");
-      this.notice("-1000 балів: порушення техніки безпеки!", "bad");
+      this.notice("-100 балів: зіткнення з працівником", "bad");
       this.tone(145, .55, "sawtooth", .12);
       this.inspector.visible = true;
       this.inspector.position.set(this.vehicle.position.x + 8, 0, this.vehicle.position.z + 5);
@@ -905,6 +948,7 @@
         this.medics.visible = false;
         this.root.querySelector(".fg-incident").classList.add("fg-hidden");
       }, 6100);
+      if (this.score <= 0) setTimeout(() => this.showGameOver(), 350);
     }
 
     updateIncidentActors(dt) {
@@ -924,10 +968,10 @@
       if (this.damageCooldown > 0) return;
       this.damageCooldown = .8;
       this.integrity = Math.max(0, this.integrity - amount);
-      const penalty = Math.round(amount * 12);
-      this.score = Math.max(0, this.score - penalty);
-      this.notice(`-${penalty} балів: ${reason}`, "bad");
+      this.score = Math.max(0, this.score - 50);
+      this.notice(`-50 балів: ${reason}`, "bad");
       this.tone(92, .22, "square", .11);
+      if (this.score <= 0) setTimeout(() => this.showGameOver(), 250);
     }
 
     updateCamera(dt) {
@@ -1030,6 +1074,42 @@
       setTimeout(() => element.remove(), 2800);
     }
 
+    returnToGameMenu() {
+      const options = this.options;
+      this.destroy(true);
+      global.ForkliftGame.launch(options);
+    }
+
+    showGameOver() {
+      if (this.destroyed || this.gameOverShown) return;
+      this.gameOverShown = true;
+      this.paused = true;
+      this.speed = 0;
+      this.root.querySelector(".fg-incident")?.classList.add("fg-hidden");
+      const screen = this.root.querySelector(".fg-screen");
+      screen.innerHTML = `
+        <div class="fg-menu">
+          <div class="fg-kicker">Зміну завершено</div>
+          <h1>Game Over</h1>
+          <p>Бали закінчилися. Результат: <strong>${Math.round(this.score)}</strong> · Перевезено: <strong>${this.delivered}</strong>.</p>
+          <div class="fg-menu-actions">
+            <button class="fg-btn primary" data-game-over="again">Спробувати ще раз</button>
+            <button class="fg-btn" data-game-over="menu">Меню гри</button>
+            <button class="fg-btn danger" data-game-over="exit">Вийти в склад</button>
+          </div>
+        </div>`;
+      screen.classList.remove("hidden");
+      screen.querySelector("[data-game-over='again']").addEventListener("click", () => {
+        const mode = this.mode;
+        const options = this.options;
+        this.destroy(true);
+        const next = global.ForkliftGame.launch(options);
+        next.start(mode);
+      });
+      screen.querySelector("[data-game-over='menu']").addEventListener("click", () => this.returnToGameMenu());
+      screen.querySelector("[data-game-over='exit']").addEventListener("click", () => this.destroy());
+    }
+
     completeShift() {
       this.paused = true;
       this.speed = 0;
@@ -1044,13 +1124,17 @@
           <div class="fg-kicker">Зміну завершено</div>
           <h1>${this.mode === "trailer" ? "Фуру завантажено!" : "Перевезення завершено!"}</h1>
           <p>Час: <strong>${formatTime(this.elapsed)}</strong> · Бали: <strong>${Math.round(this.score)}</strong> · Цілісність вантажу: <strong>${Math.round(this.integrity)}%</strong></p>
-          <div class="fg-menu-actions"><button class="fg-btn primary" data-finish="again">Ще одна зміна</button><button class="fg-btn" data-finish="exit">Вийти в склад</button></div>
+          <div class="fg-menu-actions"><button class="fg-btn primary" data-finish="again">Ще одна зміна</button><button class="fg-btn" data-finish="menu">Меню гри</button><button class="fg-btn" data-finish="exit">Вийти в склад</button></div>
         </div>`;
       screen.classList.remove("hidden");
       screen.querySelector("[data-finish='again']").addEventListener("click", () => {
-        this.destroy();
-        global.ForkliftGame.launch(this.options);
+        const mode = this.mode;
+        const options = this.options;
+        this.destroy(true);
+        const next = global.ForkliftGame.launch(options);
+        next.start(mode);
       });
+      screen.querySelector("[data-finish='menu']").addEventListener("click", () => this.returnToGameMenu());
       screen.querySelector("[data-finish='exit']").addEventListener("click", () => this.destroy());
     }
 
@@ -1066,7 +1150,7 @@
           <div class="fg-kicker">Пауза</div>
           <h1>Зміна призупинена</h1>
           <p>Поточний результат буде втрачено, якщо вийти в робочий застосунок.</p>
-          <div class="fg-menu-actions"><button class="fg-btn primary" data-pause="resume">Продовжити</button><button class="fg-btn danger" data-pause="exit">Вийти в склад</button></div>
+          <div class="fg-menu-actions"><button class="fg-btn primary" data-pause="resume">Продовжити</button><button class="fg-btn" data-pause="menu">Меню гри</button><button class="fg-btn danger" data-pause="exit">Вийти в склад</button></div>
         </div>`;
       screen.classList.remove("hidden");
       screen.querySelector("[data-pause='resume']").addEventListener("click", () => {
@@ -1074,6 +1158,7 @@
         this.paused = false;
         this.clock?.getDelta();
       });
+      screen.querySelector("[data-pause='menu']").addEventListener("click", () => this.returnToGameMenu());
       screen.querySelector("[data-pause='exit']").addEventListener("click", () => this.destroy());
     }
 
@@ -1102,7 +1187,7 @@
       this.renderer.setSize(innerWidth, innerHeight);
     }
 
-    destroy() {
+    destroy(silent) {
       if (this.destroyed) return;
       this.destroyed = true;
       cancelAnimationFrame(this.raf);
@@ -1127,7 +1212,7 @@
       this.root?.remove();
       document.body.style.overflow = this.previousBodyOverflow || "";
       if (activeGame === this) activeGame = null;
-      if (typeof this.options.onExit === "function") this.options.onExit();
+      if (!silent && typeof this.options.onExit === "function") this.options.onExit();
     }
   }
 
