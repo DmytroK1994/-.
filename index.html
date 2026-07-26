@@ -8095,7 +8095,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.15</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.16</span></div>
     </div>
   </div>
 
@@ -9313,7 +9313,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.15</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.16</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9338,6 +9338,16 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.16</h3>
+          <ul>
+            <li>у фури залишено один фізично правильний заїзд із заднього боку, а передня і бічні стінки блокують транспорт;</li>
+            <li>синтетичні сигнали замінено на справжні короткі звуки автомобільного клаксона та гідравліки вил;</li>
+            <li>після повного завантаження автоматично доступна наступна пронумерована фура як новий раунд;</li>
+            <li>працівники та службовий транспорт посилено обходять стіни, стелажі, піддони й одне одного;</li>
+            <li>після небезпечного наїзду гра тимчасово зупиняється: інспектор оформлює порушення, а двоє медиків забирають постраждалого.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.15</h3>
           <ul>
@@ -10479,7 +10489,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.15";
+  const APP_VERSION = "3.16";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18679,7 +18689,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=315")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=316")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })

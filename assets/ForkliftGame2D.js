@@ -114,9 +114,16 @@
       this.workers = [];
       this.bot = null;
       this.slots = [];
+      this.trailerRound = 1;
+      this.incident = null;
       this.audio = null;
       this.engine = null;
       this.engineGain = null;
+      this.effectSources = {
+        horn: "./assets/audio/car-horn.mp3?v=316",
+        lift: "./assets/audio/hydraulic-up-real.mp3?v=316",
+        lower: "./assets/audio/hydraulic-down-real.mp3?v=316"
+      };
       this.lastHornNotice = -Infinity;
       this.lastDamageAt = -Infinity;
       this.resizeHandler = () => this.resize();
@@ -208,7 +215,7 @@
       this.root.querySelectorAll(".fg2-hud,.fg2-goal,.fg2-pause,.fg2-controls,.fg2-zoom-tip").forEach(element => element.classList.remove("fg2-hidden"));
       this.root.querySelector("[data-fg2='delivery']").textContent = `0 / ${this.target}`;
       this.root.querySelector("[data-fg2='goal']").textContent = this.mode === "trailer"
-        ? "ЦІЛЬ: зелена фура праворуч · став піддони у пронумеровані місця"
+        ? "ФУРА №1 · один заїзд ззаду · став піддони у пронумеровані місця"
         : "ЦІЛЬ: велика зелена зона СКЛАДУ Б праворуч";
       this.running = true;
       this.lastFrame = performance.now();
@@ -224,6 +231,13 @@
         { x: 1350, y: 170, w: 150, h: 390, type: "rack" },
         { x: 1350, y: 840, w: 150, h: 390, type: "rack" }
       ];
+      if (this.mode === "trailer") {
+        this.obstacles.push(
+          { x: this.trailer.x, y: this.trailer.y, w: 34, h: this.trailer.h, type: "trailer-wall" },
+          { x: this.trailer.x + this.trailer.w - 34, y: this.trailer.y, w: 34, h: this.trailer.h, type: "trailer-wall" },
+          { x: this.trailer.x, y: this.trailer.y, w: this.trailer.w, h: 34, type: "trailer-wall" }
+        );
+      }
       this.pallets = [];
       for (let index = 0; index < 12; index++) {
         this.pallets.push({
@@ -390,6 +404,11 @@
     }
 
     update(dt) {
+      if (this.incident) {
+        this.updateIncident(dt);
+        this.updateHUD();
+        return;
+      }
       this.elapsed += dt;
       this.updateVehicle(dt);
       this.updateWorkers(dt);
@@ -398,6 +417,10 @@
     }
 
     updateVehicle(dt) {
+      if (this.incident) {
+        this.vehicle.speed = 0;
+        return;
+      }
       const input = this.movementInput();
       const v = this.vehicle;
       const inTrailer = this.mode === "trailer" && circleRect(v.x, v.y, 12, this.trailer);
@@ -491,7 +514,8 @@
     }
 
     updateWorkers(dt) {
-      this.workers.forEach(worker => {
+      this.workers.forEach((worker, workerIndex) => {
+        if (worker.injured) return;
         const toVehicle = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y);
         if (toVehicle < 135) {
           let dx = worker.x - this.vehicle.x;
@@ -512,7 +536,13 @@
         const speed = worker.avoidUntil > this.elapsed ? worker.speed * 2.4 : worker.speed;
         worker.x += dx / length * speed * dt;
         worker.y += dy / length * speed * dt;
-        if (this.obstacles.some(rect => circleRect(worker.x, worker.y, 14, rect))) {
+        const hitsObstacle = this.obstacles.some(rect => circleRect(worker.x, worker.y, 14, rect));
+        const hitsPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(worker.x - pallet.x, worker.y - pallet.y) < 33);
+        const hitsBot = this.bot && Math.hypot(worker.x - this.bot.x, worker.y - this.bot.y) < 45;
+        const hitsWorker = this.workers.some((other, otherIndex) =>
+          otherIndex !== workerIndex && !other.injured && Math.hypot(worker.x - other.x, worker.y - other.y) < 27
+        );
+        if (hitsObstacle || hitsPallet || hitsBot || hitsWorker) {
           worker.x = previous.x;
           worker.y = previous.y;
           const target = this.randomAislePoint(18);
@@ -526,15 +556,79 @@
           worker.y = previous.y;
           worker.avoidUntil = 0;
           if (this.vehicle.speed > 118) {
-            this.score = Math.max(0, this.score - 100);
-            this.notice("-100 балів: небезпечний контакт із працівником", "bad");
-            this.vehicle.speed = 0;
-            worker.x = clamp(worker.x + (worker.x - this.vehicle.x) * 2, 50, this.world.w - 50);
-            worker.y = clamp(worker.y + (worker.y - this.vehicle.y) * 2, 50, this.world.h - 50);
-            if (this.score <= 0) this.gameOver();
+            this.startIncident(worker);
           }
         }
       });
+    }
+
+    startIncident(worker) {
+      if (this.incident || worker.injured) return;
+      worker.injured = true;
+      this.vehicle.speed = 0;
+      this.score = Math.max(0, this.score - 100);
+      const side = worker.x > this.world.w / 2 ? -1 : 1;
+      this.incident = {
+        timer: 0,
+        victim: worker,
+        inspector: { x: worker.x + side * 260, y: worker.y - 130 },
+        medics: [
+          { x: worker.x + side * 300, y: worker.y + 100 },
+          { x: worker.x + side * 340, y: worker.y + 145 }
+        ],
+        exit: { x: clamp(worker.x + side * 390, 55, this.world.w - 55), y: clamp(worker.y + 190, 55, this.world.h - 55) },
+        gameOverAfter: this.score <= 0
+      };
+      this.root.querySelector("[data-fg2='goal']").textContent = "ПОРУШЕННЯ · інспектор оформлює подію, медики забирають постраждалого";
+      this.notice("-100 балів: небезпечний контакт із працівником", "bad");
+      this.tone(110, .28, "square", .065);
+    }
+
+    moveActor(actor, target, speed, dt) {
+      const dx = target.x - actor.x;
+      const dy = target.y - actor.y;
+      const length = Math.hypot(dx, dy) || 1;
+      const step = Math.min(length, speed * dt);
+      const previous = { x: actor.x, y: actor.y };
+      actor.x += dx / length * step;
+      actor.y += dy / length * step;
+      if (this.obstacles.some(rect => circleRect(actor.x, actor.y, 14, rect))) {
+        actor.x = previous.x;
+        actor.y = previous.y;
+        const tryX = clamp(previous.x + Math.sign(dx) * step, 20, this.world.w - 20);
+        if (!this.obstacles.some(rect => circleRect(tryX, actor.y, 14, rect))) actor.x = tryX;
+        else {
+          const tryY = clamp(previous.y + Math.sign(dy) * step, 20, this.world.h - 20);
+          if (!this.obstacles.some(rect => circleRect(actor.x, tryY, 14, rect))) actor.y = tryY;
+        }
+      }
+    }
+
+    updateIncident(dt) {
+      const scene = this.incident;
+      if (!scene) return;
+      scene.timer += dt;
+      this.vehicle.speed = 0;
+      const victim = scene.victim;
+      if (scene.timer < 1.8) {
+        this.moveActor(scene.inspector, victim, 185, dt);
+        scene.medics.forEach((medic, index) => this.moveActor(medic, { x: victim.x + (index ? 22 : -22), y: victim.y + 10 }, 210, dt));
+      } else if (scene.timer < 4.8) {
+        const offset = scene.medics[0].x < scene.medics[1].x ? 22 : -22;
+        this.moveActor(scene.medics[0], { x: scene.exit.x - offset, y: scene.exit.y }, 120, dt);
+        this.moveActor(scene.medics[1], { x: scene.exit.x + offset, y: scene.exit.y }, 120, dt);
+        victim.x = (scene.medics[0].x + scene.medics[1].x) / 2;
+        victim.y = (scene.medics[0].y + scene.medics[1].y) / 2;
+        victim.carriedAway = true;
+      } else {
+        this.workers = this.workers.filter(worker => worker !== victim);
+        const gameOverAfter = scene.gameOverAfter;
+        this.incident = null;
+        this.root.querySelector("[data-fg2='goal']").textContent = this.mode === "trailer"
+          ? `ФУРА №${this.trailerRound} · один заїзд ззаду · став піддони у пронумеровані місця`
+          : "ЦІЛЬ: велика зелена зона СКЛАДУ Б праворуч";
+        if (gameOverAfter) this.gameOver();
+      }
     }
 
     updateBot(dt) {
@@ -552,7 +646,10 @@
       bot.angle = Math.atan2(dy, dx);
       bot.x += dx / length * bot.speed * dt;
       bot.y += dy / length * bot.speed * dt;
-      if (this.obstacles.some(rect => circleRect(bot.x, bot.y, 25, rect))) {
+      const botHitObstacle = this.obstacles.some(rect => circleRect(bot.x, bot.y, 25, rect));
+      const botHitPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(bot.x - pallet.x, bot.y - pallet.y) < 48);
+      const botHitWorker = this.workers.some(worker => !worker.injured && Math.hypot(bot.x - worker.x, bot.y - worker.y) < 43);
+      if (botHitObstacle || botHitPallet || botHitWorker) {
         bot.x = previous.x;
         bot.y = previous.y;
         const target = this.randomAislePoint(30);
@@ -580,11 +677,16 @@
     }
 
     horn() {
-      if (!this.running || this.paused) return;
-      this.tone(320, .2, "square", .075);
-      setTimeout(() => this.tone(265, .16, "square", .06), 85);
+      if (!this.running || this.paused || this.incident) return;
+      this.playEffect("horn", 0, .95, .68);
       this.workers.forEach(worker => {
-        if (Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) < 270) worker.avoidUntil = 0;
+        if (worker.injured || Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) >= 270) return;
+        const dx = worker.x - this.vehicle.x;
+        const dy = worker.y - this.vehicle.y;
+        const length = Math.hypot(dx, dy) || 1;
+        worker.targetX = clamp(worker.x + dx / length * 240, 50, this.world.w - 50);
+        worker.targetY = clamp(worker.y + dy / length * 240, 50, this.world.h - 50);
+        worker.avoidUntil = this.elapsed + 2;
       });
       if (this.elapsed - this.lastHornNotice > 4) {
         this.lastHornNotice = this.elapsed;
@@ -593,7 +695,24 @@
     }
 
     hydraulic(direction) {
-      this.tone(direction === "lift" ? 180 : 120, .22, "sawtooth", .03);
+      this.playEffect(direction === "lift" ? "lift" : "lower", .15, .9, .55);
+    }
+
+    playEffect(name, startAt, duration, volume) {
+      const source = this.effectSources[name];
+      if (!source) return;
+      try {
+        const effect = new Audio(source);
+        effect.preload = "auto";
+        effect.volume = volume == null ? .6 : volume;
+        effect.currentTime = startAt || 0;
+        const playback = effect.play();
+        playback?.catch?.(() => {});
+        setTimeout(() => {
+          effect.pause();
+          effect.src = "";
+        }, Math.max(120, (duration || .8) * 1000));
+      } catch (error) {}
     }
 
     initAudio() {
@@ -659,7 +778,8 @@
       this.obstacles.forEach(rect => this.drawRack(ctx, rect));
       this.drawPallets(ctx);
       if (this.bot) this.drawVehicle(ctx, this.bot.x, this.bot.y, this.bot.angle, "#39829c", false, true);
-      this.workers.forEach(worker => this.drawWorker(ctx, worker));
+      this.workers.filter(worker => !worker.injured).forEach(worker => this.drawWorker(ctx, worker));
+      if (this.incident) this.drawIncident(ctx);
       this.drawVehicle(ctx, this.vehicle.x, this.vehicle.y, this.vehicle.angle, "#e4b637", true, false);
       ctx.restore();
       this.drawObjectiveIndicator(ctx);
@@ -772,6 +892,18 @@
         this.drawTargetArrow(ctx, this.destination.x + this.destination.w / 2, this.destination.y - 35);
       } else {
         ctx.save();
+        const rampY = this.trailer.y + this.trailer.h;
+        ctx.fillStyle = "#9aa7ac";
+        ctx.fillRect(this.trailer.x + 34, rampY, this.trailer.w - 68, 92);
+        ctx.setLineDash([15, 12]);
+        ctx.strokeStyle = "#f3cb55";
+        ctx.lineWidth = 5;
+        ctx.strokeRect(this.trailer.x + 47, rampY + 8, this.trailer.w - 94, 70);
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#f7df83";
+        ctx.font = "900 20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("ЄДИНИЙ ЗАЇЗД ↑", this.trailer.x + this.trailer.w / 2, rampY + 57);
         ctx.fillStyle = "#d8e0e3";
         ctx.shadowColor = "rgba(0,0,0,.4)";
         ctx.shadowBlur = 20;
@@ -785,7 +917,7 @@
         ctx.fillStyle = "#183027";
         ctx.font = "900 26px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("ФУРА · 33 МІСЦЯ", this.trailer.x + this.trailer.w / 2, this.trailer.y - 22);
+        ctx.fillText(`ФУРА №${this.trailerRound} · 33 МІСЦЯ`, this.trailer.x + this.trailer.w / 2, this.trailer.y - 22);
         this.slots.forEach(slot => {
           ctx.fillStyle = slot.occupied ? "#2f9f61" : "rgba(89,221,133,.16)";
           ctx.strokeStyle = slot.occupied ? "#a7f4c1" : "#66df91";
@@ -831,6 +963,7 @@
     }
 
     drawRack(ctx, rect) {
+      if (rect.type === "trailer-wall") return;
       ctx.save();
       ctx.fillStyle = "#264d63";
       ctx.shadowColor = "rgba(0,0,0,.38)";
@@ -871,6 +1004,60 @@
       ctx.beginPath(); ctx.arc(0, 0, 14, 0, TAU); ctx.fill();
       ctx.fillStyle = "#e5b18a";
       ctx.beginPath(); ctx.arc(0, -15, 8, 0, TAU); ctx.fill();
+      ctx.restore();
+    }
+
+    drawIncident(ctx) {
+      const scene = this.incident;
+      if (!scene) return;
+      const victim = scene.victim;
+      ctx.save();
+      if (victim.carriedAway) {
+        const left = Math.min(scene.medics[0].x, scene.medics[1].x);
+        const right = Math.max(scene.medics[0].x, scene.medics[1].x);
+        ctx.strokeStyle = "#f1b34d";
+        ctx.lineWidth = 12;
+        ctx.beginPath();
+        ctx.moveTo(left, victim.y);
+        ctx.lineTo(right, victim.y);
+        ctx.stroke();
+        ctx.fillStyle = victim.color;
+        ctx.beginPath();
+        ctx.ellipse(victim.x, victim.y, 24, 10, 0, 0, TAU);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = victim.color;
+        ctx.beginPath();
+        ctx.ellipse(victim.x, victim.y, 24, 11, -.2, 0, TAU);
+        ctx.fill();
+      }
+      this.drawResponder(ctx, scene.inspector, "#2f65ad", "ІНСПЕКТОР");
+      scene.medics.forEach(medic => this.drawResponder(ctx, medic, "#f2f5f6", "МЕДИК", true));
+      ctx.restore();
+    }
+
+    drawResponder(ctx, actor, color, label, medic) {
+      ctx.save();
+      ctx.translate(actor.x, actor.y);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(0, 0, 15, 0, TAU);
+      ctx.fill();
+      if (medic) {
+        ctx.strokeStyle = "#d83838";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(-7, 0); ctx.lineTo(7, 0);
+        ctx.moveTo(0, -7); ctx.lineTo(0, 7);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "rgba(6,18,24,.9)";
+      ctx.fillRect(-37, -34, 74, 15);
+      ctx.fillStyle = "#fff";
+      ctx.font = "900 8px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(label, 0, -26);
       ctx.restore();
     }
 
@@ -944,7 +1131,11 @@
       this.stats.bestScore = Math.max(this.stats.bestScore, Math.round(this.score));
       if (this.mode === "trailer" && (!this.stats.bestTrailer || this.elapsed < this.stats.bestTrailer)) this.stats.bestTrailer = Math.floor(this.elapsed);
       saveStats(this.stats);
-      this.resultScreen(this.mode === "trailer" ? "Фуру завантажено!" : "Доставку завершено!", `Час: ${timeText(this.elapsed)} · Бали: ${Math.round(this.score)}`);
+      this.resultScreen(
+        this.mode === "trailer" ? `Фуру №${this.trailerRound} завантажено!` : "Доставку завершено!",
+        `Час: ${timeText(this.elapsed)} · Бали: ${Math.round(this.score)}`,
+        this.mode === "trailer"
+      );
     }
 
     gameOver() {
@@ -954,15 +1145,32 @@
       this.resultScreen("Game Over", "Бали закінчилися. Спробуй пройти зміну обережніше.");
     }
 
-    resultScreen(title, message) {
+    resultScreen(title, message, nextTrailer) {
       const screen = this.root.querySelector(".fg2-screen");
       screen.innerHTML = `
         <div class="fg2-menu"><div class="fg2-kicker">Результат зміни</div><h1>${title}</h1><p>${message}</p>
-        <div class="fg2-actions"><button class="fg2-btn primary" data-result="again">Ще раз</button><button class="fg2-btn" data-result="menu">Меню гри</button><button class="fg2-btn danger" data-result="exit">Вийти в склад</button></div></div>`;
+        <div class="fg2-actions"><button class="fg2-btn primary" data-result="again">${nextTrailer ? "Наступна фура" : "Ще раз"}</button><button class="fg2-btn" data-result="menu">Меню гри</button><button class="fg2-btn danger" data-result="exit">Вийти в склад</button></div></div>`;
       screen.classList.remove("hidden");
-      screen.querySelector("[data-result='again']").addEventListener("click", () => this.restartMode());
+      screen.querySelector("[data-result='again']").addEventListener("click", () => nextTrailer ? this.nextTrailer() : this.restartMode());
       screen.querySelector("[data-result='menu']").addEventListener("click", () => this.returnToMenu());
       screen.querySelector("[data-result='exit']").addEventListener("click", () => this.destroy());
+    }
+
+    nextTrailer() {
+      this.trailerRound += 1;
+      this.elapsed = 0;
+      this.score = 1000;
+      this.integrity = 100;
+      this.delivered = 0;
+      this.over = false;
+      this.incident = null;
+      this.vehicle = { x: 590, y: 700, angle: 0, speed: 0, radius: 29, forksUp: false, carrying: null };
+      this.buildWorld();
+      this.root.querySelector(".fg2-screen").classList.add("hidden");
+      this.root.querySelector("[data-fg2='goal']").textContent = `ФУРА №${this.trailerRound} · один заїзд ззаду · став піддони у пронумеровані місця`;
+      this.paused = false;
+      this.lastFrame = performance.now();
+      this.notice(`Фура №${this.trailerRound} подана до рампи`, "good");
     }
 
     restartMode() {

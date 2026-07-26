@@ -23,3 +23,21 @@ Copyright (c) 2010-2023 Three.js Authors.
 Licensed under the MIT License.
 
 Source: https://github.com/mrdoob/three.js
+
+## Car Horn.wav
+
+Created by 15HPanska_Ruttner_Jan. Licensed under CC0 1.0.
+
+Source: https://commons.wikimedia.org/wiki/File:Car_Horn.wav
+
+## Hydraulic lift pushing up.ogg
+
+Created by stephan / PDSounds. Public domain.
+
+Source: https://commons.wikimedia.org/wiki/File:Hydraulic_lift_pushing_up.ogg
+
+## Hydraulic lift down.ogg
+
+Created by stephan / PDSounds. Public domain.
+
+Source: https://commons.wikimedia.org/wiki/File:Hydraulic_lift_down.ogg
