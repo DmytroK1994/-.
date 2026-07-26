@@ -13,7 +13,7 @@
     style.textContent = `
       .fg-root{position:fixed;inset:0;z-index:1000;overflow:hidden;background:#071018;color:#f6fbff;font-family:Inter,system-ui,-apple-system,sans-serif;touch-action:none;user-select:none}
       .fg-root *{box-sizing:border-box}
-      .fg-stage,.fg-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+      .fg-stage,.fg-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
       .fg-screen{position:absolute;inset:0;z-index:20;display:grid;padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));place-items:center;background:radial-gradient(circle at 50% 35%,rgba(44,126,151,.32),transparent 42%),linear-gradient(155deg,#101c26,#04080c 72%)}
       .fg-screen.hidden,.fg-hidden{display:none!important}
       .fg-menu{width:min(100%,560px);max-height:100%;overflow:auto;padding:24px;border:1px solid rgba(255,255,255,.18);border-radius:26px;background:rgba(8,20,28,.9);box-shadow:0 30px 90px rgba(0,0,0,.55);backdrop-filter:blur(18px)}
@@ -29,7 +29,7 @@
       .fg-record{padding:9px;border-radius:13px;background:rgba(255,255,255,.07);text-align:center}.fg-record strong,.fg-record span{display:block}.fg-record strong{font-size:16px}.fg-record span{margin-top:2px;color:#a9bbc5;font-size:9px;font-weight:800}
       .fg-menu-actions{display:flex;gap:8px;margin-top:14px}.fg-btn{min-height:42px;padding:9px 14px;border:1px solid rgba(255,255,255,.18);border-radius:13px;background:#1b303a;color:#fff;font:800 13px inherit;cursor:pointer}.fg-btn.primary{background:#e9be50;color:#172029;border-color:#ffe08d}.fg-btn.danger{background:#4b2428}
       .fg-menu-actions .fg-btn{flex:1}
-      .fg-hud{position:absolute;inset:max(10px,env(safe-area-inset-top)) 10px auto;z-index:10;display:grid;grid-template-columns:1fr auto;gap:8px;pointer-events:none}
+      .fg-hud{position:absolute;top:max(10px,env(safe-area-inset-top));right:88px;left:10px;z-index:10;display:grid;grid-template-columns:1fr auto;gap:8px;pointer-events:none}
       .fg-hud-bar{display:flex;flex-wrap:wrap;gap:6px}.fg-chip{min-width:86px;padding:7px 9px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(5,15,21,.78);box-shadow:0 8px 24px rgba(0,0,0,.25);backdrop-filter:blur(9px)}
       .fg-chip span,.fg-chip strong{display:block}.fg-chip span{color:#aabcc6;font-size:8px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}.fg-chip strong{margin-top:2px;font-size:14px}
       .fg-integrity{width:116px;height:5px;margin-top:5px;overflow:hidden;border-radius:99px;background:#3e4a4e}.fg-integrity i{display:block;width:100%;height:100%;background:#60d394;transition:width .2s,background .2s}
@@ -39,16 +39,20 @@
       .fg-notices{position:absolute;top:145px;left:50%;z-index:30;display:grid;gap:7px;width:min(90%,440px);pointer-events:none;transform:translateX(-50%)}
       .fg-notice{padding:10px 14px;border-radius:13px;background:rgba(12,27,34,.92);box-shadow:0 12px 30px rgba(0,0,0,.35);font-size:13px;font-weight:900;text-align:center;animation:fgNotice 2.7s both}.fg-notice.bad{background:rgba(104,31,35,.94)}.fg-notice.good{background:rgba(21,88,62,.94)}
       @keyframes fgNotice{0%{opacity:0;transform:translateY(-12px)}12%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
-      .fg-exit{position:absolute;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:13;min-height:38px;padding:7px 11px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(7,18,24,.78);color:#fff;font-weight:900;cursor:pointer}
-      .fg-controls{position:absolute;inset:auto 0 max(12px,env(safe-area-inset-bottom));z-index:12;display:none;align-items:end;justify-content:space-between;padding:10px 14px;pointer-events:none}
-      .fg-steer{position:relative;width:116px;height:116px;border:3px solid rgba(230,244,248,.62);border-radius:50%;background:rgba(7,19,25,.56);box-shadow:inset 0 0 0 9px rgba(4,9,12,.42);pointer-events:auto}
-      .fg-steer::before,.fg-steer::after{content:"";position:absolute;top:50%;left:50%;background:#d8e7eb;transform-origin:center}.fg-steer::before{width:72%;height:4px;transform:translate(-50%,-50%)}.fg-steer::after{width:4px;height:72%;transform:translate(-50%,-50%)}.fg-steer-hub{position:absolute;inset:39%;border-radius:50%;background:#f2c34f}
-      .fg-pedals{display:grid;grid-template-columns:repeat(3,58px);gap:7px;pointer-events:auto}.fg-control{display:grid;height:54px;padding:4px;place-items:center;border:1px solid rgba(255,255,255,.18);border-radius:15px;background:rgba(12,31,39,.82);color:#fff;font-size:10px;font-weight:900;line-height:1.05;text-align:center}.fg-control:active,.fg-control.active{background:#f0c450;color:#172029}.fg-control.horn{grid-column:2/4;background:#325d6b}
+      .fg-exit{position:absolute;top:max(10px,env(safe-area-inset-top));right:10px;z-index:13;width:70px;height:44px;padding:0 8px;border:1px solid rgba(255,255,255,.2);border-radius:13px;background:rgba(7,18,24,.86);color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+      .fg-controls{position:absolute;inset:auto 0 max(7px,env(safe-area-inset-bottom));z-index:12;display:none;align-items:end;justify-content:space-between;padding:7px 13px;pointer-events:none}
+      .fg-steering,.fg-drive{display:grid;grid-template-columns:repeat(2,64px);gap:9px;pointer-events:auto}
+      .fg-drive{grid-template-columns:64px}
+      .fg-actions{position:absolute;left:50%;bottom:0;display:flex;gap:7px;pointer-events:auto;transform:translateX(-50%)}
+      .fg-control{display:grid;width:64px;height:58px;padding:4px;place-items:center;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(12,31,39,.84);box-shadow:0 7px 20px rgba(0,0,0,.22);color:#fff;font-size:11px;font-weight:900;line-height:1.05;text-align:center}.fg-control:active,.fg-control.active{background:#f0c450;color:#172029;transform:scale(.96)}.fg-control.drive{height:50px}.fg-control.horn{background:#325d6b}.fg-control.arrow{font-size:27px}
+      .fg-look-tip{position:absolute;right:76px;bottom:83px;z-index:9;padding:6px 9px;border-radius:10px;background:rgba(5,15,21,.62);color:#c5d5dc;font-size:10px;font-weight:800;pointer-events:none;animation:fgLookTip 5s both}@keyframes fgLookTip{0%,75%{opacity:.85}100%{opacity:0}}
+      .fg-rotate-hint{display:none;position:absolute;inset:0;z-index:60;padding:22px;place-items:center;background:#071018;color:#fff;text-align:center}.fg-rotate-hint strong{display:block;font-size:44px}.fg-rotate-hint span{display:block;margin-top:10px;font-weight:800}
       .fg-incident{position:absolute;inset:0;z-index:25;display:grid;padding:18px;place-items:center;background:rgba(84,5,9,.44);pointer-events:none}.fg-incident-box{max-width:440px;padding:20px;border:2px solid #ff9292;border-radius:20px;background:rgba(55,12,15,.94);box-shadow:0 20px 70px rgba(0,0,0,.6);text-align:center}.fg-incident-box strong{display:block;font-size:25px}.fg-incident-box span{display:block;margin-top:7px;color:#ffd2d2}
       .fg-loading{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:#030608}.fg-loading-box{text-align:center}.fg-loader{width:66px;height:66px;margin:0 auto 13px;border:4px solid #23363e;border-top-color:#f2c550;border-radius:50%;animation:fgSpin .75s linear infinite}@keyframes fgSpin{to{transform:rotate(360deg)}}
       .fg-glitch{animation:fgGlitch .48s both}@keyframes fgGlitch{15%{transform:translate(7px,-2px);filter:hue-rotate(40deg)}35%{transform:translate(-8px,3px)}58%{transform:translate(5px,5px);filter:contrast(1.7)}100%{transform:none;filter:none}}
-      @media(pointer:coarse),(max-width:900px){.fg-controls{display:flex}.fg-exit{bottom:auto;top:calc(env(safe-area-inset-top) + 100px)}.fg-prompt{bottom:148px}.fg-hud{grid-template-columns:1fr auto}.fg-chip{min-width:70px;padding:6px}.fg-minimap{width:102px;height:72px}}
-      @media(max-width:560px){.fg-hud-bar{max-width:245px}.fg-chip{min-width:70px}.fg-chip strong{font-size:12px}.fg-records{grid-template-columns:1fr}.fg-steer{width:102px;height:102px}.fg-pedals{grid-template-columns:repeat(3,52px)}.fg-control{height:49px}.fg-goal{top:118px}}
+      @media(pointer:coarse),(max-width:900px){.fg-controls{display:flex}.fg-prompt{bottom:76px}.fg-hud{grid-template-columns:1fr auto}.fg-chip{min-width:66px;padding:5px 7px}.fg-minimap{width:96px;height:64px}.fg-goal{top:80px}.fg-notices{top:105px}}
+      @media(max-width:700px){.fg-hud-bar{max-width:300px}.fg-chip{min-width:62px}.fg-chip strong{font-size:11px}.fg-records{grid-template-columns:1fr}.fg-steering{grid-template-columns:repeat(2,58px)}.fg-drive{grid-template-columns:58px}.fg-control{width:58px;height:52px}.fg-control.drive{height:46px}.fg-actions .fg-control{width:56px;height:44px;font-size:9px}}
+      @media(pointer:coarse) and (orientation:portrait){.fg-root.fg-playing .fg-rotate-hint{display:grid}}
     `;
     document.head.appendChild(style);
   }
@@ -104,7 +108,10 @@
       this.damageCooldown = 0;
       this.lastLateralForce = 0;
       this.keys = new Set();
-      this.controls = { forward: false, reverse: false, lift: false, lower: false, steer: 0 };
+      this.controls = { forward: false, reverse: false, left: false, right: false, lift: false, lower: false };
+      this.cameraYaw = 0;
+      this.cameraPitch = .54;
+      this.lookPointer = null;
       this.pallets = [];
       this.npcs = [];
       this.obstacles = [];
@@ -139,17 +146,24 @@
         <div class="fg-goal fg-hidden" data-fg="goal"></div>
         <div class="fg-prompt fg-hidden" data-fg="prompt"></div>
         <div class="fg-notices"></div>
+        <div class="fg-look-tip fg-hidden">Проведи пальцем по екрану, щоб оглянутися</div>
         <div class="fg-controls fg-hidden">
-          <div class="fg-steer" aria-label="Кермо"><span class="fg-steer-hub"></span></div>
-          <div class="fg-pedals">
+          <div class="fg-steering" aria-label="Кнопки повороту">
+            <button class="fg-control arrow" data-control="left" aria-label="Повернути ліворуч">◀</button>
+            <button class="fg-control arrow" data-control="right" aria-label="Повернути праворуч">▶</button>
+          </div>
+          <div class="fg-actions">
             <button class="fg-control" data-control="lift">Підняти<br>вила</button>
-            <button class="fg-control" data-control="forward">Вперед</button>
+            <button class="fg-control horn" data-control="horn">📣<br>Сигнал</button>
             <button class="fg-control" data-control="lower">Опустити<br>вила</button>
-            <button class="fg-control" data-control="reverse">Реверс</button>
-            <button class="fg-control horn" data-control="horn">📣 Сигнал</button>
+          </div>
+          <div class="fg-drive" aria-label="Кнопки руху">
+            <button class="fg-control drive arrow" data-control="forward" aria-label="Їхати вперед">▲</button>
+            <button class="fg-control drive arrow" data-control="reverse" aria-label="Їхати назад">▼</button>
           </div>
         </div>
-        <button class="fg-exit fg-hidden" type="button">Вийти в склад</button>
+        <button class="fg-exit fg-hidden" type="button" aria-label="Пауза та вихід">☰ Пауза</button>
+        <div class="fg-rotate-hint"><div><strong>↻</strong><span>Поверни телефон горизонтально для зручного керування</span></div></div>
         <div class="fg-incident fg-hidden"><div class="fg-incident-box"><strong>Штраф за порушення ТБ!</strong><span>Рух заблоковано. Інспектор і медики вже прямують до місця інциденту.</span></div></div>
         <div class="fg-screen">
           <div class="fg-menu">
@@ -181,13 +195,35 @@
       });
       this.root.querySelector("[data-menu-action='exit']").addEventListener("click", () => this.destroy());
       this.root.querySelector("[data-menu-action='help']").addEventListener("click", () => {
-        this.notice("ПК: WASD/стрілки — рух, Q/E — вила, H/F — сигнал, Пробіл — гальмо. На телефоні використовуй кермо та кнопки.", "good");
+        this.notice("ПК: WASD/стрілки — рух, Q/E — вила, H/F — сигнал. На телефоні: поворот зліва, рух справа, огляд пальцем по екрану.", "good");
       });
       this.root.querySelector(".fg-exit").addEventListener("click", () => this.showPauseMenu());
     }
 
+    enterLandscape() {
+      if (!matchMedia("(pointer: coarse)").matches) return;
+      const lockOrientation = () => {
+        try {
+          const result = screen.orientation?.lock?.("landscape");
+          result?.catch?.(() => {});
+        } catch (error) {}
+      };
+      try {
+        if (!document.fullscreenElement && this.root.requestFullscreen) {
+          const result = this.root.requestFullscreen({ navigationUI: "hide" });
+          result?.then?.(lockOrientation).catch?.(lockOrientation);
+        } else {
+          lockOrientation();
+        }
+      } catch (error) {
+        lockOrientation();
+      }
+    }
+
     async start(mode) {
       if (this.started) return;
+      this.root.classList.add("fg-playing");
+      this.enterLandscape();
       this.mode = mode === "trailer" ? "trailer" : "transport";
       this.targetCount = this.mode === "trailer" ? 33 : 8;
       this.root.classList.add("fg-glitch");
@@ -207,7 +243,7 @@
       }
       loading.remove();
       this.started = true;
-      this.root.querySelectorAll(".fg-hud,.fg-controls,.fg-exit,.fg-goal").forEach(element => element.classList.remove("fg-hidden"));
+      this.root.querySelectorAll(".fg-hud,.fg-controls,.fg-exit,.fg-goal,.fg-look-tip").forEach(element => element.classList.remove("fg-hidden"));
       this.root.querySelector("[data-fg='delivery']").textContent = `0 / ${this.targetCount}`;
       this.root.querySelector("[data-fg='goal']").textContent = this.mode === "trailer"
         ? "Забирай піддони зі Складу А та опускай їх у зоні фури."
@@ -435,18 +471,33 @@
       this.pallets.push(pallet);
     }
 
+    isBlockedPosition(x, z, radius) {
+      const margin = radius || .55;
+      if (Math.abs(x) > 20.4 - margin || Math.abs(z) > 44.3 - margin) return true;
+      return this.obstacles.some(item => Math.hypot(x - item.x, z - item.z) < item.radius + margin);
+    }
+
+    randomFreePoint(radius) {
+      for (let attempt = 0; attempt < 40; attempt++) {
+        const x = -18.5 + Math.random() * 37;
+        const z = -41 + Math.random() * 82;
+        if (!this.isBlockedPosition(x, z, radius || .7)) return new THREE.Vector3(x, 0, z);
+      }
+      return new THREE.Vector3(0, 0, 0);
+    }
+
     spawnWorkers(count) {
       for (let index = 0; index < count; index++) {
         const person = this.createPerson(index % 2 ? 0x315b82 : 0x548454, 0xe0ad83);
-        person.position.set(index % 2 ? -5.5 : 5.5, 0, -34 + index * 7);
+        person.position.copy(this.randomFreePoint(.75));
         const limbs = person.userData.limbs;
         person.userData = {
-          direction: index % 2 ? 1 : -1,
-          baseX: person.position.x,
-          speed: .85 + (index % 3) * .13,
+          speed: .72 + Math.random() * .48,
           phase: Math.random() * Math.PI * 2,
           yieldUntil: 0,
           downUntil: 0,
+          target: this.randomFreePoint(.75),
+          changeTargetAt: 3 + Math.random() * 7,
           limbs
         };
         this.scene.add(person);
@@ -470,34 +521,41 @@
       const bot = new THREE.Group();
       bot.add(this.mesh(new THREE.BoxGeometry(1.35, .55, 1.7), this.material(0x3c7892, .45, .18), 0, .5, 0));
       for (const x of [-.42, .42]) bot.add(this.mesh(new THREE.BoxGeometry(.14, .1, 1.8), this.material(0x182226, .5, .4), x, .16, -1.4));
-      bot.position.set(-8, 0, -38);
+      const driver = this.createPerson(0x6d3c8a, 0xdca67c);
+      driver.scale.set(.8, .8, .8);
+      driver.position.set(0, .35, .75);
+      driver.rotation.y = Math.PI;
+      bot.add(driver);
+      bot.position.copy(this.randomFreePoint(1.5));
       this.scene.add(bot);
-      this.bots.push({ object: bot, direction: 1, speed: 2.3 });
+      this.bots.push({ object: bot, target: this.randomFreePoint(1.5), speed: 1.65 });
     }
 
     bindControls() {
       addEventListener("keydown", this.keyDownHandler);
       addEventListener("keyup", this.keyUpHandler);
-      const wheel = this.root.querySelector(".fg-steer");
-      const steerFromPointer = event => {
-        const box = wheel.getBoundingClientRect();
-        const value = ((event.clientX - box.left) / box.width - .5) * 2;
-        this.controls.steer = Math.max(-1, Math.min(1, value));
-        wheel.style.transform = `rotate(${this.controls.steer * 105}deg)`;
-      };
-      wheel.addEventListener("pointerdown", event => {
-        wheel.setPointerCapture(event.pointerId);
-        steerFromPointer(event);
+      const canvas = this.renderer.domElement;
+      canvas.addEventListener("pointerdown", event => {
+        if (this.paused) return;
+        this.lookPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        canvas.setPointerCapture?.(event.pointerId);
       });
-      wheel.addEventListener("pointermove", event => {
-        if (wheel.hasPointerCapture(event.pointerId)) steerFromPointer(event);
+      canvas.addEventListener("pointermove", event => {
+        if (!this.lookPointer || this.lookPointer.id !== event.pointerId) return;
+        const dx = event.clientX - this.lookPointer.x;
+        const dy = event.clientY - this.lookPointer.y;
+        this.cameraYaw -= dx * .006;
+        this.cameraPitch = Math.max(.22, Math.min(1.04, this.cameraPitch + dy * .004));
+        this.lookPointer.x = event.clientX;
+        this.lookPointer.y = event.clientY;
       });
-      const releaseWheel = () => {
-        this.controls.steer = 0;
-        wheel.style.transform = "";
+      const releaseLook = event => {
+        if (!this.lookPointer || this.lookPointer.id !== event.pointerId) return;
+        this.lookPointer = null;
+        if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
       };
-      wheel.addEventListener("pointerup", releaseWheel);
-      wheel.addEventListener("pointercancel", releaseWheel);
+      canvas.addEventListener("pointerup", releaseLook);
+      canvas.addEventListener("pointercancel", releaseLook);
       this.root.querySelectorAll("[data-control]").forEach(button => {
         const action = button.dataset.control;
         const press = event => {
@@ -567,9 +625,21 @@
       this.tone(320, .22, "square", .09);
       setTimeout(() => this.tone(265, .18, "square", .07), 90);
       this.npcs.forEach(npc => {
-        if (npc.position.distanceTo(this.vehicle.position) < 10) npc.userData.yieldUntil = this.elapsed + 3.2;
+        const distance = npc.position.distanceTo(this.vehicle.position);
+        if (distance >= 10) return;
+        const away = npc.position.clone().sub(this.vehicle.position);
+        away.y = 0;
+        if (away.lengthSq() < .01) away.set(Math.random() - .5, 0, Math.random() - .5);
+        away.normalize();
+        const side = new THREE.Vector3(-away.z, 0, away.x).multiplyScalar((Math.random() - .5) * 5);
+        let target = npc.position.clone().addScaledVector(away, 7).add(side);
+        target.x = Math.max(-19, Math.min(19, target.x));
+        target.z = Math.max(-42, Math.min(42, target.z));
+        if (this.isBlockedPosition(target.x, target.z, .75)) target = this.randomFreePoint(.75);
+        npc.userData.target = target;
+        npc.userData.yieldUntil = this.elapsed + 3.4;
       });
-      this.notice("Сигнал подано — працівники звільняють прохід", "good");
+      this.notice("Сигнал подано — працівники відходять убік", "good");
     }
 
     getInput() {
@@ -578,10 +648,10 @@
       const left = this.keys.has("KeyA") || this.keys.has("ArrowLeft");
       const right = this.keys.has("KeyD") || this.keys.has("ArrowRight");
       const brake = this.keys.has("Space");
-      const keyboardSteer = (left ? -1 : 0) + (right ? 1 : 0);
+      const keyboardSteer = ((left || this.controls.left) ? -1 : 0) + ((right || this.controls.right) ? 1 : 0);
       return {
         throttle: (forward ? 1 : 0) + (reverse ? -1 : 0),
-        steer: keyboardSteer || this.controls.steer,
+        steer: keyboardSteer,
         brake,
         lift: this.controls.lift || this.keys.has("KeyQ"),
         lower: this.controls.lower || this.keys.has("KeyE")
@@ -594,28 +664,32 @@
         this.speed *= Math.pow(.05, dt);
         return;
       }
-      const acceleration = input.throttle * (input.throttle > 0 ? 5.2 : 4.1);
+      const acceleration = input.throttle * (input.throttle > 0 ? 4.15 : 3.45);
       this.speed += acceleration * dt;
-      this.speed *= Math.pow(input.brake ? .025 : .72, dt);
-      this.speed = Math.max(-3.8, Math.min(this.carrying ? 5.2 : 6.6, this.speed));
+      this.speed *= Math.pow(input.brake ? .025 : .64, dt);
+      this.speed = Math.max(-3.1, Math.min(this.carrying ? 4.25 : 5.15, this.speed));
       if (Math.abs(input.throttle) < .01 && Math.abs(this.speed) < .025) this.speed = 0;
-      this.steer += (input.steer - this.steer) * Math.min(1, dt * 7);
-      const steeringForce = this.steer * Math.min(1, Math.abs(this.speed) / 1.6);
-      this.vehicle.rotation.y += steeringForce * this.speed * dt * .17;
+      this.steer += (input.steer - this.steer) * Math.min(1, dt * 4.2);
+      const steeringForce = this.steer * Math.min(1, Math.abs(this.speed) / 2.1);
+      this.vehicle.rotation.y -= steeringForce * this.speed * dt * .072;
       this.steeringHandle.rotation.y = -this.steer * .62;
       const direction = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, -Math.cos(this.vehicle.rotation.y));
       const previous = this.vehicle.position.clone();
       this.vehicle.position.addScaledVector(direction, this.speed * dt);
       const hitWall = Math.abs(this.vehicle.position.x) > 20.2 || Math.abs(this.vehicle.position.z) > 44.2;
       const hitObstacle = this.obstacles.some(item => Math.hypot(this.vehicle.position.x - item.x, this.vehicle.position.z - item.z) < item.radius + .8);
-      if (hitWall || hitObstacle) {
+      const hitPallet = this.pallets.some(pallet => pallet.userData.loose && Math.hypot(this.vehicle.position.x - pallet.position.x, this.vehicle.position.z - pallet.position.z) < 1.15);
+      const hitNpc = this.npcs.find(npc => npc.userData.downUntil <= this.elapsed && Math.hypot(this.vehicle.position.x - npc.position.x, this.vehicle.position.z - npc.position.z) < 1.05);
+      const hitBot = this.bots.some(bot => Math.hypot(this.vehicle.position.x - bot.object.position.x, this.vehicle.position.z - bot.object.position.z) < 1.55);
+      if (hitWall || hitObstacle || hitPallet || hitNpc || hitBot) {
         this.vehicle.position.copy(previous);
-        if (Math.abs(this.speed) > 1.2) this.damage(Math.min(12, Math.abs(this.speed) * 1.6), "Зіткнення з конструкцією");
+        if (hitNpc && this.incidentLock <= 0) this.triggerIncident(hitNpc);
+        else if (Math.abs(this.speed) > .9) this.damage(Math.min(12, Math.abs(this.speed) * 1.6), hitBot ? "Зіткнення з іншою електророклою" : "Зіткнення з перешкодою");
         this.speed *= -.18;
       }
       const lateralForce = Math.abs(this.speed * this.speed * steeringForce);
-      if (this.carrying && lateralForce > 10 && this.damageCooldown <= 0) {
-        this.damage(Math.min(7, (lateralForce - 9) * .5), "Вантаж змістився на різкому повороті");
+      if (this.carrying && lateralForce > 13.5 && this.damageCooldown <= 0) {
+        this.damage(Math.min(7, (lateralForce - 12.5) * .4), "Вантаж змістився на різкому повороті");
       }
       this.lastLateralForce = lateralForce;
       this.forkHeight += ((input.lift ? 1 : 0) - (input.lower ? 1 : 0)) * dt * .72;
@@ -694,19 +768,32 @@
         const data = npc.userData;
         if (data.downUntil > this.elapsed) return;
         const yielding = data.yieldUntil > this.elapsed;
-        const targetX = yielding ? (data.baseX < 0 ? -18.5 : 18.5) : data.baseX;
-        npc.position.x += (targetX - npc.position.x) * Math.min(1, dt * (yielding ? 2.4 : .7));
-        if (!yielding) {
-          npc.position.z += data.direction * data.speed * dt;
-          if (npc.position.z > 41 || npc.position.z < -41) {
-            data.direction *= -1;
-            npc.rotation.y += Math.PI;
+        if (!data.target || this.elapsed >= data.changeTargetAt || npc.position.distanceTo(data.target) < .65) {
+          data.target = this.randomFreePoint(.75);
+          data.changeTargetAt = this.elapsed + 4 + Math.random() * 8;
+        }
+        const movement = data.target.clone().sub(npc.position);
+        movement.y = 0;
+        const movementLength = movement.length();
+        const previous = npc.position.clone();
+        if (movementLength > .08) {
+          movement.normalize();
+          const walkingSpeed = data.speed * (yielding ? 2.35 : 1);
+          npc.position.addScaledVector(movement, walkingSpeed * dt);
+          npc.rotation.y = Math.atan2(movement.x, movement.z);
+          const hitsPallet = this.pallets.some(pallet => pallet.userData.loose && Math.hypot(npc.position.x - pallet.position.x, npc.position.z - pallet.position.z) < .72);
+          const hitsBot = this.bots.some(bot => Math.hypot(npc.position.x - bot.object.position.x, npc.position.z - bot.object.position.z) < 1.15);
+          const hitsWorker = this.npcs.some(other => other !== npc && other.userData.downUntil <= this.elapsed && Math.hypot(npc.position.x - other.position.x, npc.position.z - other.position.z) < .48);
+          if (this.isBlockedPosition(npc.position.x, npc.position.z, .55) || hitsPallet || hitsBot || hitsWorker) {
+            npc.position.copy(previous);
+            data.target = this.randomFreePoint(.75);
+            data.changeTargetAt = this.elapsed + 2;
           }
         }
-        data.phase += dt * data.speed * 5;
+        data.phase += dt * data.speed * (yielding ? 9 : 5);
         const limbs = data.limbs || [];
         limbs.forEach((limb, limbIndex) => {
-          limb.rotation.x = Math.sin(data.phase + limbIndex * Math.PI) * .35;
+          limb.rotation.x = Math.sin(data.phase + limbIndex * Math.PI) * (yielding ? .58 : .35);
         });
         const distance = Math.hypot(npc.position.x - this.vehicle.position.x, npc.position.z - this.vehicle.position.z);
         if (distance < 1.05 && this.incidentLock <= 0) this.triggerIncident(npc);
@@ -719,13 +806,25 @@
 
     updateTraffic(dt) {
       this.bots.forEach(bot => {
-        bot.object.position.z += bot.direction * bot.speed * dt;
-        if (bot.object.position.z > 39 || bot.object.position.z < -39) {
-          bot.direction *= -1;
-          bot.object.rotation.y += Math.PI;
+        if (!bot.target || bot.object.position.distanceTo(bot.target) < 1) bot.target = this.randomFreePoint(1.5);
+        const movement = bot.target.clone().sub(bot.object.position);
+        movement.y = 0;
+        const previous = bot.object.position.clone();
+        if (movement.lengthSq() > .02) {
+          movement.normalize();
+          bot.object.position.addScaledVector(movement, bot.speed * dt);
+          bot.object.rotation.y = Math.atan2(movement.x, movement.z);
+          const hitsPallet = this.pallets.some(pallet => pallet.userData.loose && Math.hypot(bot.object.position.x - pallet.position.x, bot.object.position.z - pallet.position.z) < 1.45);
+          const hitsWorker = this.npcs.some(npc => npc.userData.downUntil <= this.elapsed && Math.hypot(bot.object.position.x - npc.position.x, bot.object.position.z - npc.position.z) < 1.25);
+          if (this.isBlockedPosition(bot.object.position.x, bot.object.position.z, 1.25) || hitsPallet || hitsWorker) {
+            bot.object.position.copy(previous);
+            bot.target = this.randomFreePoint(1.5);
+          }
         }
         const distance = Math.hypot(bot.object.position.x - this.vehicle.position.x, bot.object.position.z - this.vehicle.position.z);
         if (distance < 1.6 && this.damageCooldown <= 0) {
+          bot.object.position.copy(previous);
+          bot.target = this.randomFreePoint(1.5);
           this.damage(10, "Зіткнення з іншою електророклою");
           this.speed *= -.2;
         }
@@ -755,7 +854,8 @@
       setTimeout(() => {
         if (this.destroyed) return;
         npc.rotation.z = 0;
-        npc.position.set(npc.userData.baseX, 0, 38);
+        npc.position.copy(this.randomFreePoint(.75));
+        npc.userData.target = this.randomFreePoint(.75);
         this.inspector.visible = false;
         this.medics.visible = false;
         this.root.querySelector(".fg-incident").classList.add("fg-hidden");
@@ -786,10 +886,13 @@
     }
 
     updateCamera(dt) {
-      const direction = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, -Math.cos(this.vehicle.rotation.y));
-      const targetPosition = this.vehicle.position.clone().addScaledVector(direction, -7.2).add(new THREE.Vector3(0, 4.8, 0));
+      const vehicleDirection = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, -Math.cos(this.vehicle.rotation.y));
+      const orbitDirection = vehicleDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.cameraYaw);
+      const distance = 6.8 + this.cameraPitch * 1.9;
+      const height = 2.2 + this.cameraPitch * 5.1;
+      const targetPosition = this.vehicle.position.clone().addScaledVector(orbitDirection, -distance).add(new THREE.Vector3(0, height, 0));
       this.camera.position.lerp(targetPosition, 1 - Math.pow(.004, dt));
-      const lookAt = this.vehicle.position.clone().addScaledVector(direction, 3.2).add(new THREE.Vector3(0, 1, 0));
+      const lookAt = this.vehicle.position.clone().add(new THREE.Vector3(0, 1.05, 0));
       this.camera.lookAt(lookAt);
     }
 
@@ -938,6 +1041,10 @@
       removeEventListener("keyup", this.keyUpHandler);
       try { this.engineOscillator?.stop(); } catch (error) {}
       try { this.audio?.close(); } catch (error) {}
+      try { screen.orientation?.unlock?.(); } catch (error) {}
+      if (document.fullscreenElement === this.root) {
+        try { document.exitFullscreen()?.catch?.(() => {}); } catch (error) {}
+      }
       if (this.scene) {
         this.scene.traverse(object => {
           object.geometry?.dispose?.();
