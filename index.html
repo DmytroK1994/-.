@@ -8040,14 +8040,14 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=311">
+<link rel="manifest" href="manifest.json?v=313">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
 
 <!-- Preview banner for Telegram / Viber / Facebook / Discord -->
 <meta property="og:title" content="Облік">
-<meta property="og:description" content="Інвентаризація, замовлення, здача продукції та планування завантаження фури">
+<meta property="og:description" content="Інвентаризація, замовлення та здача продукції">
 <meta property="og:image" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta property="og:image:secure_url" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta property="og:image:type" content="image/png">
@@ -8059,7 +8059,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Облік">
-<meta name="twitter:description" content="Інвентаризація, замовлення, здача продукції та планування завантаження фури">
+<meta name="twitter:description" content="Інвентаризація, замовлення та здача продукції">
 <meta name="twitter:image" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta name="twitter:image:alt" content="Облік — застосунок для складського обліку">
 
@@ -8095,7 +8095,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.11</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.13</span></div>
     </div>
   </div>
 
@@ -8144,10 +8144,6 @@
           </button>
           <button type="button" class="workspace-option" data-workspace="production">
             <span class="workspace-option-name" id="productionWorkspaceOptionLabel">Здача ГП</span>
-            <span class="workspace-option-mark"></span>
-          </button>
-          <button type="button" class="workspace-option" data-workspace="loading">
-            <span class="workspace-option-name">Завантаження фури</span>
             <span class="workspace-option-mark"></span>
           </button>
         </div>
@@ -9317,10 +9313,10 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.11</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.13</span></button>
           </div>
           <div class="about-single-description">
-            <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень, здачі продукції та планування завантаження фури.</p>
+            <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
             <p>Застосунок допомагає швидко додавати кількість піддонами, поштучно або окремим значенням, розділяти замовлення за складами, шукати й редагувати позиції, переглядати історію та формувати документи для друку або PDF.</p>
             <p>Усі дані зберігаються локально на твоєму пристрої. Для перенесення доступні файли резервної копії, а найменування можна копіювати окремо або всім списком.</p>
           </div>
@@ -9342,6 +9338,25 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.13</h3>
+          <ul>
+            <li>ігрове керування більше не імітує автомобіль: транспортувальник повертається ліворуч і праворуч без залежності від швидкості та може розвертатися на місці;</li>
+            <li>додано камери від першої особи, від третьої особи та зверху з перемиканням окремою кнопкою;</li>
+            <li>один палець керує оглядом, а жест двома пальцями наближає або віддаляє камеру;</li>
+            <li>заблоковано виділення тексту, системну лупу та контекстне меню під час тривалого натискання на ігрові кнопки;</li>
+            <li>повідомлення після частого використання сигналу більше не накопичуються на екрані.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.12</h3>
+          <ul>
+            <li>окремий процес «Завантаження фури» прибрано з основного застосунку;</li>
+            <li>перший запуск і перемикач процесів тепер містять лише інвентаризацію, замовлення та здачу продукції;</li>
+            <li>якщо планувальник був останнім відкритим процесом, застосунок безпечно відкриє інвентаризацію;</li>
+            <li>раніше збережені шаблони планувальника залишено в локальних даних для можливого перенесення в окремий застосунок.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.11</h3>
           <ul>
@@ -10444,7 +10459,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.11";
+  const APP_VERSION = "3.13";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13733,7 +13748,7 @@
   function getWorkspaceModePreference() {
     try {
       const saved = localStorage.getItem(WORKSPACE_MODE_KEY);
-      return ["inventory", "orders", "production", "loading"].includes(saved) ? saved : "inventory";
+      return ["inventory", "orders", "production"].includes(saved) ? saved : "inventory";
     } catch (error) {
       return "inventory";
     }
@@ -13752,7 +13767,6 @@
     if (mode === "inventory") return "Порахувати фактичні залишки на складах.";
     if (mode === "orders") return "Сформувати нове замовлення на потрібний склад.";
     if (mode === "production") return "Порахувати піддони й автоматично визначити загальну кількість продукції.";
-    if (mode === "loading") return "Розрахувати розміщення піддонів і ємностей у фурі.";
     return `Почати роботу в розділі «${name}».`;
   }
 
@@ -13815,11 +13829,9 @@
     document.getElementById("workspaceStartOverlay").classList.add("hidden");
     updateWorkspaceUI();
     showPage("today");
-    toast(nextMode === "loading"
-      ? "Відкрито планувальник завантаження"
-      : (nextMode === "production"
+    toast(nextMode === "production"
       ? `Відкрито «${getProductionWorkspaceName()}»`
-      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію")));
+      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію"));
     const resolve = initialWorkspaceChoiceResolver;
     initialWorkspaceChoiceResolver = null;
     if (resolve) resolve(nextMode);
@@ -14242,7 +14254,7 @@
   }
 
   function setWorkspaceMode(mode) {
-    const nextMode = ["inventory", "orders", "production", "loading"].includes(mode) ? mode : "inventory";
+    const nextMode = ["inventory", "orders", "production"].includes(mode) ? mode : "inventory";
     closeWorkspaceDropdown();
     if (workspaceMode === nextMode) return;
     workspaceMode = nextMode;
@@ -18647,8 +18659,8 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("threeGameRuntime", "./assets/three.min.js?v=311")
-        .then(() => loadSecretGameScript("forkliftGameRuntime", "./assets/ForkliftGame.js?v=311"))
+      secretGameScriptsPromise = loadSecretGameScript("threeGameRuntime", "./assets/three.min.js?v=313")
+        .then(() => loadSecretGameScript("forkliftGameRuntime", "./assets/ForkliftGame.js?v=313"))
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })

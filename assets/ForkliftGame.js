@@ -11,8 +11,8 @@
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = `
-      .fg-root{position:fixed;inset:0;z-index:1000;overflow:hidden;background:#071018;color:#f6fbff;font-family:Inter,system-ui,-apple-system,sans-serif;touch-action:none;user-select:none}
-      .fg-root *{box-sizing:border-box}
+      .fg-root{position:fixed;inset:0;z-index:1000;overflow:hidden;background:#071018;color:#f6fbff;font-family:Inter,system-ui,-apple-system,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+      .fg-root *{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
       .fg-stage,.fg-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
       .fg-screen{position:absolute;inset:0;z-index:20;display:grid;padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));place-items:center;background:radial-gradient(circle at 50% 35%,rgba(44,126,151,.32),transparent 42%),linear-gradient(155deg,#101c26,#04080c 72%)}
       .fg-screen.hidden,.fg-hidden{display:none!important}
@@ -44,7 +44,7 @@
       .fg-steering,.fg-drive{display:grid;grid-template-columns:repeat(2,64px);gap:9px;pointer-events:auto}
       .fg-drive{grid-template-columns:64px}
       .fg-actions{position:absolute;left:50%;bottom:0;display:flex;gap:7px;pointer-events:auto;transform:translateX(-50%)}
-      .fg-control{display:grid;width:64px;height:58px;padding:4px;place-items:center;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(12,31,39,.84);box-shadow:0 7px 20px rgba(0,0,0,.22);color:#fff;font-size:11px;font-weight:900;line-height:1.05;text-align:center}.fg-control:active,.fg-control.active{background:#f0c450;color:#172029;transform:scale(.96)}.fg-control.drive{height:50px}.fg-control.horn{background:#325d6b}.fg-control.arrow{font-size:27px}
+      .fg-control{display:grid;width:64px;height:58px;padding:4px;place-items:center;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(12,31,39,.84);box-shadow:0 7px 20px rgba(0,0,0,.22);color:#fff;font-size:11px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg-control:active,.fg-control.active{background:#f0c450;color:#172029;transform:scale(.96)}.fg-control.drive{height:50px}.fg-control.horn{background:#325d6b}.fg-control.camera{background:#284650}.fg-control.arrow{font-size:27px}
       .fg-look-tip{position:absolute;right:76px;bottom:83px;z-index:9;padding:6px 9px;border-radius:10px;background:rgba(5,15,21,.62);color:#c5d5dc;font-size:10px;font-weight:800;pointer-events:none;animation:fgLookTip 5s both}@keyframes fgLookTip{0%,75%{opacity:.85}100%{opacity:0}}
       .fg-rotate-hint{display:none;position:absolute;inset:0;z-index:60;padding:22px;place-items:center;background:#071018;color:#fff;text-align:center}.fg-rotate-hint strong{display:block;font-size:44px}.fg-rotate-hint span{display:block;margin-top:10px;font-weight:800}
       .fg-incident{position:absolute;inset:0;z-index:25;display:grid;padding:18px;place-items:center;background:rgba(84,5,9,.44);pointer-events:none}.fg-incident-box{max-width:440px;padding:20px;border:2px solid #ff9292;border-radius:20px;background:rgba(55,12,15,.94);box-shadow:0 20px 70px rgba(0,0,0,.6);text-align:center}.fg-incident-box strong{display:block;font-size:25px}.fg-incident-box span{display:block;margin-top:7px;color:#ffd2d2}
@@ -111,7 +111,11 @@
       this.controls = { forward: false, reverse: false, left: false, right: false, lift: false, lower: false };
       this.cameraYaw = 0;
       this.cameraPitch = .54;
-      this.lookPointer = null;
+      this.cameraDistance = 8;
+      this.cameraMode = "third";
+      this.lookPointers = new Map();
+      this.pinchDistance = 0;
+      this.lastHornNoticeAt = -Infinity;
       this.pallets = [];
       this.npcs = [];
       this.obstacles = [];
@@ -155,6 +159,7 @@
           <div class="fg-actions">
             <button class="fg-control" data-control="lift">Підняти<br>вила</button>
             <button class="fg-control horn" data-control="horn">📣<br>Сигнал</button>
+            <button class="fg-control camera" data-control="camera">👁<br>Камера</button>
             <button class="fg-control" data-control="lower">Опустити<br>вила</button>
           </div>
           <div class="fg-drive" aria-label="Кнопки руху">
@@ -195,7 +200,7 @@
       });
       this.root.querySelector("[data-menu-action='exit']").addEventListener("click", () => this.destroy());
       this.root.querySelector("[data-menu-action='help']").addEventListener("click", () => {
-        this.notice("ПК: WASD/стрілки — рух, Q/E — вила, H/F — сигнал. На телефоні: поворот зліва, рух справа, огляд пальцем по екрану.", "good");
+        this.notice("ПК: WASD/стрілки — рух, Q/E — вила, H/F — сигнал, C — камера. На телефоні: поворот зліва, рух справа, огляд одним пальцем, масштаб двома.", "good");
       });
       this.root.querySelector(".fg-exit").addEventListener("click", () => this.showPauseMenu());
     }
@@ -534,24 +539,43 @@
     bindControls() {
       addEventListener("keydown", this.keyDownHandler);
       addEventListener("keyup", this.keyUpHandler);
+      this.root.addEventListener("contextmenu", event => event.preventDefault());
+      this.root.addEventListener("selectstart", event => event.preventDefault());
       const canvas = this.renderer.domElement;
+      const pointerDistance = () => {
+        const points = Array.from(this.lookPointers.values());
+        if (points.length < 2) return 0;
+        return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+      };
       canvas.addEventListener("pointerdown", event => {
         if (this.paused) return;
-        this.lookPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        event.preventDefault();
+        this.lookPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        if (this.lookPointers.size >= 2) this.pinchDistance = pointerDistance();
         canvas.setPointerCapture?.(event.pointerId);
       });
       canvas.addEventListener("pointermove", event => {
-        if (!this.lookPointer || this.lookPointer.id !== event.pointerId) return;
-        const dx = event.clientX - this.lookPointer.x;
-        const dy = event.clientY - this.lookPointer.y;
+        const previous = this.lookPointers.get(event.pointerId);
+        if (!previous) return;
+        event.preventDefault();
+        const dx = event.clientX - previous.x;
+        const dy = event.clientY - previous.y;
+        this.lookPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        if (this.lookPointers.size >= 2) {
+          const distance = pointerDistance();
+          if (this.pinchDistance) {
+            this.cameraDistance = Math.max(4.2, Math.min(14, this.cameraDistance - (distance - this.pinchDistance) * .018));
+          }
+          this.pinchDistance = distance;
+          return;
+        }
         this.cameraYaw -= dx * .006;
         this.cameraPitch = Math.max(.22, Math.min(1.04, this.cameraPitch + dy * .004));
-        this.lookPointer.x = event.clientX;
-        this.lookPointer.y = event.clientY;
       });
       const releaseLook = event => {
-        if (!this.lookPointer || this.lookPointer.id !== event.pointerId) return;
-        this.lookPointer = null;
+        if (!this.lookPointers.has(event.pointerId)) return;
+        this.lookPointers.delete(event.pointerId);
+        this.pinchDistance = this.lookPointers.size >= 2 ? pointerDistance() : 0;
         if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
       };
       canvas.addEventListener("pointerup", releaseLook);
@@ -564,12 +588,16 @@
             this.horn();
             return;
           }
+          if (action === "camera") {
+            this.cycleCamera();
+            return;
+          }
           this.controls[action] = true;
           button.classList.add("active");
           button.setPointerCapture?.(event.pointerId);
         };
         const release = event => {
-          if (action !== "horn") this.controls[action] = false;
+          if (!["horn", "camera"].includes(action)) this.controls[action] = false;
           button.classList.remove("active");
           if (event?.pointerId != null && button.hasPointerCapture?.(event.pointerId)) button.releasePointerCapture(event.pointerId);
         };
@@ -585,7 +613,20 @@
       if (down) this.keys.add(event.code);
       else this.keys.delete(event.code);
       if (down && !event.repeat && ["KeyH", "KeyF"].includes(event.code)) this.horn();
+      if (down && !event.repeat && event.code === "KeyC") this.cycleCamera();
       if (down && !event.repeat && event.code === "Escape") this.showPauseMenu();
+    }
+
+    cycleCamera() {
+      const modes = ["third", "first", "overhead"];
+      this.cameraMode = modes[(modes.indexOf(this.cameraMode) + 1) % modes.length];
+      this.cameraYaw = 0;
+      const label = {
+        third: "Камера: від третьої особи",
+        first: "Камера: від першої особи",
+        overhead: "Камера: вигляд зверху"
+      }[this.cameraMode];
+      this.notice(label, "good");
     }
 
     initAudio() {
@@ -639,7 +680,10 @@
         npc.userData.target = target;
         npc.userData.yieldUntil = this.elapsed + 3.4;
       });
-      this.notice("Сигнал подано — працівники відходять убік", "good");
+      if (this.elapsed - this.lastHornNoticeAt > 4) {
+        this.lastHornNoticeAt = this.elapsed;
+        this.notice("Працівники відходять убік", "good");
+      }
     }
 
     getInput() {
@@ -669,9 +713,10 @@
       this.speed *= Math.pow(input.brake ? .025 : .64, dt);
       this.speed = Math.max(-3.1, Math.min(this.carrying ? 4.25 : 5.15, this.speed));
       if (Math.abs(input.throttle) < .01 && Math.abs(this.speed) < .025) this.speed = 0;
-      this.steer += (input.steer - this.steer) * Math.min(1, dt * 4.2);
-      const steeringForce = this.steer * Math.min(1, Math.abs(this.speed) / 2.1);
-      this.vehicle.rotation.y -= steeringForce * this.speed * dt * .072;
+      this.steer += (input.steer - this.steer) * Math.min(1, dt * 7.5);
+      const steeringForce = this.steer;
+      const turningSpeed = this.carrying ? .82 : 1.05;
+      this.vehicle.rotation.y -= steeringForce * turningSpeed * dt;
       this.steeringHandle.rotation.y = -this.steer * .62;
       const direction = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, -Math.cos(this.vehicle.rotation.y));
       const previous = this.vehicle.position.clone();
@@ -888,11 +933,36 @@
     updateCamera(dt) {
       const vehicleDirection = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, -Math.cos(this.vehicle.rotation.y));
       const orbitDirection = vehicleDirection.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.cameraYaw);
-      const distance = 6.8 + this.cameraPitch * 1.9;
-      const height = 2.2 + this.cameraPitch * 5.1;
-      const targetPosition = this.vehicle.position.clone().addScaledVector(orbitDirection, -distance).add(new THREE.Vector3(0, height, 0));
+      const desiredFov = this.cameraMode === "first"
+        ? Math.max(42, Math.min(72, 58 + (this.cameraDistance - 8) * 2.4))
+        : 58;
+      if (Math.abs(this.camera.fov - desiredFov) > .05) {
+        this.camera.fov = desiredFov;
+        this.camera.updateProjectionMatrix();
+      }
+      let targetPosition;
+      let lookAt;
+      if (this.cameraMode === "first") {
+        targetPosition = this.vehicle.position.clone()
+          .addScaledVector(vehicleDirection, .42)
+          .add(new THREE.Vector3(0, 2.18, 0));
+        const firstPersonDirection = orbitDirection.clone();
+        firstPersonDirection.y = (.56 - this.cameraPitch) * .9;
+        lookAt = targetPosition.clone().addScaledVector(firstPersonDirection.normalize(), 12);
+      } else if (this.cameraMode === "overhead") {
+        const overheadHeight = Math.max(8, this.cameraDistance * 1.45);
+        targetPosition = this.vehicle.position.clone()
+          .addScaledVector(orbitDirection, -2.2)
+          .add(new THREE.Vector3(0, overheadHeight, 0));
+        lookAt = this.vehicle.position.clone().addScaledVector(vehicleDirection, 1.2);
+      } else {
+        const height = 2.1 + this.cameraPitch * 5;
+        targetPosition = this.vehicle.position.clone()
+          .addScaledVector(orbitDirection, -this.cameraDistance)
+          .add(new THREE.Vector3(0, height, 0));
+        lookAt = this.vehicle.position.clone().add(new THREE.Vector3(0, 1.05, 0));
+      }
       this.camera.position.lerp(targetPosition, 1 - Math.pow(.004, dt));
-      const lookAt = this.vehicle.position.clone().add(new THREE.Vector3(0, 1.05, 0));
       this.camera.lookAt(lookAt);
     }
 
