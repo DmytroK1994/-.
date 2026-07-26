@@ -1,8 +1,8 @@
-const CACHE_NAME = "oblik-v3-14";
+const CACHE_NAME = "oblik-v3-15";
 const APP_ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json?v=314",
+  "./manifest.json?v=315",
   "./icon-192.png?v=303",
   "./icon-512.png?v=303",
   "./assets/qrcode-generator.js?v=271",

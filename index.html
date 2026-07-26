@@ -8040,7 +8040,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=314">
+<link rel="manifest" href="manifest.json?v=315">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8095,7 +8095,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.14</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.15</span></div>
     </div>
   </div>
 
@@ -9313,7 +9313,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.14</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.15</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9338,6 +9338,16 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.15</h3>
+          <ul>
+            <li>секретну гру повністю переведено з 3D на новий 2D-рушій із чітким виглядом складу зверху;</li>
+            <li>напрям джойстика тепер безпосередньо визначає напрям руху транспорту на екрані без автомобільної механіки керма;</li>
+            <li>додано постійний покажчик цілі, відстань, анімований маршрут, великі кольорові зони отримання та доставки;</li>
+            <li>у режимі фури реалізовано рампу, точний режим руху та 33 пронумеровані місця з автоматичним вирівнюванням піддонів;</li>
+            <li>збережено працівників, службовий транспорт, звуки, штрафи, Game Over, меню гри та масштабування двома пальцями.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.14</h3>
           <ul>
@@ -10469,7 +10479,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.14";
+  const APP_VERSION = "3.15";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18669,8 +18679,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("threeGameRuntime", "./assets/three.min.js?v=314")
-        .then(() => loadSecretGameScript("forkliftGameRuntime", "./assets/ForkliftGame.js?v=314"))
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=315")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
