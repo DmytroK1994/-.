@@ -11,7 +11,7 @@
     },
     trailer: {
       name: "Завантаження фури", target: 33, trailer: true,
-      goal: "один заїзд ззаду · став піддони у пронумеровані місця"
+      goal: "став піддони у пронумеровані місця"
     },
     express: {
       name: "Експрес-зміна", target: 12, timeLimit: 180,
@@ -131,7 +131,7 @@
       this.world = { w: 2200, h: 1400 };
       this.source = { x: 80, y: 455, w: 360, h: 490 };
       this.destination = { x: 1740, y: 470, w: 360, h: 460 };
-      this.trailer = { x: 1650, y: 170, w: 390, h: 1060 };
+      this.trailer = { x: 1050, y: 500, w: 920, h: 390 };
       this.obstacles = [];
       this.pallets = [];
       this.workers = [];
@@ -140,11 +140,8 @@
       this.trailerRound = 1;
       this.incident = null;
       this.audio = null;
-      this.engine = null;
       this.effectSources = {
-        horn: "./assets/audio/car-horn.mp3?v=316",
-        lift: "./assets/audio/forklift-lift-real.mp3?v=317",
-        lower: "./assets/audio/hydraulic-down-real.mp3?v=316"
+        horn: "./assets/audio/car-horn.mp3?v=316"
       };
       this.lastHornNotice = -Infinity;
       this.lastDamageAt = -Infinity;
@@ -250,7 +247,7 @@
     }
 
     buildWorld() {
-      this.obstacles = [
+      const racks = [
         { x: 710, y: 170, w: 150, h: 390, type: "rack" },
         { x: 710, y: 840, w: 150, h: 390, type: "rack" },
         { x: 1030, y: 170, w: 150, h: 390, type: "rack" },
@@ -258,11 +255,15 @@
         { x: 1350, y: 170, w: 150, h: 390, type: "rack" },
         { x: 1350, y: 840, w: 150, h: 390, type: "rack" }
       ];
+      this.obstacles = this.modeConfig.trailer
+        ? racks.filter(rect => rect.x === 710)
+        : racks;
       if (this.modeConfig.trailer) {
         this.obstacles.push(
-          { x: this.trailer.x, y: this.trailer.y, w: 34, h: this.trailer.h, type: "trailer-wall" },
+          { x: this.trailer.x, y: this.trailer.y, w: this.trailer.w, h: 34, type: "trailer-wall" },
+          { x: this.trailer.x, y: this.trailer.y + this.trailer.h - 34, w: this.trailer.w, h: 34, type: "trailer-wall" },
           { x: this.trailer.x + this.trailer.w - 34, y: this.trailer.y, w: 34, h: this.trailer.h, type: "trailer-wall" },
-          { x: this.trailer.x, y: this.trailer.y, w: this.trailer.w, h: 34, type: "trailer-wall" }
+          { x: this.trailer.x + this.trailer.w, y: this.trailer.y + 34, w: 170, h: this.trailer.h - 68, type: "trailer-cab" }
         );
       }
       this.pallets = [];
@@ -276,12 +277,12 @@
       }
       this.slots = [];
       if (this.modeConfig.trailer) {
-        for (let row = 0; row < 11; row++) {
-          for (let column = 0; column < 3; column++) {
+        for (let column = 0; column < 11; column++) {
+          for (let row = 0; row < 3; row++) {
             this.slots.push({
-              id: row * 3 + column + 1,
-              x: this.trailer.x + 75 + column * 105,
-              y: this.trailer.y + 78 + row * 86,
+              id: column * 3 + row + 1,
+              x: this.trailer.x + 60 + column * 79,
+              y: this.trailer.y + 65 + row * 115,
               occupied: false
             });
           }
@@ -319,7 +320,12 @@
         const point = { x: 480 + Math.random() * 1070, y: 65 + Math.random() * 1270 };
         const blocked = this.obstacles.some(rect => circleRect(point.x, point.y, radius || 18, rect));
         const onPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(point.x - pallet.x, point.y - pallet.y) < 55);
-        if (!blocked && !onPallet) return point;
+        const insideTrailer = this.modeConfig.trailer
+          && point.x > this.trailer.x - 20
+          && point.x < this.trailer.x + this.trailer.w + 180
+          && point.y > this.trailer.y - 20
+          && point.y < this.trailer.y + this.trailer.h + 20;
+        if (!blocked && !onPallet && !insideTrailer) return point;
       }
       return { x: 550, y: 700 };
     }
@@ -335,7 +341,12 @@
         const onVehicle = Math.hypot(point.x - this.vehicle.x, point.y - this.vehicle.y) < 100;
         const onWorker = this.workers.some(worker => Math.hypot(point.x - worker.x, point.y - worker.y) < 70);
         const onBot = this.bot && Math.hypot(point.x - this.bot.x, point.y - this.bot.y) < 90;
-        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot) return point;
+        const insideTrailer = this.modeConfig.trailer
+          && point.x > this.trailer.x - 20
+          && point.x < this.trailer.x + this.trailer.w + 180
+          && point.y > this.trailer.y - 20
+          && point.y < this.trailer.y + this.trailer.h + 20;
+        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot && !insideTrailer) return point;
       }
       return { x: 180 + (this.pallets.length % 3) * 100, y: 500 + (this.pallets.length % 5) * 90 };
     }
@@ -497,10 +508,6 @@
       }
       if (this.controls.lift) this.lift();
       if (this.controls.lower) this.lower();
-      if (this.engine) {
-        this.engine.playbackRate = clamp(.86 + v.speed / 620, .86, 1.16);
-        this.engine.volume = clamp(.025 + v.speed * .00016, .025, .055);
-      }
     }
 
     forkPoint() {
@@ -789,7 +796,31 @@
     }
 
     hydraulic(direction) {
-      this.playEffect(direction === "lift" ? "lift" : "lower", direction === "lift" ? .35 : .15, .9, .42);
+      if (!this.audio) return;
+      try {
+        this.audio.resume?.().catch?.(() => {});
+        const now = this.audio.currentTime;
+        const oscillator = this.audio.createOscillator();
+        const overtone = this.audio.createOscillator();
+        const gain = this.audio.createGain();
+        const rising = direction === "lift";
+        oscillator.type = "sine";
+        overtone.type = "triangle";
+        oscillator.frequency.setValueAtTime(rising ? 118 : 205, now);
+        oscillator.frequency.exponentialRampToValueAtTime(rising ? 205 : 118, now + .48);
+        overtone.frequency.setValueAtTime(rising ? 236 : 410, now);
+        overtone.frequency.exponentialRampToValueAtTime(rising ? 410 : 236, now + .48);
+        gain.gain.setValueAtTime(.001, now);
+        gain.gain.linearRampToValueAtTime(.028, now + .07);
+        gain.gain.exponentialRampToValueAtTime(.001, now + .5);
+        oscillator.connect(gain);
+        overtone.connect(gain);
+        gain.connect(this.audio.destination);
+        oscillator.start(now);
+        overtone.start(now);
+        oscillator.stop(now + .52);
+        overtone.stop(now + .52);
+      } catch (error) {}
     }
 
     playEffect(name, startAt, duration, volume) {
@@ -813,15 +844,8 @@
       const AudioContext = global.AudioContext || global.webkitAudioContext;
       try {
         if (AudioContext) this.audio = new AudioContext();
-        this.engine = new Audio("./assets/audio/forklift-engine-loop.mp3?v=317");
-        this.engine.loop = true;
-        this.engine.preload = "auto";
-        this.engine.volume = .025;
-        this.engine.playbackRate = .86;
-        this.engine.play()?.catch?.(() => {});
       } catch (error) {
         this.audio = null;
-        this.engine = null;
       }
     }
 
@@ -987,28 +1011,59 @@
         this.drawTargetArrow(ctx, this.destination.x + this.destination.w / 2, this.destination.y - 35);
       } else {
         ctx.save();
-        const rampY = this.trailer.y + this.trailer.h;
+        const rearX = this.trailer.x;
+        const centerY = this.trailer.y + this.trailer.h / 2;
+        const cabinX = this.trailer.x + this.trailer.w;
+        const cabinW = 170;
+
+        // Відкрита площадка перед задньою частиною фури — без воріт і стінки.
         ctx.fillStyle = "#9aa7ac";
-        ctx.fillRect(this.trailer.x + 34, rampY, this.trailer.w - 68, 92);
+        ctx.fillRect(rearX - 155, this.trailer.y + 34, 155, this.trailer.h - 68);
         ctx.setLineDash([15, 12]);
         ctx.strokeStyle = "#f3cb55";
-        ctx.lineWidth = 5;
-        ctx.strokeRect(this.trailer.x + 47, rampY + 8, this.trailer.w - 94, 70);
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(rearX - 140, this.trailer.y + 48);
+        ctx.lineTo(rearX - 140, this.trailer.y + this.trailer.h - 48);
+        ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = "#f7df83";
-        ctx.font = "900 20px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("ЄДИНИЙ ЗАЇЗД ↑", this.trailer.x + this.trailer.w / 2, rampY + 57);
-        ctx.fillStyle = "#d8e0e3";
+
+        // Вантажний відсік: задня ліва сторона повністю відкрита.
+        ctx.fillStyle = "#33464e";
         ctx.shadowColor = "rgba(0,0,0,.4)";
         ctx.shadowBlur = 20;
-        ctx.fillRect(this.trailer.x, this.trailer.y, this.trailer.w, this.trailer.h);
+        ctx.fillRect(this.trailer.x, this.trailer.y + 34, this.trailer.w - 34, this.trailer.h - 68);
         ctx.shadowBlur = 0;
-        ctx.fillStyle = "#33464e";
-        ctx.fillRect(this.trailer.x + 34, this.trailer.y + 30, this.trailer.w - 68, this.trailer.h - 60);
+        ctx.fillStyle = "#d8e0e3";
+        ctx.fillRect(this.trailer.x, this.trailer.y, this.trailer.w, 34);
+        ctx.fillRect(this.trailer.x, this.trailer.y + this.trailer.h - 34, this.trailer.w, 34);
+        ctx.fillRect(this.trailer.x + this.trailer.w - 34, this.trailer.y, 34, this.trailer.h);
         ctx.strokeStyle = "#5ee08c";
-        ctx.lineWidth = 8;
-        ctx.strokeRect(this.trailer.x + 34, this.trailer.y + 30, this.trailer.w - 68, this.trailer.h - 60);
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(rearX, this.trailer.y + 34);
+        ctx.lineTo(cabinX - 34, this.trailer.y + 34);
+        ctx.lineTo(cabinX - 34, this.trailer.y + this.trailer.h - 34);
+        ctx.lineTo(rearX, this.trailer.y + this.trailer.h - 34);
+        ctx.stroke();
+
+        // Кабіна, вид зверху.
+        ctx.fillStyle = "#d5dde0";
+        ctx.beginPath();
+        ctx.roundRect(cabinX - 2, this.trailer.y + 34, cabinW, this.trailer.h - 68, [18, 46, 46, 18]);
+        ctx.fill();
+        ctx.fillStyle = "#4e6974";
+        ctx.beginPath();
+        ctx.roundRect(cabinX + 28, this.trailer.y + 76, 82, this.trailer.h - 152, 18);
+        ctx.fill();
+        ctx.fillStyle = "#24363e";
+        ctx.fillRect(cabinX + 112, this.trailer.y + 95, 38, this.trailer.h - 190);
+        ctx.fillStyle = "#18262b";
+        ctx.fillRect(cabinX + 18, this.trailer.y + 18, 48, 22);
+        ctx.fillRect(cabinX + 18, this.trailer.y + this.trailer.h - 40, 48, 22);
+        ctx.fillRect(cabinX + 116, this.trailer.y + 18, 38, 22);
+        ctx.fillRect(cabinX + 116, this.trailer.y + this.trailer.h - 40, 38, 22);
+
         ctx.fillStyle = "#183027";
         ctx.font = "900 26px Arial";
         ctx.textAlign = "center";
@@ -1016,17 +1071,17 @@
         this.slots.forEach(slot => {
           ctx.fillStyle = slot.occupied ? "#2f9f61" : "rgba(89,221,133,.16)";
           ctx.strokeStyle = slot.occupied ? "#a7f4c1" : "#66df91";
-          ctx.lineWidth = 3;
-          ctx.fillRect(slot.x - 43, slot.y - 33, 86, 66);
-          ctx.strokeRect(slot.x - 43, slot.y - 33, 86, 66);
+          ctx.lineWidth = 2;
+          ctx.fillRect(slot.x - 34, slot.y - 42, 68, 84);
+          ctx.strokeRect(slot.x - 34, slot.y - 42, 68, 84);
           ctx.fillStyle = slot.occupied ? "#fff" : "#b8efca";
-          ctx.font = "900 22px Arial";
+          ctx.font = "900 17px Arial";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(String(slot.id), slot.x, slot.y);
         });
         ctx.restore();
-        this.drawTargetArrow(ctx, this.trailer.x + this.trailer.w / 2, this.trailer.y - 70);
+        this.drawTargetArrow(ctx, rearX - 65, centerY - 70);
       }
     }
 
@@ -1058,7 +1113,7 @@
     }
 
     drawRack(ctx, rect) {
-      if (rect.type === "trailer-wall") return;
+      if (rect.type === "trailer-wall" || rect.type === "trailer-cab") return;
       ctx.save();
       ctx.fillStyle = "#264d63";
       ctx.shadowColor = "rgba(0,0,0,.38)";
@@ -1328,10 +1383,6 @@
       removeEventListener("resize", this.resizeHandler);
       removeEventListener("keydown", this.keyDownHandler);
       removeEventListener("keyup", this.keyUpHandler);
-      try {
-        this.engine?.pause?.();
-        if (this.engine) this.engine.src = "";
-      } catch (error) {}
       try { this.audio?.close(); } catch (error) {}
       try { screen.orientation?.unlock?.(); } catch (error) {}
       if (document.fullscreenElement === this.root) {

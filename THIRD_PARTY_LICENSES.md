@@ -29,21 +29,3 @@ Source: https://github.com/mrdoob/three.js
 Created by 15HPanska_Ruttner_Jan. Licensed under CC0 1.0.
 
 Source: https://commons.wikimedia.org/wiki/File:Car_Horn.wav
-
-## Hydraulic lift down.ogg
-
-Created by stephan / PDSounds. Public domain.
-
-Source: https://commons.wikimedia.org/wiki/File:Hydraulic_lift_down.ogg
-
-## Truck_Idle.ogg
-
-Created by FreeCarSoundsGaming. Licensed under CC0 1.0.
-
-Source: https://freesound.org/people/FreeCarSoundsGaming/sounds/535044/
-
-## Forklift Raises Forks SFX 2
-
-Created by MamickaBeeGames. Licensed under CC0 1.0.
-
-Source: https://freesound.org/people/MamickaBeeGames/sounds/800357/
