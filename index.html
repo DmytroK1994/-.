@@ -7582,6 +7582,359 @@
         var(--bg);
       background-clip: border-box;
     }
+
+    /* Планувальник завантаження фури */
+    #pageLoadingPlanner {
+      width: min(100%, 1180px);
+      margin-inline: auto;
+      padding-bottom: calc(var(--app-bottom-obstruction, 0px) + 28px);
+    }
+    .loading-planner-toolbar,
+    .loading-planner-panel,
+    .loading-visual-panel {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: 0 12px 28px var(--card-shadow);
+    }
+    .loading-planner-toolbar {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: 18px;
+    }
+    .loading-planner-toolbar .loading-template-field {
+      flex: 1 1 280px;
+      min-width: 0;
+    }
+    .loading-planner-toolbar-actions {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 7px;
+    }
+    .loading-planner-toolbar button,
+    .loading-planner-panel button,
+    .loading-visual-panel button {
+      min-height: 38px;
+      margin: 0;
+      padding: 7px 11px;
+    }
+    .loading-planner-grid {
+      display: grid;
+      grid-template-columns: minmax(285px, .78fr) minmax(0, 1.6fr);
+      align-items: start;
+      gap: 12px;
+    }
+    .loading-planner-panel,
+    .loading-visual-panel {
+      min-width: 0;
+      padding: 13px;
+      border-radius: 20px;
+    }
+    .loading-panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+    .loading-panel-heading h2,
+    .loading-panel-heading h3 {
+      margin: 0;
+    }
+    .loading-dimension-grid,
+    .loading-cargo-dimensions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+    .loading-dimension-grid label,
+    .loading-cargo-dimensions label,
+    .loading-cargo-options label,
+    .loading-template-field,
+    .loading-cargo-name {
+      min-width: 0;
+    }
+    .loading-dimension-grid input,
+    .loading-cargo-dimensions input,
+    .loading-cargo-options input,
+    .loading-cargo-options select,
+    .loading-template-field select,
+    .loading-cargo-name input {
+      width: 100%;
+      min-width: 0;
+    }
+    .loading-truck-editor,
+    .loading-cargo-editor {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface-deep);
+    }
+    .loading-cargo-editor {
+      margin-top: 10px;
+    }
+    .loading-editor-title {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .loading-cargo-options {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 7px;
+      margin-top: 7px;
+    }
+    .loading-checkbox-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 7px 9px;
+      border: 1px solid var(--field-border);
+      border-radius: 11px;
+      background: var(--field-bg);
+      color: var(--field-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .loading-checkbox-line input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+    }
+    .loading-editor-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .loading-editor-actions > * {
+      flex: 1 1 0;
+    }
+    .loading-cargo-list {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .loading-cargo-row {
+      display: grid;
+      grid-template-columns: 14px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+    }
+    .loading-cargo-swatch {
+      width: 12px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--cargo-color);
+    }
+    .loading-cargo-row strong,
+    .loading-cargo-row span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+    .loading-cargo-row span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .loading-cargo-row-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .loading-cargo-row-actions button {
+      width: 34px !important;
+      min-width: 34px !important;
+      min-height: 34px !important;
+      padding: 0 !important;
+    }
+    .loading-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+    .loading-summary-item {
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      text-align: center;
+    }
+    .loading-summary-item strong,
+    .loading-summary-item span {
+      display: block;
+    }
+    .loading-summary-item strong {
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+    .loading-summary-item span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .loading-view-title {
+      margin: 11px 0 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .loading-plan-scroll {
+      overflow-x: auto;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--border) 24%, transparent) 1px, transparent 1px),
+        linear-gradient(color-mix(in srgb, var(--border) 24%, transparent) 1px, transparent 1px),
+        var(--surface-deep);
+      background-size: 20px 20px;
+    }
+    .loading-truck-plan {
+      position: relative;
+      width: min(100%, 760px);
+      min-width: 520px;
+      aspect-ratio: var(--truck-aspect, 5.55);
+      margin-inline: auto;
+      overflow: hidden;
+      border: 3px solid var(--text);
+      border-radius: 8px 18px 18px 8px;
+      background: color-mix(in srgb, var(--surface) 92%, var(--accent-soft));
+      box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--surface) 65%, transparent);
+    }
+    .loading-truck-plan::after {
+      content: "КАБІНА";
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      color: color-mix(in srgb, var(--text) 42%, transparent);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      writing-mode: vertical-rl;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .loading-placement {
+      position: absolute;
+      display: grid;
+      min-width: 6px;
+      min-height: 6px;
+      padding: 2px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--cargo-color) 55%, #000);
+      border-radius: 4px;
+      background: color-mix(in srgb, var(--cargo-color) 72%, white);
+      color: #111;
+      font-size: clamp(7px, 1vw, 11px);
+      font-weight: 900;
+      line-height: 1.05;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .loading-placement.selected {
+      z-index: 3;
+      outline: 3px solid var(--selection-outline);
+      outline-offset: 1px;
+    }
+    .loading-side-plan {
+      position: relative;
+      width: min(100%, 760px);
+      min-width: 520px;
+      height: 118px;
+      margin-inline: auto;
+      overflow: hidden;
+      border: 2px solid var(--text);
+      border-radius: 7px 15px 7px 7px;
+      background: color-mix(in srgb, var(--surface) 92%, var(--accent-soft));
+    }
+    .loading-side-block {
+      position: absolute;
+      bottom: 0;
+      min-width: 3px;
+      border: 1px solid color-mix(in srgb, var(--cargo-color) 55%, #000);
+      background: color-mix(in srgb, var(--cargo-color) 72%, white);
+    }
+    .loading-manual-editor {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+      align-items: end;
+      gap: 7px;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid var(--selection-border);
+      border-radius: 14px;
+      background: var(--selection-bg);
+    }
+    .loading-manual-editor input,
+    .loading-manual-editor select {
+      width: 100%;
+      min-width: 0;
+    }
+    .loading-manual-title {
+      grid-column: 1 / -1;
+      color: var(--selection-text);
+      font-weight: 900;
+    }
+    .loading-empty-plan {
+      display: grid;
+      position: absolute;
+      inset: 0;
+      padding: 20px;
+      place-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .loading-unplaced {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--soft-warning-border);
+      border-radius: 12px;
+      background: var(--soft-warning-bg);
+      color: var(--soft-warning-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .loading-plan-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+    .loading-plan-actions button {
+      flex: 1 1 160px;
+    }
+    @media (max-width: 780px) {
+      .loading-planner-grid { grid-template-columns: 1fr; }
+      .loading-planner-toolbar { align-items: stretch; flex-direction: column; }
+      .loading-planner-toolbar-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .loading-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .loading-manual-editor { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .loading-manual-editor button { grid-column: 1 / -1; }
+    }
+    @media (max-width: 430px) {
+      #pageLoadingPlanner { padding-inline: 0; }
+      .loading-planner-panel,
+      .loading-visual-panel { padding: 10px; border-radius: 17px; }
+      .loading-cargo-options { grid-template-columns: 1fr; }
+      .loading-dimension-grid,
+      .loading-cargo-dimensions { gap: 5px; }
+      .loading-truck-plan,
+      .loading-side-plan { min-width: 460px; }
+    }
   </style>
 
 <script>
@@ -7594,14 +7947,14 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=308">
+<link rel="manifest" href="manifest.json?v=309">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
 
 <!-- Preview banner for Telegram / Viber / Facebook / Discord -->
 <meta property="og:title" content="Облік">
-<meta property="og:description" content="Інвентаризація, замовлення, здача продукції та складський облік">
+<meta property="og:description" content="Інвентаризація, замовлення, здача продукції та планування завантаження фури">
 <meta property="og:image" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta property="og:image:secure_url" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta property="og:image:type" content="image/png">
@@ -7613,7 +7966,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Облік">
-<meta name="twitter:description" content="Інвентаризація, замовлення, здача продукції та складський облік">
+<meta name="twitter:description" content="Інвентаризація, замовлення, здача продукції та планування завантаження фури">
 <meta name="twitter:image" content="https://dmytrok1994.github.io/-./social-preview.png?v=302">
 <meta name="twitter:image:alt" content="Облік — застосунок для складського обліку">
 
@@ -7649,7 +8002,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.08</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.09</span></div>
     </div>
   </div>
 
@@ -7698,6 +8051,10 @@
           </button>
           <button type="button" class="workspace-option" data-workspace="production">
             <span class="workspace-option-name" id="productionWorkspaceOptionLabel">Здача ГП</span>
+            <span class="workspace-option-mark"></span>
+          </button>
+          <button type="button" class="workspace-option" data-workspace="loading">
+            <span class="workspace-option-name">Завантаження фури</span>
             <span class="workspace-option-mark"></span>
           </button>
         </div>
@@ -7961,6 +8318,121 @@
         </div>
       </div>
       <div id="printTodayList"></div>
+    </div>
+  </div>
+
+  <div id="pageLoadingPlanner" class="hidden">
+    <div class="loading-planner-toolbar">
+      <label class="loading-template-field">
+        Шаблон фури
+        <select id="loadingTruckSelect" aria-label="Вибрати шаблон фури"></select>
+      </label>
+      <div class="loading-planner-toolbar-actions">
+        <button type="button" class="secondary" id="loadingNewTruckBtn">Нова фура</button>
+        <button type="button" id="loadingSaveTruckBtn">Зберегти шаблон</button>
+      </div>
+    </div>
+
+    <div class="loading-planner-grid">
+      <div class="loading-planner-panel">
+        <div class="loading-panel-heading">
+          <h2>Фура і вантаж</h2>
+        </div>
+
+        <section class="loading-truck-editor">
+          <div class="loading-editor-title">Внутрішні розміри кузова</div>
+          <label class="loading-cargo-name">
+            Назва шаблону
+            <input id="loadingTruckName" maxlength="60" placeholder="Наприклад: Наша стандартна фура" />
+          </label>
+          <div class="loading-dimension-grid">
+            <label>Довжина, мм<input id="loadingTruckLength" type="number" inputmode="numeric" min="500" step="10" /></label>
+            <label>Ширина, мм<input id="loadingTruckWidth" type="number" inputmode="numeric" min="500" step="10" /></label>
+            <label>Висота, мм<input id="loadingTruckHeight" type="number" inputmode="numeric" min="500" step="10" /></label>
+          </div>
+          <p class="small">Вказуй саме корисний внутрішній простір, без товщини стінок.</p>
+        </section>
+
+        <section class="loading-cargo-editor">
+          <div class="loading-editor-title" id="loadingCargoEditorTitle">Додати вантажну одиницю</div>
+          <input id="loadingCargoEditId" type="hidden" />
+          <label class="loading-cargo-name">
+            Назва
+            <input id="loadingCargoName" maxlength="70" placeholder="Європіддон, IBC-ємність…" />
+          </label>
+          <div class="loading-cargo-dimensions">
+            <label>Довжина, мм<input id="loadingCargoLength" type="number" inputmode="numeric" min="1" step="10" placeholder="1200" /></label>
+            <label>Ширина, мм<input id="loadingCargoWidth" type="number" inputmode="numeric" min="1" step="10" placeholder="800" /></label>
+            <label>Висота, мм<input id="loadingCargoHeight" type="number" inputmode="numeric" min="1" step="10" placeholder="1800" /></label>
+          </div>
+          <div class="loading-cargo-options">
+            <label>Кількість<input id="loadingCargoQuantity" type="number" inputmode="numeric" min="1" max="500" step="1" value="1" /></label>
+            <label>Орієнтація
+              <select id="loadingCargoOrientation">
+                <option value="auto">Автоматично</option>
+                <option value="lengthwise">Уздовж кузова</option>
+                <option value="sideways">Поперек кузова</option>
+              </select>
+            </label>
+            <label class="loading-checkbox-line">
+              <input id="loadingCargoStackable" type="checkbox" />
+              Можна ставити один на один
+            </label>
+            <label>Максимум рівнів<input id="loadingCargoMaxStack" type="number" inputmode="numeric" min="1" max="20" value="1" disabled /></label>
+          </div>
+          <div class="loading-editor-actions">
+            <button type="button" id="loadingCargoSaveBtn">Додати</button>
+            <button type="button" class="secondary" id="loadingCargoCancelBtn">Очистити</button>
+          </div>
+        </section>
+
+        <div class="loading-cargo-list" id="loadingCargoList"></div>
+      </div>
+
+      <div class="loading-visual-panel">
+        <div class="loading-panel-heading">
+          <h2>Схема розміщення</h2>
+          <span class="small" id="loadingTruckSizeLabel"></span>
+        </div>
+        <div class="loading-summary">
+          <div class="loading-summary-item"><strong id="loadingPlacedCount">0</strong><span>розміщено</span></div>
+          <div class="loading-summary-item"><strong id="loadingUnplacedCount">0</strong><span>не вмістилося</span></div>
+          <div class="loading-summary-item"><strong id="loadingFloorUse">0%</strong><span>площа підлоги</span></div>
+          <div class="loading-summary-item"><strong id="loadingUsedLength">0 м</strong><span>зайнята довжина</span></div>
+        </div>
+
+        <div class="loading-view-title">Вигляд зверху</div>
+        <div class="loading-plan-scroll">
+          <div class="loading-truck-plan" id="loadingTruckPlan" aria-label="Схема фури зверху"></div>
+        </div>
+        <p class="small">Натисни на будь-який блок, щоб вручну змінити його координати, поворот або кількість рівнів.</p>
+
+        <div class="loading-view-title">Вигляд збоку</div>
+        <div class="loading-plan-scroll">
+          <div class="loading-side-plan" id="loadingSidePlan" aria-label="Схема фури збоку"></div>
+        </div>
+
+        <div class="loading-manual-editor hidden" id="loadingManualEditor">
+          <div class="loading-manual-title" id="loadingManualTitle">Редагування розміщення</div>
+          <label>Від передньої стінки, мм<input id="loadingPlacementX" type="number" inputmode="numeric" min="0" step="10" /></label>
+          <label>Від лівого борту, мм<input id="loadingPlacementY" type="number" inputmode="numeric" min="0" step="10" /></label>
+          <label>Поворот
+            <select id="loadingPlacementRotation">
+              <option value="0">0°</option>
+              <option value="90">90°</option>
+            </select>
+          </label>
+          <label>Рівнів<input id="loadingPlacementStack" type="number" inputmode="numeric" min="1" max="20" /></label>
+          <button type="button" id="loadingPlacementApplyBtn">Застосувати</button>
+        </div>
+
+        <div class="loading-unplaced hidden" id="loadingUnplacedMessage"></div>
+        <div class="loading-plan-actions">
+          <button type="button" id="loadingAutoPackBtn">Розрахувати автоматично</button>
+          <button type="button" class="secondary" id="loadingDownloadPngBtn">Зберегти схему PNG</button>
+          <button type="button" class="secondary" id="loadingClearPlanBtn">Очистити схему</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -8752,10 +9224,10 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.08</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.09</span></button>
           </div>
           <div class="about-single-description">
-            <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
+            <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень, здачі продукції та планування завантаження фури.</p>
             <p>Застосунок допомагає швидко додавати кількість піддонами, поштучно або окремим значенням, розділяти замовлення за складами, шукати й редагувати позиції, переглядати історію та формувати документи для друку або PDF.</p>
             <p>Усі дані зберігаються локально на твоєму пристрої. Для перенесення доступні файли резервної копії, а найменування можна копіювати окремо або всім списком.</p>
           </div>
@@ -8777,6 +9249,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.09</h3>
+          <ul>
+            <li>додано четвертий процес «Завантаження фури» з автоматичним геометричним розрахунком розміщення;</li>
+            <li>доступні шаблони стандартної фури, MEGA та вантажівок, а також власні внутрішні розміри кузова;</li>
+            <li>вантажні одиниці підтримують власні габарити, поворот на 90°, кількість і штабелювання з перевіркою висоти;</li>
+            <li>додано схеми зверху й збоку, ручне коригування блоків, підрахунок заповнення та збереження схеми у PNG.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.08</h3>
           <ul>
@@ -9850,7 +10331,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.08";
+  const APP_VERSION = "3.09";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11837,6 +12318,7 @@
       activeOrderId: null,
       productionDeliveries: [],
       activeProductionDeliveryId: null,
+      loadingPlanner: createDefaultLoadingPlannerState(),
       warehouses: [],
       activeWarehouseId: null
     };
@@ -12506,6 +12988,86 @@
     return new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 3 }).format(Number(value) || 0);
   }
 
+  function createDefaultLoadingTruckTemplates() {
+    return [
+      { id: "truck-standard", name: "Стандартна фура 13,6 м", length: 13600, width: 2450, height: 2700, builtIn: true },
+      { id: "truck-mega", name: "MEGA 13,6 м", length: 13600, width: 2480, height: 3000, builtIn: true },
+      { id: "truck-rigid", name: "Вантажівка 7,2 м", length: 7200, width: 2450, height: 2500, builtIn: true },
+      { id: "truck-small", name: "Мала вантажівка 4,2 м", length: 4200, width: 2100, height: 2200, builtIn: true }
+    ];
+  }
+
+  function createDefaultLoadingPlannerState() {
+    return {
+      trucks: createDefaultLoadingTruckTemplates(),
+      activeTruckId: "truck-standard",
+      cargo: [
+        {
+          id: "cargo-euro-pallet",
+          name: "Європіддон",
+          length: 1200,
+          width: 800,
+          height: 1800,
+          quantity: 20,
+          orientation: "auto",
+          stackable: false,
+          maxStack: 1,
+          color: "#70a7d8"
+        }
+      ],
+      placements: [],
+      unplaced: []
+    };
+  }
+
+  function normalizeLoadingPlanner(source) {
+    const defaults = createDefaultLoadingPlannerState();
+    const planner = source && typeof source === "object" && !Array.isArray(source) ? source : {};
+    const customTrucks = Array.isArray(planner.trucks)
+      ? planner.trucks.filter(truck => truck && typeof truck === "object")
+      : [];
+    const builtInIds = new Set(defaults.trucks.map(truck => truck.id));
+    const trucks = [
+      ...defaults.trucks,
+      ...customTrucks
+        .filter(truck => !builtInIds.has(truck.id))
+        .map(truck => ({
+          id: String(truck.id || uid()),
+          name: String(truck.name || "Власна фура").trim() || "Власна фура",
+          length: Math.max(500, Number(truck.length) || 13600),
+          width: Math.max(500, Number(truck.width) || 2450),
+          height: Math.max(500, Number(truck.height) || 2700),
+          builtIn: false
+        }))
+    ];
+    const cargo = Array.isArray(planner.cargo)
+      ? planner.cargo
+          .filter(item => item && typeof item === "object" && String(item.name || "").trim())
+          .map((item, index) => ({
+            id: String(item.id || uid()),
+            name: String(item.name).trim(),
+            length: Math.max(1, Number(item.length) || 1),
+            width: Math.max(1, Number(item.width) || 1),
+            height: Math.max(1, Number(item.height) || 1),
+            quantity: Math.min(500, Math.max(1, Math.floor(Number(item.quantity) || 1))),
+            orientation: ["auto", "lengthwise", "sideways"].includes(item.orientation) ? item.orientation : "auto",
+            stackable: Boolean(item.stackable),
+            maxStack: Math.max(1, Math.floor(Number(item.maxStack) || 1)),
+            color: /^#[0-9a-f]{6}$/i.test(item.color || "") ? item.color : loadingCargoColor(index)
+          }))
+      : defaults.cargo;
+    const activeTruckId = trucks.some(truck => truck.id === planner.activeTruckId)
+      ? planner.activeTruckId
+      : trucks[0].id;
+    return {
+      trucks,
+      activeTruckId,
+      cargo,
+      placements: Array.isArray(planner.placements) ? planner.placements.filter(item => item && typeof item === "object") : [],
+      unplaced: Array.isArray(planner.unplaced) ? planner.unplaced.filter(item => item && typeof item === "object") : []
+    };
+  }
+
   function normalizeMeasurementUnit(unit) {
     return MEASUREMENT_UNITS[unit] ? unit : "kg";
   }
@@ -12524,6 +13086,7 @@
     normalized.productionDeliveries = Array.isArray(normalized.productionDeliveries)
       ? normalized.productionDeliveries.filter(delivery => delivery && typeof delivery === "object")
       : [];
+    normalized.loadingPlanner = normalizeLoadingPlanner(normalized.loadingPlanner);
     normalized.warehouses = Array.isArray(normalized.warehouses)
       ? normalized.warehouses
           .filter(warehouse => warehouse && typeof warehouse === "object" && String(warehouse.name || "").trim())
@@ -13057,7 +13620,7 @@
   function getWorkspaceModePreference() {
     try {
       const saved = localStorage.getItem(WORKSPACE_MODE_KEY);
-      return ["inventory", "orders", "production"].includes(saved) ? saved : "inventory";
+      return ["inventory", "orders", "production", "loading"].includes(saved) ? saved : "inventory";
     } catch (error) {
       return "inventory";
     }
@@ -13076,6 +13639,7 @@
     if (mode === "inventory") return "Порахувати фактичні залишки на складах.";
     if (mode === "orders") return "Сформувати нове замовлення на потрібний склад.";
     if (mode === "production") return "Порахувати піддони й автоматично визначити загальну кількість продукції.";
+    if (mode === "loading") return "Розрахувати розміщення піддонів і ємностей у фурі.";
     return `Почати роботу в розділі «${name}».`;
   }
 
@@ -13133,14 +13697,16 @@
       localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode);
       localStorage.setItem(INITIAL_WORKSPACE_CHOICE_KEY, "done");
     } catch (error) {}
-    ensureActiveDay();
+    if (!workspaceIsLoading()) ensureActiveDay();
     saveOnly();
     document.getElementById("workspaceStartOverlay").classList.add("hidden");
     updateWorkspaceUI();
     showPage("today");
-    toast(nextMode === "production"
+    toast(nextMode === "loading"
+      ? "Відкрито планувальник завантаження"
+      : (nextMode === "production"
       ? `Відкрито «${getProductionWorkspaceName()}»`
-      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію"));
+      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію")));
     const resolve = initialWorkspaceChoiceResolver;
     initialWorkspaceChoiceResolver = null;
     if (resolve) resolve(nextMode);
@@ -13157,6 +13723,10 @@
 
   function workspaceIsProduction() {
     return workspaceMode === "production";
+  }
+
+  function workspaceIsLoading() {
+    return workspaceMode === "loading";
   }
 
   function getProductionWorkspaceName() {
@@ -13208,6 +13778,7 @@
   function workspaceLabel() {
     if (workspaceIsOrders()) return "Замовлення";
     if (workspaceIsProduction()) return getProductionWorkspaceName();
+    if (workspaceIsLoading()) return "Завантаження фури";
     return "Інвентаризація";
   }
 
@@ -13480,9 +14051,15 @@
   function updateWorkspaceUI() {
     const orders = workspaceIsOrders();
     const production = workspaceIsProduction();
+    const loading = workspaceIsLoading();
     const label = workspaceLabel();
     document.body.classList.toggle("workspace-orders", orders);
     document.body.classList.toggle("workspace-production", production);
+    document.body.classList.toggle("workspace-loading", loading);
+    if (currentPage === "today") {
+      document.getElementById("pageToday")?.classList.toggle("hidden", loading);
+      document.getElementById("pageLoadingPlanner")?.classList.toggle("hidden", !loading);
+    }
     document.getElementById("orderWarehouseControl")?.classList.remove("hidden");
     document.getElementById("orderDocumentFields")?.classList.toggle("hidden", !orders);
     const unitVisible = !production && (orders || getEntryUnitVisibility() === "visible");
@@ -13533,9 +14110,11 @@
       if (mark) mark.textContent = active ? "✓" : "";
     });
     const newButton = document.getElementById("newDayBtn");
-    if (newButton) newButton.setAttribute("aria-label", production
-      ? `Створити новий документ «${label}»`
-      : (orders ? "Створити нове замовлення" : "Створити нову інвентаризацію"));
+    if (newButton) newButton.setAttribute("aria-label", loading
+      ? "Створити новий план завантаження"
+      : (production
+        ? `Створити новий документ «${label}»`
+        : (orders ? "Створити нове замовлення" : "Створити нову інвентаризацію")));
     const formTitle = document.getElementById("formTitle");
     if (formTitle && !document.getElementById("editingEntryId")?.value) {
       formTitle.textContent = production ? "Здача на склад:" : (orders ? "Замовлення на:" : "Інвентаризація складу:");
@@ -13550,21 +14129,25 @@
   }
 
   function setWorkspaceMode(mode) {
-    const nextMode = ["inventory", "orders", "production"].includes(mode) ? mode : "inventory";
+    const nextMode = ["inventory", "orders", "production", "loading"].includes(mode) ? mode : "inventory";
     closeWorkspaceDropdown();
     if (workspaceMode === nextMode) return;
     workspaceMode = nextMode;
     try { localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode); } catch (error) {}
-    resetTodayListSearch();
-    clearEntryForm();
-    ensureActiveDay();
+    if (!workspaceIsLoading()) {
+      resetTodayListSearch();
+      clearEntryForm();
+      ensureActiveDay();
+    }
     saveOnly();
     updateWorkspaceUI();
     render();
     scrollAppToTop();
-    toast(workspaceIsProduction()
+    toast(workspaceIsLoading()
+      ? "Відкрито планувальник завантаження"
+      : (workspaceIsProduction()
       ? `Відкрито розділ «${workspaceLabel()}»`
-      : (workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію"));
+      : (workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію")));
   }
 
   function ensureActiveDay() {
@@ -15417,6 +16000,7 @@
 
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
+    document.getElementById("pageLoadingPlanner").classList.add("hidden");
     document.getElementById("pageHistory").classList.add("hidden");
     document.getElementById("pageManagement").classList.add("hidden");
     document.getElementById("pageProducts").classList.add("hidden");
@@ -15427,7 +16011,9 @@
     document.getElementById("pageAbout").classList.add("hidden");
     document.getElementById("pageInstall").classList.add("hidden");
 
-    if (page === "today") document.getElementById("pageToday").classList.remove("hidden");
+    if (page === "today") {
+      document.getElementById(workspaceIsLoading() ? "pageLoadingPlanner" : "pageToday").classList.remove("hidden");
+    }
     if (["history", "historyInventory", "historyOrders", "historyProduction"].includes(page)) {
       document.getElementById("pageHistory").classList.remove("hidden");
       const navigation = document.getElementById("historyNavigation");
@@ -15485,6 +16071,10 @@
   }
 
   async function createNewDay() {
+    if (workspaceIsLoading()) {
+      await resetLoadingPlanner();
+      return;
+    }
     const orders = workspaceIsOrders();
     const production = workspaceIsProduction();
     const productionLabel = getProductionWorkspaceName();
@@ -15535,7 +16125,7 @@
   }
 
   async function promptForCurrentDayOnStartup() {
-    if (demoModeActive || appDialogResolver) return;
+    if (demoModeActive || appDialogResolver || workspaceIsLoading()) return;
     const orders = workspaceIsOrders();
     const production = workspaceIsProduction();
     const documents = production ? state.productionDeliveries : (orders ? state.orders : state.days);
@@ -18651,10 +19241,571 @@
     });
   }
 
+  let loadingSelectedPlacementId = "";
+
+  function loadingCargoColor(index = 0) {
+    const colors = ["#70a7d8", "#7fc8a9", "#f1b96b", "#c49ae6", "#ef8d8d", "#6fc7d0", "#d3c66e", "#9fa8da"];
+    return colors[Math.abs(Number(index) || 0) % colors.length];
+  }
+
+  function getLoadingPlanner() {
+    state.loadingPlanner = normalizeLoadingPlanner(state.loadingPlanner);
+    return state.loadingPlanner;
+  }
+
+  function getActiveLoadingTruck() {
+    const planner = getLoadingPlanner();
+    return planner.trucks.find(truck => truck.id === planner.activeTruckId) || planner.trucks[0];
+  }
+
+  function loadingFormatMeters(millimeters) {
+    return `${new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 2 }).format((Number(millimeters) || 0) / 1000)} м`;
+  }
+
+  function loadingRectanglesOverlap(a, b) {
+    const tolerance = .01;
+    return a.x < b.x + b.length - tolerance
+      && a.x + a.length > b.x + tolerance
+      && a.y < b.y + b.width - tolerance
+      && a.y + a.width > b.y + tolerance;
+  }
+
+  function loadingPlacementFits(placement, truck, existing, ignoredId = "") {
+    if (
+      placement.x < 0
+      || placement.y < 0
+      || placement.x + placement.length > truck.length + .01
+      || placement.y + placement.width > truck.width + .01
+      || placement.height * placement.stackCount > truck.height + .01
+    ) return false;
+    return !existing.some(other =>
+      other.id !== ignoredId && loadingRectanglesOverlap(placement, other)
+    );
+  }
+
+  function loadingOrientationOptions(item) {
+    const itemLength = Math.max(1, Number(item.itemLength ?? item.length) || 1);
+    const itemWidth = Math.max(1, Number(item.itemWidth ?? item.width) || 1);
+    const regular = { length: itemLength, width: itemWidth, rotation: 0 };
+    const rotated = { length: itemWidth, width: itemLength, rotation: 90 };
+    if (item.orientation === "lengthwise") return [regular];
+    if (item.orientation === "sideways") return [rotated];
+    if (itemLength === itemWidth) return [regular];
+    return [regular, rotated];
+  }
+
+  function calculateLoadingLayout() {
+    const planner = getLoadingPlanner();
+    const truck = getActiveLoadingTruck();
+    const footprints = [];
+    const unplaced = [];
+
+    planner.cargo.forEach(item => {
+      const heightCapacity = Math.floor(truck.height / Math.max(1, item.height));
+      const stackCapacity = item.stackable
+        ? Math.max(0, Math.min(item.maxStack, heightCapacity))
+        : (heightCapacity >= 1 ? 1 : 0);
+      if (!stackCapacity) {
+        unplaced.push({ cargoId: item.id, name: item.name, quantity: item.quantity });
+        return;
+      }
+      let remaining = item.quantity;
+      while (remaining > 0) {
+        const stackCount = Math.min(stackCapacity, remaining);
+        footprints.push({
+          cargoId: item.id,
+          name: item.name,
+          itemLength: item.length,
+          itemWidth: item.width,
+          height: item.height,
+          stackCount,
+          color: item.color,
+          orientation: item.orientation,
+          area: item.length * item.width
+        });
+        remaining -= stackCount;
+      }
+    });
+
+    footprints.sort((a, b) => b.area - a.area || b.height - a.height || b.stackCount - a.stackCount);
+    const placed = [];
+    footprints.forEach(footprint => {
+      const xCandidates = new Set([0]);
+      const yCandidates = new Set([0]);
+      placed.forEach(item => {
+        xCandidates.add(item.x + item.length);
+        yCandidates.add(item.y + item.width);
+      });
+      const candidates = [];
+      xCandidates.forEach(x => yCandidates.forEach(y => candidates.push({ x, y })));
+      candidates.sort((a, b) => a.x - b.x || a.y - b.y);
+
+      let best = null;
+      loadingOrientationOptions(footprint).forEach(option => {
+        candidates.forEach(candidate => {
+          const proposal = {
+            ...footprint,
+            id: uid(),
+            x: candidate.x,
+            y: candidate.y,
+            length: option.length,
+            width: option.width,
+            rotation: option.rotation
+          };
+          if (!loadingPlacementFits(proposal, truck, placed)) return;
+          const usedLength = Math.max(proposal.x + proposal.length, ...placed.map(item => item.x + item.length), 0);
+          const usedWidthAtEnd = proposal.y + proposal.width;
+          const score = usedLength * 100000 + proposal.x * 100 + usedWidthAtEnd;
+          if (!best || score < best.score) best = { proposal, score };
+        });
+      });
+
+      if (best) {
+        placed.push(best.proposal);
+      } else {
+        const existing = unplaced.find(item => item.cargoId === footprint.cargoId);
+        if (existing) existing.quantity += footprint.stackCount;
+        else unplaced.push({
+          cargoId: footprint.cargoId,
+          name: footprint.name,
+          quantity: footprint.stackCount
+        });
+      }
+    });
+
+    planner.placements = placed;
+    planner.unplaced = unplaced;
+    loadingSelectedPlacementId = "";
+    saveOnly();
+    renderLoadingPlanner();
+    toast(unplaced.length ? "Схему створено: частина вантажу не вмістилася" : "Увесь вантаж розміщено");
+  }
+
+  function renderLoadingTruckControls() {
+    const planner = getLoadingPlanner();
+    const truck = getActiveLoadingTruck();
+    const select = document.getElementById("loadingTruckSelect");
+    if (!select || !truck) return;
+    select.innerHTML = planner.trucks.map(item =>
+      `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)} · ${loadingFormatMeters(item.length)} × ${loadingFormatMeters(item.width)} × ${loadingFormatMeters(item.height)}</option>`
+    ).join("");
+    select.value = truck.id;
+    const fields = {
+      loadingTruckName: truck.name,
+      loadingTruckLength: truck.length,
+      loadingTruckWidth: truck.width,
+      loadingTruckHeight: truck.height
+    };
+    Object.entries(fields).forEach(([id, value]) => {
+      const field = document.getElementById(id);
+      if (field && document.activeElement !== field) field.value = value;
+    });
+  }
+
+  function renderLoadingCargoList() {
+    const planner = getLoadingPlanner();
+    const list = document.getElementById("loadingCargoList");
+    if (!list) return;
+    if (!planner.cargo.length) {
+      list.innerHTML = `<div class="card empty">Додай хоча б один піддон, ємність або іншу вантажну одиницю.</div>`;
+      return;
+    }
+    list.innerHTML = planner.cargo.map(item => `
+      <div class="loading-cargo-row" style="--cargo-color:${item.color}">
+        <span class="loading-cargo-swatch" aria-hidden="true"></span>
+        <div>
+          <strong>${escapeHtml(item.name)} · ${item.quantity} шт.</strong>
+          <span>${item.length} × ${item.width} × ${item.height} мм · ${
+            item.orientation === "lengthwise" ? "уздовж" : (item.orientation === "sideways" ? "поперек" : "автоповорот")
+          }${item.stackable ? ` · до ${item.maxStack} рів.` : ""}</span>
+        </div>
+        <div class="loading-cargo-row-actions">
+          <button type="button" class="secondary" data-loading-action="edit-cargo" data-id="${escapeHtml(item.id)}" aria-label="Редагувати">✎</button>
+          <button type="button" class="secondary" data-loading-action="delete-cargo" data-id="${escapeHtml(item.id)}" aria-label="Видалити">×</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderLoadingPlan() {
+    const planner = getLoadingPlanner();
+    const truck = getActiveLoadingTruck();
+    const plan = document.getElementById("loadingTruckPlan");
+    const side = document.getElementById("loadingSidePlan");
+    if (!plan || !side || !truck) return;
+    plan.style.setProperty("--truck-aspect", String(truck.length / truck.width));
+    const placementHtml = planner.placements.map(placement => {
+      const left = placement.x / truck.length * 100;
+      const top = placement.y / truck.width * 100;
+      const width = placement.length / truck.length * 100;
+      const height = placement.width / truck.width * 100;
+      return `<button type="button" class="loading-placement${placement.id === loadingSelectedPlacementId ? " selected" : ""}"
+        data-loading-placement="${escapeHtml(placement.id)}"
+        style="--cargo-color:${placement.color};left:${left}%;top:${top}%;width:${width}%;height:${height}%"
+        title="${escapeHtml(placement.name)} · ${placement.stackCount} рів.">${escapeHtml(placement.name)}${placement.stackCount > 1 ? `<br>×${placement.stackCount}` : ""}</button>`;
+    }).join("");
+    plan.innerHTML = placementHtml || `<div class="loading-empty-plan">Додай вантаж і натисни «Розрахувати автоматично».</div>`;
+
+    side.innerHTML = planner.placements.map(placement => {
+      const left = placement.x / truck.length * 100;
+      const width = placement.length / truck.length * 100;
+      const height = placement.height * placement.stackCount / truck.height * 100;
+      return `<span class="loading-side-block" style="--cargo-color:${placement.color};left:${left}%;width:${width}%;height:${height}%"
+        title="${escapeHtml(placement.name)} · ${placement.stackCount} рів."></span>`;
+    }).join("");
+
+    const requested = planner.cargo.reduce((sum, item) => sum + item.quantity, 0);
+    const placedCount = planner.placements.reduce((sum, item) => sum + item.stackCount, 0);
+    const occupiedArea = planner.placements.reduce((sum, item) => sum + item.length * item.width, 0);
+    const usedLength = planner.placements.reduce((maximum, item) => Math.max(maximum, item.x + item.length), 0);
+    document.getElementById("loadingPlacedCount").textContent = placedCount;
+    document.getElementById("loadingUnplacedCount").textContent = Math.max(0, requested - placedCount);
+    document.getElementById("loadingFloorUse").textContent = `${Math.min(100, Math.round(occupiedArea / (truck.length * truck.width) * 100))}%`;
+    document.getElementById("loadingUsedLength").textContent = loadingFormatMeters(usedLength);
+    document.getElementById("loadingTruckSizeLabel").textContent =
+      `${loadingFormatMeters(truck.length)} × ${loadingFormatMeters(truck.width)} × ${loadingFormatMeters(truck.height)}`;
+
+    const warning = document.getElementById("loadingUnplacedMessage");
+    warning.classList.toggle("hidden", !planner.unplaced.length);
+    warning.textContent = planner.unplaced.length
+      ? `Не вмістилося: ${planner.unplaced.map(item => `${item.name} — ${item.quantity} шт.`).join("; ")}`
+      : "";
+    renderLoadingManualEditor();
+  }
+
+  function renderLoadingManualEditor() {
+    const planner = getLoadingPlanner();
+    const placement = planner.placements.find(item => item.id === loadingSelectedPlacementId);
+    const editor = document.getElementById("loadingManualEditor");
+    if (!editor) return;
+    editor.classList.toggle("hidden", !placement);
+    if (!placement) return;
+    document.getElementById("loadingManualTitle").textContent = `Ручне розміщення: ${placement.name}`;
+    document.getElementById("loadingPlacementX").value = Math.round(placement.x);
+    document.getElementById("loadingPlacementY").value = Math.round(placement.y);
+    document.getElementById("loadingPlacementRotation").value = String(placement.rotation || 0);
+    const stackInput = document.getElementById("loadingPlacementStack");
+    stackInput.value = placement.stackCount;
+    const cargo = planner.cargo.find(item => item.id === placement.cargoId);
+    const truck = getActiveLoadingTruck();
+    stackInput.max = String(Math.max(1, Math.min(
+      cargo?.stackable ? cargo.maxStack : 1,
+      Math.floor(truck.height / Math.max(1, placement.height))
+    )));
+  }
+
+  function renderLoadingPlanner() {
+    if (!document.getElementById("pageLoadingPlanner")) return;
+    renderLoadingTruckControls();
+    renderLoadingCargoList();
+    renderLoadingPlan();
+    const activeDateLabel = document.getElementById("activeDateLabel");
+    if (activeDateLabel && workspaceIsLoading()) {
+      activeDateLabel.textContent = "Планування розміщення вантажу за габаритами";
+    }
+  }
+
+  function clearLoadingCargoEditor() {
+    document.getElementById("loadingCargoEditId").value = "";
+    document.getElementById("loadingCargoName").value = "";
+    document.getElementById("loadingCargoLength").value = "";
+    document.getElementById("loadingCargoWidth").value = "";
+    document.getElementById("loadingCargoHeight").value = "";
+    document.getElementById("loadingCargoQuantity").value = "1";
+    document.getElementById("loadingCargoOrientation").value = "auto";
+    document.getElementById("loadingCargoStackable").checked = false;
+    document.getElementById("loadingCargoMaxStack").value = "1";
+    document.getElementById("loadingCargoMaxStack").disabled = true;
+    document.getElementById("loadingCargoEditorTitle").textContent = "Додати вантажну одиницю";
+    document.getElementById("loadingCargoSaveBtn").textContent = "Додати";
+  }
+
+  function saveLoadingCargo() {
+    const planner = getLoadingPlanner();
+    const editId = document.getElementById("loadingCargoEditId").value;
+    const name = document.getElementById("loadingCargoName").value.trim();
+    const length = Number(document.getElementById("loadingCargoLength").value);
+    const width = Number(document.getElementById("loadingCargoWidth").value);
+    const height = Number(document.getElementById("loadingCargoHeight").value);
+    const quantity = Math.floor(Number(document.getElementById("loadingCargoQuantity").value));
+    if (!name || length <= 0 || width <= 0 || height <= 0 || quantity < 1 || quantity > 500) {
+      toast("Заповни назву, три розміри та кількість від 1 до 500", true);
+      return;
+    }
+    const stackable = document.getElementById("loadingCargoStackable").checked;
+    const existing = planner.cargo.find(item => item.id === editId);
+    const cargoData = {
+      id: existing?.id || uid(),
+      name,
+      length,
+      width,
+      height,
+      quantity,
+      orientation: document.getElementById("loadingCargoOrientation").value,
+      stackable,
+      maxStack: stackable
+        ? Math.max(1, Math.floor(Number(document.getElementById("loadingCargoMaxStack").value) || 1))
+        : 1,
+      color: existing?.color || loadingCargoColor(planner.cargo.length)
+    };
+    if (existing) Object.assign(existing, cargoData);
+    else planner.cargo.push(cargoData);
+    planner.placements = [];
+    planner.unplaced = [];
+    saveOnly();
+    clearLoadingCargoEditor();
+    renderLoadingPlanner();
+    toast(existing ? "Вантажну одиницю оновлено" : "Вантажну одиницю додано");
+  }
+
+  function editLoadingCargo(id) {
+    const item = getLoadingPlanner().cargo.find(cargo => cargo.id === id);
+    if (!item) return;
+    document.getElementById("loadingCargoEditId").value = item.id;
+    document.getElementById("loadingCargoName").value = item.name;
+    document.getElementById("loadingCargoLength").value = item.length;
+    document.getElementById("loadingCargoWidth").value = item.width;
+    document.getElementById("loadingCargoHeight").value = item.height;
+    document.getElementById("loadingCargoQuantity").value = item.quantity;
+    document.getElementById("loadingCargoOrientation").value = item.orientation;
+    document.getElementById("loadingCargoStackable").checked = item.stackable;
+    document.getElementById("loadingCargoMaxStack").value = item.maxStack;
+    document.getElementById("loadingCargoMaxStack").disabled = !item.stackable;
+    document.getElementById("loadingCargoEditorTitle").textContent = "Редагувати вантажну одиницю";
+    document.getElementById("loadingCargoSaveBtn").textContent = "Зберегти";
+    document.getElementById("loadingCargoName").focus({ preventScroll: true });
+  }
+
+  async function deleteLoadingCargo(id) {
+    const planner = getLoadingPlanner();
+    const item = planner.cargo.find(cargo => cargo.id === id);
+    if (!item) return;
+    const confirmed = await showAppDialog({
+      label: "Вантажна одиниця",
+      title: `Видалити «${item.name}»?`,
+      message: "Її буде прибрано з поточного плану завантаження.",
+      confirmText: "Видалити",
+      danger: true
+    });
+    if (!confirmed) return;
+    planner.cargo = planner.cargo.filter(cargo => cargo.id !== id);
+    planner.placements = [];
+    planner.unplaced = [];
+    saveOnly();
+    renderLoadingPlanner();
+  }
+
+  function selectLoadingTruck(id) {
+    const planner = getLoadingPlanner();
+    if (!planner.trucks.some(truck => truck.id === id)) return;
+    planner.activeTruckId = id;
+    planner.placements = [];
+    planner.unplaced = [];
+    loadingSelectedPlacementId = "";
+    saveOnly();
+    renderLoadingPlanner();
+  }
+
+  function createLoadingTruck() {
+    const planner = getLoadingPlanner();
+    const truck = {
+      id: uid(),
+      name: "Нова власна фура",
+      length: 13600,
+      width: 2450,
+      height: 2700,
+      builtIn: false
+    };
+    planner.trucks.push(truck);
+    planner.activeTruckId = truck.id;
+    planner.placements = [];
+    planner.unplaced = [];
+    saveOnly();
+    renderLoadingPlanner();
+    document.getElementById("loadingTruckName").select();
+  }
+
+  function saveLoadingTruck() {
+    const planner = getLoadingPlanner();
+    const active = getActiveLoadingTruck();
+    const name = document.getElementById("loadingTruckName").value.trim();
+    const length = Number(document.getElementById("loadingTruckLength").value);
+    const width = Number(document.getElementById("loadingTruckWidth").value);
+    const height = Number(document.getElementById("loadingTruckHeight").value);
+    if (!name || length < 500 || width < 500 || height < 500) {
+      toast("Перевір назву та внутрішні розміри фури", true);
+      return;
+    }
+    if (active.builtIn) {
+      const custom = { id: uid(), name: name === active.name ? `${name} · власна` : name, length, width, height, builtIn: false };
+      planner.trucks.push(custom);
+      planner.activeTruckId = custom.id;
+    } else {
+      Object.assign(active, { name, length, width, height });
+    }
+    planner.placements = [];
+    planner.unplaced = [];
+    saveOnly();
+    renderLoadingPlanner();
+    toast("Шаблон фури збережено");
+  }
+
+  function applyManualLoadingPlacement() {
+    const planner = getLoadingPlanner();
+    const truck = getActiveLoadingTruck();
+    const placement = planner.placements.find(item => item.id === loadingSelectedPlacementId);
+    if (!placement) return;
+    const cargo = planner.cargo.find(item => item.id === placement.cargoId);
+    const rotation = Number(document.getElementById("loadingPlacementRotation").value) === 90 ? 90 : 0;
+    const stackCount = Math.max(1, Math.floor(Number(document.getElementById("loadingPlacementStack").value) || 1));
+    const proposal = {
+      ...placement,
+      x: Math.max(0, Number(document.getElementById("loadingPlacementX").value) || 0),
+      y: Math.max(0, Number(document.getElementById("loadingPlacementY").value) || 0),
+      rotation,
+      length: rotation === 90 ? placement.itemWidth : placement.itemLength,
+      width: rotation === 90 ? placement.itemLength : placement.itemWidth,
+      stackCount
+    };
+    if (!cargo?.stackable && stackCount > 1) {
+      toast("Для цієї одиниці штабелювання вимкнено", true);
+      return;
+    }
+    if (cargo?.stackable && stackCount > cargo.maxStack) {
+      toast(`Дозволено не більше ${cargo.maxStack} рівнів`, true);
+      return;
+    }
+    if (!loadingPlacementFits(proposal, truck, planner.placements, placement.id)) {
+      toast("Тут вантаж виходить за межі фури або перетинається з іншим", true);
+      return;
+    }
+    Object.assign(placement, proposal);
+    saveOnly();
+    renderLoadingPlan();
+    toast("Розміщення змінено");
+  }
+
+  async function resetLoadingPlanner() {
+    const confirmed = await showAppDialog({
+      label: "Новий план",
+      title: "Очистити поточну схему?",
+      message: "Шаблони фур залишаться, а вантаж і поточне розміщення буде очищено.",
+      confirmText: "Створити новий план"
+    });
+    if (!confirmed) return;
+    const planner = getLoadingPlanner();
+    planner.cargo = [];
+    planner.placements = [];
+    planner.unplaced = [];
+    loadingSelectedPlacementId = "";
+    saveOnly();
+    clearLoadingCargoEditor();
+    renderLoadingPlanner();
+    toast("Новий план готовий");
+  }
+
+  function clearLoadingLayout() {
+    const planner = getLoadingPlanner();
+    planner.placements = [];
+    planner.unplaced = [];
+    loadingSelectedPlacementId = "";
+    saveOnly();
+    renderLoadingPlan();
+  }
+
+  function downloadLoadingPlanPng() {
+    const planner = getLoadingPlanner();
+    const truck = getActiveLoadingTruck();
+    const canvas = document.createElement("canvas");
+    canvas.width = 1800;
+    canvas.height = 1100;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      toast("Не вдалося створити зображення", true);
+      return;
+    }
+    context.fillStyle = "#f7f9fb";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#17212b";
+    context.font = "700 52px Arial";
+    context.fillText("Схема завантаження фури", 90, 85);
+    context.font = "30px Arial";
+    context.fillStyle = "#52606d";
+    context.fillText(`${truck.name} · ${truck.length} × ${truck.width} × ${truck.height} мм`, 90, 132);
+
+    const originX = 90;
+    const originY = 190;
+    const planWidth = 1600;
+    const planHeight = Math.max(240, planWidth * truck.width / truck.length);
+    context.fillStyle = "#ffffff";
+    context.fillRect(originX, originY, planWidth, planHeight);
+    context.strokeStyle = "#17212b";
+    context.lineWidth = 8;
+    context.strokeRect(originX, originY, planWidth, planHeight);
+    planner.placements.forEach(placement => {
+      const x = originX + placement.x / truck.length * planWidth;
+      const y = originY + placement.y / truck.width * planHeight;
+      const width = placement.length / truck.length * planWidth;
+      const height = placement.width / truck.width * planHeight;
+      context.fillStyle = placement.color;
+      context.globalAlpha = .82;
+      context.fillRect(x, y, width, height);
+      context.globalAlpha = 1;
+      context.strokeStyle = "#263238";
+      context.lineWidth = 2;
+      context.strokeRect(x, y, width, height);
+      if (width > 55 && height > 28) {
+        context.save();
+        context.beginPath();
+        context.rect(x + 2, y + 2, width - 4, height - 4);
+        context.clip();
+        context.fillStyle = "#101820";
+        context.font = "700 18px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(`${placement.name}${placement.stackCount > 1 ? ` ×${placement.stackCount}` : ""}`, x + width / 2, y + height / 2);
+        context.restore();
+      }
+    });
+
+    const legendY = originY + planHeight + 70;
+    context.textAlign = "left";
+    context.textBaseline = "alphabetic";
+    context.font = "700 28px Arial";
+    context.fillStyle = "#17212b";
+    context.fillText("Вантаж:", originX, legendY);
+    planner.cargo.forEach((item, index) => {
+      const column = index % 2;
+      const row = Math.floor(index / 2);
+      const x = originX + column * 800;
+      const y = legendY + 48 + row * 42;
+      context.fillStyle = item.color;
+      context.fillRect(x, y - 22, 24, 24);
+      context.fillStyle = "#17212b";
+      context.font = "24px Arial";
+      context.fillText(`${item.name}: ${item.quantity} шт. · ${item.length} × ${item.width} × ${item.height} мм`, x + 36, y);
+    });
+    if (planner.unplaced.length) {
+      context.fillStyle = "#9a4b0f";
+      context.font = "700 25px Arial";
+      context.fillText(`Не вмістилося: ${planner.unplaced.map(item => `${item.name} — ${item.quantity}`).join("; ")}`, originX, canvas.height - 55);
+    }
+    const link = document.createElement("a");
+    link.download = `shema-zavantazhennia-${todayISO()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+    toast("Схему збережено як PNG");
+  }
+
   function render() {
-    ensureActiveDay();
+    if (!workspaceIsLoading()) ensureActiveDay();
     renderSelect();
-    renderToday();
+    if (workspaceIsLoading()) {
+      updateWorkspaceUI();
+      renderLoadingPlanner();
+    } else {
+      renderToday();
+    }
     renderProducts();
     renderBackupProductCopyOptions();
     renderHistory();
@@ -18819,6 +19970,33 @@
   document.getElementById("bottomHomeBtn").addEventListener("click", () => showPage("today", { fromBack: true }));
   document.getElementById("bottomMenuBtn").addEventListener("click", openMenu);
   document.getElementById("newDayBtn").addEventListener("click", createNewDay);
+  document.getElementById("loadingTruckSelect").addEventListener("change", event => selectLoadingTruck(event.target.value));
+  document.getElementById("loadingNewTruckBtn").addEventListener("click", createLoadingTruck);
+  document.getElementById("loadingSaveTruckBtn").addEventListener("click", saveLoadingTruck);
+  document.getElementById("loadingCargoSaveBtn").addEventListener("click", saveLoadingCargo);
+  document.getElementById("loadingCargoCancelBtn").addEventListener("click", clearLoadingCargoEditor);
+  document.getElementById("loadingCargoStackable").addEventListener("change", event => {
+    const maxStack = document.getElementById("loadingCargoMaxStack");
+    maxStack.disabled = !event.target.checked;
+    if (!event.target.checked) maxStack.value = "1";
+    else if (Number(maxStack.value) < 2) maxStack.value = "2";
+  });
+  document.getElementById("loadingCargoList").addEventListener("click", event => {
+    const button = event.target.closest("[data-loading-action]");
+    if (!button) return;
+    if (button.dataset.loadingAction === "edit-cargo") editLoadingCargo(button.dataset.id);
+    if (button.dataset.loadingAction === "delete-cargo") deleteLoadingCargo(button.dataset.id);
+  });
+  document.getElementById("loadingTruckPlan").addEventListener("click", event => {
+    const placement = event.target.closest("[data-loading-placement]");
+    if (!placement) return;
+    loadingSelectedPlacementId = placement.dataset.loadingPlacement;
+    renderLoadingPlan();
+  });
+  document.getElementById("loadingPlacementApplyBtn").addEventListener("click", applyManualLoadingPlacement);
+  document.getElementById("loadingAutoPackBtn").addEventListener("click", calculateLoadingLayout);
+  document.getElementById("loadingDownloadPngBtn").addEventListener("click", downloadLoadingPlanPng);
+  document.getElementById("loadingClearPlanBtn").addEventListener("click", clearLoadingLayout);
   document.getElementById("openInventoryHistoryBtn").addEventListener("click", () => showPage("historyInventory"));
   document.getElementById("openOrdersHistoryBtn").addEventListener("click", () => showPage("historyOrders"));
   document.getElementById("openProductionHistoryBtn").addEventListener("click", () => showPage("historyProduction"));

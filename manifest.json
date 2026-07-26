@@ -1,9 +1,9 @@
 {
   "name": "Облік",
   "short_name": "Облік",
-  "description": "Інвентаризація, замовлення, здача продукції та робота зі складськими найменуваннями",
+  "description": "Інвентаризація, замовлення, здача продукції та планування завантаження фури",
   "id": "./",
-  "start_url": "./index.html?v=308",
+  "start_url": "./index.html?v=309",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
