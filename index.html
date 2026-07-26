@@ -7594,7 +7594,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=306">
+<link rel="manifest" href="manifest.json?v=308">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -7649,7 +7649,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.06</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.08</span></div>
     </div>
   </div>
 
@@ -8752,7 +8752,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.06</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.08</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8777,6 +8777,22 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.08</h3>
+          <ul>
+            <li>виправлено випадкове блокування прокручування в розділах «Про додаток» і «Встановлення та поширення»;</li>
+            <li>захист від системного переходу тепер перехоплює лише горизонтальний жест від краю екрана;</li>
+            <li>вертикальне гортання вгору і вниз працює навіть тоді, коли рух починається біля краю екрана.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.07</h3>
+          <ul>
+            <li>у браузерній версії через 30 секунд після запуску з’являється ненав’язлива пропозиція встановити «Облік»;</li>
+            <li>на підтримуваних Android, Windows і Chromium-пристроях доступне пряме системне встановлення, а на iPhone відкривається відповідна інструкція;</li>
+            <li>додано дії «Не зараз» і «Більше не показувати»; після успішного встановлення пропозиція автоматично вимикається.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.06</h3>
           <ul>
@@ -9834,7 +9850,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.06";
+  const APP_VERSION = "3.08";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -9878,6 +9894,8 @@
   ];
   const WORKSPACE_MODE_KEY = "warehouseJournalWorkspaceMode";
   const INITIAL_WORKSPACE_CHOICE_KEY = "warehouseJournalInitialWorkspaceChoice";
+  const INSTALL_SUGGESTION_SUPPRESSED_KEY = "warehouseJournalInstallSuggestionSuppressed";
+  const INSTALLATION_COMPLETED_KEY = "warehouseJournalInstallationCompleted";
   const LAST_ENTRY_UNIT_KEY = "warehouseJournalLastEntryUnit";
   const ENTRY_PRODUCT_UNIT_PREFERENCES_KEY = "warehouseJournalEntryProductUnitPreferences";
   const ENTRY_UNIT_VISIBILITY_KEY = "warehouseJournalEntryUnitVisibility";
@@ -10160,25 +10178,49 @@
 
   function preventBrowserEdgeNavigation() {
     let edgeGestureActive = false;
+    let edgeGestureDirection = "";
+    let edgeGestureStartX = 0;
+    let edgeGestureStartY = 0;
     const edgeWidth = 42;
+    const directionThreshold = 9;
 
     document.addEventListener("touchstart", event => {
       edgeGestureActive = false;
+      edgeGestureDirection = "";
       if (isAndroidDevice || event.touches.length !== 1) return;
       const touch = event.touches[0];
       const viewportWidth = window.visualViewport?.width || window.innerWidth;
-      edgeGestureActive = touch.clientX <= edgeWidth || touch.clientX >= viewportWidth - edgeWidth;
       const interactiveTarget = event.target instanceof Element
         && event.target.closest("button, input, textarea, select, a, label, summary, details, [contenteditable='true']");
-      if (edgeGestureActive && !interactiveTarget) event.preventDefault();
-    }, { capture: true, passive: false });
+      if (interactiveTarget) return;
+      edgeGestureActive = touch.clientX <= edgeWidth || touch.clientX >= viewportWidth - edgeWidth;
+      if (!edgeGestureActive) return;
+      edgeGestureStartX = touch.clientX;
+      edgeGestureStartY = touch.clientY;
+    }, { capture: true, passive: true });
 
     document.addEventListener("touchmove", event => {
-      if (edgeGestureActive && event.touches.length === 1) event.preventDefault();
+      if (!edgeGestureActive || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - edgeGestureStartX;
+      const deltaY = touch.clientY - edgeGestureStartY;
+
+      if (!edgeGestureDirection) {
+        if (Math.abs(deltaX) < directionThreshold && Math.abs(deltaY) < directionThreshold) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+          edgeGestureActive = false;
+          edgeGestureDirection = "vertical";
+          return;
+        }
+        edgeGestureDirection = "horizontal";
+      }
+
+      if (edgeGestureDirection === "horizontal") event.preventDefault();
     }, { capture: true, passive: false });
 
     const finishEdgeGesture = () => {
       edgeGestureActive = false;
+      edgeGestureDirection = "";
     };
     document.addEventListener("touchend", finishEdgeGesture, { capture: true, passive: true });
     document.addEventListener("touchcancel", finishEdgeGesture, { capture: true, passive: true });
@@ -11260,6 +11302,8 @@
   let productSelectMode = false;
   let selectedProductIds = new Set();
   let deferredInstallPrompt = null;
+  let installSuggestionTimer = 0;
+  let installSuggestionShownThisSession = false;
   let gestureMenuIndex = 0;
   let gestureDragStartX = 0;
   let gestureDragStartY = 0;
@@ -11578,6 +11622,76 @@
       window.navigator.standalone === true;
   }
 
+  function markInstallationCompleted() {
+    try { localStorage.setItem(INSTALLATION_COMPLETED_KEY, "yes"); } catch (error) {}
+    window.clearTimeout(installSuggestionTimer);
+  }
+
+  function installSuggestionIsDisabled() {
+    if (isStandaloneApp()) return true;
+    try {
+      return localStorage.getItem(INSTALL_SUGGESTION_SUPPRESSED_KEY) === "yes"
+        || localStorage.getItem(INSTALLATION_COMPLETED_KEY) === "yes";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function installSuggestionModalIsBlocked() {
+    if (appDialogResolver || document.body.classList.contains("drawer-open")) return true;
+    return Array.from(document.querySelectorAll('[role="dialog"][aria-modal="true"]'))
+      .some(overlay => !overlay.classList.contains("hidden"));
+  }
+
+  function scheduleInstallSuggestion(delay = 30000) {
+    window.clearTimeout(installSuggestionTimer);
+    if (installSuggestionShownThisSession || installSuggestionIsDisabled()) return;
+    installSuggestionTimer = window.setTimeout(showInstallSuggestion, delay);
+  }
+
+  async function showInstallSuggestion() {
+    if (installSuggestionShownThisSession || installSuggestionIsDisabled()) return;
+    if (document.visibilityState !== "visible" || installSuggestionModalIsBlocked()) {
+      scheduleInstallSuggestion(12000);
+      return;
+    }
+    if (currentPage === "install") {
+      installSuggestionShownThisSession = true;
+      return;
+    }
+
+    installSuggestionShownThisSession = true;
+    const canInstallDirectly = Boolean(deferredInstallPrompt);
+    const message = canInstallDirectly
+      ? "Установіть «Облік» як окремий застосунок. Він матиме власну іконку, відкриватиметься без панелей браузера та залишатиметься доступним із головного екрана."
+      : (isIOSDevice
+        ? "На iPhone та iPad «Облік» установлюється через Safari. Відкрийте коротку покрокову інструкцію та додайте застосунок на початковий екран."
+        : "Установіть «Облік» як окремий застосунок. Відкрийте інструкцію для свого пристрою, якщо системна кнопка встановлення зараз недоступна.");
+
+    const result = await showAppDialog({
+      label: "Встановлення",
+      title: "Встановити «Облік»?",
+      message,
+      confirmText: canInstallDirectly ? "Встановити" : "Як встановити",
+      cancelText: "Не зараз",
+      alternativeText: "Більше не показувати",
+      alternativeResult: "never"
+    });
+
+    if (result === "never") {
+      try { localStorage.setItem(INSTALL_SUGGESTION_SUPPRESSED_KEY, "yes"); } catch (error) {}
+      toast("Пропозицію встановлення вимкнено");
+      return;
+    }
+    if (!result) return;
+
+    if (canInstallDirectly) {
+      await installApp();
+      return;
+    }
+    showPage("install");
+  }
+
   function updateInstallUI(message = "") {
     const status = document.getElementById("installStatus");
     const button = document.getElementById("installAppBtn");
@@ -11601,7 +11715,7 @@
     }
 
     if (deferredInstallPrompt) {
-      status.textContent = "Застосунок готовий до встановлення на Android.";
+      status.textContent = "Застосунок готовий до системного встановлення на цьому пристрої.";
       button.classList.remove("hidden");
       return;
     }
@@ -11619,7 +11733,7 @@
   async function installApp() {
     if (!deferredInstallPrompt) {
       updateInstallUI("Системне встановлення зараз недоступне. Відкрий меню Chrome ⋮ та обери «Встановити додаток».");
-      return;
+      return false;
     }
 
     const promptEvent = deferredInstallPrompt;
@@ -11630,12 +11744,16 @@
       await promptEvent.prompt();
       const choice = await promptEvent.userChoice;
       if (choice.outcome === "accepted") {
+        markInstallationCompleted();
         updateInstallUI("Встановлення підтверджено. Застосунок з’явиться на головному екрані.");
+        return true;
       } else {
         updateInstallUI("Встановлення скасовано. Його можна запустити повторно через меню Chrome.");
+        return false;
       }
     } catch (error) {
       updateInstallUI("Не вдалося відкрити системне встановлення. Спробуй через меню Chrome ⋮.");
+      return false;
     }
   }
 
@@ -11695,6 +11813,7 @@
 
   window.addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
+    markInstallationCompleted();
     updateInstallUI("Застосунок успішно встановлено.");
     toast("Застосунок встановлено");
   });
@@ -19288,6 +19407,7 @@
   window.setInterval(refreshEditedRelativeLabels, 60 * 1000);
   updateInstallUI();
   registerServiceWorker();
+  scheduleInstallSuggestion(30000);
   initSplashInteraction();
   setTimeout(finishSplashScreen, 3650);
 })();
