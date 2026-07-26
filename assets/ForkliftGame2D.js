@@ -4,6 +4,28 @@
   const STYLE_ID = "forkliftGame2DStyles";
   const STATS_KEY = "oblikForkliftGame2DStats";
   const TAU = Math.PI * 2;
+  const MODE_CONFIGS = {
+    transport: {
+      name: "Між складами", target: 8,
+      goal: "ЦІЛЬ: перевези 8 піддонів у зелену зону СКЛАДУ Б"
+    },
+    trailer: {
+      name: "Завантаження фури", target: 33, trailer: true,
+      goal: "один заїзд ззаду · став піддони у пронумеровані місця"
+    },
+    express: {
+      name: "Експрес-зміна", target: 12, timeLimit: 180,
+      goal: "ЕКСПРЕС: достав 12 піддонів за 3 хвилини"
+    },
+    safety: {
+      name: "Безпечна зміна", target: 10, strictSafety: true,
+      goal: "БЕЗПЕЧНА ЗМІНА: достав 10 піддонів без жодного зіткнення"
+    },
+    training: {
+      name: "Вільне тренування", target: 15, noPenalties: true,
+      goal: "ТРЕНУВАННЯ: переміщуй піддони вільно, без штрафів"
+    }
+  };
   let activeGame = null;
 
   function injectStyles() {
@@ -19,12 +41,12 @@
       .fg2-menu{width:min(100%,580px);max-height:100%;overflow:auto;padding:22px;border:1px solid rgba(255,255,255,.18);border-radius:24px;background:rgba(7,20,28,.94);box-shadow:0 28px 90px rgba(0,0,0,.58)}
       .fg2-kicker{color:#72d5e4;font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.fg2-menu h1{margin:6px 0 8px;font-size:clamp(27px,5vw,44px);line-height:1}.fg2-menu p{margin:0 0 16px;color:#bdcdd5;line-height:1.45}
       .fg2-modes{display:grid;gap:9px}.fg2-mode{display:grid;grid-template-columns:50px 1fr;align-items:center;gap:11px;width:100%;padding:12px;border:1px solid rgba(255,255,255,.16);border-radius:17px;background:#142b35;color:#fff;text-align:left}.fg2-mode:active{background:#1b3b48}.fg2-mode-icon{display:grid;width:50px;height:50px;place-items:center;border-radius:14px;background:#28515f;font-size:26px}.fg2-mode strong,.fg2-mode span{display:block}.fg2-mode span span{margin-top:3px;color:#aec1ca;font-size:12px}
-      .fg2-records{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}.fg2-record{padding:8px;border-radius:12px;background:rgba(255,255,255,.07);text-align:center}.fg2-record strong,.fg2-record span{display:block}.fg2-record span{margin-top:2px;color:#a8bbc4;font-size:9px;font-weight:800}
+      .fg2-stats{margin-top:12px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.04)}.fg2-stats summary{padding:10px 12px;cursor:pointer;color:#c8d8df;font-size:12px;font-weight:900;list-style:none}.fg2-stats summary::-webkit-details-marker{display:none}.fg2-stats summary::after{content:"⌄";float:right;font-size:16px}.fg2-stats[open] summary::after{content:"⌃"}.fg2-records{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 9px 9px}.fg2-record{padding:8px;border-radius:12px;background:rgba(255,255,255,.07);text-align:center}.fg2-record strong,.fg2-record span{display:block}.fg2-record span{margin-top:2px;color:#a8bbc4;font-size:9px;font-weight:800}
       .fg2-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.fg2-btn{flex:1;min-width:120px;min-height:42px;padding:8px 12px;border:1px solid rgba(255,255,255,.17);border-radius:13px;background:#1a303a;color:#fff;font-weight:900}.fg2-btn.primary{background:#e9bd4f;color:#162027}.fg2-btn.danger{background:#53272a}
       .fg2-hud{position:absolute;top:max(9px,env(safe-area-inset-top));left:9px;right:82px;z-index:12;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none}.fg2-hud-items{display:flex;flex-wrap:wrap;gap:5px}.fg2-chip{min-width:72px;padding:6px 8px;border:1px solid rgba(255,255,255,.17);border-radius:11px;background:rgba(7,18,24,.82);box-shadow:0 7px 20px rgba(0,0,0,.25)}.fg2-chip span,.fg2-chip strong{display:block}.fg2-chip span{color:#a9bbc4;font-size:8px;font-weight:900;text-transform:uppercase}.fg2-chip strong{margin-top:1px;font-size:13px}
       .fg2-goal{position:absolute;top:max(75px,calc(env(safe-area-inset-top) + 66px));left:50%;z-index:11;max-width:60%;padding:7px 12px;border:1px solid rgba(121,238,157,.38);border-radius:999px;background:rgba(9,37,25,.86);font-size:11px;font-weight:900;text-align:center;transform:translateX(-50%);pointer-events:none}
       .fg2-pause{position:absolute;top:max(9px,env(safe-area-inset-top));right:9px;z-index:14;width:66px;height:42px;border:1px solid rgba(255,255,255,.19);border-radius:12px;background:rgba(7,18,24,.88);color:#fff;font-size:11px;font-weight:900}
-      .fg2-notices{position:absolute;top:102px;left:50%;z-index:25;display:grid;gap:6px;width:min(78%,420px);pointer-events:none;transform:translateX(-50%)}.fg2-notice{padding:9px 12px;border-radius:13px;background:rgba(11,31,40,.94);box-shadow:0 10px 28px rgba(0,0,0,.36);font-size:12px;font-weight:900;text-align:center;animation:fg2Notice 2.35s both}.fg2-notice.bad{background:rgba(104,32,36,.95)}.fg2-notice.good{background:rgba(20,91,62,.95)}@keyframes fg2Notice{0%{opacity:0;transform:translateY(-8px)}12%,78%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+      .fg2-notices{position:absolute;top:102px;left:50%;z-index:45;display:grid;gap:6px;width:min(78%,420px);pointer-events:none;transform:translateX(-50%)}.fg2-notice{padding:9px 12px;border-radius:13px;background:rgba(11,31,40,.94);box-shadow:0 10px 28px rgba(0,0,0,.36);font-size:12px;font-weight:900;text-align:center;animation:fg2Notice 2.35s both}.fg2-notice.bad{background:rgba(104,32,36,.95)}.fg2-notice.good{background:rgba(20,91,62,.95)}@keyframes fg2Notice{0%{opacity:0;transform:translateY(-8px)}12%,78%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
       .fg2-controls{position:absolute;inset:auto 0 max(7px,env(safe-area-inset-bottom));z-index:15;display:none;align-items:end;justify-content:space-between;padding:7px 15px;pointer-events:none}
       .fg2-joystick{position:relative;width:126px;height:126px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(8,25,33,.62);box-shadow:inset 0 0 0 12px rgba(2,9,13,.26);pointer-events:auto;touch-action:none}.fg2-joystick::before,.fg2-joystick::after{content:"";position:absolute;background:rgba(255,255,255,.14)}.fg2-joystick::before{top:50%;left:12%;right:12%;height:1px}.fg2-joystick::after{top:12%;bottom:12%;left:50%;width:1px}.fg2-stick{position:absolute;top:50%;left:50%;width:52px;height:52px;border:2px solid rgba(255,255,255,.45);border-radius:50%;background:#e8ba48;box-shadow:0 6px 16px rgba(0,0,0,.35);transform:translate(-50%,-50%)}
       .fg2-right{display:grid;grid-template-columns:58px 58px;gap:7px;margin-right:18px;pointer-events:auto}.fg2-control{display:grid;width:58px;height:48px;padding:3px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(11,31,40,.86);color:#fff;font-size:9px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg2-control:active,.fg2-control.active{background:#efc14f;color:#172027;transform:scale(.96)}.fg2-control.horn{background:#315d6b}.fg2-control.wide{grid-column:1/3;width:123px}
@@ -87,6 +109,7 @@
       this.canvas = null;
       this.ctx = null;
       this.mode = "";
+      this.modeConfig = MODE_CONFIGS.transport;
       this.running = false;
       this.paused = false;
       this.destroyed = false;
@@ -118,10 +141,9 @@
       this.incident = null;
       this.audio = null;
       this.engine = null;
-      this.engineGain = null;
       this.effectSources = {
         horn: "./assets/audio/car-horn.mp3?v=316",
-        lift: "./assets/audio/hydraulic-up-real.mp3?v=316",
+        lift: "./assets/audio/forklift-lift-real.mp3?v=317",
         lower: "./assets/audio/hydraulic-down-real.mp3?v=316"
       };
       this.lastHornNotice = -Infinity;
@@ -162,19 +184,23 @@
         <div class="fg2-rotate"><div><strong>↻</strong><span>Поверни телефон горизонтально</span></div></div>
         <div class="fg2-screen">
           <div class="fg2-menu">
-            <div class="fg2-kicker">Нова 2D-версія</div>
             <h1>Симулятор транспортувальника</h1>
-            <p>Дивись на склад зверху. Джойстик рухає транспорт точно в тому напрямку, куди ти його нахиляєш.</p>
             <div class="fg2-modes">
               <button class="fg2-mode" data-mode="transport"><span class="fg2-mode-icon">🏭</span><span><strong>Між складами</strong><span>Перевези 8 піддонів із жовтої зони в зелену.</span></span></button>
               <button class="fg2-mode" data-mode="trailer"><span class="fg2-mode-icon">🚛</span><span><strong>Завантаження фури</strong><span>Щільно встанови 33 піддони у пронумеровані місця.</span></span></button>
+              <button class="fg2-mode" data-mode="express"><span class="fg2-mode-icon">⏱️</span><span><strong>Експрес-зміна</strong><span>Достав 12 піддонів за три хвилини.</span></span></button>
+              <button class="fg2-mode" data-mode="safety"><span class="fg2-mode-icon">🦺</span><span><strong>Безпечна зміна</strong><span>Достав 10 піддонів без жодного зіткнення.</span></span></button>
+              <button class="fg2-mode" data-mode="training"><span class="fg2-mode-icon">🎓</span><span><strong>Вільне тренування</strong><span>Тренуйся без штрафів і Game Over.</span></span></button>
             </div>
-            <div class="fg2-records">
-              <div class="fg2-record"><strong>${this.stats.bestTrailer ? timeText(this.stats.bestTrailer) : "—"}</strong><span>найкраща фура</span></div>
-              <div class="fg2-record"><strong>${this.stats.total}</strong><span>усього піддонів</span></div>
-              <div class="fg2-record"><strong>${this.stats.bestScore}</strong><span>найкращі бали</span></div>
-            </div>
-            <div class="fg2-actions"><button class="fg2-btn" data-menu="help">Керування</button><button class="fg2-btn danger" data-menu="exit">Повернутися до роботи</button></div>
+            <details class="fg2-stats">
+              <summary>Статистика гри</summary>
+              <div class="fg2-records">
+                <div class="fg2-record"><strong>${this.stats.bestTrailer ? timeText(this.stats.bestTrailer) : "—"}</strong><span>найкраща фура</span></div>
+                <div class="fg2-record"><strong>${this.stats.total}</strong><span>усього піддонів</span></div>
+                <div class="fg2-record"><strong>${this.stats.bestScore}</strong><span>найкращі бали</span></div>
+              </div>
+            </details>
+            <div class="fg2-actions"><button class="fg2-btn" data-menu="help">Керування</button><button class="fg2-btn danger" data-menu="exit">Вийти</button></div>
           </div>
         </div>`;
       document.body.appendChild(this.root);
@@ -184,7 +210,7 @@
       this.root.addEventListener("selectstart", event => event.preventDefault());
       this.root.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => this.start(button.dataset.mode)));
       this.root.querySelector("[data-menu='exit']").addEventListener("click", () => this.destroy());
-      this.root.querySelector("[data-menu='help']").addEventListener("click", () => this.notice("Джойстик — напрям руху. Q/E або кнопки — вила. H/F — сигнал. Два пальці — масштаб.", "good"));
+      this.root.querySelector("[data-menu='help']").addEventListener("click", () => this.helpScreen());
       this.root.querySelector(".fg2-pause").addEventListener("click", () => this.pauseMenu());
       this.resize();
       return this;
@@ -204,8 +230,9 @@
 
     start(mode) {
       if (this.running) return;
-      this.mode = mode === "trailer" ? "trailer" : "transport";
-      this.target = this.mode === "trailer" ? 33 : 8;
+      this.mode = MODE_CONFIGS[mode] ? mode : "transport";
+      this.modeConfig = MODE_CONFIGS[this.mode];
+      this.target = this.modeConfig.target;
       this.root.classList.add("playing");
       this.enterLandscape();
       this.buildWorld();
@@ -214,9 +241,9 @@
       this.root.querySelector(".fg2-screen").classList.add("hidden");
       this.root.querySelectorAll(".fg2-hud,.fg2-goal,.fg2-pause,.fg2-controls,.fg2-zoom-tip").forEach(element => element.classList.remove("fg2-hidden"));
       this.root.querySelector("[data-fg2='delivery']").textContent = `0 / ${this.target}`;
-      this.root.querySelector("[data-fg2='goal']").textContent = this.mode === "trailer"
-        ? "ФУРА №1 · один заїзд ззаду · став піддони у пронумеровані місця"
-        : "ЦІЛЬ: велика зелена зона СКЛАДУ Б праворуч";
+      this.root.querySelector("[data-fg2='goal']").textContent = this.modeConfig.trailer
+        ? `ФУРА №${this.trailerRound} · ${this.modeConfig.goal}`
+        : this.modeConfig.goal;
       this.running = true;
       this.lastFrame = performance.now();
       this.raf = requestAnimationFrame(time => this.frame(time));
@@ -231,7 +258,7 @@
         { x: 1350, y: 170, w: 150, h: 390, type: "rack" },
         { x: 1350, y: 840, w: 150, h: 390, type: "rack" }
       ];
-      if (this.mode === "trailer") {
+      if (this.modeConfig.trailer) {
         this.obstacles.push(
           { x: this.trailer.x, y: this.trailer.y, w: 34, h: this.trailer.h, type: "trailer-wall" },
           { x: this.trailer.x + this.trailer.w - 34, y: this.trailer.y, w: 34, h: this.trailer.h, type: "trailer-wall" },
@@ -240,13 +267,15 @@
       }
       this.pallets = [];
       for (let index = 0; index < 12; index++) {
+        const point = this.randomPalletPoint();
         this.pallets.push({
-          id: `p${index}`, x: 145 + (index % 3) * 95, y: 530 + Math.floor(index / 3) * 100,
-          carried: false, delivered: false, color: index % 3 === 0 ? "#8bc5dc" : "#d39a55"
+          id: `p${index}`, x: point.x, y: point.y,
+          carried: false, delivered: false, slotId: null,
+          color: index % 3 === 0 ? "#8bc5dc" : "#d39a55"
         });
       }
       this.slots = [];
-      if (this.mode === "trailer") {
+      if (this.modeConfig.trailer) {
         for (let row = 0; row < 11; row++) {
           for (let column = 0; column < 3; column++) {
             this.slots.push({
@@ -288,9 +317,27 @@
     randomAislePoint(radius) {
       for (let attempt = 0; attempt < 50; attempt++) {
         const point = { x: 480 + Math.random() * 1070, y: 65 + Math.random() * 1270 };
-        if (!this.obstacles.some(rect => circleRect(point.x, point.y, radius || 18, rect))) return point;
+        const blocked = this.obstacles.some(rect => circleRect(point.x, point.y, radius || 18, rect));
+        const onPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(point.x - pallet.x, point.y - pallet.y) < 55);
+        if (!blocked && !onPallet) return point;
       }
       return { x: 550, y: 700 };
+    }
+
+    randomPalletPoint() {
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const point = {
+          x: 110 + Math.random() * 1430,
+          y: 100 + Math.random() * 1200
+        };
+        const blocked = this.obstacles.some(rect => circleRect(point.x, point.y, 42, rect));
+        const crowded = this.pallets.some(pallet => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 82);
+        const onVehicle = Math.hypot(point.x - this.vehicle.x, point.y - this.vehicle.y) < 100;
+        const onWorker = this.workers.some(worker => Math.hypot(point.x - worker.x, point.y - worker.y) < 70);
+        const onBot = this.bot && Math.hypot(point.x - this.bot.x, point.y - this.bot.y) < 90;
+        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot) return point;
+      }
+      return { x: 180 + (this.pallets.length % 3) * 100, y: 500 + (this.pallets.length % 5) * 90 };
     }
 
     bindControls() {
@@ -410,6 +457,10 @@
         return;
       }
       this.elapsed += dt;
+      if (this.modeConfig.timeLimit && this.elapsed >= this.modeConfig.timeLimit) {
+        this.gameOver("Час вийшов. Спробуй пройти експрес-зміну швидше.");
+        return;
+      }
       this.updateVehicle(dt);
       this.updateWorkers(dt);
       this.updateBot(dt);
@@ -423,7 +474,7 @@
       }
       const input = this.movementInput();
       const v = this.vehicle;
-      const inTrailer = this.mode === "trailer" && circleRect(v.x, v.y, 12, this.trailer);
+      const inTrailer = this.modeConfig.trailer && circleRect(v.x, v.y, 12, this.trailer);
       const maxSpeed = inTrailer ? 92 : (v.carrying ? 150 : 176);
       v.speed += (input.strength * maxSpeed - v.speed) * Math.min(1, dt * 6);
       if (input.strength < .05) v.speed *= Math.pow(.05, dt);
@@ -437,7 +488,7 @@
       v.x = clamp(v.x, 35, this.world.w - 35);
       v.y = clamp(v.y, 35, this.world.h - 35);
       const hitObstacle = this.obstacles.some(rect => circleRect(v.x, v.y, v.radius, rect));
-      const hitPallet = this.pallets.some(pallet => !pallet.carried && !pallet.delivered && Math.hypot(v.x - pallet.x, v.y - pallet.y) < 43);
+      const hitPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(v.x - pallet.x, v.y - pallet.y) < 43);
       if (hitObstacle || hitPallet) {
         v.x = previous.x;
         v.y = previous.y;
@@ -446,9 +497,9 @@
       }
       if (this.controls.lift) this.lift();
       if (this.controls.lower) this.lower();
-      if (this.engine && this.audio) {
-        this.engine.frequency.setTargetAtTime(48 + v.speed * .16, this.audio.currentTime, .05);
-        this.engineGain.gain.setTargetAtTime(.006 + v.speed * .00007, this.audio.currentTime, .08);
+      if (this.engine) {
+        this.engine.playbackRate = clamp(.86 + v.speed / 620, .86, 1.16);
+        this.engine.volume = clamp(.025 + v.speed * .00016, .025, .055);
       }
     }
 
@@ -463,11 +514,22 @@
       if (this.vehicle.forksUp) return;
       const point = this.forkPoint();
       const nearest = this.pallets
-        .filter(pallet => !pallet.carried && !pallet.delivered)
+        .filter(pallet => !pallet.carried)
         .map(pallet => ({ pallet, d: Math.hypot(point.x - pallet.x, point.y - pallet.y) }))
         .sort((a, b) => a.d - b.d)[0];
       if (!nearest || nearest.d > 48) return;
       nearest.pallet.carried = true;
+      if (nearest.pallet.slotId != null) {
+        const occupiedSlot = this.slots.find(slot => slot.id === nearest.pallet.slotId);
+        if (occupiedSlot) {
+          occupiedSlot.occupied = false;
+          occupiedSlot.palletId = null;
+        }
+        nearest.pallet.slotId = null;
+        nearest.pallet.delivered = false;
+        this.delivered = Math.max(0, this.delivered - 1);
+        this.notice("Піддон забрано з місця — його можна переставити", "good");
+      }
       this.vehicle.carrying = nearest.pallet;
       this.vehicle.forksUp = true;
       this.notice("Піддон піднято", "good");
@@ -481,18 +543,38 @@
         .filter(item => !item.occupied)
         .map(item => ({ item, d: Math.hypot(point.x - item.x, point.y - item.y) }))
         .sort((a, b) => a.d - b.d)[0];
-      const placementDistance = this.mode === "trailer" ? 72 : 88;
-      if (!slot || slot.d > placementDistance) {
-        this.notice(this.mode === "trailer"
-          ? "Під'їдь до вільного пронумерованого місця у фурі"
-          : "Під'їдь до вільного пронумерованого місця у зеленій зоні", "bad");
+      const placementDistance = this.modeConfig.trailer ? 72 : 88;
+      const exactSlot = slot && slot.d <= placementDistance ? slot.item : null;
+      const freePoint = {
+        x: clamp(point.x, 45, this.world.w - 45),
+        y: clamp(point.y, 45, this.world.h - 45)
+      };
+      if (!exactSlot) {
+        const blocked = this.obstacles.some(rect => circleRect(freePoint.x, freePoint.y, 35, rect));
+        const overlapsPallet = this.pallets.some(item =>
+          item !== pallet && !item.carried && Math.hypot(freePoint.x - item.x, freePoint.y - item.y) < 70
+        );
+        if (blocked || overlapsPallet) {
+          this.notice("Тут немає вільного місця для піддона", "bad");
+          return;
+        }
+        pallet.x = freePoint.x;
+        pallet.y = freePoint.y;
+        pallet.carried = false;
+        pallet.delivered = false;
+        pallet.slotId = null;
+        this.vehicle.carrying = null;
+        this.vehicle.forksUp = false;
+        this.notice("Піддон поставлено у вибраному місці", "good");
         return;
       }
-      slot.item.occupied = true;
-      pallet.x = slot.item.x;
-      pallet.y = slot.item.y;
+      exactSlot.occupied = true;
+      exactSlot.palletId = pallet.id;
+      pallet.x = exactSlot.x;
+      pallet.y = exactSlot.y;
       pallet.carried = false;
       pallet.delivered = true;
+      pallet.slotId = exactSlot.id;
       this.vehicle.carrying = null;
       this.vehicle.forksUp = false;
       this.delivered += 1;
@@ -507,9 +589,11 @@
 
     replenish() {
       const index = this.pallets.length;
+      const point = this.randomPalletPoint();
       this.pallets.push({
-        id: `p${index}`, x: 145 + (index % 3) * 95, y: 530 + (index % 4) * 100,
-        carried: false, delivered: false, color: index % 2 ? "#d39a55" : "#8bc5dc"
+        id: `p${index}`, x: point.x, y: point.y,
+        carried: false, delivered: false, slotId: null,
+        color: index % 2 ? "#d39a55" : "#8bc5dc"
       });
     }
 
@@ -566,7 +650,7 @@
       if (this.incident || worker.injured) return;
       worker.injured = true;
       this.vehicle.speed = 0;
-      this.score = Math.max(0, this.score - 100);
+      if (!this.modeConfig.noPenalties) this.score = Math.max(0, this.score - 100);
       const side = worker.x > this.world.w / 2 ? -1 : 1;
       this.incident = {
         timer: 0,
@@ -577,10 +661,12 @@
           { x: worker.x + side * 340, y: worker.y + 145 }
         ],
         exit: { x: clamp(worker.x + side * 390, 55, this.world.w - 55), y: clamp(worker.y + 190, 55, this.world.h - 55) },
-        gameOverAfter: this.score <= 0
+        gameOverAfter: this.modeConfig.strictSafety || (!this.modeConfig.noPenalties && this.score <= 0)
       };
       this.root.querySelector("[data-fg2='goal']").textContent = "ПОРУШЕННЯ · інспектор оформлює подію, медики забирають постраждалого";
-      this.notice("-100 балів: небезпечний контакт із працівником", "bad");
+      this.notice(this.modeConfig.noPenalties
+        ? "Небезпечний контакт із працівником — тренування продовжиться"
+        : "-100 балів: небезпечний контакт із працівником", "bad");
       this.tone(110, .28, "square", .065);
     }
 
@@ -624,10 +710,12 @@
         this.workers = this.workers.filter(worker => worker !== victim);
         const gameOverAfter = scene.gameOverAfter;
         this.incident = null;
-        this.root.querySelector("[data-fg2='goal']").textContent = this.mode === "trailer"
-          ? `ФУРА №${this.trailerRound} · один заїзд ззаду · став піддони у пронумеровані місця`
-          : "ЦІЛЬ: велика зелена зона СКЛАДУ Б праворуч";
-        if (gameOverAfter) this.gameOver();
+        this.root.querySelector("[data-fg2='goal']").textContent = this.modeConfig.trailer
+          ? `ФУРА №${this.trailerRound} · ${this.modeConfig.goal}`
+          : this.modeConfig.goal;
+        if (gameOverAfter) this.gameOver(this.modeConfig.strictSafety
+          ? "У безпечній зміні не можна допускати зіткнень."
+          : undefined);
       }
     }
 
@@ -669,11 +757,17 @@
     damage(reason) {
       if (this.elapsed - this.lastDamageAt < .8) return;
       this.lastDamageAt = this.elapsed;
+      if (this.modeConfig.noPenalties) {
+        this.notice(`${reason} — без штрафу у тренуванні`, "bad");
+        this.tone(92, .2, "square", .05);
+        return;
+      }
       this.score = Math.max(0, this.score - 50);
       this.integrity = Math.max(0, this.integrity - 7);
       this.notice(`-50 балів: ${reason}`, "bad");
       this.tone(92, .2, "square", .08);
-      if (this.score <= 0) this.gameOver();
+      if (this.modeConfig.strictSafety) this.gameOver("У безпечній зміні не можна допускати зіткнень.");
+      else if (this.score <= 0) this.gameOver();
     }
 
     horn() {
@@ -695,7 +789,7 @@
     }
 
     hydraulic(direction) {
-      this.playEffect(direction === "lift" ? "lift" : "lower", .15, .9, .55);
+      this.playEffect(direction === "lift" ? "lift" : "lower", direction === "lift" ? .35 : .15, .9, .42);
     }
 
     playEffect(name, startAt, duration, volume) {
@@ -717,17 +811,18 @@
 
     initAudio() {
       const AudioContext = global.AudioContext || global.webkitAudioContext;
-      if (!AudioContext) return;
       try {
-        this.audio = new AudioContext();
-        this.engine = this.audio.createOscillator();
-        this.engineGain = this.audio.createGain();
-        this.engine.type = "sawtooth";
-        this.engine.frequency.value = 48;
-        this.engineGain.gain.value = .006;
-        this.engine.connect(this.engineGain).connect(this.audio.destination);
-        this.engine.start();
-      } catch (error) { this.audio = null; }
+        if (AudioContext) this.audio = new AudioContext();
+        this.engine = new Audio("./assets/audio/forklift-engine-loop.mp3?v=317");
+        this.engine.loop = true;
+        this.engine.preload = "auto";
+        this.engine.volume = .025;
+        this.engine.playbackRate = .86;
+        this.engine.play()?.catch?.(() => {});
+      } catch (error) {
+        this.audio = null;
+        this.engine = null;
+      }
     }
 
     tone(frequency, duration, type, volume) {
@@ -825,7 +920,7 @@
         return available || { x: this.source.x + this.source.w / 2, y: this.source.y + this.source.h / 2 };
       }
       return this.slots.find(slot => !slot.occupied)
-        || (this.mode === "trailer"
+        || (this.modeConfig.trailer
           ? { x: this.trailer.x + this.trailer.w / 2, y: this.trailer.y + this.trailer.h / 2 }
           : { x: this.destination.x + this.destination.w / 2, y: this.destination.y + this.destination.h / 2 });
     }
@@ -874,8 +969,8 @@
     }
 
     drawZones(ctx) {
-      this.zone(ctx, this.source, "#e1b83d", "СКЛАД А · ВЗЯТИ ПІДДОН");
-      if (this.mode === "transport") {
+      this.zone(ctx, this.source, "#e1b83d", "СКЛАД А · ПІДДОНИ РОЗМІЩЕНІ ПО ВСІЙ ЗОНІ");
+      if (!this.modeConfig.trailer) {
         this.zone(ctx, this.destination, "#42ca79", "СКЛАД Б · ПОСТАВИТИ СЮДИ");
         this.slots.forEach(slot => {
           ctx.fillStyle = slot.occupied ? "#2f9f61" : "rgba(89,221,133,.18)";
@@ -1094,7 +1189,9 @@
     }
 
     updateHUD() {
-      this.root.querySelector("[data-fg2='time']").textContent = timeText(this.elapsed);
+      this.root.querySelector("[data-fg2='time']").textContent = this.modeConfig.timeLimit
+        ? timeText(Math.max(0, this.modeConfig.timeLimit - this.elapsed))
+        : timeText(this.elapsed);
       this.root.querySelector("[data-fg2='delivery']").textContent = `${this.delivered} / ${this.target}`;
       this.root.querySelector("[data-fg2='score']").textContent = String(Math.round(this.score));
       this.root.querySelector("[data-fg2='integrity']").textContent = `${Math.round(this.integrity)}%`;
@@ -1110,6 +1207,25 @@
       element.textContent = text;
       area.appendChild(element);
       setTimeout(() => element.remove(), 2400);
+    }
+
+    helpScreen() {
+      const screen = this.root.querySelector(".fg2-screen");
+      const previousContent = screen.innerHTML;
+      screen.innerHTML = `
+        <div class="fg2-menu">
+          <h1>Керування</h1>
+          <p><strong>Телефон:</strong> джойстик задає напрям руху. Кнопки праворуч керують вилами та сигналом. Два пальці змінюють масштаб.</p>
+          <p><strong>Комп’ютер:</strong> стрілки або W/A/S/D — рух, Q — підняти вила, E — опустити, H або F — сигнал.</p>
+          <p>Піддон можна взяти з будь-якого місця й поставити назад, у фуру, у зону призначення або в інше вільне місце.</p>
+          <div class="fg2-actions"><button class="fg2-btn primary" data-help="back">Зрозуміло</button></div>
+        </div>`;
+      screen.querySelector("[data-help='back']").addEventListener("click", () => {
+        screen.innerHTML = previousContent;
+        screen.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => this.start(button.dataset.mode)));
+        screen.querySelector("[data-menu='exit']")?.addEventListener("click", () => this.destroy());
+        screen.querySelector("[data-menu='help']")?.addEventListener("click", () => this.helpScreen());
+      });
     }
 
     pauseMenu() {
@@ -1129,29 +1245,35 @@
     complete() {
       this.paused = true;
       this.stats.bestScore = Math.max(this.stats.bestScore, Math.round(this.score));
-      if (this.mode === "trailer" && (!this.stats.bestTrailer || this.elapsed < this.stats.bestTrailer)) this.stats.bestTrailer = Math.floor(this.elapsed);
+      if (this.modeConfig.trailer && (!this.stats.bestTrailer || this.elapsed < this.stats.bestTrailer)) this.stats.bestTrailer = Math.floor(this.elapsed);
       saveStats(this.stats);
       this.resultScreen(
-        this.mode === "trailer" ? `Фуру №${this.trailerRound} завантажено!` : "Доставку завершено!",
+        this.modeConfig.trailer ? `Фуру №${this.trailerRound} завантажено!` : `${this.modeConfig.name} завершено!`,
         `Час: ${timeText(this.elapsed)} · Бали: ${Math.round(this.score)}`,
-        this.mode === "trailer"
+        this.modeConfig.trailer
       );
     }
 
-    gameOver() {
+    gameOver(message) {
       if (this.over) return;
       this.over = true;
       this.paused = true;
-      this.resultScreen("Game Over", "Бали закінчилися. Спробуй пройти зміну обережніше.");
+      this.resultScreen("Game Over", message || "Бали закінчилися. Спробуй пройти зміну обережніше.");
     }
 
     resultScreen(title, message, nextTrailer) {
       const screen = this.root.querySelector(".fg2-screen");
       screen.innerHTML = `
         <div class="fg2-menu"><div class="fg2-kicker">Результат зміни</div><h1>${title}</h1><p>${message}</p>
-        <div class="fg2-actions"><button class="fg2-btn primary" data-result="again">${nextTrailer ? "Наступна фура" : "Ще раз"}</button><button class="fg2-btn" data-result="menu">Меню гри</button><button class="fg2-btn danger" data-result="exit">Вийти в склад</button></div></div>`;
+        <div class="fg2-actions"><button class="fg2-btn primary" data-result="again">${nextTrailer ? "Наступна фура" : "Ще раз"}</button>${nextTrailer ? '<button class="fg2-btn" data-result="inspect">Перевірити вантаж</button>' : ""}<button class="fg2-btn" data-result="menu">Меню гри</button><button class="fg2-btn danger" data-result="exit">Вийти</button></div></div>`;
       screen.classList.remove("hidden");
       screen.querySelector("[data-result='again']").addEventListener("click", () => nextTrailer ? this.nextTrailer() : this.restartMode());
+      screen.querySelector("[data-result='inspect']")?.addEventListener("click", () => {
+        screen.classList.add("hidden");
+        this.paused = false;
+        this.lastFrame = performance.now();
+        this.notice("Можна забрати будь-який піддон із фури та переставити", "good");
+      });
       screen.querySelector("[data-result='menu']").addEventListener("click", () => this.returnToMenu());
       screen.querySelector("[data-result='exit']").addEventListener("click", () => this.destroy());
     }
@@ -1167,7 +1289,7 @@
       this.vehicle = { x: 590, y: 700, angle: 0, speed: 0, radius: 29, forksUp: false, carrying: null };
       this.buildWorld();
       this.root.querySelector(".fg2-screen").classList.add("hidden");
-      this.root.querySelector("[data-fg2='goal']").textContent = `ФУРА №${this.trailerRound} · один заїзд ззаду · став піддони у пронумеровані місця`;
+      this.root.querySelector("[data-fg2='goal']").textContent = `ФУРА №${this.trailerRound} · ${this.modeConfig.goal}`;
       this.paused = false;
       this.lastFrame = performance.now();
       this.notice(`Фура №${this.trailerRound} подана до рампи`, "good");
@@ -1206,7 +1328,10 @@
       removeEventListener("resize", this.resizeHandler);
       removeEventListener("keydown", this.keyDownHandler);
       removeEventListener("keyup", this.keyUpHandler);
-      try { this.engine?.stop(); } catch (error) {}
+      try {
+        this.engine?.pause?.();
+        if (this.engine) this.engine.src = "";
+      } catch (error) {}
       try { this.audio?.close(); } catch (error) {}
       try { screen.orientation?.unlock?.(); } catch (error) {}
       if (document.fullscreenElement === this.root) {
