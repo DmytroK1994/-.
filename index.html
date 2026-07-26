@@ -5340,22 +5340,262 @@
       padding-top: 16px;
       border-top: 1px solid var(--border);
     }
-    .install-action-card {
-      margin-bottom: 18px;
-      padding: 14px;
+    .install-guide {
+      display: grid;
+      gap: 14px;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 18px);
+    }
+    .install-guide-hero {
+      position: relative;
+      min-height: 152px;
+      padding: 23px 19px 22px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, .2);
+      border-bottom: 5px solid #3b82f6;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 92% 8%, rgba(96, 165, 250, .2), transparent 34%),
+        #172235;
+      color: #f8fafc;
+      box-shadow: 0 16px 38px rgba(15, 23, 42, .22);
+    }
+    .install-guide-hero::after {
+      content: "";
+      position: absolute;
+      right: -74px;
+      bottom: -106px;
+      width: 210px;
+      height: 210px;
+      border: 28px solid rgba(255, 255, 255, .055);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .install-guide-kicker {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      border: 1px solid rgba(147, 197, 253, .42);
+      border-radius: 999px;
+      background: rgba(59, 130, 246, .16);
+      color: #bfdbfe;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .install-guide-hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(24px, 7vw, 32px);
+      line-height: 1.08;
+      text-align: left;
+    }
+    .install-guide-hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 10px 0 0;
+      color: #aebdd1;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .install-pwa-intro,
+    .install-action-card,
+    .install-platform-card,
+    .install-share-guide {
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 18px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 8px 24px var(--card-shadow);
+    }
+    .install-pwa-intro {
+      padding: 15px 15px 15px 17px;
+      border-left: 5px solid #3b82f6;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .install-pwa-intro strong {
+      color: var(--text);
+      font-weight: 900;
+    }
+    .install-action-card {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
       background: var(--surface-deep);
     }
     .install-status {
       margin: 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.5;
+    }
+    .install-action-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 9px;
     }
     #installAppBtn,
     #shareAppBtn {
-      margin-top: 12px;
+      min-height: 44px;
+      margin: 0;
+    }
+    .install-device-nav {
+      display: flex;
+      gap: 8px;
+      margin: 0 -2px;
+      padding: 2px 2px 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      overscroll-behavior-inline: contain;
+    }
+    .install-device-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .install-device-link {
+      display: inline-flex;
+      min-height: 36px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: none;
+      box-shadow: 0 4px 12px var(--card-shadow);
+    }
+    .install-platform-card,
+    .install-share-guide {
+      padding: 16px;
+      scroll-margin-top: calc(var(--app-header-height, 74px) + 16px);
+    }
+    .install-platform-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .install-platform-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: var(--install-platform-accent, #94a3b8);
+    }
+    .install-platform-card[data-platform="android"] {
+      --install-platform-accent: #22a35a;
+    }
+    .install-platform-card[data-platform="ios"] {
+      --install-platform-accent: #718096;
+    }
+    .install-platform-card[data-platform="windows"] {
+      --install-platform-accent: #1684d8;
+    }
+    .install-platform-card[data-platform="macos"] {
+      --install-platform-accent: #64748b;
+    }
+    #pageInstall[data-current-platform="android"] .install-platform-card[data-platform="android"],
+    #pageInstall[data-current-platform="ios"] .install-platform-card[data-platform="ios"],
+    #pageInstall[data-current-platform="windows"] .install-platform-card[data-platform="windows"],
+    #pageInstall[data-current-platform="macos"] .install-platform-card[data-platform="macos"] {
+      border-color: var(--install-platform-accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--install-platform-accent) 20%, transparent), 0 12px 30px var(--card-shadow);
+    }
+    .install-platform-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      margin-bottom: 10px;
+      padding: 4px 9px;
+      border: 1px solid color-mix(in srgb, var(--install-platform-accent) 45%, var(--border));
+      border-radius: 7px;
+      background: color-mix(in srgb, var(--install-platform-accent) 10%, var(--surface));
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .install-platform-card h2,
+    .install-share-guide h2 {
+      margin: 0;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.25;
+      text-align: left;
+    }
+    .install-platform-divider {
+      height: 2px;
+      margin: 12px 0 13px;
+      border: 0;
+      background: var(--surface-deep);
+    }
+    .install-steps {
+      margin: 0;
+      padding-left: 23px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .install-steps li {
+      padding-left: 2px;
+    }
+    .install-steps li + li {
+      margin-top: 9px;
+    }
+    .install-steps strong {
+      font-weight: 900;
+    }
+    .install-method-title {
+      margin: 13px 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+    .install-method-title:first-of-type {
+      margin-top: 0;
+    }
+    .install-note {
+      margin: 14px 0 0;
+      padding: 11px 12px;
+      border-radius: 10px;
+      background: var(--surface-deep);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.48;
+    }
+    .install-note strong {
+      color: var(--text);
+    }
+    .install-note-warning {
+      border: 1px solid color-mix(in srgb, var(--soft-warning-border) 55%, var(--border));
+      background: color-mix(in srgb, var(--soft-warning-bg) 9%, var(--surface-deep));
+    }
+    .install-share-guide {
+      border-top: 4px solid #718ca6;
+    }
+    .install-share-guide p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media (min-width: 560px) {
+      .install-action-buttons {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .install-platform-card,
+      .install-share-guide {
+        padding: 19px 20px;
+      }
     }
     .reset-confirmation-overlay {
       position: fixed;
@@ -7354,7 +7594,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=305">
+<link rel="manifest" href="manifest.json?v=306">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -7409,7 +7649,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.05</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.06</span></div>
     </div>
   </div>
 
@@ -8411,34 +8651,99 @@
 
 
   <div id="pageInstall" class="hidden">
-    <div class="card">
+    <div class="install-guide">
+      <section class="install-guide-hero">
+        <div class="install-guide-kicker">PWA - мобільний застосунок</div>
+        <h1>Встановлення та поширення</h1>
+        <p>Покрокова інструкція для Android, iPhone та iPad, Windows, MacBook і Mac.</p>
+      </section>
+
+      <section class="install-pwa-intro">
+        <strong>Що таке PWA?</strong>
+        Це вебзастосунок, який встановлюється на пристрій як звичайна програма. «Облік» отримує власну іконку, відкривається в окремому вікні, займає небагато пам’яті та може працювати без постійного підключення до інтернету.
+      </section>
+
       <div class="install-action-card">
         <p class="install-status" id="installStatus">Перевіряю можливість встановлення на цьому пристрої…</p>
-        <button class="green hidden" id="installAppBtn">Встановити застосунок</button>
-        <button id="shareAppBtn">Поділитися застосунком</button>
+        <div class="install-action-buttons">
+          <button class="green hidden" id="installAppBtn">Встановити застосунок</button>
+          <button id="shareAppBtn">Поділитися застосунком</button>
+        </div>
       </div>
 
-      <div class="small">
-        <b>iPhone / iOS</b><br>
-        1. Відкрий цей додаток у Safari.<br>
-        2. Натисни кнопку “Поділитися”.<br>
-        3. Обери “На початковий екран”.<br>
-        4. Натисни “Додати”.<br><br>
+      <nav class="install-device-nav" aria-label="Перейти до інструкції для пристрою">
+        <a class="install-device-link" href="#installAndroid">Android</a>
+        <a class="install-device-link" href="#installIOS">iPhone / iPad</a>
+        <a class="install-device-link" href="#installWindows">Windows</a>
+        <a class="install-device-link" href="#installMacOS">macOS</a>
+      </nav>
 
-        Після цього “Облік” з’явиться на екрані телефона як звичайний додаток.<br><br>
+      <section class="install-platform-card" id="installAndroid" data-platform="android">
+        <span class="install-platform-badge">Android</span>
+        <h2>Встановлення на Android</h2>
+        <hr class="install-platform-divider">
+        <ol class="install-steps">
+          <li>Відкрийте опубліковану сторінку «Облік» у <strong>Google Chrome</strong>, Brave або іншому Chromium-браузері.</li>
+          <li>Зачекайте кілька секунд. Якщо з’явиться повідомлення «Додати “Облік” на головний екран», натисніть його.</li>
+          <li>Якщо повідомлення немає, відкрийте <strong>меню браузера ⋮</strong> у правому верхньому куті.</li>
+          <li>Виберіть <strong>«Встановити додаток»</strong> або <strong>«Додати на головний екран»</strong>.</li>
+          <li>Підтвердьте дію кнопкою <strong>«Встановити»</strong>.</li>
+        </ol>
+        <p class="install-note"><strong>💡 Примітка:</strong> іконка «Облік» з’явиться на головному екрані та в загальному меню програм смартфона.</p>
+        <p class="install-note install-note-warning"><strong>Важливо:</strong> локальну адресу <code>file://</code> не можна встановити як PWA. Відкривайте опубліковану HTTPS-версію застосунку.</p>
+      </section>
 
-        <b>Android</b><br>
-        1. Відкрий опублікований застосунок через HTTPS у Google Chrome.<br>
-        2. Натисни зелену кнопку “Встановити застосунок”, якщо вона з’явилася вище.<br>
-        3. Підтвердь системне встановлення Chrome.<br>
-        4. Якщо кнопки немає, відкрий меню Chrome ⋮ та обери “Встановити додаток” або “Додати на головний екран”.<br><br>
+      <section class="install-platform-card" id="installIOS" data-platform="ios">
+        <span class="install-platform-badge">iOS / iPadOS</span>
+        <h2>Встановлення на iPhone та iPad</h2>
+        <hr class="install-platform-divider">
+        <ol class="install-steps">
+          <li>Відкрийте стандартний браузер <strong>Safari</strong>. На iPhone та iPad установлення виконується саме через нього.</li>
+          <li>Перейдіть на опубліковану сторінку застосунку «Облік».</li>
+          <li>Натисніть кнопку <strong>«Поділитися»</strong> - квадрат зі стрілкою вгору в нижній панелі Safari.</li>
+          <li>Прокрутіть список дій і виберіть <strong>«На початковий екран»</strong>.</li>
+          <li>За потреби перевірте назву та натисніть <strong>«Додати»</strong> у правому верхньому куті.</li>
+        </ol>
+        <p class="install-note"><strong>💡 Примітка:</strong> «Облік» з’явиться на головному екрані та відкриватиметься в окремому вікні без панелей Safari.</p>
+      </section>
 
-        <b>Важливо</b><br>
-        Локальний файл <code>file://</code> не можна встановити як PWA на Android. Використовуй опубліковану HTTPS-адресу GitHub Pages.<br><br>
+      <section class="install-platform-card" id="installWindows" data-platform="windows">
+        <span class="install-platform-badge">Windows PC</span>
+        <h2>Встановлення на Windows 10 / 11</h2>
+        <hr class="install-platform-divider">
+        <ol class="install-steps">
+          <li>Відкрийте сторінку «Облік» у <strong>Google Chrome</strong> або <strong>Microsoft Edge</strong>.</li>
+          <li>Праворуч в адресному рядку знайдіть значок <strong>«Встановити»</strong> - він може виглядати як монітор зі стрілкою або плюс.</li>
+          <li>Натисніть значок і виберіть <strong>«Встановити»</strong>.</li>
+          <li>Альтернативний шлях: меню <strong>⋮ → «Додатки» → «Встановити цей сайт як додаток»</strong>.</li>
+        </ol>
+        <p class="install-note"><strong>💡 Примітка:</strong> застосунок буде додано до меню «Пуск»; його також можна закріпити на робочому столі або панелі завдань.</p>
+      </section>
 
-        <b>Як оновити додаток</b><br>
-        Якщо після оновлення щось виглядає неправильно, видали ярлик з екрана телефона і додай додаток заново.
-      </div>
+      <section class="install-platform-card" id="installMacOS" data-platform="macos">
+        <span class="install-platform-badge">macOS</span>
+        <h2>Встановлення на MacBook / Mac</h2>
+        <hr class="install-platform-divider">
+
+        <h3 class="install-method-title">Спосіб 1: Safari - macOS Sonoma та новіші</h3>
+        <ol class="install-steps">
+          <li>Відкрийте сторінку «Облік» у <strong>Safari</strong>.</li>
+          <li>У верхньому меню натисніть <strong>«Файл» → «Додати до Dock…»</strong>.</li>
+          <li>Підтвердьте назву та натисніть <strong>«Додати»</strong>.</li>
+        </ol>
+
+        <h3 class="install-method-title">Спосіб 2: Google Chrome або Chromium-браузер</h3>
+        <ol class="install-steps">
+          <li>Відкрийте сторінку застосунку в <strong>Google Chrome</strong>.</li>
+          <li>Натисніть значок встановлення праворуч в адресному рядку або відкрийте <strong>меню ⋮ → «Зберегти та поділитися» → «Встановити сторінку як додаток…»</strong>.</li>
+        </ol>
+        <p class="install-note"><strong>💡 Примітка:</strong> «Облік» з’явиться в папці «Програми», Launchpad і на панелі Dock.</p>
+      </section>
+
+      <section class="install-share-guide" id="installSharing">
+        <h2>Як поширити застосунок</h2>
+        <p>Натисніть кнопку «Поділитися застосунком» угорі сторінки. Надішліть посилання через месенджер, пошту або інший доступний спосіб. Одержувач відкриває посилання у своєму браузері та виконує інструкцію для власного пристрою.</p>
+      </section>
     </div>
   </div>
 
@@ -8447,7 +8752,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.05</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.06</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень та роботи зі складськими найменуваннями.</p>
@@ -8472,6 +8777,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.06</h3>
+          <ul>
+            <li>застарілий опис «Встановлення та поширення» повністю замінено за структурою наданої PDF-інструкції;</li>
+            <li>додано окремі мобільні картки для Android, iPhone та iPad, Windows і macOS;</li>
+            <li>поточна платформа виділяється автоматично, а системні кнопки встановлення й поширення залишилися доступними.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.05</h3>
           <ul>
@@ -9521,7 +9834,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.05";
+  const APP_VERSION = "3.06";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11268,7 +11581,18 @@
   function updateInstallUI(message = "") {
     const status = document.getElementById("installStatus");
     const button = document.getElementById("installAppBtn");
+    const installPage = document.getElementById("pageInstall");
     if (!status || !button) return;
+
+    if (installPage) {
+      installPage.dataset.currentPlatform = isIOSDevice
+        ? "ios"
+        : (isAndroidDevice
+          ? "android"
+          : (/Windows/i.test(navigator.userAgent)
+            ? "windows"
+            : (/Macintosh|Mac OS X/i.test(navigator.userAgent) ? "macos" : "")));
+    }
 
     if (isStandaloneApp()) {
       status.textContent = "Застосунок уже встановлено на цьому пристрої.";
