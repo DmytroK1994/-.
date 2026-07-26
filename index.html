@@ -7935,6 +7935,99 @@
       .loading-truck-plan,
       .loading-side-plan { min-width: 460px; }
     }
+    .secret-game-option {
+      display: grid !important;
+      grid-template-columns: 42px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      text-align: left !important;
+      border-color: color-mix(in srgb, var(--primary-bg) 58%, var(--border)) !important;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--primary-bg) 22%, var(--surface)), var(--surface-deep)) !important;
+    }
+    .secret-game-option-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      font-size: 21px;
+    }
+    .secret-game-option strong,
+    .secret-game-option span {
+      display: block;
+    }
+    .secret-game-option span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .secret-game-transition {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: grid;
+      padding: 20px;
+      place-items: center;
+      overflow: hidden;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
+        radial-gradient(circle at center, #17313b, #020405 68%);
+      color: #f8fdff;
+      text-align: center;
+      animation: secretGameScreenShake .5s both;
+    }
+    .secret-game-transition.hidden { display: none !important; }
+    .secret-game-transition::before,
+    .secret-game-transition::after {
+      content: "";
+      position: absolute;
+      width: 180%;
+      height: 2px;
+      background: rgba(98,222,235,.7);
+      box-shadow: 0 0 24px #58d7e6;
+      animation: secretGameScan 1s linear infinite;
+    }
+    .secret-game-transition::after {
+      background: rgba(243,196,74,.72);
+      animation-delay: -.48s;
+    }
+    .secret-game-transition-content {
+      position: relative;
+      z-index: 2;
+    }
+    .secret-game-transition-spinner {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 13px;
+      border: 4px solid rgba(255,255,255,.18);
+      border-top-color: #f1c44d;
+      border-radius: 50%;
+      animation: secretGameSpin .72s linear infinite;
+    }
+    .secret-game-transition strong,
+    .secret-game-transition span {
+      display: block;
+    }
+    .secret-game-transition span {
+      margin-top: 5px;
+      color: #a9c0c9;
+      font-size: 12px;
+    }
+    @keyframes secretGameSpin { to { transform: rotate(360deg); } }
+    @keyframes secretGameScan {
+      from { transform: translateY(-55vh) rotate(-5deg); }
+      to { transform: translateY(55vh) rotate(-5deg); }
+    }
+    @keyframes secretGameScreenShake {
+      0%,100% { transform: translate(0); filter: none; }
+      14% { transform: translate(7px,-3px); filter: hue-rotate(25deg); }
+      31% { transform: translate(-8px,4px); }
+      52% { transform: translate(5px,3px); filter: contrast(1.7); }
+      72% { transform: translate(-3px,-2px); }
+    }
   </style>
 
 <script>
@@ -7947,7 +8040,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=309">
+<link rel="manifest" href="manifest.json?v=310">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8002,7 +8095,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.09</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.10</span></div>
     </div>
   </div>
 
@@ -9224,7 +9317,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.09</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.10</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень, здачі продукції та планування завантаження фури.</p>
@@ -9249,6 +9342,16 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.10</h3>
+          <ul>
+            <li>додано секретну 3D-гру «Симулятор транспортувальника», яка запускається фразою Play Game у пошуку позиції;</li>
+            <li>реалізовано режими перевезення між складами й завантаження фури на 33 європіддони;</li>
+            <li>додано мобільне кермо, клавіатурне керування, вила, клаксон, NPC, інспектора, медиків, пошкодження та штрафи за порушення ТБ;</li>
+            <li>ігрові скрипти й Three.js завантажуються лише після підтвердження запуску та кешуються PWA для наступних запусків;</li>
+            <li>рекорди, перевезений вантаж і найкращі бали зберігаються окремо від робочих даних застосунку.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.09</h3>
           <ul>
@@ -10331,7 +10434,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.09";
+  const APP_VERSION = "3.10";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18499,6 +18602,112 @@
   }
 
   let productSearchKeyboardIndex = -1;
+  let secretGamePromptActive = false;
+  let secretGameScriptsPromise = null;
+
+  function isSecretGameSearch(value) {
+    return String(value || "").trim().toLocaleLowerCase("en-US") === "play game";
+  }
+
+  function loadSecretGameScript(id, source) {
+    const existing = document.getElementById(id);
+    if (existing) {
+      if (existing.dataset.loaded === "true") return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        existing.addEventListener("load", resolve, { once: true });
+        existing.addEventListener("error", reject, { once: true });
+      });
+    }
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.id = id;
+      script.src = source;
+      script.async = true;
+      script.addEventListener("load", () => {
+        script.dataset.loaded = "true";
+        resolve();
+      }, { once: true });
+      script.addEventListener("error", () => {
+        script.remove();
+        reject(new Error(`Не вдалося завантажити ${source}`));
+      }, { once: true });
+      document.head.appendChild(script);
+    });
+  }
+
+  function loadSecretGameScripts() {
+    if (!secretGameScriptsPromise) {
+      secretGameScriptsPromise = loadSecretGameScript("threeGameRuntime", "./assets/three.min.js?v=310")
+        .then(() => loadSecretGameScript("forkliftGameRuntime", "./assets/ForkliftGame.js?v=310"))
+        .then(() => {
+          if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
+        })
+        .catch(error => {
+          secretGameScriptsPromise = null;
+          throw error;
+        });
+    }
+    return secretGameScriptsPromise;
+  }
+
+  function showSecretGameTransition() {
+    let overlay = document.getElementById("secretGameTransition");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "secretGameTransition";
+      overlay.className = "secret-game-transition";
+      overlay.setAttribute("role", "status");
+      overlay.setAttribute("aria-live", "polite");
+      overlay.innerHTML = `
+        <div class="secret-game-transition-content">
+          <div class="secret-game-transition-spinner"></div>
+          <strong>Запускаю «Симулятор транспортувальника»</strong>
+          <span>Готую 3D-цех, електророклу та робочу зміну…</span>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+    overlay.classList.remove("hidden");
+    return overlay;
+  }
+
+  async function requestSecretGameLaunch() {
+    if (secretGamePromptActive || document.querySelector(".fg-root")) return;
+    secretGamePromptActive = true;
+    const searchInput = document.getElementById("productSearch");
+    searchInput?.blur();
+    document.getElementById("productSearchResults")?.classList.add("hidden");
+    const confirmed = await showAppDialog({
+      label: "Секретний режим",
+      title: "Секретний режим знайдено! 🎮",
+      message: "Бажаєте відпочити та запустити «Симулятор транспортувальника»?",
+      confirmText: "Запустити двигун",
+      cancelText: "Повернутися до роботи"
+    });
+    secretGamePromptActive = false;
+    if (!confirmed) return;
+
+    if (searchInput) {
+      searchInput.value = "";
+      document.getElementById("productSelect").value = "";
+      document.getElementById("selectedProductLabel").textContent = "Позицію не вибрано";
+      updateClearSearchButton();
+    }
+    const transition = showSecretGameTransition();
+    try {
+      await loadSecretGameScripts();
+      window.ForkliftGame.launch({
+        onExit() {
+          transition.classList.add("hidden");
+          renderSelect(false);
+        }
+      });
+      window.setTimeout(() => transition.classList.add("hidden"), 180);
+    } catch (error) {
+      transition.classList.add("hidden");
+      toast("Не вдалося запустити 3D-гру. Перевір файли гри та підтримку WebGL.", true);
+    }
+  }
 
   function renderSelect(showDropdown = false) {
     const select = document.getElementById("productSelect");
@@ -18514,6 +18723,22 @@
 
     select.innerHTML = "";
     results.innerHTML = "";
+
+    if (isSecretGameSearch(search)) {
+      label.textContent = "Знайдено секретний режим";
+      if (showDropdown) {
+        results.classList.remove("hidden");
+        results.innerHTML = `
+          <button type="button" class="combo-option secret-game-option" data-action="launch-secret-game">
+            <span class="secret-game-option-icon">🎮</span>
+            <span><strong>Запустити «Симулятор транспортувальника»</strong><span>Секретна 3D-зміна на складі</span></span>
+          </button>
+        `;
+      } else {
+        results.classList.add("hidden");
+      }
+      return;
+    }
 
     if (!productsSorted.length) {
       label.textContent = "Спочатку додай найменування в меню";
@@ -18590,6 +18815,10 @@
     const options = Array.from(results.querySelectorAll(".combo-option"));
     const active = options[productSearchKeyboardIndex] || (document.getElementById("productSearch").value.trim() ? options[0] : null);
     if (!active) return false;
+    if (active.dataset.action === "launch-secret-game") {
+      requestSecretGameLaunch();
+      return true;
+    }
     selectProduct(active.dataset.id);
     return true;
   }
@@ -19912,6 +20141,7 @@
     if (action === "restore-trash") restoreTrashItem(id);
     if (action === "delete-trash") deleteTrashItemPermanently(id);
     if (action === "select-product") selectProduct(id);
+    if (action === "launch-secret-game") requestSecretGameLaunch();
     if (action === "select-quick-edit-entry") selectQuickEditEntry(id);
     if (action === "open-theme-category") openThemeCategory(id);
     if (action === "choose-theme") chooseTheme(id);
@@ -20118,7 +20348,10 @@
   document.getElementById("quickEditUnit").addEventListener("change", event => {
     updateEntryUnitLabels(event.target.value, "quickEdit");
   });
-  document.getElementById("productSearch").addEventListener("input", () => renderSelect(true));
+  document.getElementById("productSearch").addEventListener("input", event => {
+    renderSelect(true);
+    if (isSecretGameSearch(event.currentTarget.value)) requestSecretGameLaunch();
+  });
   document.getElementById("productSearch").addEventListener("focus", () => renderSelect(true));
   document.getElementById("productSearch").addEventListener("blur", () => {
     setTimeout(() => {

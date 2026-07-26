@@ -15,3 +15,11 @@ Copyright (c) Cozmo and jsQR contributors.
 Licensed under the Apache License 2.0.
 
 Source: https://github.com/cozmo/jsQR
+
+## Three.js r160
+
+Copyright (c) 2010-2023 Three.js Authors.
+
+Licensed under the MIT License.
+
+Source: https://github.com/mrdoob/three.js
