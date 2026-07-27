@@ -8095,7 +8095,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.18</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.19</span></div>
     </div>
   </div>
 
@@ -9313,7 +9313,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.18</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.19</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9338,6 +9338,21 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.19</h3>
+          <ul>
+            <li>керування переміщено ближче до центру екрана, біля джойстика додано перемикач реверсу;</li>
+            <li>після секретної фрази спочатку відкривається екран «Почати гру», а кожен режим отримав збережувані рівні;</li>
+            <li>додано складський лабіринт із непомітною натискною платформою та прохідною брамою без текстових підказок і стрілок;</li>
+            <li>кожен піддон має власний відсоток пошкодження, а вантаж із пошкодженням понад 50% приносить лише половину балів;</li>
+            <li>повторне піднімання та встановлення вже зарахованого піддона більше не дозволяє нескінченно накопичувати бали;</li>
+            <li>на складі з’являються бусти швидкості, захисту вантажу й додаткових балів;</li>
+            <li>додано чергу з десяти фур: рампа закривається, завантажена фура від’їжджає, а наступна під’їжджає;</li>
+            <li>службова кара самостійно перевозить піддони, має проблисковий маячок і пріоритет руху;</li>
+            <li>водії та працівники отримали короткі ситуаційні репліки, які не перекривають огляд;</li>
+            <li>фонові аудіофайли видалено: залишено м’який синтезований сигнал і короткі звуки керування вилами.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.18</h3>
           <ul>
@@ -10509,7 +10524,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.18";
+  const APP_VERSION = "3.19";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18709,7 +18724,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=318")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=319")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -18752,7 +18767,7 @@
       label: "Секретний режим",
       title: "Секретний режим знайдено! 🎮",
       message: "Бажаєте відпочити та запустити «Симулятор транспортувальника»?",
-      confirmText: "Запустити двигун",
+      confirmText: "Почати гру",
       cancelText: "Повернутися до роботи"
     });
     secretGamePromptActive = false;
