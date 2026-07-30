@@ -4801,27 +4801,49 @@
       max-width: 100%;
       min-height: min(297mm, calc((100vw - 24px) * 1.414));
       margin: 0 auto;
-      padding: clamp(10px, 3vw, 7mm);
+      padding: clamp(8px, 2vw, 5mm);
       background: white;
       color: black;
       box-shadow: 0 10px 32px rgba(0, 0, 0, .22);
       font-family: Arial, sans-serif;
     }
     .preview-report-title {
-      margin: 0 0 5px;
-      font-size: 13px;
-      text-align: left;
+      margin: 0;
+      font-size: 15px;
+      text-align: center;
+    }
+    .document-report-heading {
+      position: relative;
+      min-height: 24px;
+      margin: 0 0 8px;
+      padding: 0 34px;
+    }
+    .document-report-number {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      min-width: 30px;
+      transform: translateY(-50%);
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1;
+      text-align: right;
+      white-space: nowrap;
     }
     .preview-report-table {
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
+      width: calc(100% - 1mm);
+      max-width: calc(100% - 1mm);
+      margin-right: auto;
+      margin-left: auto;
+      overflow: visible;
       font-size: 9px;
       line-height: 1.15;
     }
     .preview-table-header-row,
     .preview-report-table .print-report-row {
       display: flex;
+      width: 100%;
+      max-width: 100%;
       border: .5px solid #777;
     }
     .preview-table-header-row > div,
@@ -4859,10 +4881,19 @@
       margin-bottom: 1px;
     }
     .preview-sheet.order-preview-sheet {
-      overflow: hidden;
+      overflow: visible;
     }
-    .preview-sheet.order-preview-sheet .preview-report-table,
+    .preview-sheet.order-preview-sheet .preview-report-table {
+      width: calc(100% - 1mm);
+      max-width: calc(100% - 1mm);
+      margin-right: auto;
+      margin-left: auto;
+      min-width: 0;
+      overflow: visible;
+    }
     .preview-sheet.order-preview-sheet #previewTodayList {
+      width: 100%;
+      max-width: 100%;
       min-width: 0;
       overflow: visible;
     }
@@ -6457,18 +6488,32 @@
       }
 
       .print-report-header {
-        margin-bottom: 4px;
+        margin-bottom: 5px;
       }
 
       .print-report-header h1 {
-        font-size: 13px;
-        text-align: left;
+        font-size: 15px;
+        text-align: center;
         margin: 0;
       }
 
       .print-report-table {
         display: block !important;
-        width: 100%;
+        width: calc(100% - 1mm);
+        max-width: calc(100% - 1mm);
+        margin-right: auto;
+        margin-left: auto;
+        overflow: visible;
+      }
+
+      .document-report-heading {
+        min-height: 24px;
+        margin-bottom: 7px;
+        padding: 0 34px;
+      }
+
+      .document-report-number {
+        font-size: 11px;
       }
 
       .print-table-header {
@@ -6479,6 +6524,8 @@
 
       .print-table-header-row {
         display: flex;
+        width: 100%;
+        max-width: 100%;
         background: #e5e7eb;
         border: .5px solid #777;
         break-inside: avoid;
@@ -6519,6 +6566,7 @@
       .print-report-row {
         display: flex;
         width: 100%;
+        max-width: 100%;
         border: .5px solid #777;
         overflow: hidden;
         page-break-inside: avoid;
@@ -7050,6 +7098,8 @@
       display:grid;
       width:100%;
       max-width:100%;
+      margin-right:0;
+      margin-left:0;
       grid-template-columns:
         var(--order-col-number, 7mm)
         var(--order-col-status, 18mm)
@@ -7067,14 +7117,14 @@
         var(--order-col-quantity, 20mm)
         minmax(0, 1fr);
     }
-    .order-print-row { border:1px solid #aaa; break-inside:avoid; page-break-inside:avoid; }
+    .order-print-row { border:1px solid #777; break-inside:avoid; page-break-inside:avoid; }
     .order-report-table .print-table-header-row > div,
     .order-report-table .preview-table-header-row > div,
     .order-print-row > div {
       min-width:0;
       padding:4px;
-      border-right:1px solid #aaa;
-      border-bottom:1px solid #aaa;
+      border-right:1px solid #999;
+      border-bottom:1px solid #999;
       overflow-wrap:anywhere;
       word-break:normal;
       white-space:normal;
@@ -7088,8 +7138,8 @@
     .print-report-header h1.order-document-title,
     .preview-report-title.order-document-title {
       width:100%;
-      margin:0 0 10px;
-      font-size:18px;
+      margin:0;
+      font-size:15px;
       font-weight:900;
       letter-spacing:.5px;
       text-align:center;
@@ -8356,7 +8406,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=333">
+<link rel="manifest" href="manifest.json?v=334">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8411,7 +8461,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.33</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.34</span></div>
     </div>
   </div>
 
@@ -8530,7 +8580,10 @@
   <div id="pageToday">
 
     <div class="print-only print-report-header">
-      <h1 id="printReportTitle"></h1>
+      <div class="document-report-heading">
+        <h1 id="printReportTitle"></h1>
+        <div class="document-report-number" id="printDocumentNumber"></div>
+      </div>
       <div class="order-report-meta hidden" id="printOrderMeta"></div>
     </div>
 
@@ -8864,7 +8917,10 @@
       </div>
     </div>
     <div class="preview-sheet">
-      <h1 class="preview-report-title" id="previewReportTitle"></h1>
+      <div class="document-report-heading">
+        <h1 class="preview-report-title" id="previewReportTitle"></h1>
+        <div class="document-report-number" id="previewDocumentNumber"></div>
+      </div>
       <div class="order-report-meta hidden" id="previewOrderMeta"></div>
       <div class="preview-report-table" id="previewReportTable">
         <div class="inventory-warehouse-report-row hidden" id="previewInventoryWarehouseRow"></div>
@@ -9637,7 +9693,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.33</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.34</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9662,6 +9718,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.34</h3>
+          <ul>
+            <li>таблиці PDF і попереднього перегляду розтягнуто майже на всю корисну ширину аркуша зі збереженням видимих рамок;</li>
+            <li>заголовок із датою тепер розміщується посередині, а номер документа — окремо праворуч;</li>
+            <li>однакове оформлення застосовано до інвентаризації, замовлень і здачі ГП;</li>
+            <li>виправлено обрізання крайніх колонок таблиці замовлення.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.33</h3>
           <ul>
@@ -11054,7 +11119,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.33";
+  const APP_VERSION = "3.34";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13707,6 +13772,26 @@
 
   function documentNumberText(document) {
     return `№${Math.max(1, Number(document?.documentNumber) || 1)}`;
+  }
+
+  function documentReportTitle(documentData, production = false, orders = false) {
+    if (production) return `${getProductionWorkspaceName().toLocaleUpperCase("uk-UA")} ВІД ${niceDate(documentData.date)}`;
+    if (orders) return `ЗАМОВЛЕННЯ НА ${niceDate(documentData.date)}`;
+    return `ЗАЛИШКИ НА ${niceDate(documentData.date)}`;
+  }
+
+  function updateDocumentHeadings(documentData, production = false, orders = false) {
+    const title = documentReportTitle(documentData, production, orders);
+    const number = documentNumberText(documentData);
+    ["printReportTitle", "previewReportTitle"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = title;
+    });
+    ["printDocumentNumber", "previewDocumentNumber"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = number;
+    });
+    return title;
   }
 
   function formatPlainNumber(value) {
@@ -19776,7 +19861,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=333")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=334")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -20245,11 +20330,7 @@
           activeDateLabel.removeAttribute("aria-label");
         }
       }
-      document.getElementById("printReportTitle").textContent = production
-        ? `${getProductionWorkspaceName().toLocaleUpperCase("uk-UA")} ${documentNumberText(day)} ВІД ${niceDate(day.date)}`
-        : (orders
-            ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
-            : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`);
+      updateDocumentHeadings(day, production, orders);
     }
     updateCurrentOrderSearchVisibility();
     updateCurrentListSortUI();
@@ -21190,18 +21271,12 @@
       return;
     }
 
-    const reportTitle = production
-      ? `${getProductionWorkspaceName().toLocaleUpperCase("uk-UA")} ${documentNumberText(day)} ВІД ${niceDate(day.date)}`
-      : (orders
-          ? `ЗАМОВЛЕННЯ ${documentNumberText(day)} НА ${niceDate(day.date)}`
-          : `Залишки ${documentNumberText(day)} на ${niceDate(day.date)}`);
     const reportRows = production
       ? buildProductionDocumentRows(day)
       : (orders ? buildOrderDocumentRows(day) : buildDocumentRows(day));
     applyDocumentLayout(day, orders);
-    document.getElementById("printReportTitle").textContent = reportTitle;
+    updateDocumentHeadings(day, production, orders);
     document.getElementById("printTodayList").innerHTML = reportRows;
-    document.getElementById("previewReportTitle").textContent = reportTitle;
     document.getElementById("previewTodayList").innerHTML = reportRows;
     document.getElementById("documentPreview").classList.remove("hidden");
     document.body.classList.add("preview-open", "printing-report");
