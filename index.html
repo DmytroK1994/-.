@@ -679,9 +679,18 @@
     }
     .production-layout-block {
       min-width: 0;
-      padding: 6px;
-      border: 1px solid transparent;
+      margin-top: 0;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
       border-radius: 12px;
+      background: var(--surface-deep);
+    }
+    .production-layout-block.is-collapsed {
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+    .entry-section-toggle {
+      margin-left: auto !important;
     }
     .production-entry-grid {
       display: grid;
@@ -8484,7 +8493,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=339">
+<link rel="manifest" href="manifest.json?v=340">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8539,7 +8548,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.39</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.40</span></div>
     </div>
   </div>
 
@@ -9771,7 +9780,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.39</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.40</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9796,6 +9805,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.40</h3>
+          <ul>
+            <li>блоки «Коробок у піддоні», «Пачок у коробці», «Кількість піддонів» і «Коментар» у здачі ГП отримали однакове оформлення з інвентаризацією та замовленнями;</li>
+            <li>кожен блок здачі ГП тепер окремо згортається та розгортається кнопкою «+ / −»;</li>
+            <li>стан блоків зберігається окремо у вікнах додавання та редагування;</li>
+            <li>кнопки згортання в усіх процесах вирівняно ближче до правого краю блока.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.39</h3>
           <ul>
@@ -10938,36 +10956,56 @@
           Загальна кількість пачок
           <strong id="quickEditProductionTotal">0 пач.</strong>
         </div>
-        <div class="production-layout-block" data-layout-item="boxes" data-layout-default-width="half">
-          <label for="quickEditBoxesPerPallet">Коробок у піддоні</label>
-          <input id="quickEditBoxesPerPallet" type="number" inputmode="numeric" min="0" />
-        </div>
-        <div class="production-layout-block" data-layout-item="packs" data-layout-default-width="half">
-          <label for="quickEditPacksPerBox">Пачок у коробці</label>
-          <input id="quickEditPacksPerBox" type="number" inputmode="numeric" min="0" />
-        </div>
-        <div class="production-layout-block" data-layout-item="pallets">
-          <label for="quickEditProductionPallets">Кількість піддонів</label>
-          <div class="expression-input-wrap">
-            <input id="quickEditProductionPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
-            <div class="expression-operator-control" data-expression-input="quickEditProductionPallets">
-              <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
-              <details class="expression-operator-menu">
-                <summary aria-label="Змінити математичний оператор">⌄</summary>
-                <div class="expression-operator-options">
-                  <button type="button" class="active" data-expression-operator="+">+</button>
-                  <button type="button" data-expression-operator="−">−</button>
-                  <button type="button" data-expression-operator="×">×</button>
-                  <button type="button" data-expression-operator="÷">÷</button>
-                </div>
-              </details>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="quickProductionBoxes" data-layout-item="boxes" data-layout-default-width="half">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="quickEditBoxesPerPallet">Коробок у піддоні</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickProductionBoxes" data-entry-section-label="Коробок у піддоні" aria-expanded="true" aria-controls="quickProductionBoxesContent" aria-label="Згорнути розділ Коробок у піддоні">−</button>
+          </div>
+          <div class="entry-section-content" id="quickProductionBoxesContent">
+            <input id="quickEditBoxesPerPallet" type="number" inputmode="numeric" min="0" />
+          </div>
+        </section>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="quickProductionPacks" data-layout-item="packs" data-layout-default-width="half">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="quickEditPacksPerBox">Пачок у коробці</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickProductionPacks" data-entry-section-label="Пачок у коробці" aria-expanded="true" aria-controls="quickProductionPacksContent" aria-label="Згорнути розділ Пачок у коробці">−</button>
+          </div>
+          <div class="entry-section-content" id="quickProductionPacksContent">
+            <input id="quickEditPacksPerBox" type="number" inputmode="numeric" min="0" />
+          </div>
+        </section>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="quickProductionPallets" data-layout-item="pallets">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="quickEditProductionPallets">Кількість піддонів</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickProductionPallets" data-entry-section-label="Кількість піддонів" aria-expanded="true" aria-controls="quickProductionPalletsContent" aria-label="Згорнути розділ Кількість піддонів">−</button>
+          </div>
+          <div class="entry-section-content" id="quickProductionPalletsContent">
+            <div class="expression-input-wrap">
+              <input id="quickEditProductionPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
+              <div class="expression-operator-control" data-expression-input="quickEditProductionPallets">
+                <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+                <details class="expression-operator-menu">
+                  <summary aria-label="Змінити математичний оператор">⌄</summary>
+                  <div class="expression-operator-options">
+                    <button type="button" class="active" data-expression-operator="+">+</button>
+                    <button type="button" data-expression-operator="−">−</button>
+                    <button type="button" data-expression-operator="×">×</button>
+                    <button type="button" data-expression-operator="÷">÷</button>
+                  </div>
+                </details>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="production-layout-block" data-layout-item="comment">
-          <label for="quickEditProductionComment">Коментар</label>
-          <textarea id="quickEditProductionComment" rows="2" placeholder="Необов’язково"></textarea>
-        </div>
+        </section>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="quickProductionComment" data-layout-item="comment">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="quickEditProductionComment">Коментар</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickProductionComment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="quickProductionCommentContent" aria-label="Згорнути розділ Коментар">−</button>
+          </div>
+          <div class="entry-section-content" id="quickProductionCommentContent">
+            <textarea id="quickEditProductionComment" rows="2" placeholder="Необов’язково"></textarea>
+          </div>
+        </section>
       </div>
       <div class="order-entry-dialog-grid" id="quickEditStandardFields" data-layout-container="quick-standard">
         <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditDirect" data-layout-item="direct">
@@ -11102,36 +11140,56 @@
           Загальна кількість пачок
           <strong id="productionDialogTotal">0 пач.</strong>
         </div>
-        <div class="production-layout-block" data-layout-item="boxes" data-layout-default-width="half">
-          <label for="productionDialogBoxesPerPallet">Коробок у піддоні</label>
-          <input id="productionDialogBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
-        </div>
-        <div class="production-layout-block" data-layout-item="packs" data-layout-default-width="half">
-          <label for="productionDialogPacksPerBox">Пачок у коробці</label>
-          <input id="productionDialogPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
-        </div>
-        <div class="production-layout-block" data-layout-item="pallets">
-          <label for="productionDialogPallets">Кількість піддонів</label>
-          <div class="expression-input-wrap">
-            <input id="productionDialogPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
-            <div class="expression-operator-control" data-expression-input="productionDialogPallets">
-              <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
-              <details class="expression-operator-menu">
-                <summary aria-label="Змінити математичний оператор">⌄</summary>
-                <div class="expression-operator-options">
-                  <button type="button" class="active" data-expression-operator="+">+</button>
-                  <button type="button" data-expression-operator="−">−</button>
-                  <button type="button" data-expression-operator="×">×</button>
-                  <button type="button" data-expression-operator="÷">÷</button>
-                </div>
-              </details>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="dialogProductionBoxes" data-layout-item="boxes" data-layout-default-width="half">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="productionDialogBoxesPerPallet">Коробок у піддоні</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogProductionBoxes" data-entry-section-label="Коробок у піддоні" aria-expanded="true" aria-controls="dialogProductionBoxesContent" aria-label="Згорнути розділ Коробок у піддоні">−</button>
+          </div>
+          <div class="entry-section-content" id="dialogProductionBoxesContent">
+            <input id="productionDialogBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
+          </div>
+        </section>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="dialogProductionPacks" data-layout-item="packs" data-layout-default-width="half">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="productionDialogPacksPerBox">Пачок у коробці</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogProductionPacks" data-entry-section-label="Пачок у коробці" aria-expanded="true" aria-controls="dialogProductionPacksContent" aria-label="Згорнути розділ Пачок у коробці">−</button>
+          </div>
+          <div class="entry-section-content" id="dialogProductionPacksContent">
+            <input id="productionDialogPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+          </div>
+        </section>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="dialogProductionPallets" data-layout-item="pallets">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="productionDialogPallets">Кількість піддонів</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogProductionPallets" data-entry-section-label="Кількість піддонів" aria-expanded="true" aria-controls="dialogProductionPalletsContent" aria-label="Згорнути розділ Кількість піддонів">−</button>
+          </div>
+          <div class="entry-section-content" id="dialogProductionPalletsContent">
+            <div class="expression-input-wrap">
+              <input id="productionDialogPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
+              <div class="expression-operator-control" data-expression-input="productionDialogPallets">
+                <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+                <details class="expression-operator-menu">
+                  <summary aria-label="Змінити математичний оператор">⌄</summary>
+                  <div class="expression-operator-options">
+                    <button type="button" class="active" data-expression-operator="+">+</button>
+                    <button type="button" data-expression-operator="−">−</button>
+                    <button type="button" data-expression-operator="×">×</button>
+                    <button type="button" data-expression-operator="÷">÷</button>
+                  </div>
+                </details>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="production-layout-block" data-layout-item="comment">
-          <label for="productionDialogComment">Коментар</label>
-          <textarea id="productionDialogComment" rows="2" placeholder="Необов’язково"></textarea>
-        </div>
+        </section>
+        <section class="production-layout-block entry-collapsible-section order-entry-dialog-section" data-entry-section="dialogProductionComment" data-layout-item="comment">
+          <div class="entry-section-header">
+            <label class="inventory-entry-section-title" for="productionDialogComment">Коментар</label>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogProductionComment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="dialogProductionCommentContent" aria-label="Згорнути розділ Коментар">−</button>
+          </div>
+          <div class="entry-section-content" id="dialogProductionCommentContent">
+            <textarea id="productionDialogComment" rows="2" placeholder="Необов’язково"></textarea>
+          </div>
+        </section>
       </div>
       <div class="order-entry-dialog-grid" id="standardEntryDialogFields" data-layout-container="dialog-standard">
         <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogDirect" data-layout-item="direct">
@@ -11239,7 +11297,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.39";
+  const APP_VERSION = "3.40";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16622,6 +16680,14 @@
       quickEditPieces: true,
       quickEditDirect: true,
       quickEditComment: true,
+      quickProductionBoxes: true,
+      quickProductionPacks: true,
+      quickProductionPallets: true,
+      quickProductionComment: true,
+      dialogProductionBoxes: true,
+      dialogProductionPacks: true,
+      dialogProductionPallets: true,
+      dialogProductionComment: true,
       productMain: true,
       productAmounts: false,
       productProduction: false
@@ -20153,7 +20219,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=339")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=340")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
