@@ -4007,6 +4007,7 @@
       box-shadow: 0 24px 70px var(--popover-shadow);
     }
     .quick-edit-header {
+      position: relative;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
@@ -4016,6 +4017,9 @@
     .quick-edit-title-block {
       flex: 1;
       min-width: 0;
+    }
+    body:not(.workspace-orders) .quick-edit-title-block {
+      padding-right: 42px;
     }
     .quick-edit-header h2 {
       margin: 0;
@@ -4034,9 +4038,10 @@
     .quick-edit-current-warehouse {
       display: grid;
       flex: 0 1 190px;
-      grid-template-columns: minmax(0, 1fr) 36px;
+      grid-template-columns: minmax(0, 1fr);
       align-items: end;
       gap: 5px;
+      margin-right: 40px;
       min-width: 0;
     }
     .quick-edit-current-warehouse-label {
@@ -4060,18 +4065,31 @@
       font-weight: 850;
     }
     #deleteQuickEditWarehouseBtn {
+      position: absolute;
+      top: 0;
+      right: 0;
       width: 36px !important;
       min-width: 36px !important;
       height: 36px !important;
       min-height: 36px !important;
       margin: 0 !important;
       padding: 0 !important;
-      border: 1px solid var(--soft-danger-border) !important;
-      border-radius: 10px !important;
-      background: var(--soft-danger-bg) !important;
-      color: var(--soft-danger-text) !important;
+      border: 1px solid transparent !important;
+      border-radius: 11px !important;
+      background: transparent !important;
+      color: #e33434 !important;
       box-shadow: none !important;
-      font-size: 17px !important;
+    }
+    #deleteQuickEditWarehouseBtn:hover,
+    #deleteQuickEditWarehouseBtn:active {
+      border-color: rgba(227, 52, 52, .22) !important;
+      background: rgba(227, 52, 52, .07) !important;
+      color: #e33434 !important;
+    }
+    #deleteQuickEditWarehouseBtn .product-trash-icon {
+      width: 14px;
+      height: 15px;
+      border-width: 2px;
     }
     @media (max-width: 420px) {
       .quick-edit-header {
@@ -8276,7 +8294,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=329">
+<link rel="manifest" href="manifest.json?v=331">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8331,7 +8349,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.29</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.31</span></div>
     </div>
   </div>
 
@@ -9557,7 +9575,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.29</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.31</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9582,6 +9600,20 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.31</h3>
+          <ul>
+            <li>кошик у редагуванні замінено на простий контур із червоних ліній без кольорової заливки;</li>
+            <li>кнопку закріплено у правому верхньому куті без впливу на розміри та компонування вікна;</li>
+            <li>видалення з поточного складу доступне в редагуванні замовлення, інвентаризації та здачі ГП.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.30</h3>
+          <ul>
+            <li>кошик у редагуванні замовлення отримав такий самий намальований значок і стиль, як у редагуванні найменування.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.29</h3>
           <ul>
@@ -10610,8 +10642,8 @@
         <div class="quick-edit-current-warehouse hidden" id="quickEditCurrentWarehouseContext">
           <label class="quick-edit-current-warehouse-label" for="quickEditCurrentWarehouse">Поточний склад</label>
           <select id="quickEditCurrentWarehouse" aria-label="Поточний склад редагованої позиції"></select>
-          <button type="button" id="deleteQuickEditWarehouseBtn" aria-label="Видалити замовлення з поточного складу" title="Видалити замовлення з поточного складу">🗑</button>
         </div>
+        <button type="button" id="deleteQuickEditWarehouseBtn" aria-label="Видалити позицію" title="Видалити позицію"><span class="product-trash-icon" aria-hidden="true"></span></button>
       </div>
       <div class="quick-edit-tabs configurable-dialog-menu" id="quickEditTabs"></div>
       <input type="hidden" id="quickEditProductId" />
@@ -10940,7 +10972,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.29";
+  const APP_VERSION = "3.31";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -17332,7 +17364,7 @@
     tabs.innerHTML = entries.map((entry, index) => `
       <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
         data-action="select-quick-edit-entry" data-id="${entry.id}">
-        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatEntryTotal(entry)}
+        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatEntryTotal(entry)}${!workspaceIsOrders() && entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
       </button>
     `).join("");
     tabs.classList.toggle("hidden", entries.length < 2);
@@ -17358,8 +17390,7 @@
     fillQuickEditForm(entry);
   }
 
-  async function deleteQuickEditWarehouseOrder() {
-    if (!workspaceIsOrders()) return;
+  async function deleteQuickEditCurrentPosition() {
     const productId = document.getElementById("quickEditProductId").value;
     const entryId = document.getElementById("quickEditEntryId").value;
     const day = getActiveDay();
@@ -17375,18 +17406,21 @@
     );
     if (!entriesToDelete.length) return;
     const warehouseName = selectedEntry.warehouseName || "Без складу";
+    const documentName = workspaceIsProduction()
+      ? getProductionWorkspaceName()
+      : (workspaceIsOrders() ? "замовлення" : "інвентаризації");
     const confirmed = await showAppDialog({
-      label: "Видалення замовлення",
+      label: "Видалення позиції",
       title: `Видалити «${selectedEntry.productName}» зі складу «${warehouseName}»?`,
       message: entriesToDelete.length > 1
-        ? `У кошик буде переміщено всі записи цієї позиції на вибраному складі: ${entriesToDelete.length}. Інші склади не зміняться.`
-        : "У кошик буде переміщено цю позицію лише з вибраного складу. Інші склади не зміняться.",
+        ? `У кошик буде переміщено всі записи цієї позиції з ${documentName} на поточному складі: ${entriesToDelete.length}. Інші склади не зміняться.`
+        : `У кошик буде переміщено цю позицію з ${documentName} лише на поточному складі. Інші склади не зміняться.`,
       confirmText: "Видалити",
       cancelText: "Скасувати",
       danger: true
     });
     if (!confirmed) return;
-    if (!putInTrash("entries", `Замовлення «${selectedEntry.productName}» · ${warehouseName}`, {
+    if (!putInTrash("entries", `Позиція «${selectedEntry.productName}» · ${warehouseName}`, {
       day: { ...cloneData(day), entries: [] },
       workspace: workspaceMode,
       entries: entriesToDelete
@@ -17395,7 +17429,7 @@
     day.entries = day.entries.filter(entry => !deletedIds.has(entry.id));
     closeQuickEdit();
     save();
-    toast(`Замовлення зі складу «${warehouseName}» переміщено в кошик`);
+    toast(`Позицію зі складу «${warehouseName}» переміщено в кошик`);
   }
 
   function openQuickEdit(productId, preferredEntryId = "") {
@@ -19508,7 +19542,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=329")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=331")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -21306,7 +21340,7 @@
   document.getElementById("quickEditCurrentWarehouse").addEventListener("change", event => {
     selectQuickEditWarehouse(event.target.value);
   });
-  document.getElementById("deleteQuickEditWarehouseBtn").addEventListener("click", deleteQuickEditWarehouseOrder);
+  document.getElementById("deleteQuickEditWarehouseBtn").addEventListener("click", deleteQuickEditCurrentPosition);
   document.getElementById("quickEditOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeQuickEdit();
   });
