@@ -8081,7 +8081,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=322">
+<link rel="manifest" href="manifest.json?v=323">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8136,7 +8136,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.22</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.23</span></div>
     </div>
   </div>
 
@@ -9359,7 +9359,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.22</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.23</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9384,6 +9384,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.23</h3>
+          <ul>
+            <li>остання вибрана позиція тепер зберігається окремо для кожного конкретного документа;</li>
+            <li>нова інвентаризація, нове замовлення або нова здача продукції починаються без рядка останньої позиції;</li>
+            <li>позиції різних документів і різних робочих розділів більше не пов’язуються між собою.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.22</h3>
           <ul>
@@ -10592,7 +10600,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.22";
+  const APP_VERSION = "3.23";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18769,10 +18777,19 @@
     }
   }
 
+  function getLastSelectedProductContextKey() {
+    const documentId = workspaceIsProduction()
+      ? state.activeProductionDeliveryId
+      : (workspaceIsOrders() ? state.activeOrderId : state.activeDayId);
+    return documentId ? `${workspaceMode}:${documentId}` : "";
+  }
+
   function rememberLastSelectedProduct(productId) {
     if (!productId) return;
+    const contextKey = getLastSelectedProductContextKey();
+    if (!contextKey) return;
     const remembered = getLastSelectedProducts();
-    remembered[workspaceMode] = productId;
+    remembered[contextKey] = productId;
     try {
       localStorage.setItem(LAST_SELECTED_PRODUCTS_KEY, JSON.stringify(remembered));
     } catch (error) {}
@@ -18783,7 +18800,8 @@
     const shortcut = document.getElementById("recentProductShortcut");
     const name = document.getElementById("recentProductShortcutName");
     if (!shortcut || !name) return;
-    const productId = getLastSelectedProducts()[workspaceMode] || "";
+    const contextKey = getLastSelectedProductContextKey();
+    const productId = contextKey ? (getLastSelectedProducts()[contextKey] || "") : "";
     const product = state.products.find(item => item.id === productId);
     shortcut.classList.toggle("hidden", !product);
     shortcut.dataset.id = product?.id || "";
@@ -18830,7 +18848,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=322")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=323")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
