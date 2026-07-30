@@ -30,7 +30,7 @@
   const PALLET_CATEGORIES = [
     { id: "raw", label: "СИРОВИНА", short: "СИРОВ." },
     { id: "pack", label: "ПАКУВАННЯ", short: "ПАКУВ." },
-    { id: "finished", label: "ГОТОВА ПРОДУКЦІЯ", short: "ГОТОВА" }
+    { id: "finished", label: "ГОТОВА ПРОДУКЦІЯ", short: "ГП" }
   ];
   let activeGame = null;
 
@@ -165,6 +165,7 @@
       this.world = { w: 2200, h: 1400 };
       this.source = { x: 80, y: 455, w: 360, h: 490 };
       this.destination = { x: 1740, y: 470, w: 360, h: 460 };
+      this.stagingZone = { x: 330, y: 950, w: 310, h: 330 };
       this.trailer = { x: 1050, y: 500, w: 920, h: 390 };
       this.obstacles = [];
       this.pallets = [];
@@ -531,16 +532,18 @@
         { x: 650, y: 930 },
         { x: 650, y: 1110 }
       ].filter(point => !this.obstacles.some(rect => circleRect(point.x, point.y, 34, rect)));
-      this.botStageSlots = Array.from({ length: 8 }, (_, index) => ({
-        x: 500 + (index % 2) * 105,
-        y: 970 + Math.floor(index / 2) * 78
+      this.botStageSlots = Array.from({ length: 9 }, (_, index) => ({
+        x: 380 + (index % 3) * 105,
+        y: 1000 + Math.floor(index / 3) * 90,
+        category: this.palletCategory(index % 3)
       }));
       this.botStagedPallets = [];
       this.bot = {
         x: 520, y: 1300, angle: 0, targetX: 650, targetY: 1110,
-        speed: 82, speedBoostUntil: 0, task: "rack", carrying: false,
+        speed: 58, speedBoostUntil: 0, task: "rack", carrying: false,
         rackIndex: 0, stageIndex: 0, path: [], pathKey: "", blockedFor: 0,
-        cargoDestination: "", cargoCategory: null, waitNoticeAt: -Infinity
+        cargoDestination: "", cargoCategory: null, waitNoticeAt: -Infinity,
+        hornAt: -Infinity
       };
       this.bot.carrying = false;
       this.bot.beacon = 0;
@@ -623,7 +626,7 @@
         && y > this.trailer.y - 12
         && y < this.trailer.y + this.trailer.h + 12;
       const insideSafeZone = this.modeConfig.trailer && circleRect(x, y, 18, this.trailerSafeZone);
-      const insideStagingZone = x > 440 && x < 675 && y > 910 && y < 1295;
+      const insideStagingZone = circleRect(x, y, 18, this.stagingZone);
       const insideClosedYard = this.modeConfig.trailer && y < 480;
       return insideTrailer || insideSafeZone || insideStagingZone || insideClosedYard;
     }
@@ -669,7 +672,7 @@
         const inBotLane = (point.y > 1210 && point.x > 455 && point.x < 1030)
           || (point.x > 890 && point.x < 1025 && point.y > 600 && point.y < 1335)
           || (this.modeConfig.trailer && point.x > 930 && point.x < 1240 && point.y > 590 && point.y < 655);
-        const inBotStage = point.x > 430 && point.x < 685 && point.y > 900 && point.y < 1310;
+        const inBotStage = circleRect(point.x, point.y, 45, this.stagingZone);
         const inBotRackService = [
           { x: 650, y: 275 }, { x: 650, y: 455 },
           { x: 650, y: 930 }, { x: 650, y: 1110 }
@@ -886,10 +889,13 @@
         || this.obstacles.some(rect => circleRect(point.x, point.y, 10, rect))
       );
       const hitForkPallet = this.pallets.find(pallet =>
-        !pallet.carried && forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
+        !pallet.carried
+        && !this.palletAcceptsForks(v, pallet)
+        && forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
       );
       const hitForkStage = this.botStagedPallets.find(pallet =>
-        forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
+        !this.palletAcceptsForks(v, pallet)
+        && forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
       );
       const hitForkWorker = this.workers.find(worker =>
         !worker.injured && forkPoints.some(point => Math.hypot(point.x - worker.x, point.y - worker.y) < 24)
@@ -958,6 +964,15 @@
         });
       });
       return points;
+    }
+
+    palletAcceptsForks(vehicle, pallet) {
+      if (vehicle.carrying || pallet.carried) return false;
+      const dx = pallet.x - vehicle.x;
+      const dy = pallet.y - vehicle.y;
+      const forward = dx * Math.cos(vehicle.angle) + dy * Math.sin(vehicle.angle);
+      const sideways = -dx * Math.sin(vehicle.angle) + dy * Math.cos(vehicle.angle);
+      return forward >= 38 && forward <= 104 && Math.abs(sideways) <= 27;
     }
 
     lift() {
@@ -1652,7 +1667,11 @@
       }
       const rackPoint = this.botRackPoints[bot.rackIndex % Math.max(1, this.botRackPoints.length)] || { x: 650, y: 1110 };
       const freeStageIndex = this.botStageSlots.findIndex(slot =>
-        !this.botStagedPallets.some(pallet => Math.hypot(slot.x - pallet.x, slot.y - pallet.y) < 36)
+        (
+          !bot.cargoCategory?.id
+          || slot.category?.id === bot.cargoCategory.id
+        )
+        && !this.botStagedPallets.some(pallet => Math.hypot(slot.x - pallet.x, slot.y - pallet.y) < 36)
       );
       if (freeStageIndex >= 0) bot.stageIndex = freeStageIndex;
       const stagePoint = this.botStageSlots[bot.stageIndex % this.botStageSlots.length] || { x: 520, y: 1200 };
@@ -1715,7 +1734,7 @@
         }
         return;
       }
-      const botBoost = this.elapsed < (bot.speedBoostUntil || 0) ? 1.35 : 1;
+      const botBoost = this.elapsed < (bot.speedBoostUntil || 0) ? 1.18 : 1;
       const step = Math.min(length, bot.speed * botBoost * dt);
       const nextX = clamp(bot.x + dx / length * step, 42, this.world.w - 42);
       const nextY = clamp(bot.y + dy / length * step, 42, this.world.h - 42);
@@ -1726,6 +1745,30 @@
             y: nextY + Math.sin(bot.angle) * 77
           }
         : null;
+
+      const workerInRoute = this.workers.find(worker => {
+        if (worker.injured) return false;
+        const offsetX = worker.x - bot.x;
+        const offsetY = worker.y - bot.y;
+        const ahead = offsetX * directionX + offsetY * directionY;
+        const side = Math.abs(offsetX * directionY - offsetY * directionX);
+        return ahead > -10 && ahead < 165 && side < 58;
+      });
+      if (workerInRoute) {
+        const escape = this.workerEscapePoint(workerInRoute, bot);
+        workerInRoute.targetX = escape.x;
+        workerInRoute.targetY = escape.y;
+        workerInRoute.avoidUntil = Math.max(workerInRoute.avoidUntil, this.elapsed + 3);
+        workerInRoute.awayUntil = Math.max(workerInRoute.awayUntil, this.elapsed + 9);
+        workerInRoute.aware = true;
+        if (this.elapsed - bot.hornAt > 2.4) {
+          bot.hornAt = this.elapsed;
+          this.softHorn();
+          this.say(bot, "Обережно, звільніть проїзд!", 2.2);
+        }
+        bot.blockedFor = 0;
+        return;
+      }
 
       const struckWorker = this.workers.find(worker =>
         !worker.injured && (
@@ -1745,7 +1788,16 @@
       if (this.botPositionBlocked(nextX, nextY) || cargoBlocked) {
         bot.path = [];
         bot.blockedFor += dt;
-        if (bot.blockedFor > 1.2) this.recoverBotPosition();
+        if (bot.blockedFor > .42) {
+          const reverseStep = bot.speed * .62 * dt;
+          const reverseX = clamp(bot.x - Math.cos(bot.angle) * reverseStep, 42, this.world.w - 42);
+          const reverseY = clamp(bot.y - Math.sin(bot.angle) * reverseStep, 42, this.world.h - 42);
+          if (!this.botPositionBlocked(reverseX, reverseY)) {
+            bot.x = reverseX;
+            bot.y = reverseY;
+          }
+        }
+        if (bot.blockedFor > 1.6) this.recoverBotPosition();
       } else {
         bot.x = nextX;
         bot.y = nextY;
@@ -1756,7 +1808,14 @@
         if (bot.task === "rack") {
           bot.carrying = true;
           bot.cargoDestination = this.palletDestination(bot.rackIndex + bot.stageIndex);
-          bot.cargoCategory = this.palletCategory(bot.rackIndex + bot.stageIndex);
+          const availableCategories = PALLET_CATEGORIES.filter(category =>
+            this.botStageSlots.some(slot =>
+              slot.category?.id === category.id
+              && !this.botStagedPallets.some(pallet => Math.hypot(slot.x - pallet.x, slot.y - pallet.y) < 36)
+            )
+          );
+          bot.cargoCategory = availableCategories[bot.rackIndex % Math.max(1, availableCategories.length)]
+            || this.palletCategory(bot.rackIndex);
           bot.task = "stage";
           bot.path = [];
           bot.pathKey = "";
@@ -2019,17 +2078,34 @@
       ctx.lineWidth = 5;
       ctx.beginPath(); ctx.moveTo(470, 700); ctx.lineTo(1610, 700); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = "rgba(75,185,215,.13)";
-      ctx.strokeStyle = "rgba(115,220,240,.72)";
-      ctx.lineWidth = 4;
-      ctx.setLineDash([13, 10]);
-      ctx.fillRect(455, 925, 205, 355);
-      ctx.strokeRect(455, 925, 205, 355);
-      ctx.setLineDash([]);
+      const stageColors = [
+        ["rgba(85,176,215,.18)", "#77cfea"],
+        ["rgba(225,174,78,.18)", "#e4ba65"],
+        ["rgba(91,200,126,.18)", "#75dc98"]
+      ];
+      const stageColumnWidth = this.stagingZone.w / PALLET_CATEGORIES.length;
+      PALLET_CATEGORIES.forEach((category, index) => {
+        const x = this.stagingZone.x + index * stageColumnWidth;
+        ctx.fillStyle = stageColors[index][0];
+        ctx.strokeStyle = stageColors[index][1];
+        ctx.lineWidth = 3;
+        ctx.setLineDash([13, 10]);
+        ctx.fillRect(x, this.stagingZone.y, stageColumnWidth, this.stagingZone.h);
+        ctx.strokeRect(x, this.stagingZone.y, stageColumnWidth, this.stagingZone.h);
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#f4fbfd";
+        ctx.font = "900 11px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(category.short, x + stageColumnWidth / 2, this.stagingZone.y - 12);
+      });
       ctx.fillStyle = "#d3f7ff";
       ctx.font = "900 14px Arial";
       ctx.textAlign = "center";
-      ctx.fillText("ЗОНА КОМПЛЕКТАЦІЇ", 557, 912);
+      ctx.fillText(
+        "ЗОНА КОМПЛЕКТАЦІЇ",
+        this.stagingZone.x + this.stagingZone.w / 2,
+        this.stagingZone.y - 34
+      );
     }
 
     drawTruckQueue(ctx) {
@@ -2234,7 +2310,36 @@
     drawZones(ctx) {
       this.zone(ctx, this.source, "#e1b83d", "СКЛАД А · ПІДДОНИ РОЗМІЩЕНІ ПО ВСІЙ ЗОНІ");
       if (!this.modeConfig.trailer) {
-        this.zone(ctx, this.destination, "#42ca79", "СКЛАД Б · ПОСТАВИТИ СЮДИ");
+        this.zone(ctx, this.destination, "#42ca79", "СКЛАД Б · РОЗПОДІЛ ЗА КАТЕГОРІЯМИ");
+        const categoryColors = {
+          raw: ["rgba(88,181,218,.2)", "#7dd3ed"],
+          pack: ["rgba(225,177,79,.2)", "#e7bd69"],
+          finished: ["rgba(85,205,126,.2)", "#7ae09c"]
+        };
+        PALLET_CATEGORIES.forEach(category => {
+          const categorySlots = this.slots.filter(slot => slot.category?.id === category.id);
+          if (!categorySlots.length) return;
+          const left = Math.min(...categorySlots.map(slot => slot.x - 52));
+          const right = Math.max(...categorySlots.map(slot => slot.x + 52));
+          const top = Math.min(...categorySlots.map(slot => slot.y - 38));
+          const bottom = Math.max(...categorySlots.map(slot => slot.y + 38));
+          const colors = categoryColors[category.id];
+          ctx.fillStyle = colors[0];
+          ctx.strokeStyle = colors[1];
+          ctx.lineWidth = 3;
+          ctx.fillRect(left - 4, top - 28, right - left + 8, bottom - top + 32);
+          ctx.strokeRect(left - 4, top - 28, right - left + 8, bottom - top + 32);
+          ctx.fillStyle = "#f4fff7";
+          ctx.font = "900 10px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(
+            category.id === "finished" ? "ЗОНА ГП" : `ЗОНА ${category.label}`,
+            (left + right) / 2,
+            top - 15,
+            right - left
+          );
+        });
         this.slots.forEach(slot => {
           ctx.fillStyle = slot.occupied ? "#2f9f61" : "rgba(89,221,133,.18)";
           ctx.strokeStyle = slot.occupied ? "#d1ffe0" : "#76e99d";
