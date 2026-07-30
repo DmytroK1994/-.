@@ -144,6 +144,7 @@
       this.trailerSafeZone = { x: 875, y: 955, w: 145, h: 245 };
       this.truckDestinations = [];
       this.currentTruckDestination = "";
+      this.wrongDeliveries = 0;
       this.totalPalletsCreated = 0;
       this.supplyLimit = 0;
       this.mazePlate = null;
@@ -342,7 +343,8 @@
         timeLimit: this.modeConfig.timeLimit ? expressLimit : challengeLimit,
         strictSafety: Boolean(this.modeConfig.strictSafety || cycle === 3),
         maze: Boolean(this.modeConfig.maze),
-        mazeComplexity: Math.min(4, 1 + Math.floor((this.level - 1) / 2))
+        mazeComplexity: Math.min(4, 1 + Math.floor((this.level - 1) / 2)),
+        sparseBoosts: this.level % 3 === 0
       };
       this.target = this.modeConfig.trailer
         ? 33
@@ -358,8 +360,20 @@
         TRUCK_DESTINATIONS[((this.level - 1) * 2 + index) % TRUCK_DESTINATIONS.length]
       );
       this.currentTruckDestination = this.truckDestinations[0] || "";
+      this.wrongDeliveries = 0;
       this.totalPalletsCreated = 0;
-      this.supplyLimit = this.target + Math.max(2, 6 - Math.floor(this.level / 3));
+      this.supplyLimit = this.modeConfig.trailer
+        ? Math.ceil(this.target * 1.5) + 6
+        : this.target + Math.max(2, 6 - Math.floor(this.level / 3));
+    }
+
+    palletDestination(sequenceIndex) {
+      if (!this.modeConfig.trailer) return "";
+      const index = Number(sequenceIndex) || 0;
+      if (index % 3 !== 2) return this.currentTruckDestination;
+      const alternatives = TRUCK_DESTINATIONS.filter(city => city !== this.currentTruckDestination);
+      return alternatives[(index + this.level + this.trucksCompleted) % alternatives.length]
+        || this.currentTruckDestination;
     }
 
     levelGoalText() {
@@ -369,6 +383,7 @@
       const rules = [];
       if (this.levelRules.timeLimit) rules.push(`час ${timeText(this.levelRules.timeLimit)}`);
       if (this.levelRules.strictSafety) rules.push("без зіткнень");
+      if (this.levelRules.sparseBoosts) rules.push("мало бустів");
       return `${prefix}${this.modeConfig.goal}${rules.length ? ` · ${rules.join(" · ")}` : ""}`;
     }
 
@@ -441,8 +456,8 @@
         this.pallets.push({
           id: `p${index}`, x: point.x, y: point.y,
           carried: false, delivered: false, slotId: null, damage: 0, awarded: false,
-          destroyedPenalty: false,
-          destination: this.modeConfig.trailer ? this.currentTruckDestination : "",
+          destroyedPenalty: false, wrongPenaltyApplied: false, wrongInTruck: false,
+          destination: this.palletDestination(index),
           color: index % 3 === 0 ? "#8bc5dc" : "#d39a55"
         });
         this.totalPalletsCreated += 1;
@@ -508,7 +523,8 @@
       this.bot = {
         x: 520, y: 1300, angle: 0, targetX: 650, targetY: 1110,
         speed: 82, speedBoostUntil: 0, task: "rack", carrying: false,
-        rackIndex: 0, stageIndex: 0, path: [], pathKey: "", blockedFor: 0
+        rackIndex: 0, stageIndex: 0, path: [], pathKey: "", blockedFor: 0,
+        cargoDestination: "", waitNoticeAt: -Infinity
       };
       this.bot.carrying = false;
       this.bot.beacon = 0;
@@ -864,6 +880,10 @@
         }
         nearest.pallet.slotId = null;
         nearest.pallet.delivered = false;
+        if (nearest.pallet.wrongInTruck) {
+          this.wrongDeliveries = Math.max(0, this.wrongDeliveries - 1);
+          nearest.pallet.wrongInTruck = false;
+        }
         this.delivered = Math.max(0, this.delivered - 1);
         if (this.modeConfig.trailer && this.delivered < this.target) {
           this.trailerAwaitingDeparture = false;
@@ -923,6 +943,15 @@
       pallet.carried = false;
       pallet.delivered = true;
       pallet.slotId = exactSlot.id;
+      const wrongDestination = Boolean(
+        this.modeConfig.trailer
+        && pallet.destination
+        && pallet.destination !== this.currentTruckDestination
+      );
+      pallet.wrongInTruck = wrongDestination;
+      if (wrongDestination) {
+        this.wrongDeliveries += 1;
+      }
       this.vehicle.carrying = null;
       this.vehicle.forksUp = false;
       this.delivered += 1;
@@ -933,8 +962,20 @@
         this.stats.total += 1;
         if (pallet.damage > 50) this.notice("Вантаж пошкоджено більш ніж на 50%: зараховано половину балів", "bad");
       }
+      if (wrongDestination) {
+        if (!pallet.wrongPenaltyApplied) {
+          pallet.wrongPenaltyApplied = true;
+          this.score = Math.floor(this.score / 2);
+          this.notice(
+            `Неправильна фура: ${pallet.destination} замість ${this.currentTruckDestination}. Знято половину балів`,
+            "bad"
+          );
+        } else {
+          this.notice(`Увага: цей піддон призначений для міста ${pallet.destination}`, "bad");
+        }
+      }
       saveStats(this.stats);
-      this.notice("Піддон точно встановлено", "good");
+      if (!wrongDestination) this.notice("Піддон точно встановлено", "good");
       this.tone(640, .16, "sine", .06);
       if (this.delivered >= this.target) {
         if (this.modeConfig.trailer) {
@@ -945,8 +986,21 @@
         }
         else this.complete();
       }
-      else if (this.pallets.filter(item => !item.delivered && !item.carried && (item.damage || 0) < 100).length < 5) {
-        this.replenish();
+      else if (this.pallets.filter(item =>
+        !item.delivered
+        && !item.carried
+        && (item.damage || 0) < 100
+        && (!this.modeConfig.trailer || item.destination === this.currentTruckDestination)
+      ).length < 5) {
+        while (
+          this.pallets.filter(item =>
+            !item.delivered
+            && !item.carried
+            && (item.damage || 0) < 100
+            && (!this.modeConfig.trailer || item.destination === this.currentTruckDestination)
+          ).length < 5
+          && this.replenish()
+        ) {}
         this.checkSupplyExhausted();
       }
     }
@@ -958,8 +1012,8 @@
       this.pallets.push({
         id: `p${Date.now()}-${index}-${Math.round(Math.random() * 9999)}`, x: point.x, y: point.y,
         carried: false, delivered: false, slotId: null, damage: 0, awarded: false,
-        destroyedPenalty: false,
-        destination: this.modeConfig.trailer ? this.currentTruckDestination : "",
+        destroyedPenalty: false, wrongPenaltyApplied: false, wrongInTruck: false,
+        destination: this.palletDestination(this.totalPalletsCreated),
         color: index % 2 ? "#d39a55" : "#8bc5dc"
       });
       this.totalPalletsCreated += 1;
@@ -1008,7 +1062,10 @@
     spawnBoosts() {
       this.boosts = [];
       const types = ["speed", "speed", "shield", "speed", "score", "speed"];
-      const boostCount = Math.min(12, 8 + Math.floor(this.level / 3));
+      const regularCount = Math.min(7, 5 + Math.floor((this.level - 1) / 5));
+      const boostCount = this.levelRules.sparseBoosts
+        ? Math.max(2, Math.ceil(regularCount / 2))
+        : regularCount;
       for (let index = 0; index < boostCount; index++) {
         const point = this.randomBoostPoint();
         this.boosts.push({
@@ -1059,7 +1116,10 @@
           && Math.random() < .004;
         if (!playerTakes && !botTakes) return;
         boost.active = false;
-        boost.respawnAt = this.elapsed + 9 + Math.random() * 8;
+        const respawnDelay = this.levelRules.sparseBoosts
+          ? 30 + Math.random() * 15
+          : 18 + Math.random() * 12;
+        boost.respawnAt = this.elapsed + respawnDelay;
         if (botTakes) {
           this.botScore += boost.type === "score" ? 75 : 25;
           if (boost.type === "speed") {
@@ -1108,18 +1168,23 @@
         }
         this.currentTruckDestination = this.truckDestinations[this.trucksCompleted] || "";
         this.pallets = this.pallets.filter(pallet => !pallet.delivered && (pallet.damage || 0) < 100);
-        this.pallets.forEach(pallet => {
-          pallet.destination = this.currentTruckDestination;
+        this.pallets.forEach((pallet, index) => {
+          pallet.destination = this.palletDestination(index);
           pallet.awarded = false;
+          pallet.wrongInTruck = false;
+          pallet.wrongPenaltyApplied = false;
         });
         this.slots.forEach(slot => {
           slot.occupied = false;
           slot.palletId = null;
         });
         this.delivered = 0;
+        this.wrongDeliveries = 0;
         this.trailerShortage = 0;
         this.totalPalletsCreated = this.pallets.length;
-        this.supplyLimit = this.target + Math.max(2, 6 - Math.floor(this.level / 3));
+        this.supplyLimit = this.modeConfig.trailer
+          ? Math.ceil(this.target * 1.5) + 6
+          : this.target + Math.max(2, 6 - Math.floor(this.level / 3));
         while (this.pallets.filter(pallet => !pallet.carried).length < 12 && this.replenish()) {}
         this.trailerRound = this.trucksCompleted + 1;
         this.trailerAwaitingDeparture = false;
@@ -1130,6 +1195,7 @@
           this.bot.stageIndex = 0;
           this.bot.path = [];
           this.bot.pathKey = "";
+          this.bot.cargoDestination = "";
         }
         this.root.querySelector("[data-fg2='goal']").textContent = this.levelGoalText();
         this.notice(`Фура ${this.trailerRound}/${this.trucksRequired} готова до завантаження`, "good");
@@ -1282,7 +1348,8 @@
     moveActor(actor, target, speed, dt) {
       const dx = target.x - actor.x;
       const dy = target.y - actor.y;
-      const length = Math.hypot(dx, dy) || 1;
+      const waypointDistance = Math.hypot(dx, dy);
+      const length = waypointDistance || 1;
       const step = Math.min(length, speed * dt);
       const previous = { x: actor.x, y: actor.y };
       actor.x += dx / length * step;
@@ -1473,6 +1540,26 @@
       const dx = waypoint.x - bot.x;
       const dy = waypoint.y - bot.y;
       const length = Math.hypot(dx, dy) || 1;
+      const directionX = dx / length;
+      const directionY = dy / length;
+      const playerOffsetX = this.vehicle.x - bot.x;
+      const playerOffsetY = this.vehicle.y - bot.y;
+      const playerDistance = Math.hypot(playerOffsetX, playerOffsetY);
+      const playerAhead = playerOffsetX * directionX + playerOffsetY * directionY;
+      const playerSide = Math.abs(playerOffsetX * directionY - playerOffsetY * directionX);
+      const playerBlocksRoute = waypointDistance > 4
+        && (
+          playerDistance < 90
+          || (playerAhead > -15 && playerAhead < 190 && playerSide < 72)
+        );
+      if (playerBlocksRoute) {
+        bot.blockedFor = 0;
+        if (this.elapsed - bot.waitNoticeAt > 5) {
+          bot.waitNoticeAt = this.elapsed;
+          this.notice("Службова кара бачить тебе й чекає, доки проїзд звільниться", "good");
+        }
+        return;
+      }
       const botBoost = this.elapsed < (bot.speedBoostUntil || 0) ? 1.35 : 1;
       const step = Math.min(length, bot.speed * botBoost * dt);
       const nextX = clamp(bot.x + dx / length * step, 42, this.world.w - 42);
@@ -1513,12 +1600,18 @@
       if (Math.hypot(bot.x - target.x, bot.y - target.y) < 38) {
         if (bot.task === "rack") {
           bot.carrying = true;
+          bot.cargoDestination = this.palletDestination(bot.rackIndex + bot.stageIndex);
           bot.task = "stage";
           bot.path = [];
           bot.pathKey = "";
         } else if (bot.task === "stage") {
-          this.botStagedPallets.push({ x: stagePoint.x, y: stagePoint.y });
+          this.botStagedPallets.push({
+            x: stagePoint.x,
+            y: stagePoint.y,
+            destination: bot.cargoDestination
+          });
           bot.carrying = false;
+          bot.cargoDestination = "";
           bot.stageIndex += 1;
           bot.rackIndex += 1;
           bot.task = this.botStagedPallets.length >= this.botStageSlots.length ? "parked" : "rack";
@@ -2205,7 +2298,7 @@
         ctx.font = "900 8px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("ГОТОВО", 0, 1);
+        ctx.fillText((pallet.destination || "ГОТОВО").toUpperCase(), 0, 1, 54);
         ctx.restore();
       });
     }
@@ -2327,14 +2420,14 @@
           ctx.strokeStyle = "#f2d2a5";
           ctx.lineWidth = 2;
           ctx.strokeRect(48, -28, 58, 56);
-          if (this.modeConfig.trailer && this.currentTruckDestination) {
+          if (this.modeConfig.trailer && this.bot?.cargoDestination) {
             ctx.fillStyle = "rgba(9,22,28,.9)";
             ctx.fillRect(48, -7, 58, 15);
             ctx.fillStyle = "#fff";
             ctx.font = "900 8px Arial";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText(this.currentTruckDestination.toUpperCase(), 77, 1, 54);
+            ctx.fillText(this.bot.cargoDestination.toUpperCase(), 77, 1, 54);
           }
         }
       }
@@ -2418,7 +2511,8 @@
       saveStats(this.stats);
       this.resultScreen(
         `Рівень ${this.level} пройдено!`,
-        `${this.modeConfig.name} · Час: ${timeText(this.elapsed)} · Результат: ${Math.round(this.score)} балів`,
+        `${this.modeConfig.name} · Час: ${timeText(this.elapsed)} · Результат: ${Math.round(this.score)} балів`
+          + (this.wrongDeliveries ? ` · Не за призначенням: ${this.wrongDeliveries}` : ""),
         true
       );
     }
