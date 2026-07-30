@@ -707,36 +707,34 @@
       }
     }
     [data-layout-container] {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     [data-layout-container].layout-managed > [data-layout-item] {
       position: relative;
       order: initial !important;
-      grid-column: span var(--layout-grid-span, 12) !important;
-      min-height: var(--layout-min-height, auto);
+      grid-column: 1 / -1 !important;
       min-width: 0;
-      padding-bottom: 17px !important;
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
     }
     [data-layout-container].layout-managed > [data-layout-item].layout-width-half {
-      grid-column: span 6 !important;
+      grid-column: span 1 !important;
     }
     [data-layout-item] input,
     [data-layout-item] textarea {
       -webkit-user-select: text;
       user-select: text;
     }
-    [data-layout-container].layout-managed > [data-layout-item]:is(.layout-width-half, .layout-width-compact) .inventory-entry-section-fields {
+    [data-layout-container].layout-managed > [data-layout-item].layout-width-half .inventory-entry-section-fields {
       grid-template-columns: minmax(0, 1fr);
     }
-    [data-layout-container].layout-managed > [data-layout-item]:is(.layout-width-half, .layout-width-compact) .entry-section-header {
+    [data-layout-container].layout-managed > [data-layout-item].layout-width-half .entry-section-header {
       flex-wrap: wrap;
       gap: 4px;
     }
-    #orderEntryOverlay [data-layout-item]:is(.layout-width-half, .layout-width-compact) .entry-section-unit-select,
-    #quickEditOverlay [data-layout-item]:is(.layout-width-half, .layout-width-compact) .entry-section-unit-select {
+    #orderEntryOverlay [data-layout-item].layout-width-half .entry-section-unit-select,
+    #quickEditOverlay [data-layout-item].layout-width-half .entry-section-unit-select {
       order: 3;
       flex: 1 1 100%;
       width: 100% !important;
@@ -755,55 +753,8 @@
       outline: 2px dashed var(--selection-border);
       outline-offset: 2px;
     }
-    .block-resize-handle {
-      position: absolute !important;
-      right: 2px !important;
-      bottom: 2px !important;
-      z-index: 8;
-      width: 17px !important;
-      min-width: 17px !important;
-      max-width: 17px !important;
-      height: 17px !important;
-      min-height: 17px !important;
-      max-height: 17px !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: 0 !important;
-      border-radius: 0 0 7px 0 !important;
-      background:
-        repeating-linear-gradient(
-          135deg,
-          transparent 0 3px,
-          var(--muted) 3px 4px,
-          transparent 4px 6px
-        ) !important;
-      color: transparent !important;
-      box-shadow: none !important;
-      clip-path: polygon(100% 0, 100% 100%, 0 100%);
-      cursor: nwse-resize;
-      touch-action: none;
-      opacity: .7;
-    }
-    .block-resize-handle:hover,
-    .block-resize-handle:active {
-      background:
-        repeating-linear-gradient(
-          135deg,
-          transparent 0 3px,
-          var(--selection-border) 3px 4px,
-          transparent 4px 6px
-        ) !important;
-      opacity: 1;
-    }
-    [data-layout-item].block-layout-resizing {
-      border-color: var(--selection-border) !important;
-      outline: 2px solid var(--selection-outline);
-      outline-offset: 1px;
-    }
     body.block-layout-dragging,
-    body.block-layout-dragging *,
-    body.block-layout-resizing,
-    body.block-layout-resizing * {
+    body.block-layout-dragging * {
       -webkit-user-select: none !important;
       user-select: none !important;
       -webkit-touch-callout: none !important;
@@ -4948,8 +4899,8 @@
       white-space: nowrap;
     }
     .preview-report-table {
-      width: calc(100% - 1mm);
-      max-width: calc(100% - 1mm);
+      width: 100%;
+      max-width: 100%;
       margin-right: auto;
       margin-left: auto;
       overflow: visible;
@@ -4961,6 +4912,7 @@
       display: flex;
       width: 100%;
       max-width: 100%;
+      box-sizing: border-box;
       border: .5px solid #777;
     }
     .preview-table-header-row > div,
@@ -5001,8 +4953,8 @@
       overflow: visible;
     }
     .preview-sheet.order-preview-sheet .preview-report-table {
-      width: calc(100% - 1mm);
-      max-width: calc(100% - 1mm);
+      width: 100%;
+      max-width: 100%;
       margin-right: auto;
       margin-left: auto;
       min-width: 0;
@@ -5017,25 +4969,25 @@
     .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row,
     .preview-sheet.order-preview-sheet .order-report-table .order-print-row {
       grid-template-columns:
-        var(--order-col-number, 7mm)
-        var(--order-col-status, 18mm)
-        var(--order-col-name, 38mm)
-        var(--order-col-quantity, 20mm)
+        var(--order-col-number-pct, 3.5%)
+        var(--order-col-status-pct, 9%)
+        var(--order-col-name-pct, 19%)
+        var(--order-col-quantity-pct, 10%)
         minmax(0, 1fr);
     }
     .preview-sheet.order-preview-sheet .order-report-table.order-long-names .print-table-header-row,
     .preview-sheet.order-preview-sheet .order-report-table.order-long-names .order-print-row {
       grid-template-columns:
-        var(--order-col-number, 7mm)
-        var(--order-col-status, 18mm)
-        var(--order-col-name, 38mm)
-        var(--order-col-quantity, 20mm)
+        var(--order-col-number-pct, 3.5%)
+        var(--order-col-status-pct, 9%)
+        var(--order-col-name-pct, 19%)
+        var(--order-col-quantity-pct, 10%)
         minmax(0, 1fr);
     }
     .preview-sheet.order-preview-sheet .order-report-table .print-table-header-row > div,
     .preview-sheet.order-preview-sheet .order-report-table .order-print-row > div {
       padding: 3px;
-      overflow: hidden;
+      overflow: visible;
       overflow-wrap: anywhere;
       word-break: normal;
       hyphens: auto;
@@ -6514,7 +6466,7 @@
     @media print {
       @page {
         size: A4;
-        margin: 6mm 7mm;
+        margin: 5mm;
         @top-left { content: ""; }
         @top-center { content: ""; }
         @top-right { content: ""; }
@@ -6616,8 +6568,8 @@
 
       .print-report-table {
         display: block !important;
-        width: calc(100% - 1mm);
-        max-width: calc(100% - 1mm);
+        width: 100%;
+        max-width: 100%;
         margin-right: auto;
         margin-left: auto;
         overflow: visible;
@@ -6643,6 +6595,7 @@
         display: flex;
         width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
         background: #e5e7eb;
         border: .5px solid #777;
         break-inside: avoid;
@@ -6667,6 +6620,8 @@
 
       #printTodayList {
         display: block;
+        width: 100%;
+        max-width: 100%;
       }
 
       .card,
@@ -6684,6 +6639,7 @@
         display: flex;
         width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
         border: .5px solid #777;
         overflow: hidden;
         page-break-inside: avoid;
@@ -7218,6 +7174,7 @@
       display:grid;
       width:100%;
       max-width:100%;
+      box-sizing:border-box;
       margin-right:0;
       margin-left:0;
       grid-template-columns:
@@ -7243,6 +7200,7 @@
     .order-print-row > div {
       min-width:0;
       padding:4px;
+      box-sizing:border-box;
       border-right:1px solid #999;
       border-bottom:1px solid #999;
       overflow-wrap:anywhere;
@@ -8526,7 +8484,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=338">
+<link rel="manifest" href="manifest.json?v=339">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8581,7 +8539,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.38</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.39</span></div>
     </div>
   </div>
 
@@ -9813,7 +9771,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.38</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.39</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9838,6 +9796,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.39</h3>
+          <ul>
+            <li>ручне розтягування та звуження блоків прибрано, залишено лише їх переставляння довгим натисканням;</li>
+            <li>таблиці всіх документів розширено майже на всю корисну ширину аркуша A4 з однаковими невеликими полями;</li>
+            <li>колонки замовлення у попередньому перегляді масштабуються пропорційно ширині аркуша;</li>
+            <li>рамки більше не обрізають заголовки та правий край таблиці.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.38</h3>
           <ul>
@@ -11272,7 +11239,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.38";
+  const APP_VERSION = "3.39";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16705,19 +16672,7 @@
     const layouts = getEntryBlockLayouts();
     const items = Array.from(container.children).filter(item => item.dataset.layoutItem);
     layouts[context] = {
-      order: items.map(item => item.dataset.layoutItem),
-      widths: Object.fromEntries(items.map(item => [
-        item.dataset.layoutItem,
-        item.classList.contains("layout-width-half") ? "half" : "full"
-      ])),
-      spans: Object.fromEntries(items.map(item => [
-        item.dataset.layoutItem,
-        Math.min(12, Math.max(6, Number(item.dataset.layoutSpan) || 12))
-      ])),
-      heights: Object.fromEntries(items.map(item => [
-        item.dataset.layoutItem,
-        Math.max(0, Number(item.dataset.layoutMinHeight) || 0)
-      ]))
+      order: items.map(item => item.dataset.layoutItem)
     };
     try { localStorage.setItem(ENTRY_BLOCK_LAYOUT_KEY, JSON.stringify(layouts)); } catch (error) {}
   }
@@ -16735,32 +16690,14 @@
       ].filter((id, index, all) => byId.has(id) && all.indexOf(id) === index);
       orderedIds.forEach(id => container.appendChild(byId.get(id)));
       items.forEach(item => {
-        const savedWidth = layout.widths?.[item.dataset.layoutItem];
-        const defaultSpan = item.dataset.layoutDefaultWidth === "half" ? 6 : 12;
-        const legacySpan = savedWidth === "half" ? 6 : (savedWidth === "full" ? 12 : defaultSpan);
-        const savedSpan = Number(layout.spans?.[item.dataset.layoutItem]);
-        const span = Number.isFinite(savedSpan)
-          ? Math.min(12, Math.max(6, Math.round(savedSpan)))
-          : legacySpan;
-        const savedHeight = Math.max(0, Number(layout.heights?.[item.dataset.layoutItem]) || 0);
-        item.classList.toggle("layout-width-half", span === 6);
-        item.classList.toggle("layout-width-compact", span > 6 && span <= 8);
-        item.dataset.layoutWidth = span === 6 ? "half" : (span === 12 ? "full" : "custom");
-        item.dataset.layoutSpan = String(span);
-        item.style.setProperty("--layout-grid-span", String(span));
-        item.dataset.layoutMinHeight = savedHeight ? String(savedHeight) : "";
-        if (savedHeight) item.style.setProperty("--layout-min-height", `${savedHeight}px`);
-        else item.style.removeProperty("--layout-min-height");
-        const hasResizeHandle = Array.from(item.children)
-          .some(child => child.classList.contains("block-resize-handle"));
-        if (!hasResizeHandle) {
-          const handle = document.createElement("button");
-          handle.type = "button";
-          handle.className = "block-resize-handle";
-          handle.setAttribute("aria-label", "Змінити ширину блока");
-          handle.title = "Потягни вліво або вправо, щоб змінити ширину";
-          item.appendChild(handle);
-        }
+        const half = item.dataset.layoutDefaultWidth === "half";
+        item.classList.toggle("layout-width-half", half);
+        item.classList.remove("layout-width-compact");
+        item.removeAttribute("data-layout-width");
+        item.removeAttribute("data-layout-span");
+        item.removeAttribute("data-layout-min-height");
+        item.style.removeProperty("--layout-grid-span");
+        item.style.removeProperty("--layout-min-height");
       });
       container.classList.add("layout-managed");
     });
@@ -16786,18 +16723,6 @@
     let didDrag = false;
     let targetItem = null;
     let suppressClickUntil = 0;
-    let resizingItem = null;
-    let resizingContainer = null;
-    let resizeHandle = null;
-    let resizePointerId = null;
-    let resizeStartX = 0;
-    let resizeStartY = 0;
-    let resizeStartWidth = 0;
-    let resizeStartHeight = 0;
-    let resizeStartedSpan = 12;
-    let resizeStartedHalf = false;
-    let resizeStartedMinHeight = 0;
-    let resizeDidVertical = false;
 
     const clearPressTimer = () => {
       window.clearTimeout(pressTimer);
@@ -16828,72 +16753,8 @@
       pointerId = null;
       didDrag = false;
     };
-    const finishResize = (event, cancelled = false) => {
-      if (event?.pointerId !== resizePointerId || !resizingItem) return false;
-      event.preventDefault();
-      if (cancelled) {
-        resizingItem.classList.toggle("layout-width-half", resizeStartedHalf);
-        resizingItem.classList.toggle("layout-width-compact", resizeStartedSpan > 6 && resizeStartedSpan <= 8);
-        resizingItem.dataset.layoutWidth = resizeStartedSpan === 6
-          ? "half"
-          : (resizeStartedSpan === 12 ? "full" : "custom");
-        resizingItem.dataset.layoutSpan = String(resizeStartedSpan);
-        resizingItem.style.setProperty("--layout-grid-span", String(resizeStartedSpan));
-        resizingItem.dataset.layoutMinHeight = resizeStartedMinHeight ? String(resizeStartedMinHeight) : "";
-        if (resizeStartedMinHeight) {
-          resizingItem.style.setProperty("--layout-min-height", `${resizeStartedMinHeight}px`);
-        } else {
-          resizingItem.style.removeProperty("--layout-min-height");
-        }
-      } else {
-        saveEntryBlockLayout(resizingContainer);
-      }
-      try { resizeHandle?.releasePointerCapture(resizePointerId); } catch (error) {}
-      resizingItem.classList.remove("block-layout-resizing");
-      document.body.classList.remove("block-layout-resizing");
-      suppressClickUntil = Date.now() + 350;
-      resizingItem = null;
-      resizingContainer = null;
-      resizeHandle = null;
-      resizePointerId = null;
-      resizeStartX = 0;
-      resizeStartY = 0;
-      resizeStartWidth = 0;
-      resizeStartHeight = 0;
-      resizeStartedSpan = 12;
-      resizeStartedHalf = false;
-      resizeStartedMinHeight = 0;
-      resizeDidVertical = false;
-      return true;
-    };
 
     document.addEventListener("pointerdown", event => {
-      const requestedResizeHandle = event.target.closest(".block-resize-handle");
-      if (requestedResizeHandle) {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        event.stopPropagation();
-        const item = requestedResizeHandle.closest("[data-layout-item]");
-        const container = item?.parentElement?.closest("[data-layout-container]");
-        if (!item || !container || item.parentElement !== container) return;
-        resizingItem = item;
-        resizingContainer = container;
-        resizeHandle = requestedResizeHandle;
-        resizePointerId = event.pointerId;
-        resizeStartX = event.clientX;
-        resizeStartY = event.clientY;
-        const startRect = item.getBoundingClientRect();
-        resizeStartWidth = startRect.width;
-        resizeStartHeight = startRect.height;
-        resizeStartedSpan = Math.min(12, Math.max(6, Number(item.dataset.layoutSpan) || 12));
-        resizeStartedHalf = item.classList.contains("layout-width-half");
-        resizeStartedMinHeight = Math.max(0, Number(item.dataset.layoutMinHeight) || 0);
-        resizeDidVertical = false;
-        item.classList.add("block-layout-resizing");
-        document.body.classList.add("block-layout-resizing");
-        try { requestedResizeHandle.setPointerCapture(event.pointerId); } catch (error) {}
-        return;
-      }
       const item = event.target.closest("[data-layout-item]");
       const container = item?.parentElement?.closest("[data-layout-container]");
       if (!item || !container || item.parentElement !== container || isInteractive(event.target)) return;
@@ -16916,27 +16777,6 @@
     }, { passive: false });
 
     document.addEventListener("pointermove", event => {
-      if (event.pointerId === resizePointerId && resizingItem) {
-        event.preventDefault();
-        const deltaX = event.clientX - resizeStartX;
-        const deltaY = event.clientY - resizeStartY;
-        const containerWidth = Math.max(1, resizingContainer.getBoundingClientRect().width);
-        const desiredWidth = Math.min(containerWidth, Math.max(containerWidth / 2, resizeStartWidth + deltaX));
-        const span = Math.min(12, Math.max(6, Math.round((desiredWidth / containerWidth) * 12)));
-        resizingItem.classList.toggle("layout-width-half", span === 6);
-        resizingItem.classList.toggle("layout-width-compact", span > 6 && span <= 8);
-        resizingItem.dataset.layoutWidth = span === 6 ? "half" : (span === 12 ? "full" : "custom");
-        resizingItem.dataset.layoutSpan = String(span);
-        resizingItem.style.setProperty("--layout-grid-span", String(span));
-        if (Math.abs(deltaY) > 4 || resizeDidVertical) {
-          resizeDidVertical = true;
-          const requestedHeight = Math.max(0, Math.round(resizeStartHeight + deltaY));
-          resizingItem.style.setProperty("--layout-min-height", `${requestedHeight}px`);
-          const actualHeight = Math.round(resizingItem.getBoundingClientRect().height);
-          resizingItem.dataset.layoutMinHeight = String(actualHeight);
-        }
-        return;
-      }
       if (event.pointerId !== pointerId || !pressedItem) return;
       const distance = Math.hypot(event.clientX - startX, event.clientY - startY);
       if (!activeItem) {
@@ -16966,18 +16806,12 @@
     }, { passive: false });
 
     document.addEventListener("pointerup", event => {
-      if (finishResize(event)) return;
       if (event.pointerId === pointerId) finish(event);
     }, { passive: false });
     document.addEventListener("pointercancel", event => {
-      if (finishResize(event, true)) return;
       if (event.pointerId === pointerId) finish(event, true);
     }, { passive: false });
     document.addEventListener("contextmenu", event => {
-      if (event.target.closest(".block-resize-handle")) {
-        event.preventDefault();
-        return;
-      }
       const item = event.target.closest("[data-layout-item]");
       if (item && !isInteractive(event.target)) event.preventDefault();
     });
@@ -20319,7 +20153,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=338")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=339")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -20750,11 +20584,20 @@
         table.style.setProperty("--order-col-status", `${orderColumnLayout.statusMm}mm`);
         table.style.setProperty("--order-col-name", `${orderColumnLayout.nameMm}mm`);
         table.style.setProperty("--order-col-quantity", `${orderColumnLayout.quantityMm}mm`);
+        const printableWidthMm = 200;
+        table.style.setProperty("--order-col-number-pct", `${orderColumnLayout.numberMm / printableWidthMm * 100}%`);
+        table.style.setProperty("--order-col-status-pct", `${orderColumnLayout.statusMm / printableWidthMm * 100}%`);
+        table.style.setProperty("--order-col-name-pct", `${orderColumnLayout.nameMm / printableWidthMm * 100}%`);
+        table.style.setProperty("--order-col-quantity-pct", `${orderColumnLayout.quantityMm / printableWidthMm * 100}%`);
       } else {
         table.style.removeProperty("--order-col-number");
         table.style.removeProperty("--order-col-status");
         table.style.removeProperty("--order-col-name");
         table.style.removeProperty("--order-col-quantity");
+        table.style.removeProperty("--order-col-number-pct");
+        table.style.removeProperty("--order-col-status-pct");
+        table.style.removeProperty("--order-col-name-pct");
+        table.style.removeProperty("--order-col-quantity-pct");
       }
     });
     previewSheet?.classList.toggle("order-preview-sheet", orders);
