@@ -1693,7 +1693,8 @@
       }
       const dx = waypoint.x - bot.x;
       const dy = waypoint.y - bot.y;
-      const length = Math.hypot(dx, dy) || 1;
+      const waypointDistance = Math.hypot(dx, dy);
+      const length = waypointDistance || 1;
       const directionX = dx / length;
       const directionY = dy / length;
       const playerOffsetX = this.vehicle.x - bot.x;
