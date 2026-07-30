@@ -26,6 +26,7 @@
       goal: "СКЛАДСЬКИЙ ЛАБІРИНТ"
     }
   };
+  const TRUCK_DESTINATIONS = ["Київ", "Львів", "Житомир", "Одеса", "Дніпро", "Харків", "Вінниця", "Черкаси", "Луцьк", "Тернопіль"];
   let activeGame = null;
 
   function injectStyles() {
@@ -41,20 +42,21 @@
       .fg2-menu{width:min(100%,760px);max-height:100%;overflow:auto;padding:clamp(18px,3vw,30px);border:1px solid rgba(145,220,235,.24);border-radius:28px;background:linear-gradient(155deg,rgba(13,36,46,.97),rgba(4,13,19,.98));box-shadow:0 34px 110px rgba(0,0,0,.64),inset 0 1px rgba(255,255,255,.08)}
       .fg2-kicker{color:#72d5e4;font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.fg2-menu h1{margin:6px 0 8px;font-size:clamp(27px,5vw,44px);line-height:1}.fg2-menu p{margin:0 0 16px;color:#bdcdd5;line-height:1.45}
       .fg2-menu-lead{max-width:620px}.fg2-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.fg2-mode{position:relative;display:grid;grid-template-columns:54px 1fr;align-items:center;gap:12px;width:100%;min-height:88px;padding:14px;border:1px solid rgba(255,255,255,.15);border-radius:19px;background:linear-gradient(145deg,#173642,#10252e);color:#fff;box-shadow:0 9px 24px rgba(0,0,0,.22);text-align:left;transition:transform .16s ease,border-color .16s ease,background .16s ease}.fg2-mode:hover{border-color:rgba(114,213,228,.58);background:linear-gradient(145deg,#1c4350,#14313b);transform:translateY(-2px)}.fg2-mode:active{background:#1b3b48;transform:scale(.985)}.fg2-mode-icon{display:grid;width:54px;height:54px;place-items:center;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:linear-gradient(145deg,#326878,#244852);font-size:28px;box-shadow:inset 0 1px rgba(255,255,255,.12)}.fg2-mode strong,.fg2-mode span{display:block}.fg2-mode-copy>span{margin-top:4px;color:#aec1ca;font-size:12px;line-height:1.3}.fg2-mode-level{position:absolute;top:8px;right:9px;padding:3px 7px;border-radius:999px;background:rgba(5,17,23,.68);color:#78d9e7!important;font-size:9px!important;font-weight:900;letter-spacing:.04em}
+      .fg2-levels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:16px}.fg2-level{position:relative;min-height:82px;border:1px solid rgba(255,255,255,.16);border-radius:17px;background:linear-gradient(145deg,#173642,#10252e);color:#fff;font-size:24px;font-weight:950}.fg2-level small{display:block;margin-top:4px;color:#9fb5bf;font-size:9px;letter-spacing:.05em;text-transform:uppercase}.fg2-level.current{border-color:#72d5e4;box-shadow:0 0 0 2px rgba(114,213,228,.16)}.fg2-level:disabled{border-color:rgba(255,255,255,.07);background:#0c1b22;color:#64767e;opacity:.72}.fg2-level-lock{display:block;font-size:16px}
       .fg2-stats{margin-top:12px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.04)}.fg2-stats summary{padding:10px 12px;cursor:pointer;color:#c8d8df;font-size:12px;font-weight:900;list-style:none}.fg2-stats summary::-webkit-details-marker{display:none}.fg2-stats summary::after{content:"⌄";float:right;font-size:16px}.fg2-stats[open] summary::after{content:"⌃"}.fg2-records{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 9px 9px}.fg2-record{padding:8px;border-radius:12px;background:rgba(255,255,255,.07);text-align:center}.fg2-record strong,.fg2-record span{display:block}.fg2-record span{margin-top:2px;color:#a8bbc4;font-size:9px;font-weight:800}
       .fg2-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.fg2-btn{flex:1;min-width:120px;min-height:42px;padding:8px 12px;border:1px solid rgba(255,255,255,.17);border-radius:13px;background:#1a303a;color:#fff;font-weight:900}.fg2-btn.primary{background:#e9bd4f;color:#162027}.fg2-btn.danger{background:#53272a}
       .fg2-hud{position:absolute;top:max(9px,env(safe-area-inset-top));left:9px;right:82px;z-index:12;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none}.fg2-hud-items{display:flex;flex-wrap:wrap;gap:5px}.fg2-chip{min-width:72px;padding:6px 8px;border:1px solid rgba(255,255,255,.17);border-radius:11px;background:rgba(7,18,24,.82);box-shadow:0 7px 20px rgba(0,0,0,.25)}.fg2-chip span,.fg2-chip strong{display:block}.fg2-chip span{color:#a9bbc4;font-size:8px;font-weight:900;text-transform:uppercase}.fg2-chip strong{margin-top:1px;font-size:13px}
-      .fg2-goal{position:absolute;top:max(75px,calc(env(safe-area-inset-top) + 66px));left:50%;z-index:11;max-width:60%;padding:7px 12px;border:1px solid rgba(121,238,157,.38);border-radius:999px;background:rgba(9,37,25,.86);font-size:11px;font-weight:900;text-align:center;transform:translateX(-50%);pointer-events:none}
+      .fg2-goal{position:absolute;top:max(63px,calc(env(safe-area-inset-top) + 54px));left:9px;z-index:11;width:min(42vw,360px);padding:6px 9px;border:1px solid rgba(121,238,157,.38);border-radius:10px;background:rgba(9,37,25,.88);font-size:9px;font-weight:900;line-height:1.25;text-align:left;pointer-events:none}
       .fg2-pause{position:absolute;top:max(9px,env(safe-area-inset-top));right:9px;z-index:14;width:66px;height:42px;border:1px solid rgba(255,255,255,.19);border-radius:12px;background:rgba(7,18,24,.88);color:#fff;font-size:11px;font-weight:900}
-      .fg2-notices{position:absolute;top:102px;left:50%;z-index:45;display:grid;gap:6px;width:min(78%,420px);pointer-events:none;transform:translateX(-50%)}.fg2-notice{padding:9px 12px;border-radius:13px;background:rgba(11,31,40,.94);box-shadow:0 10px 28px rgba(0,0,0,.36);font-size:12px;font-weight:900;text-align:center;animation:fg2Notice 2.35s both}.fg2-notice.bad{background:rgba(104,32,36,.95)}.fg2-notice.good{background:rgba(20,91,62,.95)}@keyframes fg2Notice{0%{opacity:0;transform:translateY(-8px)}12%,78%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+      .fg2-notices{position:absolute;top:max(116px,calc(env(safe-area-inset-top) + 107px));left:9px;z-index:45;display:grid;gap:3px;width:min(34vw,280px);pointer-events:none}.fg2-notice{padding:5px 8px;border-radius:9px;background:rgba(11,31,40,.92);box-shadow:0 7px 18px rgba(0,0,0,.3);font-size:9px;font-weight:900;line-height:1.2;text-align:left;animation:fg2Notice 1.8s both}.fg2-notice.bad{background:rgba(104,32,36,.93)}.fg2-notice.good{background:rgba(20,91,62,.93)}@keyframes fg2Notice{0%{opacity:0;transform:translateX(-7px)}12%,75%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-5px)}}
       .fg2-controls{position:absolute;left:50%;bottom:max(8px,env(safe-area-inset-bottom));z-index:15;display:none;width:min(82%,700px);align-items:end;justify-content:space-between;pointer-events:none;transform:translateX(-50%)}
       .fg2-left{display:grid;justify-items:center;gap:6px;pointer-events:auto}
       .fg2-joystick{position:relative;width:126px;height:126px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(8,25,33,.62);box-shadow:inset 0 0 0 12px rgba(2,9,13,.26);pointer-events:auto;touch-action:none}.fg2-joystick::before,.fg2-joystick::after{content:"";position:absolute;background:rgba(255,255,255,.14)}.fg2-joystick::before{top:50%;left:12%;right:12%;height:1px}.fg2-joystick::after{top:12%;bottom:12%;left:50%;width:1px}.fg2-stick{position:absolute;top:50%;left:50%;width:52px;height:52px;border:2px solid rgba(255,255,255,.45);border-radius:50%;background:#e8ba48;box-shadow:0 6px 16px rgba(0,0,0,.35);transform:translate(-50%,-50%)}
       .fg2-right{display:grid;grid-template-columns:58px 58px;gap:7px;pointer-events:auto}.fg2-control{display:grid;width:58px;height:48px;padding:3px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(11,31,40,.86);color:#fff;font-size:9px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg2-control:active,.fg2-control.active{background:#efc14f;color:#172027;transform:scale(.96)}.fg2-control.horn{background:#315d6b}.fg2-control.reverse{width:96px;height:34px;background:rgba(39,69,80,.92)}.fg2-control.reverse.active{background:#efc14f;color:#172027}.fg2-control.wide{grid-column:1/3;width:123px}
       .fg2-zoom-tip{position:absolute;right:18px;bottom:123px;z-index:8;padding:5px 8px;border-radius:9px;background:rgba(5,15,21,.62);color:#c5d5dc;font-size:9px;font-weight:800;pointer-events:none;animation:fg2Tip 5s both}@keyframes fg2Tip{0%,75%{opacity:.85}100%{opacity:0}}
-      .fg2-rotate{display:none;position:absolute;inset:0;z-index:60;padding:22px;place-items:center;background:#071018;text-align:center}.fg2-rotate strong{display:block;font-size:45px}.fg2-rotate span{display:block;margin-top:8px;font-weight:900}
-      @media(pointer:coarse),(max-width:900px){.fg2-controls{display:flex}.fg2-goal{top:68px}.fg2-notices{top:96px}}
-      @media(max-width:700px){.fg2-controls{width:84%}.fg2-joystick{width:112px;height:112px}.fg2-stick{width:47px;height:47px}.fg2-chip{min-width:64px;padding:5px 7px}.fg2-chip strong{font-size:11px}.fg2-records{grid-template-columns:1fr}.fg2-modes{grid-template-columns:1fr}.fg2-menu{border-radius:22px}.fg2-mode{min-height:78px}}
+      .fg2-rotate{display:none;position:absolute;inset:0;z-index:60;padding:22px;place-items:center;background:#071018;text-align:center;pointer-events:none;animation:fg2RotateHint 5s forwards}.fg2-rotate strong{display:block;font-size:45px}.fg2-rotate span{display:block;margin-top:8px;font-weight:900}@keyframes fg2RotateHint{0%,78%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+      @media(pointer:coarse),(max-width:900px){.fg2-controls{display:flex}}
+      @media(max-width:700px){.fg2-controls{width:84%}.fg2-joystick{width:112px;height:112px}.fg2-stick{width:47px;height:47px}.fg2-chip{min-width:58px;padding:5px 6px}.fg2-chip strong{font-size:10px}.fg2-records{grid-template-columns:1fr}.fg2-modes{grid-template-columns:1fr}.fg2-levels{grid-template-columns:repeat(5,minmax(48px,1fr))}.fg2-level{min-height:64px;font-size:19px}.fg2-menu{border-radius:22px}.fg2-mode{min-height:78px}.fg2-goal{width:min(52vw,300px)}.fg2-notices{width:min(46vw,240px)}}
       @media(pointer:coarse) and (orientation:portrait){.fg2-root.playing .fg2-rotate{display:grid}}
     `;
     document.head.appendChild(style);
@@ -67,10 +69,11 @@
         bestTrailer: Number(value.bestTrailer) || 0,
         bestScore: Number(value.bestScore) || 0,
         total: Number(value.total) || 0,
-        levels: value.levels && typeof value.levels === "object" ? value.levels : {}
+        levels: value.levels && typeof value.levels === "object" ? value.levels : {},
+        lastPlayed: value.lastPlayed && typeof value.lastPlayed === "object" ? value.lastPlayed : {}
       };
     } catch (error) {
-      return { bestTrailer: 0, bestScore: 0, total: 0, levels: {} };
+      return { bestTrailer: 0, bestScore: 0, total: 0, levels: {}, lastPlayed: {} };
     }
   }
 
@@ -136,8 +139,13 @@
       this.trucksRequired = 1;
       this.trucksCompleted = 0;
       this.trailerAwaitingDeparture = false;
+      this.trailerShortage = 0;
       this.trafficLight = "red";
       this.trailerSafeZone = { x: 875, y: 955, w: 145, h: 245 };
+      this.truckDestinations = [];
+      this.currentTruckDestination = "";
+      this.totalPalletsCreated = 0;
+      this.supplyLimit = 0;
       this.mazePlate = null;
       this.mazeGate = null;
       this.mazeGateOpen = false;
@@ -183,6 +191,7 @@
             <div class="fg2-chip"><span>Піддони</span><strong data-fg2="delivery">0 / 8</strong></div>
             <div class="fg2-chip"><span>Бали</span><strong data-fg2="score">1000</strong></div>
             <div class="fg2-chip"><span>Вантаж</span><strong data-fg2="integrity">100%</strong></div>
+            <div class="fg2-chip fg2-hidden" data-fg2="boost-chip"><span>Буст</span><strong data-fg2="boost">—</strong></div>
           </div>
         </div>
         <div class="fg2-goal fg2-hidden" data-fg2="goal"></div>
@@ -207,11 +216,11 @@
             <h1>Симулятор транспортувальника</h1>
             <p class="fg2-menu-lead">П’ять режимів, поступове ускладнення рівнів і різні правила проходження.</p>
             <div class="fg2-modes">
-              <button class="fg2-mode" data-mode="transport"><span class="fg2-mode-icon">🏭</span><span class="fg2-mode-copy"><strong>Між складами</strong><span>Перевозь піддони через дедалі складніші маршрути.</span></span><span class="fg2-mode-level">РІВЕНЬ ${Math.max(1, Number(this.stats.levels.transport) || 1)}</span></button>
-              <button class="fg2-mode" data-mode="trailer"><span class="fg2-mode-icon">🚛</span><span class="fg2-mode-copy"><strong>Завантаження фури</strong><span>33 місця, безпечний виїзд і до двох фур за рівень.</span></span><span class="fg2-mode-level">РІВЕНЬ ${Math.max(1, Number(this.stats.levels.trailer) || 1)}</span></button>
-              <button class="fg2-mode" data-mode="express"><span class="fg2-mode-icon">⏱️</span><span class="fg2-mode-copy"><strong>Експрес-зміна</strong><span>Реалістичний запас часу та зростання обсягу роботи.</span></span><span class="fg2-mode-level">РІВЕНЬ ${Math.max(1, Number(this.stats.levels.express) || 1)}</span></button>
-              <button class="fg2-mode" data-mode="safety"><span class="fg2-mode-icon">🦺</span><span class="fg2-mode-copy"><strong>Безпечна зміна</strong><span>Складні маршрути без небезпечних зіткнень.</span></span><span class="fg2-mode-level">РІВЕНЬ ${Math.max(1, Number(this.stats.levels.safety) || 1)}</span></button>
-              <button class="fg2-mode" data-mode="maze"><span class="fg2-mode-icon">🧩</span><span class="fg2-mode-copy"><strong>Великий лабіринт</strong><span>Знайди маршрут, активуй прохід і достав вантаж.</span></span><span class="fg2-mode-level">РІВЕНЬ ${Math.max(1, Number(this.stats.levels.maze) || 1)}</span></button>
+              <button class="fg2-mode" data-mode="transport"><span class="fg2-mode-icon">🏭</span><span class="fg2-mode-copy"><strong>Між складами</strong><span>Перевозь піддони через дедалі складніші маршрути.</span></span><span class="fg2-mode-level">ВІДКРИТО ${clamp(Number(this.stats.levels.transport) || 1, 1, 10)}/10</span></button>
+              <button class="fg2-mode" data-mode="trailer"><span class="fg2-mode-icon">🚛</span><span class="fg2-mode-copy"><strong>Завантаження фури</strong><span>33 місця, безпечний виїзд і до двох фур за рівень.</span></span><span class="fg2-mode-level">ВІДКРИТО ${clamp(Number(this.stats.levels.trailer) || 1, 1, 10)}/10</span></button>
+              <button class="fg2-mode" data-mode="express"><span class="fg2-mode-icon">⏱️</span><span class="fg2-mode-copy"><strong>Експрес-зміна</strong><span>Реалістичний запас часу та зростання обсягу роботи.</span></span><span class="fg2-mode-level">ВІДКРИТО ${clamp(Number(this.stats.levels.express) || 1, 1, 10)}/10</span></button>
+              <button class="fg2-mode" data-mode="safety"><span class="fg2-mode-icon">🦺</span><span class="fg2-mode-copy"><strong>Безпечна зміна</strong><span>Складні маршрути без небезпечних зіткнень.</span></span><span class="fg2-mode-level">ВІДКРИТО ${clamp(Number(this.stats.levels.safety) || 1, 1, 10)}/10</span></button>
+              <button class="fg2-mode" data-mode="maze"><span class="fg2-mode-icon">🧩</span><span class="fg2-mode-copy"><strong>Великий лабіринт</strong><span>Знайди маршрут, активуй прохід і достав вантаж.</span></span><span class="fg2-mode-level">ВІДКРИТО ${clamp(Number(this.stats.levels.maze) || 1, 1, 10)}/10</span></button>
             </div>
             <details class="fg2-stats">
               <summary>Статистика гри</summary>
@@ -223,18 +232,65 @@
             </details>
             <div class="fg2-actions"><button class="fg2-btn" data-menu="help">Керування</button><button class="fg2-btn danger" data-menu="exit">Вийти</button></div>
           </div>
+          <div class="fg2-menu fg2-level-menu hidden">
+            <div class="fg2-kicker">Обери рівень</div>
+            <h1 data-level-title>Режим гри</h1>
+            <p data-level-description>Пройдені рівні можна запускати повторно.</p>
+            <div class="fg2-levels" data-level-list></div>
+            <div class="fg2-actions"><button class="fg2-btn" data-level-back>Назад до режимів</button></div>
+          </div>
         </div>`;
       document.body.appendChild(this.root);
       this.canvas = this.root.querySelector(".fg2-canvas");
       this.ctx = this.canvas.getContext("2d");
       this.root.addEventListener("contextmenu", event => event.preventDefault());
       this.root.addEventListener("selectstart", event => event.preventDefault());
-      this.root.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => this.start(button.dataset.mode)));
-      this.root.querySelectorAll("[data-menu='exit']").forEach(button => button.addEventListener("click", () => this.destroy()));
-      this.root.querySelector("[data-menu='help']").addEventListener("click", () => this.helpScreen());
+      this.bindMenuActions();
       this.root.querySelector(".fg2-pause").addEventListener("click", () => this.pauseMenu());
       this.resize();
       return this;
+    }
+
+    bindMenuActions(scope) {
+      const root = scope || this.root;
+      root.querySelectorAll("[data-mode]").forEach(button =>
+        button.addEventListener("click", () => this.showLevelSelect(button.dataset.mode))
+      );
+      root.querySelectorAll("[data-menu='exit']").forEach(button =>
+        button.addEventListener("click", () => this.destroy())
+      );
+      root.querySelector("[data-menu='help']")?.addEventListener("click", () => this.helpScreen());
+      root.querySelector("[data-level-back]")?.addEventListener("click", () => {
+        root.querySelector(".fg2-level-menu")?.classList.add("hidden");
+        root.querySelector(".fg2-mode-menu")?.classList.remove("hidden");
+      });
+    }
+
+    showLevelSelect(mode) {
+      if (!MODE_CONFIGS[mode]) return;
+      const screen = this.root.querySelector(".fg2-screen");
+      const modeMenu = screen.querySelector(".fg2-mode-menu");
+      const levelMenu = screen.querySelector(".fg2-level-menu");
+      const unlocked = clamp(Number(this.stats.levels[mode]) || 1, 1, 10);
+      const lastPlayed = clamp(Number(this.stats.lastPlayed?.[mode]) || unlocked, 1, unlocked);
+      levelMenu.querySelector("[data-level-title]").textContent = MODE_CONFIGS[mode].name;
+      levelMenu.querySelector("[data-level-description]").textContent =
+        `Відкрито рівнів: ${unlocked} із 10. Пройдені рівні можна запускати повторно.`;
+      const list = levelMenu.querySelector("[data-level-list]");
+      list.innerHTML = Array.from({ length: 10 }, (_, index) => {
+        const level = index + 1;
+        const locked = level > unlocked;
+        const current = level === lastPlayed;
+        return `<button class="fg2-level${current ? " current" : ""}" data-level="${level}"${locked ? " disabled" : ""}>
+          ${locked ? '<span class="fg2-level-lock">🔒</span>' : level}
+          <small>${locked ? "закрито" : current ? "останній" : level < unlocked ? "пройдено" : "доступно"}</small>
+        </button>`;
+      }).join("");
+      list.querySelectorAll("[data-level]:not([disabled])").forEach(button =>
+        button.addEventListener("click", () => this.start(mode, Number(button.dataset.level)))
+      );
+      modeMenu.classList.add("hidden");
+      levelMenu.classList.remove("hidden");
     }
 
     enterLandscape() {
@@ -253,7 +309,10 @@
       if (this.running) return;
       this.mode = MODE_CONFIGS[mode] ? mode : "transport";
       this.modeConfig = MODE_CONFIGS[this.mode];
-      this.level = Math.max(1, Number(forcedLevel) || Number(this.stats.levels[this.mode]) || 1);
+      const unlocked = clamp(Number(this.stats.levels[this.mode]) || 1, 1, 10);
+      this.level = clamp(Number(forcedLevel) || unlocked, 1, unlocked);
+      this.stats.lastPlayed[this.mode] = this.level;
+      saveStats(this.stats);
       this.configureLevel();
       this.root.classList.add("playing");
       this.enterLandscape();
@@ -290,12 +349,19 @@
       this.truckQueueTotal = Math.max(this.trucksRequired + 2, 10 - ((this.level - 1) % 7));
       this.trailerRound = 1;
       this.trailerAwaitingDeparture = false;
+      this.trailerShortage = 0;
       this.trafficLight = "red";
+      this.truckDestinations = Array.from({ length: this.trucksRequired }, (_, index) =>
+        TRUCK_DESTINATIONS[((this.level - 1) * 2 + index) % TRUCK_DESTINATIONS.length]
+      );
+      this.currentTruckDestination = this.truckDestinations[0] || "";
+      this.totalPalletsCreated = 0;
+      this.supplyLimit = this.target + Math.max(2, 6 - Math.floor(this.level / 3));
     }
 
     levelGoalText() {
       const prefix = this.modeConfig.trailer
-        ? `ФУРА ${Math.min(this.trucksCompleted + 1, this.trucksRequired)}/${this.trucksRequired} · `
+        ? `ФУРА ${Math.min(this.trucksCompleted + 1, this.trucksRequired)}/${this.trucksRequired} · ${this.currentTruckDestination.toUpperCase()} · `
         : "";
       const rules = [];
       if (this.levelRules.timeLimit) rules.push(`час ${timeText(this.levelRules.timeLimit)}`);
@@ -367,13 +433,16 @@
         this.driver = null;
       }
       this.pallets = [];
-      for (let index = 0; index < 12; index++) {
+      for (let index = 0; index < Math.min(12, this.supplyLimit); index++) {
         const point = this.randomPalletPoint();
         this.pallets.push({
           id: `p${index}`, x: point.x, y: point.y,
           carried: false, delivered: false, slotId: null, damage: 0, awarded: false,
+          destroyedPenalty: false,
+          destination: this.modeConfig.trailer ? this.currentTruckDestination : "",
           color: index % 3 === 0 ? "#8bc5dc" : "#d39a55"
         });
+        this.totalPalletsCreated += 1;
       }
       if (this.levelRules.maze && this.pallets[0]) {
         this.pallets[0].x = 585;
@@ -381,10 +450,11 @@
       }
       this.slots = [];
       if (this.modeConfig.trailer) {
-        for (let column = 0; column < 11; column++) {
+        // Починаємо від голови фури, щоб дальні місця завантажувалися першими.
+        for (let column = 10; column >= 0; column--) {
           for (let row = 0; row < 3; row++) {
             this.slots.push({
-              id: column * 3 + row + 1,
+              id: (10 - column) * 3 + row + 1,
               x: this.trailer.x + 60 + column * 79,
               y: this.trailer.y + 65 + row * 115,
               occupied: false
@@ -710,8 +780,8 @@
 
     forkPoint() {
       return {
-        x: this.vehicle.x + Math.cos(this.vehicle.angle) * 43,
-        y: this.vehicle.y + Math.sin(this.vehicle.angle) * 43
+        x: this.vehicle.x + Math.cos(this.vehicle.angle) * 77,
+        y: this.vehicle.y + Math.sin(this.vehicle.angle) * 77
       };
     }
 
@@ -719,10 +789,10 @@
       if (this.vehicle.forksUp) return;
       const point = this.forkPoint();
       const nearest = this.pallets
-        .filter(pallet => !pallet.carried)
+        .filter(pallet => !pallet.carried && (pallet.damage || 0) < 100)
         .map(pallet => ({ pallet, d: Math.hypot(point.x - pallet.x, point.y - pallet.y) }))
         .sort((a, b) => a.d - b.d)[0];
-      if (!nearest || nearest.d > 48) return;
+      if (!nearest || nearest.d > 66) return;
       nearest.pallet.carried = true;
       if (nearest.pallet.slotId != null) {
         const occupiedSlot = this.slots.find(slot => slot.id === nearest.pallet.slotId);
@@ -753,12 +823,17 @@
         .filter(item => !item.occupied)
         .map(item => ({ item, d: Math.hypot(point.x - item.x, point.y - item.y) }))
         .sort((a, b) => a.d - b.d)[0];
-      const placementDistance = this.modeConfig.trailer ? 72 : 88;
+      const placementDistance = this.modeConfig.trailer ? 58 : 76;
       const exactSlot = slot && slot.d <= placementDistance ? slot.item : null;
       const freePoint = {
         x: clamp(point.x, 45, this.world.w - 45),
         y: clamp(point.y, 45, this.world.h - 45)
       };
+      if (exactSlot && (pallet.damage || 0) >= 100) {
+        this.notice("Цей піддон пошкоджено на 100% — завантажити його не можна", "bad");
+        this.checkSupplyExhausted();
+        return;
+      }
       if (!exactSlot) {
         const blocked = this.obstacles.some(rect => circleRect(freePoint.x, freePoint.y, 35, rect));
         const overlapsPallet = this.pallets.some(item =>
@@ -808,17 +883,43 @@
         }
         else this.complete();
       }
-      else if (this.pallets.filter(item => !item.delivered && !item.carried).length < 5) this.replenish();
+      else if (this.pallets.filter(item => !item.delivered && !item.carried && (item.damage || 0) < 100).length < 5) {
+        this.replenish();
+        this.checkSupplyExhausted();
+      }
     }
 
     replenish() {
+      if (this.totalPalletsCreated >= this.supplyLimit) return false;
       const index = this.pallets.length;
       const point = this.randomPalletPoint();
       this.pallets.push({
         id: `p${Date.now()}-${index}-${Math.round(Math.random() * 9999)}`, x: point.x, y: point.y,
         carried: false, delivered: false, slotId: null, damage: 0, awarded: false,
+        destroyedPenalty: false,
+        destination: this.modeConfig.trailer ? this.currentTruckDestination : "",
         color: index % 2 ? "#d39a55" : "#8bc5dc"
       });
+      this.totalPalletsCreated += 1;
+      return true;
+    }
+
+    checkSupplyExhausted() {
+      if (this.trailerAwaitingDeparture || this.trailerTransition) return;
+      const usable = this.pallets.filter(pallet =>
+        !pallet.delivered && (pallet.damage || 0) < 100
+      ).length;
+      if (this.totalPalletsCreated < this.supplyLimit || this.delivered + usable >= this.target) return;
+      if (!this.modeConfig.trailer) {
+        this.gameOver("Запас придатних піддонів вичерпано. Рівень потрібно пройти повторно.");
+        return;
+      }
+      this.trailerShortage = Math.max(0, this.target - this.delivered);
+      this.trailerAwaitingDeparture = true;
+      this.trafficLight = "red";
+      this.root.querySelector("[data-fg2='goal']").textContent =
+        `Бракує ${this.trailerShortage} піддонів · від’їдь у безпечну зону, фура вирушить неповною`;
+      this.notice(`Запас вичерпано: фура вирушить без ${this.trailerShortage} піддонів`, "bad");
     }
 
     checkTrailerDeparture() {
@@ -847,7 +948,7 @@
       const types = ["speed", "speed", "shield", "speed", "score", "speed"];
       const boostCount = Math.min(12, 8 + Math.floor(this.level / 3));
       for (let index = 0; index < boostCount; index++) {
-        const point = this.randomAislePoint(26);
+        const point = this.randomBoostPoint();
         this.boosts.push({
           x: point.x,
           y: point.y,
@@ -859,11 +960,26 @@
       }
     }
 
+    randomBoostPoint(previousBoost) {
+      let fallback = this.randomAislePoint(26);
+      for (let attempt = 0; attempt < 35; attempt++) {
+        const point = this.randomAislePoint(26);
+        fallback = point;
+        const movedFarEnough = !previousBoost
+          || Math.hypot(point.x - previousBoost.x, point.y - previousBoost.y) >= 220;
+        const clearOfOthers = this.boosts.every(boost =>
+          boost === previousBoost || !boost.active || Math.hypot(point.x - boost.x, point.y - boost.y) >= 90
+        );
+        if (movedFarEnough && clearOfOthers) return point;
+      }
+      return fallback;
+    }
+
     updateBoosts() {
       this.boosts.forEach(boost => {
         if (!boost.active) {
           if (boost.respawnAt && this.elapsed >= boost.respawnAt) {
-            const point = this.randomAislePoint(26);
+            const point = this.randomBoostPoint(boost);
             const types = ["speed", "speed", "speed", "shield", "score"];
             boost.x = point.x;
             boost.y = point.y;
@@ -884,15 +1000,17 @@
         boost.respawnAt = this.elapsed + 9 + Math.random() * 8;
         if (botTakes) {
           this.botScore += boost.type === "score" ? 75 : 25;
-          if (boost.type === "speed") this.bot.speedBoostUntil = this.elapsed + 7;
+          if (boost.type === "speed") {
+            this.bot.speedBoostUntil = Math.max(this.elapsed, this.bot.speedBoostUntil || 0) + 20;
+          }
           return;
         }
         if (boost.type === "speed") {
-          this.speedBoostUntil = this.elapsed + 11;
-          this.notice("Прискорення активне на 11 секунд", "good");
+          this.speedBoostUntil = Math.max(this.elapsed, this.speedBoostUntil) + 40;
+          this.notice("Прискорення +40 секунд", "good");
         } else if (boost.type === "shield") {
-          this.shieldBoostUntil = this.elapsed + 14;
-          this.notice("Захист вантажу активний на 14 секунд", "good");
+          this.shieldBoostUntil = Math.max(this.elapsed, this.shieldBoostUntil) + 40;
+          this.notice("Захист вантажу +40 секунд", "good");
         } else {
           this.score += 75;
           this.notice("+75 бонусних балів", "good");
@@ -926,13 +1044,21 @@
           this.complete();
           return;
         }
-        this.pallets = this.pallets.filter(pallet => !pallet.delivered);
+        this.currentTruckDestination = this.truckDestinations[this.trucksCompleted] || "";
+        this.pallets = this.pallets.filter(pallet => !pallet.delivered && (pallet.damage || 0) < 100);
+        this.pallets.forEach(pallet => {
+          pallet.destination = this.currentTruckDestination;
+          pallet.awarded = false;
+        });
         this.slots.forEach(slot => {
           slot.occupied = false;
           slot.palletId = null;
         });
         this.delivered = 0;
-        while (this.pallets.filter(pallet => !pallet.carried).length < 12) this.replenish();
+        this.trailerShortage = 0;
+        this.totalPalletsCreated = this.pallets.length;
+        this.supplyLimit = this.target + Math.max(2, 6 - Math.floor(this.level / 3));
+        while (this.pallets.filter(pallet => !pallet.carried).length < 12 && this.replenish()) {}
         this.trailerRound = this.trucksCompleted + 1;
         this.trailerAwaitingDeparture = false;
         this.trafficLight = "red";
@@ -1187,14 +1313,30 @@
       if (this.elapsed - this.lastDamageAt < .8) return;
       this.lastDamageAt = this.elapsed;
       const carried = this.vehicle.carrying;
+      let destroyedNow = false;
       if (carried && this.elapsed >= this.shieldBoostUntil) {
         const addedDamage = Math.round(clamp(6 + this.vehicle.speed * .08, 7, 24));
         carried.damage = clamp((carried.damage || 0) + addedDamage, 0, 100);
         this.notice(`Пошкодження цього піддона: ${Math.round(carried.damage)}%`, "bad");
+        if (carried.damage >= 100 && !carried.destroyedPenalty) {
+          carried.destroyedPenalty = true;
+          this.score = Math.floor(this.score / 2);
+          destroyedNow = true;
+          this.notice("Піддон знищено: втрачено половину накопичених балів", "bad");
+          this.replenish();
+          this.checkSupplyExhausted();
+        }
       }
       if (this.modeConfig.noPenalties) {
         this.notice(`${reason} — без штрафу у тренуванні`, "bad");
         this.tone(92, .2, "square", .05);
+        return;
+      }
+      if (destroyedNow) {
+        this.integrity = Math.max(0, this.integrity - 15);
+        this.tone(78, .3, "square", .09);
+        if (this.levelRules.strictSafety) this.gameOver("У безпечній зміні вантаж не можна пошкоджувати.");
+        else if (this.score <= 0) this.gameOver();
         return;
       }
       this.score = Math.max(0, this.score - 50);
@@ -1419,7 +1561,8 @@
         ctx.fillStyle = "#263840";
         ctx.font = "900 11px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(`#${this.level + index + 1}`, x + 82, y + 34);
+        const destination = this.truckDestinations[this.trucksCompleted + index + 1];
+        ctx.fillText(destination ? destination.toUpperCase() : `РЕЙС #${this.level + index + 1}`, x + 82, y + 34);
       }
       ctx.fillStyle = "#7d8b90";
       ctx.fillRect(900, 435, 1300, 28);
@@ -1520,7 +1663,9 @@
         };
       }
       if (!this.vehicle.carrying) {
-        const available = this.pallets.find(pallet => !pallet.carried && !pallet.delivered);
+        const available = this.pallets.find(pallet =>
+          !pallet.carried && !pallet.delivered && (pallet.damage || 0) < 100
+        );
         return available || { x: this.source.x + this.source.w / 2, y: this.source.y + this.source.h / 2 };
       }
       return this.slots.find(slot => !slot.occupied)
@@ -1543,6 +1688,7 @@
       const y = clamp(rawY, marginTop, height - marginBottom);
       const angle = Math.atan2(rawY - height / 2, rawX - width / 2);
       const meters = Math.max(1, Math.round(Math.hypot(target.x - this.vehicle.x, target.y - this.vehicle.y) / 10));
+      const targetText = this.vehicle.carrying && target.id != null ? `МІСЦЕ №${target.id}` : `${meters} м`;
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
@@ -1562,14 +1708,14 @@
       ctx.strokeStyle = this.vehicle.carrying ? "#62f293" : "#f4cb4f";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(x - 34, y + 25, 68, 23, 8);
+      ctx.roundRect(x - 43, y + 25, 86, 23, 8);
       ctx.fill();
       ctx.stroke();
       ctx.fillStyle = "#fff";
       ctx.font = "900 11px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(`${meters} м`, x, y + 36);
+      ctx.fillText(targetText, x, y + 36);
       ctx.restore();
     }
 
@@ -1674,7 +1820,11 @@
         ctx.fillStyle = "#183027";
         ctx.font = "900 26px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(`ФУРА №${this.trailerRound} · 33 МІСЦЯ`, this.trailer.x + this.trailer.w / 2, this.trailer.y - 22);
+        ctx.fillText(
+          `ЗАВАНТАЖЕННЯ · ${this.currentTruckDestination.toUpperCase()} · ФУРА ${this.trailerRound}/${this.trucksRequired}`,
+          this.trailer.x + this.trailer.w / 2,
+          this.trailer.y - 22
+        );
         this.slots.forEach(slot => {
           const showOccupied = slot.occupied && (!this.trailerTransition || this.trailerTransition.timer < 3);
           ctx.fillStyle = showOccupied ? "#2f9f61" : "rgba(89,221,133,.16)";
@@ -1774,8 +1924,17 @@
         ctx.fillRect(-29, -21, 58, 40);
         ctx.strokeStyle = "rgba(255,255,255,.35)";
         ctx.strokeRect(-29, -21, 58, 40);
+        if (pallet.destination) {
+          ctx.fillStyle = "rgba(9,22,28,.9)";
+          ctx.fillRect(-29, -7, 58, 15);
+          ctx.fillStyle = "#fff";
+          ctx.font = "900 8px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(pallet.destination.toUpperCase(), 0, 1, 54);
+        }
         if ((pallet.damage || 0) > 0) {
-          ctx.fillStyle = pallet.damage > 50 ? "#c74343" : "#e5b442";
+          ctx.fillStyle = pallet.damage >= 100 ? "#901f28" : pallet.damage > 50 ? "#c74343" : "#e5b442";
           ctx.fillRect(-29, 13, 58 * clamp(pallet.damage / 100, 0, 1), 6);
           ctx.fillStyle = "#fff";
           ctx.font = "900 9px Arial";
@@ -1903,6 +2062,15 @@
           ctx.strokeStyle = "#f2d2a5";
           ctx.lineWidth = 2;
           ctx.strokeRect(48, -28, 58, 56);
+          if (this.modeConfig.trailer && this.currentTruckDestination) {
+            ctx.fillStyle = "rgba(9,22,28,.9)";
+            ctx.fillRect(48, -7, 58, 15);
+            ctx.fillStyle = "#fff";
+            ctx.font = "900 8px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(this.currentTruckDestination.toUpperCase(), 77, 1, 54);
+          }
         }
       }
       ctx.restore();
@@ -1919,6 +2087,15 @@
       this.root.querySelector("[data-fg2='integrity']").textContent = carried
         ? `${Math.round(100 - (carried.damage || 0))}%`
         : "—";
+      const boostParts = [];
+      const speedRemaining = Math.max(0, this.speedBoostUntil - this.elapsed);
+      const shieldRemaining = Math.max(0, this.shieldBoostUntil - this.elapsed);
+      if (speedRemaining > 0) boostParts.push(`⚡ ${timeText(speedRemaining)}`);
+      if (shieldRemaining > 0) boostParts.push(`🛡 ${timeText(shieldRemaining)}`);
+      const boostChip = this.root.querySelector("[data-fg2='boost-chip']");
+      boostChip?.classList.toggle("fg2-hidden", boostParts.length === 0);
+      const boostValue = this.root.querySelector("[data-fg2='boost']");
+      if (boostValue) boostValue.textContent = boostParts.join(" · ") || "—";
     }
 
     notice(text, type) {
@@ -1930,7 +2107,8 @@
       element.className = `fg2-notice ${type || ""}`;
       element.textContent = text;
       area.appendChild(element);
-      setTimeout(() => element.remove(), 2400);
+      while (area.children.length > 2) area.firstElementChild?.remove();
+      setTimeout(() => element.remove(), 1850);
     }
 
     helpScreen() {
@@ -1946,9 +2124,7 @@
         </div>`;
       screen.querySelector("[data-help='back']").addEventListener("click", () => {
         screen.innerHTML = previousContent;
-        screen.querySelectorAll("[data-mode]").forEach(button => button.addEventListener("click", () => this.start(button.dataset.mode)));
-        screen.querySelectorAll("[data-menu='exit']").forEach(button => button.addEventListener("click", () => this.destroy()));
-        screen.querySelector("[data-menu='help']")?.addEventListener("click", () => this.helpScreen());
+        this.bindMenuActions(screen);
       });
     }
 
@@ -1970,7 +2146,10 @@
       this.paused = true;
       this.stats.bestScore = Math.max(this.stats.bestScore, Math.round(this.score));
       if (this.modeConfig.trailer && (!this.stats.bestTrailer || this.elapsed < this.stats.bestTrailer)) this.stats.bestTrailer = Math.floor(this.elapsed);
-      this.stats.levels[this.mode] = Math.max(Number(this.stats.levels[this.mode]) || 1, this.level + 1);
+      this.stats.levels[this.mode] = Math.max(
+        Number(this.stats.levels[this.mode]) || 1,
+        Math.min(10, this.level + 1)
+      );
       saveStats(this.stats);
       this.resultScreen(
         `Рівень ${this.level} пройдено!`,
@@ -1990,7 +2169,7 @@
       const screen = this.root.querySelector(".fg2-screen");
       screen.innerHTML = `
         <div class="fg2-menu"><div class="fg2-kicker">Результат зміни</div><h1>${title}</h1><p>${message}</p>
-        <div class="fg2-actions">${wonLevel ? '<button class="fg2-btn primary" data-result="next">Наступний рівень</button>' : ""}<button class="fg2-btn" data-result="again">Повторити рівень</button><button class="fg2-btn" data-result="menu">Меню гри</button><button class="fg2-btn danger" data-result="exit">Вийти</button></div></div>`;
+        <div class="fg2-actions">${wonLevel && this.level < 10 ? '<button class="fg2-btn primary" data-result="next">Наступний рівень</button>' : ""}<button class="fg2-btn" data-result="again">Повторити рівень</button><button class="fg2-btn" data-result="menu">Меню гри</button><button class="fg2-btn danger" data-result="exit">Вийти</button></div></div>`;
       screen.classList.remove("hidden");
       screen.querySelector("[data-result='next']")?.addEventListener("click", () => this.nextLevel());
       screen.querySelector("[data-result='again']").addEventListener("click", () => this.restartLevel());
