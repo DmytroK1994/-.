@@ -7254,14 +7254,33 @@
     .order-report-table .print-table-header-row > div:last-child {
       text-align:center !important;
     }
+    .preview-report-table .print-report-row > div,
+    .print-report-table .print-report-row > div,
+    .preview-report-table .order-print-row > div,
+    .print-report-table .order-print-row > div,
+    .preview-report-table .print-total-cell,
+    .print-report-table .print-total-cell {
+      text-align:center !important;
+    }
     .order-warehouse-report-row,
     .inventory-warehouse-report-row {
       min-height:28px;
       padding:6px 8px;
-      font-size:12px;
+      font-size:13px;
       line-height:1.2;
       font-weight:900;
       text-align:left;
+    }
+    @media (max-width: 600px) {
+      .document-preview-overlay {
+        padding-right:4px;
+        padding-left:4px;
+      }
+      .preview-sheet,
+      .preview-sheet.order-preview-sheet {
+        padding-right:5px;
+        padding-left:5px;
+      }
     }
     .print-report-header h1.order-document-title,
     .preview-report-title.order-document-title {
@@ -7344,6 +7363,22 @@
       .order-report-table .order-print-row > div {
         padding:3px;
         line-height:1.1;
+      }
+    }
+    @supports (-webkit-touch-callout: none) {
+      @media print {
+        @page {
+          size:A4 portrait;
+          margin:3mm;
+        }
+        html,
+        body,
+        #pageToday,
+        .print-report-table,
+        #printTodayList {
+          width:100% !important;
+          max-width:100% !important;
+        }
       }
     }
     @media (max-width:600px) {
@@ -8534,7 +8569,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=343">
+<link rel="manifest" href="manifest.json?v=344">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8589,7 +8624,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.43</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.44</span></div>
     </div>
   </div>
 
@@ -9821,7 +9856,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.43</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.44</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9846,6 +9881,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.44</h3>
+          <ul>
+            <li>увесь текст у клітинках документів вирівняно по центру, включно з номером, статусом, найменуванням, кількістю та коментарем;</li>
+            <li>рядок складу залишено вирівняним зліва та збільшено для кращої помітності;</li>
+            <li>мобільний попередній перегляд отримав менші бокові відступи;</li>
+            <li>для друку з iPhone задано формат A4, повну доступну ширину та мінімальні поля.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.43</h3>
           <ul>
@@ -11360,7 +11404,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.43";
+  const APP_VERSION = "3.44";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -20283,7 +20327,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=343")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=344")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
