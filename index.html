@@ -4008,47 +4008,62 @@
     }
     .quick-edit-header {
       position: relative;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 10px;
+      display: block;
       margin-bottom: 12px;
     }
     .quick-edit-title-block {
-      flex: 1;
+      width: 100%;
       min-width: 0;
-    }
-    body:not(.workspace-orders) .quick-edit-title-block {
       padding-right: 42px;
     }
+    .quick-edit-heading-row {
+      display: grid;
+      grid-template-columns: minmax(82px, 1fr) minmax(112px, 156px);
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+    }
     .quick-edit-header h2 {
-      margin: 0;
-      overflow-wrap: anywhere;
+      width: 100%;
+      margin: 7px 0 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-size: clamp(13px, 4vw, 20px);
+      line-height: 1.15;
+      overflow-wrap: normal;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .quick-edit-header h2::-webkit-scrollbar {
+      display: none;
     }
     .quick-edit-header .quick-edit-eyebrow {
-      margin-bottom: 5px;
+      margin: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 850;
+      line-height: 1.05;
+      white-space: pre-line;
     }
     body.workspace-production .quick-edit-header {
       display: block;
       text-align: center;
     }
+    body.workspace-production .quick-edit-heading-row {
+      display: block;
+    }
     .quick-edit-current-warehouse {
       display: grid;
-      flex: 0 1 190px;
       grid-template-columns: minmax(0, 1fr);
-      align-items: end;
-      gap: 5px;
-      margin-right: 40px;
+      gap: 2px;
+      width: 100%;
       min-width: 0;
     }
     .quick-edit-current-warehouse-label {
       grid-column: 1 / -1;
       margin: 0 !important;
       color: var(--muted);
-      font-size: 10px !important;
+      font-size: 9px !important;
       font-weight: 800;
       line-height: 1;
       text-align: right;
@@ -4056,12 +4071,12 @@
     #quickEditCurrentWarehouse {
       width: 100%;
       min-width: 0;
-      min-height: 36px;
-      height: 36px;
+      min-height: 30px;
+      height: 30px;
       margin: 0;
-      padding: 6px 25px 6px 8px;
-      border-radius: 10px;
-      font-size: 12px;
+      padding: 3px 24px 3px 7px;
+      border-radius: 9px;
+      font-size: 11px;
       font-weight: 850;
     }
     #deleteQuickEditWarehouseBtn {
@@ -4092,11 +4107,9 @@
       border-width: 2px;
     }
     @media (max-width: 420px) {
-      .quick-edit-header {
-        gap: 7px;
-      }
-      .quick-edit-current-warehouse {
-        flex-basis: 150px;
+      .quick-edit-heading-row {
+        grid-template-columns: minmax(74px, 1fr) minmax(105px, 142px);
+        gap: 6px;
       }
     }
     body.workspace-production .quick-edit-header .quick-edit-eyebrow {
@@ -4156,6 +4169,19 @@
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 13px;
+    }
+    #saveQuickEditDefaultsBtn {
+      width: 100%;
+      min-height: 30px;
+      margin: 9px 0 0;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 11px;
+      font-weight: 750;
     }
     #saveQuickEditBtn {
       border: 1px solid var(--soft-success-border);
@@ -6627,6 +6653,21 @@
     .order-document-fields, .order-entry-fields, .quick-edit-order-fields { display:grid; gap:8px; margin:10px 0; }
     .order-entry-fields, .quick-edit-order-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .order-document-fields label, .order-entry-fields label, .quick-edit-order-fields label { margin:0; }
+    #quickEditOrderFields {
+      margin: 6px 0 8px;
+    }
+    #quickEditOrderFields label {
+      font-size: 10px;
+      line-height: 1;
+    }
+    #quickEditOrderFields select {
+      width: 100%;
+      min-height: 32px;
+      height: 32px;
+      margin: 2px 0 0;
+      padding: 3px 27px 3px 8px;
+      font-size: 12px;
+    }
     .warehouse-manager-overlay { position:fixed; inset:0; z-index:1300; display:grid; place-items:center; padding:max(18px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom)); background:rgba(0,0,0,.48); }
     .warehouse-manager-dialog { width:min(520px,100%); max-height:min(720px,88dvh); overflow:auto; padding:20px; border:1px solid var(--border); border-radius:24px; background:var(--surface-strong, #fff); color:var(--text); box-shadow:0 24px 70px rgba(0,0,0,.28); }
     .warehouse-manager-list { display:grid; gap:8px; margin:14px 0; }
@@ -6656,10 +6697,8 @@
       box-shadow: 0 24px 70px var(--popover-shadow);
     }
     .order-entry-dialog-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
+      position: relative;
+      display: block;
       margin-bottom: 12px;
     }
     .order-entry-dialog-header > div:first-child {
@@ -6667,8 +6706,25 @@
       min-width: 0;
     }
     .order-entry-dialog-header h2 {
-      margin: 0;
-      overflow-wrap: anywhere;
+      width: 100%;
+      margin: 7px 0 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-size: clamp(13px, 4vw, 20px);
+      line-height: 1.15;
+      overflow-wrap: normal;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .order-entry-dialog-header h2::-webkit-scrollbar {
+      display: none;
+    }
+    #orderEntryDialogEyebrow {
+      min-height: 30px;
+      padding-right: 158px;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.15;
     }
     body.workspace-production .order-entry-dialog-header {
       position: relative;
@@ -6704,6 +6760,9 @@
       right: 0;
     }
     .order-entry-dialog-header-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
       display: flex;
       align-items: center;
       gap: 7px;
@@ -6767,7 +6826,7 @@
     .order-entry-dialog-grid .order-entry-top-fields {
       display: grid;
       grid-column: 1 / -1;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr);
       gap: 10px;
     }
     body:not(.workspace-orders) .order-entry-dialog-grid .order-entry-top-fields {
@@ -6868,8 +6927,11 @@
       content: "⌃";
     }
     #orderEntryOverlay #orderEntryStatus {
-      height: 48px;
-      min-height: 48px;
+      width: 100%;
+      height: 32px;
+      min-height: 32px;
+      padding: 3px 28px 3px 9px;
+      font-size: 13px;
     }
     .entry-unit-picker-popover {
       position: absolute;
@@ -8294,7 +8356,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=332">
+<link rel="manifest" href="manifest.json?v=333">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8349,7 +8411,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.32</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.33</span></div>
     </div>
   </div>
 
@@ -9575,7 +9637,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.32</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.33</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9600,6 +9662,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.33</h3>
+          <ul>
+            <li>у додаванні замовлення терміновість розтягнуто на всю ширину й зроблено компактнішою;</li>
+            <li>заголовки найменувань у додаванні та редагуванні розміщено одним рядком під назвою дії;</li>
+            <li>вибір поточного складу та переміщення позиції між складами додано також до редагування інвентаризації;</li>
+            <li>типові значення можна окремо зберегти без додавання або зміни кількості.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.32</h3>
           <ul>
@@ -10644,12 +10715,14 @@
     <div class="quick-edit-dialog">
       <div class="quick-edit-header">
         <div class="quick-edit-title-block">
-          <div class="quick-edit-eyebrow" id="quickEditEyebrow">Редагування позиції</div>
+          <div class="quick-edit-heading-row">
+            <div class="quick-edit-eyebrow" id="quickEditEyebrow">Редагування позиції</div>
+            <div class="quick-edit-current-warehouse hidden" id="quickEditCurrentWarehouseContext">
+              <label class="quick-edit-current-warehouse-label" for="quickEditCurrentWarehouse">Поточний склад</label>
+              <select id="quickEditCurrentWarehouse" aria-label="Поточний склад редагованої позиції"></select>
+            </div>
+          </div>
           <h2 id="quickEditTitle">Редагування позиції</h2>
-        </div>
-        <div class="quick-edit-current-warehouse hidden" id="quickEditCurrentWarehouseContext">
-          <label class="quick-edit-current-warehouse-label" for="quickEditCurrentWarehouse">Поточний склад</label>
-          <select id="quickEditCurrentWarehouse" aria-label="Поточний склад редагованої позиції"></select>
         </div>
         <button type="button" id="deleteQuickEditWarehouseBtn" aria-label="Видалити позицію" title="Видалити позицію"><span class="product-trash-icon" aria-hidden="true"></span></button>
       </div>
@@ -10658,10 +10731,10 @@
       <input type="hidden" id="quickEditEntryId" />
       <div class="quick-edit-order-fields hidden" id="quickEditOrderFields">
         <div>
-          <label for="quickEditWarehouse">В інший склад</label>
+          <label for="quickEditWarehouse">Перемістити на інший склад</label>
           <select id="quickEditWarehouse"></select>
         </div>
-        <div>
+        <div class="quick-edit-status-field">
           <label for="quickEditOrderStatus">Статус</label>
           <select id="quickEditOrderStatus">
             <option value="normal">Звичайно</option>
@@ -10799,6 +10872,7 @@
           </div>
         </section>
       </div>
+      <button type="button" id="saveQuickEditDefaultsBtn">Зберегти типові значення</button>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
         <button id="closeQuickEditBtn">Закрити</button>
@@ -10980,7 +11054,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.32";
+  const APP_VERSION = "3.33";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -17412,7 +17486,7 @@
   function renderQuickEditWarehouseOptions(entries, selectedEntry) {
     const context = document.getElementById("quickEditCurrentWarehouseContext");
     const select = document.getElementById("quickEditCurrentWarehouse");
-    const visible = workspaceIsOrders() && !workspaceIsProduction();
+    const visible = !workspaceIsProduction();
     context.classList.toggle("hidden", !visible);
     if (!visible) {
       select.innerHTML = "";
@@ -17460,11 +17534,12 @@
     document.getElementById("quickEditPacksPerBox").value = entry.packsPerBox || "";
     document.getElementById("quickEditProductionComment").value = entry.comment || "";
     updateQuickEditProductionTotal();
-    document.getElementById("quickEditOrderFields").classList.toggle("hidden", !workspaceIsOrders() || production);
+    document.getElementById("quickEditOrderFields").classList.toggle("hidden", production);
+    document.querySelector("#quickEditOrderFields .quick-edit-status-field")?.classList.toggle("hidden", !workspaceIsOrders());
     renderWarehouseOptions();
     document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
     document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
-    if (workspaceIsOrders() && !production) {
+    if (!production) {
       document.getElementById("quickEditCurrentWarehouse").value = quickEditWarehouseKey(entry);
     }
   }
@@ -17553,7 +17628,7 @@
     document.getElementById("quickEditProductId").value = productId;
     document.getElementById("quickEditEyebrow").textContent = workspaceIsProduction()
       ? getProductionWorkspaceName()
-      : (workspaceIsOrders() ? "Редагування замовлення" : "Редагування інвентаризації");
+      : (workspaceIsOrders() ? "Редагування замовлення" : "Редагування\nінвентаризації");
     document.getElementById("quickEditTitle").textContent = product?.name || selected.productName || "Редагування позиції";
     renderQuickEditWarehouseOptions(entries, selected);
     renderQuickEditTabs(quickEditEntriesForWarehouse(entries, selected), selected.id);
@@ -17639,16 +17714,18 @@
       directKgExpression: directCalculation.display,
       comment: document.getElementById("quickEditComment").value.trim()
     };
+    const warehouseId = document.getElementById("quickEditWarehouse").value;
+    const warehouse = state.warehouses.find(item => item.id === warehouseId);
+    if (!warehouse) {
+      toast("Оберіть склад", true);
+      return;
+    }
+    Object.assign(updated, {
+      warehouseId,
+      warehouseName: warehouse.name
+    });
     if (workspaceIsOrders()) {
-      const warehouseId = document.getElementById("quickEditWarehouse").value;
-      const warehouse = state.warehouses.find(item => item.id === warehouseId);
-      if (!warehouse) {
-        toast("Оберіть склад", true);
-        return;
-      }
       Object.assign(updated, {
-        warehouseId,
-        warehouseName: warehouse.name,
         orderStatus: normalizeOrderStatus(document.getElementById("quickEditOrderStatus").value),
         needDate: getActiveDay().date || todayISO()
       });
@@ -17666,6 +17743,47 @@
     closeQuickEdit();
     showSuccessCheck();
     scheduleKeyboardScrollRestore();
+  }
+
+  async function saveQuickEditDefaults() {
+    const productId = document.getElementById("quickEditProductId").value;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Найменування не знайдено", true);
+      return;
+    }
+    const production = workspaceIsProduction();
+    const boxesPerPallet = Math.max(0, Number(document.getElementById("quickEditBoxesPerPallet").value) || 0);
+    const packsPerBox = Math.max(0, Number(document.getElementById("quickEditPacksPerBox").value) || 0);
+    if (production && (boxesPerPallet <= 0 || packsPerBox <= 0)) {
+      toast("Введи коробки в піддоні та пачки в коробці", true);
+      return;
+    }
+    const confirmed = await showAppDialog({
+      label: "Типові значення",
+      title: `Зберегти типові значення для «${product.name}»?`,
+      message: production
+        ? "Коробки в піддоні та пачки в коробці автоматично підставлятимуться наступного разу."
+        : "Одиниці виміру та кількість у піддоні/одиниці автоматично підставлятимуться наступного разу.",
+      confirmText: "Зберегти",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    if (production) {
+      product.defaultBoxesPerPallet = boxesPerPallet;
+      product.defaultPacksPerBox = packsPerBox;
+    } else {
+      Object.assign(product, {
+        defaultUnit: normalizeMeasurementUnit(document.getElementById("quickEditDirectUnit").value),
+        defaultPalletUnit: normalizeMeasurementUnit(document.getElementById("quickEditPalletUnit").value),
+        defaultPieceUnit: normalizeMeasurementUnit(document.getElementById("quickEditPieceUnit").value),
+        defaultDirectUnit: normalizeMeasurementUnit(document.getElementById("quickEditDirectUnit").value),
+        defaultPalletKg: Math.max(0, Number(document.getElementById("quickEditKgPerPallet").value) || 0),
+        defaultPieceKg: Math.max(0, Number(document.getElementById("quickEditKgPerPiece").value) || 0)
+      });
+    }
+    save();
+    toast("Типові значення збережено");
   }
 
   function formatProductionEntryCalculation(expression, pallets, boxesPerPallet, packsPerBox, totalPacks) {
@@ -19658,7 +19776,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=332")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=333")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -21452,6 +21570,7 @@
   });
   document.getElementById("clearTodayListSearchBtn").addEventListener("click", clearTodayListSearch);
   document.getElementById("saveQuickEditBtn").addEventListener("click", saveQuickEditEntry);
+  document.getElementById("saveQuickEditDefaultsBtn").addEventListener("click", saveQuickEditDefaults);
   document.getElementById("closeQuickEditBtn").addEventListener("click", closeQuickEdit);
   document.getElementById("quickEditCurrentWarehouse").addEventListener("change", event => {
     selectQuickEditWarehouse(event.target.value);
