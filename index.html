@@ -707,12 +707,13 @@
       }
     }
     [data-layout-container] {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(12, minmax(0, 1fr));
     }
     [data-layout-container].layout-managed > [data-layout-item] {
       position: relative;
       order: initial !important;
-      grid-column: 1 / -1 !important;
+      grid-column: span var(--layout-grid-span, 12) !important;
+      min-height: var(--layout-min-height, auto);
       min-width: 0;
       padding-bottom: 17px !important;
       -webkit-touch-callout: none;
@@ -720,22 +721,22 @@
       user-select: none;
     }
     [data-layout-container].layout-managed > [data-layout-item].layout-width-half {
-      grid-column: span 1 !important;
+      grid-column: span 6 !important;
     }
     [data-layout-item] input,
     [data-layout-item] textarea {
       -webkit-user-select: text;
       user-select: text;
     }
-    [data-layout-container].layout-managed > [data-layout-item].layout-width-half .inventory-entry-section-fields {
+    [data-layout-container].layout-managed > [data-layout-item]:is(.layout-width-half, .layout-width-compact) .inventory-entry-section-fields {
       grid-template-columns: minmax(0, 1fr);
     }
-    [data-layout-container].layout-managed > [data-layout-item].layout-width-half .entry-section-header {
+    [data-layout-container].layout-managed > [data-layout-item]:is(.layout-width-half, .layout-width-compact) .entry-section-header {
       flex-wrap: wrap;
       gap: 4px;
     }
-    #orderEntryOverlay [data-layout-item].layout-width-half .entry-section-unit-select,
-    #quickEditOverlay [data-layout-item].layout-width-half .entry-section-unit-select {
+    #orderEntryOverlay [data-layout-item]:is(.layout-width-half, .layout-width-compact) .entry-section-unit-select,
+    #quickEditOverlay [data-layout-item]:is(.layout-width-half, .layout-width-compact) .entry-section-unit-select {
       order: 3;
       flex: 1 1 100%;
       width: 100% !important;
@@ -779,7 +780,7 @@
       color: transparent !important;
       box-shadow: none !important;
       clip-path: polygon(100% 0, 100% 100%, 0 100%);
-      cursor: ew-resize;
+      cursor: nwse-resize;
       touch-action: none;
       opacity: .7;
     }
@@ -8525,7 +8526,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=337">
+<link rel="manifest" href="manifest.json?v=338">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8580,7 +8581,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.37</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.38</span></div>
     </div>
   </div>
 
@@ -9812,7 +9813,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.37</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.38</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9837,6 +9838,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.38</h3>
+          <ul>
+            <li>кутовий маркер тепер змінює не лише ширину, а й висоту блока;</li>
+            <li>ширина регулюється поступово в межах від половини до повної ширини;</li>
+            <li>перетягування вниз збільшує висоту, а вгору зменшує її без накладання вмісту;</li>
+            <li>індивідуальні ширина та висота зберігаються окремо для кожного процесу й вікна.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.37</h3>
           <ul>
@@ -11262,7 +11272,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.37";
+  const APP_VERSION = "3.38";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16699,6 +16709,14 @@
       widths: Object.fromEntries(items.map(item => [
         item.dataset.layoutItem,
         item.classList.contains("layout-width-half") ? "half" : "full"
+      ])),
+      spans: Object.fromEntries(items.map(item => [
+        item.dataset.layoutItem,
+        Math.min(12, Math.max(6, Number(item.dataset.layoutSpan) || 12))
+      ])),
+      heights: Object.fromEntries(items.map(item => [
+        item.dataset.layoutItem,
+        Math.max(0, Number(item.dataset.layoutMinHeight) || 0)
       ]))
     };
     try { localStorage.setItem(ENTRY_BLOCK_LAYOUT_KEY, JSON.stringify(layouts)); } catch (error) {}
@@ -16718,11 +16736,21 @@
       orderedIds.forEach(id => container.appendChild(byId.get(id)));
       items.forEach(item => {
         const savedWidth = layout.widths?.[item.dataset.layoutItem];
-        const width = savedWidth === "half" || savedWidth === "full"
-          ? savedWidth
-          : (item.dataset.layoutDefaultWidth === "half" ? "half" : "full");
-        item.classList.toggle("layout-width-half", width === "half");
-        item.dataset.layoutWidth = width;
+        const defaultSpan = item.dataset.layoutDefaultWidth === "half" ? 6 : 12;
+        const legacySpan = savedWidth === "half" ? 6 : (savedWidth === "full" ? 12 : defaultSpan);
+        const savedSpan = Number(layout.spans?.[item.dataset.layoutItem]);
+        const span = Number.isFinite(savedSpan)
+          ? Math.min(12, Math.max(6, Math.round(savedSpan)))
+          : legacySpan;
+        const savedHeight = Math.max(0, Number(layout.heights?.[item.dataset.layoutItem]) || 0);
+        item.classList.toggle("layout-width-half", span === 6);
+        item.classList.toggle("layout-width-compact", span > 6 && span <= 8);
+        item.dataset.layoutWidth = span === 6 ? "half" : (span === 12 ? "full" : "custom");
+        item.dataset.layoutSpan = String(span);
+        item.style.setProperty("--layout-grid-span", String(span));
+        item.dataset.layoutMinHeight = savedHeight ? String(savedHeight) : "";
+        if (savedHeight) item.style.setProperty("--layout-min-height", `${savedHeight}px`);
+        else item.style.removeProperty("--layout-min-height");
         const hasResizeHandle = Array.from(item.children)
           .some(child => child.classList.contains("block-resize-handle"));
         if (!hasResizeHandle) {
@@ -16763,7 +16791,13 @@
     let resizeHandle = null;
     let resizePointerId = null;
     let resizeStartX = 0;
+    let resizeStartY = 0;
+    let resizeStartWidth = 0;
+    let resizeStartHeight = 0;
+    let resizeStartedSpan = 12;
     let resizeStartedHalf = false;
+    let resizeStartedMinHeight = 0;
+    let resizeDidVertical = false;
 
     const clearPressTimer = () => {
       window.clearTimeout(pressTimer);
@@ -16799,7 +16833,18 @@
       event.preventDefault();
       if (cancelled) {
         resizingItem.classList.toggle("layout-width-half", resizeStartedHalf);
-        resizingItem.dataset.layoutWidth = resizeStartedHalf ? "half" : "full";
+        resizingItem.classList.toggle("layout-width-compact", resizeStartedSpan > 6 && resizeStartedSpan <= 8);
+        resizingItem.dataset.layoutWidth = resizeStartedSpan === 6
+          ? "half"
+          : (resizeStartedSpan === 12 ? "full" : "custom");
+        resizingItem.dataset.layoutSpan = String(resizeStartedSpan);
+        resizingItem.style.setProperty("--layout-grid-span", String(resizeStartedSpan));
+        resizingItem.dataset.layoutMinHeight = resizeStartedMinHeight ? String(resizeStartedMinHeight) : "";
+        if (resizeStartedMinHeight) {
+          resizingItem.style.setProperty("--layout-min-height", `${resizeStartedMinHeight}px`);
+        } else {
+          resizingItem.style.removeProperty("--layout-min-height");
+        }
       } else {
         saveEntryBlockLayout(resizingContainer);
       }
@@ -16812,7 +16857,13 @@
       resizeHandle = null;
       resizePointerId = null;
       resizeStartX = 0;
+      resizeStartY = 0;
+      resizeStartWidth = 0;
+      resizeStartHeight = 0;
+      resizeStartedSpan = 12;
       resizeStartedHalf = false;
+      resizeStartedMinHeight = 0;
+      resizeDidVertical = false;
       return true;
     };
 
@@ -16830,7 +16881,14 @@
         resizeHandle = requestedResizeHandle;
         resizePointerId = event.pointerId;
         resizeStartX = event.clientX;
+        resizeStartY = event.clientY;
+        const startRect = item.getBoundingClientRect();
+        resizeStartWidth = startRect.width;
+        resizeStartHeight = startRect.height;
+        resizeStartedSpan = Math.min(12, Math.max(6, Number(item.dataset.layoutSpan) || 12));
         resizeStartedHalf = item.classList.contains("layout-width-half");
+        resizeStartedMinHeight = Math.max(0, Number(item.dataset.layoutMinHeight) || 0);
+        resizeDidVertical = false;
         item.classList.add("block-layout-resizing");
         document.body.classList.add("block-layout-resizing");
         try { requestedResizeHandle.setPointerCapture(event.pointerId); } catch (error) {}
@@ -16861,11 +16919,22 @@
       if (event.pointerId === resizePointerId && resizingItem) {
         event.preventDefault();
         const deltaX = event.clientX - resizeStartX;
-        let half = resizeStartedHalf;
-        if (deltaX <= -24) half = true;
-        if (deltaX >= 24) half = false;
-        resizingItem.classList.toggle("layout-width-half", half);
-        resizingItem.dataset.layoutWidth = half ? "half" : "full";
+        const deltaY = event.clientY - resizeStartY;
+        const containerWidth = Math.max(1, resizingContainer.getBoundingClientRect().width);
+        const desiredWidth = Math.min(containerWidth, Math.max(containerWidth / 2, resizeStartWidth + deltaX));
+        const span = Math.min(12, Math.max(6, Math.round((desiredWidth / containerWidth) * 12)));
+        resizingItem.classList.toggle("layout-width-half", span === 6);
+        resizingItem.classList.toggle("layout-width-compact", span > 6 && span <= 8);
+        resizingItem.dataset.layoutWidth = span === 6 ? "half" : (span === 12 ? "full" : "custom");
+        resizingItem.dataset.layoutSpan = String(span);
+        resizingItem.style.setProperty("--layout-grid-span", String(span));
+        if (Math.abs(deltaY) > 4 || resizeDidVertical) {
+          resizeDidVertical = true;
+          const requestedHeight = Math.max(0, Math.round(resizeStartHeight + deltaY));
+          resizingItem.style.setProperty("--layout-min-height", `${requestedHeight}px`);
+          const actualHeight = Math.round(resizingItem.getBoundingClientRect().height);
+          resizingItem.dataset.layoutMinHeight = String(actualHeight);
+        }
         return;
       }
       if (event.pointerId !== pointerId || !pressedItem) return;
@@ -20250,7 +20319,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=337")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=338")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
