@@ -48,6 +48,7 @@
       .fg2-kicker{color:#72d5e4;font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.fg2-menu h1{margin:6px 0 8px;font-size:clamp(27px,5vw,44px);line-height:1}.fg2-menu p{margin:0 0 16px;color:#bdcdd5;line-height:1.45}
       .fg2-menu-lead{max-width:620px}.fg2-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.fg2-mode{position:relative;display:grid;grid-template-columns:54px 1fr;align-items:center;gap:12px;width:100%;min-height:88px;padding:14px;border:1px solid rgba(255,255,255,.15);border-radius:19px;background:linear-gradient(145deg,#173642,#10252e);color:#fff;box-shadow:0 9px 24px rgba(0,0,0,.22);text-align:left;transition:transform .16s ease,border-color .16s ease,background .16s ease}.fg2-mode:hover{border-color:rgba(114,213,228,.58);background:linear-gradient(145deg,#1c4350,#14313b);transform:translateY(-2px)}.fg2-mode:active{background:#1b3b48;transform:scale(.985)}.fg2-mode-icon{display:grid;width:54px;height:54px;place-items:center;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:linear-gradient(145deg,#326878,#244852);font-size:28px;box-shadow:inset 0 1px rgba(255,255,255,.12)}.fg2-mode strong,.fg2-mode span{display:block}.fg2-mode-copy>span{margin-top:4px;color:#aec1ca;font-size:12px;line-height:1.3}.fg2-mode-level{position:absolute;top:8px;right:9px;padding:3px 7px;border-radius:999px;background:rgba(5,17,23,.68);color:#78d9e7!important;font-size:9px!important;font-weight:900;letter-spacing:.04em}
       .fg2-levels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:16px}.fg2-level{position:relative;min-height:82px;border:1px solid rgba(255,255,255,.16);border-radius:17px;background:linear-gradient(145deg,#173642,#10252e);color:#fff;font-size:24px;font-weight:950}.fg2-level small{display:block;margin-top:4px;color:#9fb5bf;font-size:9px;letter-spacing:.05em;text-transform:uppercase}.fg2-level.current{border-color:#72d5e4;box-shadow:0 0 0 2px rgba(114,213,228,.16)}.fg2-level:disabled{border-color:rgba(255,255,255,.07);background:#0c1b22;color:#64767e;opacity:.72}.fg2-level-lock{display:block;font-size:16px}
+      .fg2-vehicles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px}.fg2-vehicle{min-height:56px;padding:9px 11px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#102730;color:#fff;text-align:left}.fg2-vehicle strong,.fg2-vehicle span{display:block}.fg2-vehicle span{margin-top:3px;color:#aebfc7;font-size:10px}.fg2-vehicle.active{border-color:#e9bd4f;background:#29434c;box-shadow:0 0 0 2px rgba(233,189,79,.15)}
       .fg2-stats{margin-top:12px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.04)}.fg2-stats summary{padding:10px 12px;cursor:pointer;color:#c8d8df;font-size:12px;font-weight:900;list-style:none}.fg2-stats summary::-webkit-details-marker{display:none}.fg2-stats summary::after{content:"⌄";float:right;font-size:16px}.fg2-stats[open] summary::after{content:"⌃"}.fg2-records{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 9px 9px}.fg2-record{padding:8px;border-radius:12px;background:rgba(255,255,255,.07);text-align:center}.fg2-record strong,.fg2-record span{display:block}.fg2-record span{margin-top:2px;color:#a8bbc4;font-size:9px;font-weight:800}
       .fg2-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.fg2-btn{flex:1;min-width:120px;min-height:42px;padding:8px 12px;border:1px solid rgba(255,255,255,.17);border-radius:13px;background:#1a303a;color:#fff;font-weight:900}.fg2-btn.primary{background:#e9bd4f;color:#162027}.fg2-btn.danger{background:#53272a}
       .fg2-hud{position:absolute;top:max(9px,env(safe-area-inset-top));left:9px;right:82px;z-index:12;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none}.fg2-hud-items{display:flex;flex-wrap:wrap;gap:5px}.fg2-chip{min-width:72px;padding:6px 8px;border:1px solid rgba(255,255,255,.17);border-radius:11px;background:rgba(7,18,24,.82);box-shadow:0 7px 20px rgba(0,0,0,.25)}.fg2-chip span,.fg2-chip strong{display:block}.fg2-chip span{color:#a9bbc4;font-size:8px;font-weight:900;text-transform:uppercase}.fg2-chip strong{margin-top:1px;font-size:13px}
@@ -57,7 +58,7 @@
       .fg2-controls{position:absolute;left:50%;bottom:max(8px,env(safe-area-inset-bottom));z-index:15;display:none;width:min(82%,700px);align-items:end;justify-content:space-between;pointer-events:none;transform:translateX(-50%)}
       .fg2-left{display:grid;justify-items:center;gap:6px;pointer-events:auto}
       .fg2-joystick{position:relative;width:126px;height:126px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(8,25,33,.62);box-shadow:inset 0 0 0 12px rgba(2,9,13,.26);pointer-events:auto;touch-action:none}.fg2-joystick::before,.fg2-joystick::after{content:"";position:absolute;background:rgba(255,255,255,.14)}.fg2-joystick::before{top:50%;left:12%;right:12%;height:1px}.fg2-joystick::after{top:12%;bottom:12%;left:50%;width:1px}.fg2-stick{position:absolute;top:50%;left:50%;width:52px;height:52px;border:2px solid rgba(255,255,255,.45);border-radius:50%;background:#e8ba48;box-shadow:0 6px 16px rgba(0,0,0,.35);transform:translate(-50%,-50%)}
-      .fg2-right{display:grid;grid-template-columns:58px 58px;gap:7px;pointer-events:auto}.fg2-control{display:grid;width:58px;height:48px;padding:3px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(11,31,40,.86);color:#fff;font-size:9px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg2-control:active,.fg2-control.active{background:#efc14f;color:#172027;transform:scale(.96)}.fg2-control.horn{background:#315d6b}.fg2-control.reverse{width:96px;height:34px;background:rgba(39,69,80,.92)}.fg2-control.reverse.active{background:#efc14f;color:#172027}.fg2-control.wide{grid-column:1/3;width:123px}
+      .fg2-right{display:grid;grid-template-columns:58px 58px;gap:7px;pointer-events:auto}.fg2-control{display:grid;width:58px;height:48px;padding:3px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(11,31,40,.86);color:#fff;font-size:9px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg2-control:active,.fg2-control.active{background:#efc14f;color:#172027;transform:scale(.96)}.fg2-control.horn{background:#315d6b}.fg2-control.reverse,.fg2-control.speed-mode{width:108px;height:34px;background:rgba(39,69,80,.92)}.fg2-control.reverse.active,.fg2-control.speed-mode.active{background:#efc14f;color:#172027}.fg2-control.wide{grid-column:1/3;width:123px}
       .fg2-zoom-tip{position:absolute;right:18px;bottom:123px;z-index:8;padding:5px 8px;border-radius:9px;background:rgba(5,15,21,.62);color:#c5d5dc;font-size:9px;font-weight:800;pointer-events:none;animation:fg2Tip 5s both}@keyframes fg2Tip{0%,75%{opacity:.85}100%{opacity:0}}
       .fg2-rotate{display:none;position:absolute;inset:0;z-index:60;padding:22px;place-items:center;background:#071018;text-align:center;pointer-events:none;animation:fg2RotateHint 5s forwards}.fg2-rotate strong{display:block;font-size:45px}.fg2-rotate span{display:block;margin-top:8px;font-weight:900}@keyframes fg2RotateHint{0%,78%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
       @media(pointer:coarse),(max-width:900px){.fg2-controls{display:flex}}
@@ -133,6 +134,8 @@
       this.target = 8;
       this.level = 1;
       this.levelRules = {};
+      this.playerVehicle = "pallet";
+      this.forkliftSpeedMode = "slow";
       this.reverse = false;
       this.speedBoostUntil = 0;
       this.shieldBoostUntil = 0;
@@ -201,6 +204,7 @@
             <div class="fg2-chip"><span>Піддони</span><strong data-fg2="delivery">0 / 8</strong></div>
             <div class="fg2-chip"><span>Бали</span><strong data-fg2="score">1000</strong></div>
             <div class="fg2-chip"><span>Вантаж</span><strong data-fg2="integrity">100%</strong></div>
+            <div class="fg2-chip"><span>Техніка</span><strong data-fg2="vehicle">Електровізок</strong></div>
             <div class="fg2-chip fg2-hidden" data-fg2="boost-chip"><span>Буст</span><strong data-fg2="boost">—</strong></div>
           </div>
         </div>
@@ -212,6 +216,7 @@
           <div class="fg2-left">
             <div class="fg2-joystick" aria-label="Джойстик руху"><span class="fg2-stick"></span></div>
             <button class="fg2-control reverse" data-control="reverse">Реверс: вимк.</button>
+            <button class="fg2-control speed-mode fg2-hidden" data-control="speed">🐢 Черепашка</button>
           </div>
           <div class="fg2-right">
             <button class="fg2-control" data-control="lift">Підняти<br>вила</button>
@@ -246,6 +251,10 @@
             <div class="fg2-kicker">Обери рівень</div>
             <h1 data-level-title>Режим гри</h1>
             <p data-level-description>Пройдені рівні можна запускати повторно.</p>
+            <div class="fg2-vehicles" aria-label="Вибір техніки">
+              <button class="fg2-vehicle active" data-vehicle="pallet"><strong>Електровізок</strong><span>Точне й спокійне керування</span></button>
+              <button class="fg2-vehicle" data-vehicle="forklift"><strong>Кара</strong><span>Швидка техніка: Черепашка / Заєць</span></button>
+            </div>
             <div class="fg2-levels" data-level-list></div>
             <div class="fg2-actions"><button class="fg2-btn" data-level-back>Назад до режимів</button></div>
           </div>
@@ -270,6 +279,14 @@
         button.addEventListener("click", () => this.destroy())
       );
       root.querySelector("[data-menu='help']")?.addEventListener("click", () => this.helpScreen());
+      root.querySelectorAll("[data-vehicle]").forEach(button =>
+        button.addEventListener("click", () => {
+          this.playerVehicle = button.dataset.vehicle === "forklift" ? "forklift" : "pallet";
+          root.querySelectorAll("[data-vehicle]").forEach(item =>
+            item.classList.toggle("active", item.dataset.vehicle === this.playerVehicle)
+          );
+        })
+      );
       root.querySelector("[data-level-back]")?.addEventListener("click", () => {
         root.querySelector(".fg2-level-menu")?.classList.add("hidden");
         root.querySelector(".fg2-mode-menu")?.classList.remove("hidden");
@@ -286,6 +303,9 @@
       levelMenu.querySelector("[data-level-title]").textContent = MODE_CONFIGS[mode].name;
       levelMenu.querySelector("[data-level-description]").textContent =
         `Відкрито рівнів: ${unlocked} із 10. Пройдені рівні можна запускати повторно.`;
+      levelMenu.querySelectorAll("[data-vehicle]").forEach(item =>
+        item.classList.toggle("active", item.dataset.vehicle === this.playerVehicle)
+      );
       const list = levelMenu.querySelector("[data-level-list]");
       list.innerHTML = Array.from({ length: 10 }, (_, index) => {
         const level = index + 1;
@@ -324,6 +344,8 @@
       this.stats.lastPlayed[this.mode] = this.level;
       saveStats(this.stats);
       this.configureLevel();
+      this.vehicle.radius = this.playerVehicle === "forklift" ? 34 : 29;
+      this.forkliftSpeedMode = "slow";
       this.root.classList.add("playing");
       this.enterLandscape();
       this.buildWorld();
@@ -334,6 +356,9 @@
       this.root.querySelector("[data-fg2='delivery']").textContent = `0 / ${this.target}`;
       this.root.querySelector("[data-fg2='level']").textContent = String(this.level);
       this.root.querySelector("[data-fg2='goal']").textContent = this.levelGoalText();
+      const speedButton = this.root.querySelector("[data-control='speed']");
+      speedButton?.classList.toggle("fg2-hidden", this.playerVehicle !== "forklift");
+      if (speedButton) speedButton.textContent = "🐢 Черепашка";
       this.running = true;
       this.lastFrame = performance.now();
       this.raf = requestAnimationFrame(time => this.frame(time));
@@ -730,6 +755,14 @@
         button.addEventListener("pointerdown", event => {
           event.preventDefault();
           if (action === "horn") return this.horn();
+          if (action === "speed") {
+            if (this.playerVehicle !== "forklift") return;
+            this.forkliftSpeedMode = this.forkliftSpeedMode === "fast" ? "slow" : "fast";
+            button.classList.toggle("active", this.forkliftSpeedMode === "fast");
+            button.textContent = this.forkliftSpeedMode === "fast" ? "🐇 Заєць" : "🐢 Черепашка";
+            this.softClick(this.forkliftSpeedMode === "fast" ? 360 : 190);
+            return;
+          }
           if (action === "reverse") {
             this.reverse = !this.reverse;
             button.classList.toggle("active", this.reverse);
@@ -743,8 +776,10 @@
           button.setPointerCapture?.(event.pointerId);
         });
         const release = event => {
-          if (action !== "horn") this.controls[action] = false;
-          button.classList.remove("active");
+          if (action === "lift" || action === "lower") {
+            this.controls[action] = false;
+            button.classList.remove("active");
+          }
           if (event?.pointerId != null && button.hasPointerCapture?.(event.pointerId)) button.releasePointerCapture(event.pointerId);
         };
         button.addEventListener("pointerup", release);
@@ -792,6 +827,12 @@
         const reverseButton = this.root.querySelector("[data-control='reverse']");
         reverseButton?.classList.toggle("active", this.reverse);
         if (reverseButton) reverseButton.textContent = this.reverse ? "Реверс: увімк." : "Реверс: вимк.";
+      }
+      if (down && !event.repeat && event.code === "KeyT" && this.playerVehicle === "forklift") {
+        this.forkliftSpeedMode = this.forkliftSpeedMode === "fast" ? "slow" : "fast";
+        const speedButton = this.root.querySelector("[data-control='speed']");
+        speedButton?.classList.toggle("active", this.forkliftSpeedMode === "fast");
+        if (speedButton) speedButton.textContent = this.forkliftSpeedMode === "fast" ? "🐇 Заєць" : "🐢 Черепашка";
       }
       if (!down && event.code === "KeyQ") this.controls.lift = false;
       if (!down && event.code === "KeyE") this.controls.lower = false;
@@ -867,7 +908,10 @@
       const v = this.vehicle;
       const inTrailer = this.modeConfig.trailer && circleRect(v.x, v.y, 12, this.trailer);
       const boosted = this.elapsed < this.speedBoostUntil ? 1.45 : 1;
-      const maxSpeed = (v.carrying ? 150 : 176) * boosted;
+      const baseSpeed = this.playerVehicle === "forklift"
+        ? (this.forkliftSpeedMode === "fast" ? 430 : 235)
+        : (v.carrying ? 150 : 176);
+      const maxSpeed = baseSpeed * (v.carrying && this.playerVehicle === "forklift" ? .86 : 1) * boosted;
       v.speed += (input.strength * maxSpeed - v.speed) * Math.min(1, dt * 6);
       if (input.strength < .05) v.speed *= Math.pow(.05, dt);
       if (input.strength > .05) {
@@ -2047,7 +2091,15 @@
       if (this.bot) this.drawVehicle(ctx, this.bot.x, this.bot.y, this.bot.angle, "#39829c", false, true);
       this.workers.filter(worker => !worker.injured).forEach(worker => this.drawWorker(ctx, worker));
       if (this.incident) this.drawIncident(ctx);
-      this.drawVehicle(ctx, this.vehicle.x, this.vehicle.y, this.vehicle.angle, "#e4b637", true, false);
+      this.drawVehicle(
+        ctx,
+        this.vehicle.x,
+        this.vehicle.y,
+        this.vehicle.angle,
+        this.playerVehicle === "forklift" ? "#df8f35" : "#e4b637",
+        true,
+        false
+      );
       this.drawSpeechBubbles(ctx);
       ctx.restore();
       this.drawObjectiveIndicator(ctx);
@@ -2685,9 +2737,10 @@
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
-      if (bot) {
+      const enlarged = bot || (player && this.playerVehicle === "forklift");
+      if (enlarged) {
         ctx.save();
-        ctx.scale(1.18, 1.18);
+        ctx.scale(bot ? 1.18 : 1.14, bot ? 1.18 : 1.14);
       }
       ctx.shadowColor = "rgba(0,0,0,.45)";
       ctx.shadowBlur = 12;
@@ -2710,6 +2763,13 @@
         ctx.font = "900 10px Arial";
         ctx.textAlign = "center";
         ctx.fillText("BOT", -9, 4);
+      } else if (player && this.playerVehicle === "forklift") {
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 8px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("КАРА", -7, 3);
+      }
+      if (enlarged) {
         ctx.restore();
       }
       // Вила і піддон мають однаковий реальний розмір у гравця та службової кари.
@@ -2763,6 +2823,9 @@
         : timeText(this.elapsed);
       this.root.querySelector("[data-fg2='delivery']").textContent = `${this.delivered} / ${this.target}`;
       this.root.querySelector("[data-fg2='score']").textContent = String(Math.round(this.score));
+      this.root.querySelector("[data-fg2='vehicle']").textContent = this.playerVehicle === "forklift"
+        ? `Кара · ${this.forkliftSpeedMode === "fast" ? "Заєць" : "Черепашка"}`
+        : "Електровізок";
       const carried = this.vehicle.carrying;
       this.root.querySelector("[data-fg2='integrity']").textContent = carried
         ? `${Math.round(100 - (carried.damage || 0))}%`
@@ -2797,8 +2860,8 @@
       screen.innerHTML = `
         <div class="fg2-menu">
           <h1>Керування</h1>
-          <p><strong>Телефон:</strong> джойстик задає напрям руху. Кнопки праворуч керують вилами та сигналом. Два пальці змінюють масштаб.</p>
-          <p><strong>Комп’ютер:</strong> стрілки або W/A/S/D — рух, Q — підняти вила, E — опустити, H або F — сигнал.</p>
+          <p><strong>Телефон:</strong> джойстик задає напрям руху. Кнопки праворуч керують вилами та сигналом. Для кари кнопка «Черепашка / Заєць» перемикає швидкість. Два пальці змінюють масштаб.</p>
+          <p><strong>Комп’ютер:</strong> стрілки або W/A/S/D — рух, Q — підняти вила, E — опустити, H або F — сигнал, T — швидкість кари.</p>
           <p>Піддон можна взяти з будь-якого місця й поставити назад, у фуру, у зону призначення або в інше вільне місце.</p>
           <div class="fg2-actions"><button class="fg2-btn primary" data-help="back">Зрозуміло</button></div>
         </div>`;
@@ -2862,8 +2925,10 @@
       const mode = this.mode;
       const nextLevel = this.level + 1;
       const options = this.options;
+      const playerVehicle = this.playerVehicle;
       this.destroy(true);
       const next = global.ForkliftGame.launch(options);
+      next.playerVehicle = playerVehicle;
       next.start(mode, nextLevel);
     }
 
@@ -2871,15 +2936,19 @@
       const mode = this.mode;
       const level = this.level;
       const options = this.options;
+      const playerVehicle = this.playerVehicle;
       this.destroy(true);
       const next = global.ForkliftGame.launch(options);
+      next.playerVehicle = playerVehicle;
       next.start(mode, level);
     }
 
     returnToMenu() {
       const options = this.options;
+      const playerVehicle = this.playerVehicle;
       this.destroy(true);
-      global.ForkliftGame.launch(options);
+      const next = global.ForkliftGame.launch(options);
+      next.playerVehicle = playerVehicle;
     }
 
     resize() {
