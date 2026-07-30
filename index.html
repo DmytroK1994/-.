@@ -714,6 +714,7 @@
       order: initial !important;
       grid-column: 1 / -1 !important;
       min-width: 0;
+      padding-bottom: 17px !important;
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
@@ -753,8 +754,55 @@
       outline: 2px dashed var(--selection-border);
       outline-offset: 2px;
     }
+    .block-resize-handle {
+      position: absolute !important;
+      right: 2px !important;
+      bottom: 2px !important;
+      z-index: 8;
+      width: 17px !important;
+      min-width: 17px !important;
+      max-width: 17px !important;
+      height: 17px !important;
+      min-height: 17px !important;
+      max-height: 17px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 0 0 7px 0 !important;
+      background:
+        repeating-linear-gradient(
+          135deg,
+          transparent 0 3px,
+          var(--muted) 3px 4px,
+          transparent 4px 6px
+        ) !important;
+      color: transparent !important;
+      box-shadow: none !important;
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+      cursor: ew-resize;
+      touch-action: none;
+      opacity: .7;
+    }
+    .block-resize-handle:hover,
+    .block-resize-handle:active {
+      background:
+        repeating-linear-gradient(
+          135deg,
+          transparent 0 3px,
+          var(--selection-border) 3px 4px,
+          transparent 4px 6px
+        ) !important;
+      opacity: 1;
+    }
+    [data-layout-item].block-layout-resizing {
+      border-color: var(--selection-border) !important;
+      outline: 2px solid var(--selection-outline);
+      outline-offset: 1px;
+    }
     body.block-layout-dragging,
-    body.block-layout-dragging * {
+    body.block-layout-dragging *,
+    body.block-layout-resizing,
+    body.block-layout-resizing * {
       -webkit-user-select: none !important;
       user-select: none !important;
       -webkit-touch-callout: none !important;
@@ -8477,7 +8525,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=336">
+<link rel="manifest" href="manifest.json?v=337">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8532,7 +8580,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.36</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.37</span></div>
     </div>
   </div>
 
@@ -9764,7 +9812,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.36</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.37</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9789,6 +9837,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.37</h3>
+          <ul>
+            <li>затримку довгого натискання перед переміщенням блока збільшено до однієї секунди;</li>
+            <li>довге натискання тепер відповідає лише за переставляння блоків і більше не змінює їхню ширину;</li>
+            <li>у правому нижньому куті кожного блока додано окремий діагональний маркер зміни ширини;</li>
+            <li>перетягування маркера ліворуч звужує блок до половини, а праворуч повертає повну ширину.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.36</h3>
           <ul>
@@ -11205,7 +11262,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.36";
+  const APP_VERSION = "3.37";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16666,6 +16723,16 @@
           : (item.dataset.layoutDefaultWidth === "half" ? "half" : "full");
         item.classList.toggle("layout-width-half", width === "half");
         item.dataset.layoutWidth = width;
+        const hasResizeHandle = Array.from(item.children)
+          .some(child => child.classList.contains("block-resize-handle"));
+        if (!hasResizeHandle) {
+          const handle = document.createElement("button");
+          handle.type = "button";
+          handle.className = "block-resize-handle";
+          handle.setAttribute("aria-label", "Змінити ширину блока");
+          handle.title = "Потягни вліво або вправо, щоб змінити ширину";
+          item.appendChild(handle);
+        }
       });
       container.classList.add("layout-managed");
     });
@@ -16691,6 +16758,12 @@
     let didDrag = false;
     let targetItem = null;
     let suppressClickUntil = 0;
+    let resizingItem = null;
+    let resizingContainer = null;
+    let resizeHandle = null;
+    let resizePointerId = null;
+    let resizeStartX = 0;
+    let resizeStartedHalf = false;
 
     const clearPressTimer = () => {
       window.clearTimeout(pressTimer);
@@ -16710,13 +16783,7 @@
         return;
       }
       event?.preventDefault();
-      if (!cancelled && !didDrag) {
-        const half = !activeItem.classList.contains("layout-width-half");
-        activeItem.classList.toggle("layout-width-half", half);
-        activeItem.dataset.layoutWidth = half ? "half" : "full";
-        toast(half ? "Ширина блока: половина" : "Ширина блока: повна");
-      }
-      saveEntryBlockLayout(pressedContainer);
+      if (!cancelled && didDrag) saveEntryBlockLayout(pressedContainer);
       activeItem.classList.remove("block-layout-active");
       clearTarget();
       document.body.classList.remove("block-layout-dragging");
@@ -16727,8 +16794,48 @@
       pointerId = null;
       didDrag = false;
     };
+    const finishResize = (event, cancelled = false) => {
+      if (event?.pointerId !== resizePointerId || !resizingItem) return false;
+      event.preventDefault();
+      if (cancelled) {
+        resizingItem.classList.toggle("layout-width-half", resizeStartedHalf);
+        resizingItem.dataset.layoutWidth = resizeStartedHalf ? "half" : "full";
+      } else {
+        saveEntryBlockLayout(resizingContainer);
+      }
+      try { resizeHandle?.releasePointerCapture(resizePointerId); } catch (error) {}
+      resizingItem.classList.remove("block-layout-resizing");
+      document.body.classList.remove("block-layout-resizing");
+      suppressClickUntil = Date.now() + 350;
+      resizingItem = null;
+      resizingContainer = null;
+      resizeHandle = null;
+      resizePointerId = null;
+      resizeStartX = 0;
+      resizeStartedHalf = false;
+      return true;
+    };
 
     document.addEventListener("pointerdown", event => {
+      const requestedResizeHandle = event.target.closest(".block-resize-handle");
+      if (requestedResizeHandle) {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const item = requestedResizeHandle.closest("[data-layout-item]");
+        const container = item?.parentElement?.closest("[data-layout-container]");
+        if (!item || !container || item.parentElement !== container) return;
+        resizingItem = item;
+        resizingContainer = container;
+        resizeHandle = requestedResizeHandle;
+        resizePointerId = event.pointerId;
+        resizeStartX = event.clientX;
+        resizeStartedHalf = item.classList.contains("layout-width-half");
+        item.classList.add("block-layout-resizing");
+        document.body.classList.add("block-layout-resizing");
+        try { requestedResizeHandle.setPointerCapture(event.pointerId); } catch (error) {}
+        return;
+      }
       const item = event.target.closest("[data-layout-item]");
       const container = item?.parentElement?.closest("[data-layout-container]");
       if (!item || !container || item.parentElement !== container || isInteractive(event.target)) return;
@@ -16745,11 +16852,22 @@
         activeItem = pressedItem;
         activeItem.classList.add("block-layout-active");
         document.body.classList.add("block-layout-dragging");
-        toast("Перетягни блок. Відпусти без руху — змінити ширину.");
-      }, 560);
-    }, { passive: true });
+        try { activeItem.setPointerCapture(pointerId); } catch (error) {}
+        toast("Перетягни блок у потрібне місце.");
+      }, 1000);
+    }, { passive: false });
 
     document.addEventListener("pointermove", event => {
+      if (event.pointerId === resizePointerId && resizingItem) {
+        event.preventDefault();
+        const deltaX = event.clientX - resizeStartX;
+        let half = resizeStartedHalf;
+        if (deltaX <= -24) half = true;
+        if (deltaX >= 24) half = false;
+        resizingItem.classList.toggle("layout-width-half", half);
+        resizingItem.dataset.layoutWidth = half ? "half" : "full";
+        return;
+      }
       if (event.pointerId !== pointerId || !pressedItem) return;
       const distance = Math.hypot(event.clientX - startX, event.clientY - startY);
       if (!activeItem) {
@@ -16779,12 +16897,18 @@
     }, { passive: false });
 
     document.addEventListener("pointerup", event => {
+      if (finishResize(event)) return;
       if (event.pointerId === pointerId) finish(event);
     }, { passive: false });
     document.addEventListener("pointercancel", event => {
+      if (finishResize(event, true)) return;
       if (event.pointerId === pointerId) finish(event, true);
     }, { passive: false });
     document.addEventListener("contextmenu", event => {
+      if (event.target.closest(".block-resize-handle")) {
+        event.preventDefault();
+        return;
+      }
       const item = event.target.closest("[data-layout-item]");
       if (item && !isInteractive(event.target)) event.preventDefault();
     });
@@ -20126,7 +20250,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=336")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=337")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
