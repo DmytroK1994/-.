@@ -216,12 +216,12 @@
           <div class="fg2-left">
             <div class="fg2-joystick" aria-label="Джойстик руху"><span class="fg2-stick"></span></div>
             <button class="fg2-control reverse" data-control="reverse">Реверс: вимк.</button>
-            <button class="fg2-control speed-mode fg2-hidden" data-control="speed">🐢 Черепашка</button>
           </div>
           <div class="fg2-right">
             <button class="fg2-control" data-control="lift">Підняти<br>вила</button>
             <button class="fg2-control" data-control="lower">Опустити<br>вила</button>
             <button class="fg2-control horn wide" data-control="horn">📣 Сигнал</button>
+            <button class="fg2-control speed-mode wide fg2-hidden" data-control="speed">🐢 Черепашка</button>
           </div>
         </div>
         <div class="fg2-rotate"><div><strong>↻</strong><span>Поверни телефон горизонтально</span></div></div>
@@ -932,15 +932,6 @@
         || point.y < 10 || point.y > this.world.h - 10
         || this.obstacles.some(rect => circleRect(point.x, point.y, 10, rect))
       );
-      const hitForkPallet = this.pallets.find(pallet =>
-        !pallet.carried
-        && !this.palletAcceptsForks(v, pallet)
-        && forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
-      );
-      const hitForkStage = this.botStagedPallets.find(pallet =>
-        !this.palletAcceptsForks(v, pallet)
-        && forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
-      );
       const hitForkWorker = this.workers.find(worker =>
         !worker.injured && forkPoints.some(point => Math.hypot(point.x - worker.x, point.y - worker.y) < 24)
       );
@@ -959,7 +950,7 @@
       const hitCargoBot = cargoPoint && this.bot && Math.hypot(cargoPoint.x - this.bot.x, cargoPoint.y - this.bot.y) < 62;
       if (
         hitObstacle || hitPallet || hitStagePallet
-        || hitForkObstacle || hitForkPallet || hitForkStage || hitForkWorker || hitForkBot
+        || hitForkObstacle || hitForkWorker || hitForkBot
         || hitCargoObstacle || hitCargoPallet || hitCargoStage || hitCargoWorker || hitCargoBot
       ) {
         v.x = previous.x;
@@ -974,9 +965,9 @@
           else if (v.speed > 25) this.damage("Вила або вантаж зачепили працівника");
         } else if (hitCargoBot || hitForkBot) {
           this.gameOver("Вантаж зачепив службову кару. Її потрібно пропускати.");
-        } else if (v.speed > 28 && (cargoPoint || hitForkObstacle || hitForkPallet || hitForkStage)) {
+        } else if (v.speed > 28 && (cargoPoint || hitForkObstacle)) {
           this.damage(
-            hitCargoPallet || hitCargoStage || hitForkPallet || hitForkStage
+            hitCargoPallet || hitCargoStage
               ? "Вила або вантаж зачепили інший піддон"
               : "Вила або вантаж зачепили перешкоду"
           );
@@ -1008,15 +999,6 @@
         });
       });
       return points;
-    }
-
-    palletAcceptsForks(vehicle, pallet) {
-      if (vehicle.carrying || pallet.carried) return false;
-      const dx = pallet.x - vehicle.x;
-      const dy = pallet.y - vehicle.y;
-      const forward = dx * Math.cos(vehicle.angle) + dy * Math.sin(vehicle.angle);
-      const sideways = -dx * Math.sin(vehicle.angle) + dy * Math.cos(vehicle.angle);
-      return forward >= 38 && forward <= 104 && Math.abs(sideways) <= 27;
     }
 
     lift() {
