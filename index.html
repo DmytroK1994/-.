@@ -4007,11 +4007,19 @@
       box-shadow: 0 24px 70px var(--popover-shadow);
     }
     .quick-edit-header {
-      display: block;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
       margin-bottom: 12px;
+    }
+    .quick-edit-title-block {
+      flex: 1;
+      min-width: 0;
     }
     .quick-edit-header h2 {
       margin: 0;
+      overflow-wrap: anywhere;
     }
     .quick-edit-header .quick-edit-eyebrow {
       margin-bottom: 5px;
@@ -4020,7 +4028,58 @@
       font-weight: 850;
     }
     body.workspace-production .quick-edit-header {
+      display: block;
       text-align: center;
+    }
+    .quick-edit-current-warehouse {
+      display: grid;
+      flex: 0 1 190px;
+      grid-template-columns: minmax(0, 1fr) 36px;
+      align-items: end;
+      gap: 5px;
+      min-width: 0;
+    }
+    .quick-edit-current-warehouse-label {
+      grid-column: 1 / -1;
+      margin: 0 !important;
+      color: var(--muted);
+      font-size: 10px !important;
+      font-weight: 800;
+      line-height: 1;
+      text-align: right;
+    }
+    #quickEditCurrentWarehouse {
+      width: 100%;
+      min-width: 0;
+      min-height: 36px;
+      height: 36px;
+      margin: 0;
+      padding: 6px 25px 6px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    #deleteQuickEditWarehouseBtn {
+      width: 36px !important;
+      min-width: 36px !important;
+      height: 36px !important;
+      min-height: 36px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 1px solid var(--soft-danger-border) !important;
+      border-radius: 10px !important;
+      background: var(--soft-danger-bg) !important;
+      color: var(--soft-danger-text) !important;
+      box-shadow: none !important;
+      font-size: 17px !important;
+    }
+    @media (max-width: 420px) {
+      .quick-edit-header {
+        gap: 7px;
+      }
+      .quick-edit-current-warehouse {
+        flex-basis: 150px;
+      }
     }
     body.workspace-production .quick-edit-header .quick-edit-eyebrow {
       font-size: 17px;
@@ -8217,7 +8276,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=328">
+<link rel="manifest" href="manifest.json?v=329">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8272,7 +8331,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.28</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.29</span></div>
     </div>
   </div>
 
@@ -9498,7 +9557,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.28</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.29</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9523,6 +9582,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.29</h3>
+          <ul>
+            <li>у редагуванні замовлення біля назви позиції додано вибір поточного складу;</li>
+            <li>вікно автоматично відкриває саме склад натиснутої позиції та дозволяє перейти до цього товару на іншому складі;</li>
+            <li>кошик у заголовку видаляє всі записи цієї позиції лише з поточного складу, залишаючи інші склади без змін.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.28</h3>
           <ul>
@@ -10536,8 +10603,15 @@
   <div class="quick-edit-overlay hidden" id="quickEditOverlay" role="dialog" aria-modal="true" aria-labelledby="quickEditTitle">
     <div class="quick-edit-dialog">
       <div class="quick-edit-header">
-        <div class="quick-edit-eyebrow" id="quickEditEyebrow">Редагування позиції</div>
-        <h2 id="quickEditTitle">Редагування позиції</h2>
+        <div class="quick-edit-title-block">
+          <div class="quick-edit-eyebrow" id="quickEditEyebrow">Редагування позиції</div>
+          <h2 id="quickEditTitle">Редагування позиції</h2>
+        </div>
+        <div class="quick-edit-current-warehouse hidden" id="quickEditCurrentWarehouseContext">
+          <label class="quick-edit-current-warehouse-label" for="quickEditCurrentWarehouse">Поточний склад</label>
+          <select id="quickEditCurrentWarehouse" aria-label="Поточний склад редагованої позиції"></select>
+          <button type="button" id="deleteQuickEditWarehouseBtn" aria-label="Видалити замовлення з поточного складу" title="Видалити замовлення з поточного складу">🗑</button>
+        </div>
       </div>
       <div class="quick-edit-tabs configurable-dialog-menu" id="quickEditTabs"></div>
       <input type="hidden" id="quickEditProductId" />
@@ -10866,7 +10940,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.28";
+  const APP_VERSION = "3.29";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -17189,6 +17263,35 @@
     return getActiveDay().entries.filter(entry => (entry.productId || entry.productName) === productId);
   }
 
+  function quickEditWarehouseKey(entry) {
+    return entry?.warehouseId || `name:${entry?.warehouseName || "Без складу"}`;
+  }
+
+  function renderQuickEditWarehouseOptions(entries, selectedEntry) {
+    const context = document.getElementById("quickEditCurrentWarehouseContext");
+    const select = document.getElementById("quickEditCurrentWarehouse");
+    const visible = workspaceIsOrders() && !workspaceIsProduction();
+    context.classList.toggle("hidden", !visible);
+    if (!visible) {
+      select.innerHTML = "";
+      return;
+    }
+    const warehouses = new Map();
+    entries.forEach(entry => {
+      const key = quickEditWarehouseKey(entry);
+      if (!warehouses.has(key)) warehouses.set(key, entry.warehouseName || "Без складу");
+    });
+    select.innerHTML = Array.from(warehouses, ([key, name]) =>
+      `<option value="${escapeHtml(key)}">${escapeHtml(name)}</option>`
+    ).join("");
+    select.value = quickEditWarehouseKey(selectedEntry);
+  }
+
+  function quickEditEntriesForWarehouse(entries, entry) {
+    const warehouseKey = quickEditWarehouseKey(entry);
+    return entries.filter(item => quickEditWarehouseKey(item) === warehouseKey);
+  }
+
   function fillQuickEditForm(entry) {
     if (!entry) return;
     const production = workspaceIsProduction();
@@ -17219,6 +17322,9 @@
     renderWarehouseOptions();
     document.getElementById("quickEditWarehouse").value = entry.warehouseId || "";
     document.getElementById("quickEditOrderStatus").value = normalizeOrderStatus(entry.orderStatus);
+    if (workspaceIsOrders() && !production) {
+      document.getElementById("quickEditCurrentWarehouse").value = quickEditWarehouseKey(entry);
+    }
   }
 
   function renderQuickEditTabs(entries, selectedId) {
@@ -17226,7 +17332,7 @@
     tabs.innerHTML = entries.map((entry, index) => `
       <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
         data-action="select-quick-edit-entry" data-id="${entry.id}">
-        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatEntryTotal(entry)}${entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
+        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatEntryTotal(entry)}
       </button>
     `).join("");
     tabs.classList.toggle("hidden", entries.length < 2);
@@ -17237,8 +17343,59 @@
     const entries = getQuickEditEntries(productId);
     const entry = entries.find(item => item.id === entryId);
     if (!entry) return;
-    renderQuickEditTabs(entries, entry.id);
+    renderQuickEditWarehouseOptions(entries, entry);
+    renderQuickEditTabs(quickEditEntriesForWarehouse(entries, entry), entry.id);
     fillQuickEditForm(entry);
+  }
+
+  function selectQuickEditWarehouse(warehouseKey) {
+    const productId = document.getElementById("quickEditProductId").value;
+    const entries = getQuickEditEntries(productId);
+    const entry = entries.find(item => quickEditWarehouseKey(item) === warehouseKey);
+    if (!entry) return;
+    renderQuickEditWarehouseOptions(entries, entry);
+    renderQuickEditTabs(quickEditEntriesForWarehouse(entries, entry), entry.id);
+    fillQuickEditForm(entry);
+  }
+
+  async function deleteQuickEditWarehouseOrder() {
+    if (!workspaceIsOrders()) return;
+    const productId = document.getElementById("quickEditProductId").value;
+    const entryId = document.getElementById("quickEditEntryId").value;
+    const day = getActiveDay();
+    const selectedEntry = day.entries.find(entry => entry.id === entryId);
+    if (!selectedEntry) {
+      toast("Запис не знайдено", true);
+      return;
+    }
+    const warehouseKey = quickEditWarehouseKey(selectedEntry);
+    const entriesToDelete = day.entries.filter(entry =>
+      (entry.productId || entry.productName) === productId
+      && quickEditWarehouseKey(entry) === warehouseKey
+    );
+    if (!entriesToDelete.length) return;
+    const warehouseName = selectedEntry.warehouseName || "Без складу";
+    const confirmed = await showAppDialog({
+      label: "Видалення замовлення",
+      title: `Видалити «${selectedEntry.productName}» зі складу «${warehouseName}»?`,
+      message: entriesToDelete.length > 1
+        ? `У кошик буде переміщено всі записи цієї позиції на вибраному складі: ${entriesToDelete.length}. Інші склади не зміняться.`
+        : "У кошик буде переміщено цю позицію лише з вибраного складу. Інші склади не зміняться.",
+      confirmText: "Видалити",
+      cancelText: "Скасувати",
+      danger: true
+    });
+    if (!confirmed) return;
+    if (!putInTrash("entries", `Замовлення «${selectedEntry.productName}» · ${warehouseName}`, {
+      day: { ...cloneData(day), entries: [] },
+      workspace: workspaceMode,
+      entries: entriesToDelete
+    })) return;
+    const deletedIds = new Set(entriesToDelete.map(entry => entry.id));
+    day.entries = day.entries.filter(entry => !deletedIds.has(entry.id));
+    closeQuickEdit();
+    save();
+    toast(`Замовлення зі складу «${warehouseName}» переміщено в кошик`);
   }
 
   function openQuickEdit(productId, preferredEntryId = "") {
@@ -17254,7 +17411,8 @@
       ? getProductionWorkspaceName()
       : (workspaceIsOrders() ? "Редагування замовлення" : "Редагування інвентаризації");
     document.getElementById("quickEditTitle").textContent = product?.name || selected.productName || "Редагування позиції";
-    renderQuickEditTabs(entries, selected.id);
+    renderQuickEditWarehouseOptions(entries, selected);
+    renderQuickEditTabs(quickEditEntriesForWarehouse(entries, selected), selected.id);
     fillQuickEditForm(selected);
     document.getElementById("quickEditOverlay").classList.remove("hidden");
     document.body.classList.add("quick-edit-open");
@@ -19350,7 +19508,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=328")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=329")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -21145,6 +21303,10 @@
   document.getElementById("clearTodayListSearchBtn").addEventListener("click", clearTodayListSearch);
   document.getElementById("saveQuickEditBtn").addEventListener("click", saveQuickEditEntry);
   document.getElementById("closeQuickEditBtn").addEventListener("click", closeQuickEdit);
+  document.getElementById("quickEditCurrentWarehouse").addEventListener("change", event => {
+    selectQuickEditWarehouse(event.target.value);
+  });
+  document.getElementById("deleteQuickEditWarehouseBtn").addEventListener("click", deleteQuickEditWarehouseOrder);
   document.getElementById("quickEditOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeQuickEdit();
   });
