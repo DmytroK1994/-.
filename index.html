@@ -8294,7 +8294,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=331">
+<link rel="manifest" href="manifest.json?v=332">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8349,7 +8349,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.31</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.32</span></div>
     </div>
   </div>
 
@@ -9575,7 +9575,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.31</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.32</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9600,6 +9600,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.32</h3>
+          <ul>
+            <li>повторні підрахунки одного найменування на тому самому складі тепер об’єднуються в одну позицію;</li>
+            <li>в інвентаризації, замовленнях і здачі ГП автоматично підсумовуються кількості та оновлюється загальний результат;</li>
+            <li>записи з різними одиницями виміру, типовими коефіцієнтами, статусами або датами не змішуються.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.31</h3>
           <ul>
@@ -10972,7 +10980,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.31";
+  const APP_VERSION = "3.32";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13796,6 +13804,7 @@
           if (warehouse) entry.warehouseName = warehouse.name;
         }
       });
+      day.entries = consolidateCompatibleEntries(day.entries, false);
     });
     normalized.orders.forEach(order => {
       order.responsible = String(order.responsible || "");
@@ -13817,6 +13826,7 @@
           if (warehouse) entry.warehouseName = warehouse.name;
         }
       });
+      order.entries = consolidateCompatibleEntries(order.entries, false);
     });
     normalized.productionDeliveries.forEach(delivery => {
       delivery.entries = Array.isArray(delivery.entries)
@@ -13840,6 +13850,7 @@
           if (entryWarehouse) entry.warehouseName = entryWarehouse.name;
         }
       });
+      delivery.entries = consolidateCompatibleEntries(delivery.entries, true);
     });
     assignDocumentNumbers(normalized.days);
     assignDocumentNumbers(normalized.orders);
@@ -17291,6 +17302,105 @@
     return formatUnitTotals(getEntryUnitTotals(entry));
   }
 
+  function entryMergeProductKey(entry) {
+    return String(entry?.productId || entry?.productName || "");
+  }
+
+  function entryMergeWarehouseKey(entry) {
+    return String(entry?.warehouseId || `name:${entry?.warehouseName || "Без складу"}`);
+  }
+
+  function sameEntryNumber(left, right) {
+    return Math.abs((Number(left) || 0) - (Number(right) || 0)) < 0.000001;
+  }
+
+  function canMergeEntries(left, right, production = false) {
+    if (!left || !right) return false;
+    if (entryMergeProductKey(left) !== entryMergeProductKey(right)) return false;
+    if (entryMergeWarehouseKey(left) !== entryMergeWarehouseKey(right)) return false;
+    if (production) {
+      return sameEntryNumber(left.boxesPerPallet, right.boxesPerPallet)
+        && sameEntryNumber(left.packsPerBox, right.packsPerBox);
+    }
+    const usesPallets = (Number(left.pallets) || 0) > 0 || (Number(right.pallets) || 0) > 0;
+    const usesPieces = (Number(left.pieces) || 0) > 0 || (Number(right.pieces) || 0) > 0;
+    const usesDirect = (Number(left.directKg) || 0) > 0 || (Number(right.directKg) || 0) > 0;
+    if (usesPallets && normalizeMeasurementUnit(left.palletUnit || left.unit) !== normalizeMeasurementUnit(right.palletUnit || right.unit)) return false;
+    if (usesPieces && normalizeMeasurementUnit(left.pieceUnit || left.unit) !== normalizeMeasurementUnit(right.pieceUnit || right.unit)) return false;
+    if (usesDirect && normalizeMeasurementUnit(left.directUnit || left.unit) !== normalizeMeasurementUnit(right.directUnit || right.unit)) return false;
+    if (usesPallets && !sameEntryNumber(left.kgPerPallet, right.kgPerPallet)) return false;
+    if (usesPieces && !sameEntryNumber(left.kgPerPiece, right.kgPerPiece)) return false;
+    if (normalizeOrderStatus(left.orderStatus) !== normalizeOrderStatus(right.orderStatus)) return false;
+    return String(left.needDate || "") === String(right.needDate || "");
+  }
+
+  function combineEntryText(left, right) {
+    const values = [left, right].map(value => String(value || "").trim()).filter(Boolean);
+    return [...new Set(values)].join(" · ");
+  }
+
+  function combineEntryExpression(left, right) {
+    const values = [left, right].map(value => String(value || "").trim()).filter(Boolean);
+    if (!values.length) return "";
+    if (values.length === 1) return values[0];
+    return `(${values[0]})+(${values[1]})`;
+  }
+
+  function mergeEntryValues(target, source, production = false, markEdited = true) {
+    target.comment = combineEntryText(target.comment, source.comment);
+    if (markEdited) {
+      target.editedAt = nowText();
+      target.editedTimestamp = new Date().toISOString();
+    }
+    if (production) {
+      target.palletsExpression = combineEntryExpression(
+        target.palletsExpression || target.pallets,
+        source.palletsExpression || source.pallets
+      );
+      const palletCalculation = calculateWeightExpression(target.palletsExpression);
+      target.pallets = palletCalculation.valid ? Math.max(0, palletCalculation.value) : (Number(target.pallets) || 0) + (Number(source.pallets) || 0);
+      target.boxesPerPallet = Number(target.boxesPerPallet) || Number(source.boxesPerPallet) || 0;
+      target.packsPerBox = Number(target.packsPerBox) || Number(source.packsPerBox) || 0;
+      target.totalKg = target.pallets * target.boxesPerPallet * target.packsPerBox;
+      target.parts = [formatProductionEntryCalculation(
+        target.palletsExpression,
+        target.pallets,
+        target.boxesPerPallet,
+        target.packsPerBox,
+        target.totalKg
+      )];
+      return target;
+    }
+    target.pallets = (Number(target.pallets) || 0) + (Number(source.pallets) || 0);
+    target.pieces = (Number(target.pieces) || 0) + (Number(source.pieces) || 0);
+    target.directKgExpression = combineEntryExpression(
+      target.directKgExpression || target.directKg,
+      source.directKgExpression || source.directKg
+    );
+    recalcEntry(target);
+    return target;
+  }
+
+  function appendOrMergeEntry(day, entry, production = false) {
+    const existing = day.entries.find(item => canMergeEntries(item, entry, production));
+    if (!existing) {
+      day.entries.push(entry);
+      return { entry, merged: false };
+    }
+    mergeEntryValues(existing, entry, production);
+    return { entry: existing, merged: true };
+  }
+
+  function consolidateCompatibleEntries(entries, production = false) {
+    const consolidated = [];
+    (entries || []).forEach(entry => {
+      const existing = consolidated.find(item => canMergeEntries(item, entry, production));
+      if (existing) mergeEntryValues(existing, entry, production, false);
+      else consolidated.push(entry);
+    });
+    return consolidated;
+  }
+
   function getQuickEditEntries(productId) {
     return getActiveDay().entries.filter(entry => (entry.productId || entry.productName) === productId);
   }
@@ -17500,6 +17610,7 @@
         editedAt: nowText(),
         editedTimestamp: new Date().toISOString()
       });
+      getActiveDay().entries = consolidateCompatibleEntries(getActiveDay().entries, true);
       if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
       save();
       closeQuickEdit();
@@ -17549,6 +17660,7 @@
     }
 
     Object.assign(entry, updated, { editedAt: nowText(), editedTimestamp: new Date().toISOString() });
+    getActiveDay().entries = consolidateCompatibleEntries(getActiveDay().entries, false);
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     save();
     closeQuickEdit();
@@ -17765,7 +17877,7 @@
         toast("Заповни піддони, коробки в піддоні та пачки в коробці", true);
         return;
       }
-      getActiveDay().entries.push({
+      const addResult = appendOrMergeEntry(getActiveDay(), {
         id: uid(),
         createdAt: nowText(),
         productId: product.id,
@@ -17780,13 +17892,14 @@
         warehouseId: warehouse.id,
         warehouseName: warehouse.name,
         comment: document.getElementById("productionDialogComment").value.trim()
-      });
+      }, true);
       document.getElementById("productSearch").value = "";
       document.getElementById("productSelect").value = "";
       document.getElementById("selectedProductLabel").textContent = "Позицію не вибрано";
       closeOrderEntryDialog();
       save();
       showSuccessCheck();
+      if (addResult.merged) toast("Кількість додано до наявної позиції");
       return;
     }
     const orders = workspaceIsOrders();
@@ -17842,7 +17955,7 @@
       toast("Введи кількість", true);
       return;
     }
-    getActiveDay().entries.push(entry);
+    const addResult = appendOrMergeEntry(getActiveDay(), entry, false);
     document.getElementById("productSearch").value = "";
     document.getElementById("productSelect").value = "";
     document.getElementById("selectedProductLabel").textContent = "Позицію не вибрано";
@@ -17850,6 +17963,7 @@
     save();
     closeOrderEntryDialog({ returnFocus: false });
     showSuccessCheck();
+    if (addResult.merged) toast("Кількість додано до наявної позиції");
   }
 
   function initDesktopOrderEntryKeyboardFlow() {
@@ -17958,14 +18072,16 @@
         entryData.warehouseName = old.warehouseName || "Без складу";
       }
       Object.assign(old, entryData, { editedAt: nowText(), editedTimestamp: new Date().toISOString() });
+      day.entries = consolidateCompatibleEntries(day.entries, false);
       toast("Запис оновлено");
     } else {
-      day.entries.push({
+      const addResult = appendOrMergeEntry(day, {
         id: uid(),
         createdAt: nowText(),
         ...entryData
-      });
+      }, false);
       showSuccessCheck();
+      if (addResult.merged) toast("Кількість додано до наявної позиції");
     }
 
     clearEntryForm();
@@ -19542,7 +19658,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=331")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=332")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
