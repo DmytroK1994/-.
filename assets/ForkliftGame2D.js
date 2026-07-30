@@ -54,11 +54,12 @@
       .fg2-hud{position:absolute;top:max(9px,env(safe-area-inset-top));left:9px;right:82px;z-index:12;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none}.fg2-hud-items{display:flex;flex-wrap:wrap;gap:5px}.fg2-chip{min-width:72px;padding:6px 8px;border:1px solid rgba(255,255,255,.17);border-radius:11px;background:rgba(7,18,24,.82);box-shadow:0 7px 20px rgba(0,0,0,.25)}.fg2-chip span,.fg2-chip strong{display:block}.fg2-chip span{color:#a9bbc4;font-size:8px;font-weight:900;text-transform:uppercase}.fg2-chip strong{margin-top:1px;font-size:13px}
       .fg2-goal{position:absolute;top:max(63px,calc(env(safe-area-inset-top) + 54px));left:9px;z-index:11;width:min(42vw,360px);padding:6px 9px;border:1px solid rgba(121,238,157,.38);border-radius:10px;background:rgba(9,37,25,.88);font-size:9px;font-weight:900;line-height:1.25;text-align:left;pointer-events:none}
       .fg2-pause{position:absolute;top:max(9px,env(safe-area-inset-top));right:9px;z-index:14;width:66px;height:42px;border:1px solid rgba(255,255,255,.19);border-radius:12px;background:rgba(7,18,24,.88);color:#fff;font-size:11px;font-weight:900}
+      .fg2-speed-toggle{position:absolute;top:max(58px,calc(env(safe-area-inset-top) + 49px));right:9px;z-index:14;display:grid;width:42px;height:42px;padding:0;place-items:center;border:1px solid rgba(255,255,255,.19);border-radius:12px;background:rgba(7,18,24,.88);color:#fff;font-size:22px;line-height:1;touch-action:none}.fg2-speed-toggle:active,.fg2-speed-toggle.active{background:#efc14f;color:#172027;transform:scale(.96)}
       .fg2-notices{position:absolute;top:max(116px,calc(env(safe-area-inset-top) + 107px));left:9px;z-index:45;display:grid;gap:3px;width:min(34vw,280px);pointer-events:none}.fg2-notice{padding:5px 8px;border-radius:9px;background:rgba(11,31,40,.92);box-shadow:0 7px 18px rgba(0,0,0,.3);font-size:9px;font-weight:900;line-height:1.2;text-align:left;animation:fg2Notice 1.8s both}.fg2-notice.bad{background:rgba(104,32,36,.93)}.fg2-notice.good{background:rgba(20,91,62,.93)}@keyframes fg2Notice{0%{opacity:0;transform:translateX(-7px)}12%,75%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-5px)}}
       .fg2-controls{position:absolute;left:50%;bottom:max(8px,env(safe-area-inset-bottom));z-index:15;display:none;width:min(82%,700px);align-items:end;justify-content:space-between;pointer-events:none;transform:translateX(-50%)}
       .fg2-left{display:grid;justify-items:center;gap:6px;pointer-events:auto}
       .fg2-joystick{position:relative;width:126px;height:126px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(8,25,33,.62);box-shadow:inset 0 0 0 12px rgba(2,9,13,.26);pointer-events:auto;touch-action:none}.fg2-joystick::before,.fg2-joystick::after{content:"";position:absolute;background:rgba(255,255,255,.14)}.fg2-joystick::before{top:50%;left:12%;right:12%;height:1px}.fg2-joystick::after{top:12%;bottom:12%;left:50%;width:1px}.fg2-stick{position:absolute;top:50%;left:50%;width:52px;height:52px;border:2px solid rgba(255,255,255,.45);border-radius:50%;background:#e8ba48;box-shadow:0 6px 16px rgba(0,0,0,.35);transform:translate(-50%,-50%)}
-      .fg2-right{display:grid;grid-template-columns:58px 58px;gap:7px;pointer-events:auto}.fg2-control{display:grid;width:58px;height:48px;padding:3px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(11,31,40,.86);color:#fff;font-size:9px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg2-control:active,.fg2-control.active{background:#efc14f;color:#172027;transform:scale(.96)}.fg2-control.horn{background:#315d6b}.fg2-control.reverse,.fg2-control.speed-mode{width:108px;height:34px;background:rgba(39,69,80,.92)}.fg2-control.reverse.active,.fg2-control.speed-mode.active{background:#efc14f;color:#172027}.fg2-control.wide{grid-column:1/3;width:123px}
+      .fg2-right{display:grid;grid-template-columns:58px 58px;gap:7px;pointer-events:auto}.fg2-control{display:grid;width:58px;height:48px;padding:3px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(11,31,40,.86);color:#fff;font-size:9px;font-weight:900;line-height:1.05;text-align:center;touch-action:none}.fg2-control:active,.fg2-control.active{background:#efc14f;color:#172027;transform:scale(.96)}.fg2-control.horn{background:#315d6b}.fg2-control.reverse{width:108px;height:34px;background:rgba(39,69,80,.92)}.fg2-control.reverse.active{background:#efc14f;color:#172027}.fg2-control.wide{grid-column:1/3;width:123px}
       .fg2-zoom-tip{position:absolute;right:18px;bottom:123px;z-index:8;padding:5px 8px;border-radius:9px;background:rgba(5,15,21,.62);color:#c5d5dc;font-size:9px;font-weight:800;pointer-events:none;animation:fg2Tip 5s both}@keyframes fg2Tip{0%,75%{opacity:.85}100%{opacity:0}}
       .fg2-rotate{display:none;position:absolute;inset:0;z-index:60;padding:22px;place-items:center;background:#071018;text-align:center;pointer-events:none;animation:fg2RotateHint 5s forwards}.fg2-rotate strong{display:block;font-size:45px}.fg2-rotate span{display:block;margin-top:8px;font-weight:900}@keyframes fg2RotateHint{0%,78%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
       @media(pointer:coarse),(max-width:900px){.fg2-controls{display:flex}}
@@ -211,6 +212,7 @@
         <div class="fg2-goal fg2-hidden" data-fg2="goal"></div>
         <div class="fg2-notices"></div>
         <button class="fg2-pause fg2-hidden">☰ Пауза</button>
+        <button class="fg2-speed-toggle fg2-hidden" data-control="speed" aria-label="Режим швидкості: Черепашка" title="Черепашка / Заєць">🐢</button>
         <div class="fg2-zoom-tip fg2-hidden">Два пальці — масштаб</div>
         <div class="fg2-controls fg2-hidden">
           <div class="fg2-left">
@@ -221,7 +223,6 @@
             <button class="fg2-control" data-control="lift">Підняти<br>вила</button>
             <button class="fg2-control" data-control="lower">Опустити<br>вила</button>
             <button class="fg2-control horn wide" data-control="horn">📣 Сигнал</button>
-            <button class="fg2-control speed-mode wide fg2-hidden" data-control="speed">🐢 Черепашка</button>
           </div>
         </div>
         <div class="fg2-rotate"><div><strong>↻</strong><span>Поверни телефон горизонтально</span></div></div>
@@ -358,7 +359,10 @@
       this.root.querySelector("[data-fg2='goal']").textContent = this.levelGoalText();
       const speedButton = this.root.querySelector("[data-control='speed']");
       speedButton?.classList.toggle("fg2-hidden", this.playerVehicle !== "forklift");
-      if (speedButton) speedButton.textContent = "🐢 Черепашка";
+      if (speedButton) {
+        speedButton.textContent = "🐢";
+        speedButton.setAttribute("aria-label", "Режим швидкості: Черепашка");
+      }
       this.running = true;
       this.lastFrame = performance.now();
       this.raf = requestAnimationFrame(time => this.frame(time));
@@ -533,7 +537,7 @@
           }
         }
       }
-      this.workers = Array.from({ length: 9 }, (_, index) => {
+      this.workers = Array.from({ length: 5 }, (_, index) => {
         const point = this.randomWorkerPoint(false);
         return {
           x: point.x, y: point.y, targetX: point.x, targetY: point.y,
@@ -759,7 +763,8 @@
             if (this.playerVehicle !== "forklift") return;
             this.forkliftSpeedMode = this.forkliftSpeedMode === "fast" ? "slow" : "fast";
             button.classList.toggle("active", this.forkliftSpeedMode === "fast");
-            button.textContent = this.forkliftSpeedMode === "fast" ? "🐇 Заєць" : "🐢 Черепашка";
+            button.textContent = this.forkliftSpeedMode === "fast" ? "🐇" : "🐢";
+            button.setAttribute("aria-label", this.forkliftSpeedMode === "fast" ? "Режим швидкості: Заєць" : "Режим швидкості: Черепашка");
             this.softClick(this.forkliftSpeedMode === "fast" ? 360 : 190);
             return;
           }
@@ -832,7 +837,10 @@
         this.forkliftSpeedMode = this.forkliftSpeedMode === "fast" ? "slow" : "fast";
         const speedButton = this.root.querySelector("[data-control='speed']");
         speedButton?.classList.toggle("active", this.forkliftSpeedMode === "fast");
-        if (speedButton) speedButton.textContent = this.forkliftSpeedMode === "fast" ? "🐇 Заєць" : "🐢 Черепашка";
+        if (speedButton) {
+          speedButton.textContent = this.forkliftSpeedMode === "fast" ? "🐇" : "🐢";
+          speedButton.setAttribute("aria-label", this.forkliftSpeedMode === "fast" ? "Режим швидкості: Заєць" : "Режим швидкості: Черепашка");
+        }
       }
       if (!down && event.code === "KeyQ") this.controls.lift = false;
       if (!down && event.code === "KeyE") this.controls.lower = false;
