@@ -7255,12 +7255,24 @@
       text-align:center !important;
     }
     .preview-report-table .print-report-row > div,
-    .print-report-table .print-report-row > div,
-    .preview-report-table .order-print-row > div,
-    .print-report-table .order-print-row > div,
+    .print-report-table .print-report-row > div {
+      text-align:left !important;
+    }
+    .preview-report-table .order-print-row > div:nth-child(1),
+    .preview-report-table .order-print-row > div:nth-child(2),
+    .preview-report-table .order-print-row > div:nth-child(4),
+    .print-report-table .order-print-row > div:nth-child(1),
+    .print-report-table .order-print-row > div:nth-child(2),
+    .print-report-table .order-print-row > div:nth-child(4),
     .preview-report-table .print-total-cell,
     .print-report-table .print-total-cell {
       text-align:center !important;
+    }
+    .preview-report-table .order-print-row > div:nth-child(3),
+    .preview-report-table .order-print-row > div:nth-child(5),
+    .print-report-table .order-print-row > div:nth-child(3),
+    .print-report-table .order-print-row > div:nth-child(5) {
+      text-align:left !important;
     }
     .order-warehouse-report-row,
     .inventory-warehouse-report-row {
@@ -8569,7 +8581,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=344">
+<link rel="manifest" href="manifest.json?v=345">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8624,7 +8636,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.44</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.45</span></div>
     </div>
   </div>
 
@@ -9856,7 +9868,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.44</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.45</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9881,6 +9893,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.45</h3>
+          <ul>
+            <li>у рядках документів номер, статус і кількість залишено вирівняними по центру;</li>
+            <li>найменування та коментар повернуто до вирівнювання зліва;</li>
+            <li>назви продукції у здачі ГП та назви позицій в інвентаризації також відображаються зліва;</li>
+            <li>заголовки колонок залишилися по центру, а назва складу — зліва.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.44</h3>
           <ul>
@@ -11404,7 +11425,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.44";
+  const APP_VERSION = "3.45";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -20327,7 +20348,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=344")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=345")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
