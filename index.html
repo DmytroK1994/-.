@@ -671,7 +671,17 @@
     }
     .production-entry-fields {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+    }
+    .production-entry-fields > :not([data-layout-item]) {
+      grid-column: 1 / -1;
+    }
+    .production-layout-block {
+      min-width: 0;
+      padding: 6px;
+      border: 1px solid transparent;
+      border-radius: 12px;
     }
     .production-entry-grid {
       display: grid;
@@ -695,6 +705,59 @@
       .production-entry-grid {
         grid-template-columns: 1fr;
       }
+    }
+    [data-layout-container] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    [data-layout-container].layout-managed > [data-layout-item] {
+      position: relative;
+      order: initial !important;
+      grid-column: 1 / -1 !important;
+      min-width: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    [data-layout-container].layout-managed > [data-layout-item].layout-width-half {
+      grid-column: span 1 !important;
+    }
+    [data-layout-item] input,
+    [data-layout-item] textarea {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    [data-layout-container].layout-managed > [data-layout-item].layout-width-half .inventory-entry-section-fields {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    [data-layout-container].layout-managed > [data-layout-item].layout-width-half .entry-section-header {
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    #orderEntryOverlay [data-layout-item].layout-width-half .entry-section-unit-select,
+    #quickEditOverlay [data-layout-item].layout-width-half .entry-section-unit-select {
+      order: 3;
+      flex: 1 1 100%;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: 0 !important;
+    }
+    [data-layout-container].layout-managed > [data-layout-item].block-layout-active {
+      z-index: 20;
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text);
+      box-shadow: 0 8px 24px var(--popover-shadow);
+      transform: scale(.99);
+    }
+    [data-layout-container].layout-managed > [data-layout-item].block-layout-target {
+      outline: 2px dashed var(--selection-border);
+      outline-offset: 2px;
+    }
+    body.block-layout-dragging,
+    body.block-layout-dragging * {
+      -webkit-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
     }
     .app-header.workspace-dropdown-open {
       overflow: visible !important;
@@ -8414,7 +8477,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=335">
+<link rel="manifest" href="manifest.json?v=336">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8469,7 +8532,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.35</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.36</span></div>
     </div>
   </div>
 
@@ -9701,7 +9764,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.35</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.36</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9726,6 +9789,16 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.36</h3>
+          <ul>
+            <li>блоки у вікнах додавання та редагування можна переставляти довгим натисканням і перетягуванням;</li>
+            <li>довге натискання без переміщення змінює ширину блока між повною та половинною;</li>
+            <li>у половинній ширині внутрішні поля автоматично перебудовуються без накладання;</li>
+            <li>порядок і ширина зберігаються окремо для інвентаризації, замовлень, здачі ГП, додавання та редагування;</li>
+            <li>під час компонування вимкнено виділення тексту й системне меню довгого натискання.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.35</h3>
           <ul>
@@ -10826,22 +10899,20 @@
           </select>
         </div>
       </div>
-      <div class="production-entry-fields hidden" id="quickEditProductionFields">
+      <div class="production-entry-fields hidden" id="quickEditProductionFields" data-layout-container="quick-production">
         <div class="production-entry-result" aria-live="polite">
           Загальна кількість пачок
           <strong id="quickEditProductionTotal">0 пач.</strong>
         </div>
-        <div class="production-entry-grid">
-          <div>
-            <label for="quickEditBoxesPerPallet">Коробок у піддоні</label>
-            <input id="quickEditBoxesPerPallet" type="number" inputmode="numeric" min="0" />
-          </div>
-          <div>
-            <label for="quickEditPacksPerBox">Пачок у коробці</label>
-            <input id="quickEditPacksPerBox" type="number" inputmode="numeric" min="0" />
-          </div>
+        <div class="production-layout-block" data-layout-item="boxes" data-layout-default-width="half">
+          <label for="quickEditBoxesPerPallet">Коробок у піддоні</label>
+          <input id="quickEditBoxesPerPallet" type="number" inputmode="numeric" min="0" />
         </div>
-        <div>
+        <div class="production-layout-block" data-layout-item="packs" data-layout-default-width="half">
+          <label for="quickEditPacksPerBox">Пачок у коробці</label>
+          <input id="quickEditPacksPerBox" type="number" inputmode="numeric" min="0" />
+        </div>
+        <div class="production-layout-block" data-layout-item="pallets">
           <label for="quickEditProductionPallets">Кількість піддонів</label>
           <div class="expression-input-wrap">
             <input id="quickEditProductionPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
@@ -10859,13 +10930,13 @@
             </div>
           </div>
         </div>
-        <div>
+        <div class="production-layout-block" data-layout-item="comment">
           <label for="quickEditProductionComment">Коментар</label>
           <textarea id="quickEditProductionComment" rows="2" placeholder="Необов’язково"></textarea>
         </div>
       </div>
-      <div class="order-entry-dialog-grid" id="quickEditStandardFields">
-        <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditDirect">
+      <div class="order-entry-dialog-grid" id="quickEditStandardFields" data-layout-container="quick-standard">
+        <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditDirect" data-layout-item="direct">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Окрема кількість</div>
             <select id="quickEditDirectUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для окремої кількості">
@@ -10895,7 +10966,7 @@
           </div>
         </section>
 
-        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditPallets">
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditPallets" data-layout-item="pallets">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Піддони</div>
             <select id="quickEditPalletUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для піддонів">
@@ -10919,7 +10990,7 @@
           </div>
         </section>
 
-        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditPieces">
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditPieces" data-layout-item="pieces">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Поштучно / коробками</div>
             <select id="quickEditPieceUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для поштучного підрахунку">
@@ -10943,7 +11014,7 @@
           </div>
         </section>
 
-        <section class="order-entry-comment-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditComment">
+        <section class="order-entry-comment-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditComment" data-layout-item="comment">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Коментар</div>
             <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickEditComment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="quickEditCommentContent" aria-label="Згорнути розділ Коментар">−</button>
@@ -10992,22 +11063,20 @@
         </div>
       </div>
       <input type="hidden" id="orderEntryProductId" />
-      <div class="production-entry-fields hidden" id="productionEntryFields">
+      <div class="production-entry-fields hidden" id="productionEntryFields" data-layout-container="dialog-production">
         <div class="production-entry-result" aria-live="polite">
           Загальна кількість пачок
           <strong id="productionDialogTotal">0 пач.</strong>
         </div>
-        <div class="production-entry-grid">
-          <div>
-            <label for="productionDialogBoxesPerPallet">Коробок у піддоні</label>
-            <input id="productionDialogBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
-          </div>
-          <div>
-            <label for="productionDialogPacksPerBox">Пачок у коробці</label>
-            <input id="productionDialogPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
-          </div>
+        <div class="production-layout-block" data-layout-item="boxes" data-layout-default-width="half">
+          <label for="productionDialogBoxesPerPallet">Коробок у піддоні</label>
+          <input id="productionDialogBoxesPerPallet" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 84" />
         </div>
-        <div>
+        <div class="production-layout-block" data-layout-item="packs" data-layout-default-width="half">
+          <label for="productionDialogPacksPerBox">Пачок у коробці</label>
+          <input id="productionDialogPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+        </div>
+        <div class="production-layout-block" data-layout-item="pallets">
           <label for="productionDialogPallets">Кількість піддонів</label>
           <div class="expression-input-wrap">
             <input id="productionDialogPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
@@ -11025,13 +11094,13 @@
             </div>
           </div>
         </div>
-        <div>
+        <div class="production-layout-block" data-layout-item="comment">
           <label for="productionDialogComment">Коментар</label>
           <textarea id="productionDialogComment" rows="2" placeholder="Необов’язково"></textarea>
         </div>
       </div>
-      <div class="order-entry-dialog-grid" id="standardEntryDialogFields">
-        <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogDirect">
+      <div class="order-entry-dialog-grid" id="standardEntryDialogFields" data-layout-container="dialog-standard">
+        <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogDirect" data-layout-item="direct">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Окрема кількість</div>
             <select id="orderEntryDirectUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для окремої кількості">
@@ -11069,7 +11138,7 @@
             </select>
           </div>
         </div>
-        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPallets">
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPallets" data-layout-item="pallets">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Піддони</div>
             <select id="orderEntryPalletUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для піддонів">
@@ -11090,7 +11159,7 @@
             </div>
           </div>
         </section>
-        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPieces">
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPieces" data-layout-item="pieces">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Поштучно / коробками</div>
             <select id="orderEntryPieceUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для поштучного підрахунку">
@@ -11111,7 +11180,7 @@
             </div>
           </div>
         </section>
-        <section class="order-entry-comment-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogComment">
+        <section class="order-entry-comment-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogComment" data-layout-item="comment">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Коментар</div>
             <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogComment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="orderEntryCommentContent" aria-label="Згорнути розділ Коментар">−</button>
@@ -11136,7 +11205,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.35";
+  const APP_VERSION = "3.36";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11162,6 +11231,7 @@
   const WORKSPACE_BUTTON_SIZE_KEY = "warehouseJournalWorkspaceButtonSize";
   const BOTTOM_NAV_BUTTON_SIZE_KEY = "warehouseJournalBottomNavigationButtonSize";
   const DIALOG_MENU_BUTTON_SIZE_KEY = "warehouseJournalDialogMenuButtonSize";
+  const ENTRY_BLOCK_LAYOUT_KEY = "warehouseJournalEntryBlockLayoutV1";
   const CUSTOM_BUTTON_SIZE_SUFFIX = "CustomPx";
   const CUSTOM_BUTTON_SIZE_MIN = 30;
   const CUSTOM_BUTTON_SIZE_MAX = 58;
@@ -16553,6 +16623,182 @@
     applyEntrySectionState(state);
   }
 
+  function getEntryBlockLayouts() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(ENTRY_BLOCK_LAYOUT_KEY) || "{}");
+      return saved && typeof saved === "object" ? saved : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function saveEntryBlockLayout(container) {
+    const context = container?.dataset.layoutContainer;
+    if (!context) return;
+    const layouts = getEntryBlockLayouts();
+    const items = Array.from(container.children).filter(item => item.dataset.layoutItem);
+    layouts[context] = {
+      order: items.map(item => item.dataset.layoutItem),
+      widths: Object.fromEntries(items.map(item => [
+        item.dataset.layoutItem,
+        item.classList.contains("layout-width-half") ? "half" : "full"
+      ]))
+    };
+    try { localStorage.setItem(ENTRY_BLOCK_LAYOUT_KEY, JSON.stringify(layouts)); } catch (error) {}
+  }
+
+  function applyEntryBlockLayouts() {
+    const layouts = getEntryBlockLayouts();
+    document.querySelectorAll("[data-layout-container]").forEach(container => {
+      const context = container.dataset.layoutContainer;
+      const layout = layouts[context] || {};
+      const items = Array.from(container.children).filter(item => item.dataset.layoutItem);
+      const byId = new Map(items.map(item => [item.dataset.layoutItem, item]));
+      const orderedIds = [
+        ...(Array.isArray(layout.order) ? layout.order : []),
+        ...items.map(item => item.dataset.layoutItem)
+      ].filter((id, index, all) => byId.has(id) && all.indexOf(id) === index);
+      orderedIds.forEach(id => container.appendChild(byId.get(id)));
+      items.forEach(item => {
+        const savedWidth = layout.widths?.[item.dataset.layoutItem];
+        const width = savedWidth === "half" || savedWidth === "full"
+          ? savedWidth
+          : (item.dataset.layoutDefaultWidth === "half" ? "half" : "full");
+        item.classList.toggle("layout-width-half", width === "half");
+        item.dataset.layoutWidth = width;
+      });
+      container.classList.add("layout-managed");
+    });
+  }
+
+  function syncEntryBlockLayoutContexts() {
+    const suffix = workspaceIsOrders() ? "orders" : "inventory";
+    const dialog = document.getElementById("standardEntryDialogFields");
+    const quickEdit = document.getElementById("quickEditStandardFields");
+    if (dialog) dialog.dataset.layoutContainer = `dialog-${suffix}`;
+    if (quickEdit) quickEdit.dataset.layoutContainer = `quick-${suffix}`;
+    applyEntryBlockLayouts();
+  }
+
+  function initEntryBlockLayoutControls() {
+    let pressTimer = 0;
+    let pointerId = null;
+    let pressedItem = null;
+    let pressedContainer = null;
+    let activeItem = null;
+    let startX = 0;
+    let startY = 0;
+    let didDrag = false;
+    let targetItem = null;
+    let suppressClickUntil = 0;
+
+    const clearPressTimer = () => {
+      window.clearTimeout(pressTimer);
+      pressTimer = 0;
+    };
+    const isInteractive = target => Boolean(target.closest("input, textarea, select, button, a, summary, details"));
+    const clearTarget = () => {
+      targetItem?.classList.remove("block-layout-target");
+      targetItem = null;
+    };
+    const finish = (event, cancelled = false) => {
+      clearPressTimer();
+      if (!activeItem) {
+        pressedItem = null;
+        pressedContainer = null;
+        pointerId = null;
+        return;
+      }
+      event?.preventDefault();
+      if (!cancelled && !didDrag) {
+        const half = !activeItem.classList.contains("layout-width-half");
+        activeItem.classList.toggle("layout-width-half", half);
+        activeItem.dataset.layoutWidth = half ? "half" : "full";
+        toast(half ? "Ширина блока: половина" : "Ширина блока: повна");
+      }
+      saveEntryBlockLayout(pressedContainer);
+      activeItem.classList.remove("block-layout-active");
+      clearTarget();
+      document.body.classList.remove("block-layout-dragging");
+      suppressClickUntil = Date.now() + 450;
+      activeItem = null;
+      pressedItem = null;
+      pressedContainer = null;
+      pointerId = null;
+      didDrag = false;
+    };
+
+    document.addEventListener("pointerdown", event => {
+      const item = event.target.closest("[data-layout-item]");
+      const container = item?.parentElement?.closest("[data-layout-container]");
+      if (!item || !container || item.parentElement !== container || isInteractive(event.target)) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      clearPressTimer();
+      pointerId = event.pointerId;
+      pressedItem = item;
+      pressedContainer = container;
+      startX = event.clientX;
+      startY = event.clientY;
+      didDrag = false;
+      pressTimer = window.setTimeout(() => {
+        if (!pressedItem) return;
+        activeItem = pressedItem;
+        activeItem.classList.add("block-layout-active");
+        document.body.classList.add("block-layout-dragging");
+        toast("Перетягни блок. Відпусти без руху — змінити ширину.");
+      }, 560);
+    }, { passive: true });
+
+    document.addEventListener("pointermove", event => {
+      if (event.pointerId !== pointerId || !pressedItem) return;
+      const distance = Math.hypot(event.clientX - startX, event.clientY - startY);
+      if (!activeItem) {
+        if (distance > 9) {
+          clearPressTimer();
+          pressedItem = null;
+          pressedContainer = null;
+          pointerId = null;
+        }
+        return;
+      }
+      event.preventDefault();
+      if (distance > 14) didDrag = true;
+      const hovered = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-layout-item]");
+      if (!hovered || hovered === activeItem || hovered.parentElement !== pressedContainer) {
+        clearTarget();
+        return;
+      }
+      clearTarget();
+      targetItem = hovered;
+      targetItem.classList.add("block-layout-target");
+      const rect = hovered.getBoundingClientRect();
+      const before = event.clientY < rect.top + rect.height / 2
+        || (Math.abs(event.clientY - (rect.top + rect.height / 2)) < rect.height / 3
+          && event.clientX < rect.left + rect.width / 2);
+      pressedContainer.insertBefore(activeItem, before ? hovered : hovered.nextSibling);
+    }, { passive: false });
+
+    document.addEventListener("pointerup", event => {
+      if (event.pointerId === pointerId) finish(event);
+    }, { passive: false });
+    document.addEventListener("pointercancel", event => {
+      if (event.pointerId === pointerId) finish(event, true);
+    }, { passive: false });
+    document.addEventListener("contextmenu", event => {
+      const item = event.target.closest("[data-layout-item]");
+      if (item && !isInteractive(event.target)) event.preventDefault();
+    });
+    document.addEventListener("selectstart", event => {
+      if (event.target.closest("[data-layout-item]") && !isInteractive(event.target)) event.preventDefault();
+    });
+    document.addEventListener("click", event => {
+      if (Date.now() < suppressClickUntil && event.target.closest("[data-layout-item]")) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+  }
+
   function prepareProductEditorSections() {
     const state = getEntrySectionState();
     state.productMain = true;
@@ -17720,6 +17966,7 @@
   }
 
   function openQuickEdit(productId, preferredEntryId = "") {
+    syncEntryBlockLayoutContexts();
     const entries = getQuickEditEntries(productId);
     if (!entries.length) {
       toast("Позицію не знайдено", true);
@@ -17996,6 +18243,7 @@
 
   function openOrderEntryDialog(productId) {
     if (!usesEntryDialogMode()) return;
+    syncEntryBlockLayoutContexts();
     const product = state.products.find(item => item.id === productId);
     if (!product) {
       toast("Найменування не знайдено", true);
@@ -19878,7 +20126,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=335")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=336")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -22029,6 +22277,8 @@
   applyEntryUnitVisibility();
   applyOrderEntryMode();
   applyEntrySectionState();
+  syncEntryBlockLayoutContexts();
+  initEntryBlockLayoutControls();
   updateDemoModeUI();
   renderThemeCategories();
   render();
