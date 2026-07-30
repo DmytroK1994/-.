@@ -2711,7 +2711,7 @@
     .recent-product-shortcut {
       width: 100%;
       min-height: 30px !important;
-      margin: 5px 0 0 !important;
+      margin: 8px 0 0 !important;
       padding: 5px 9px !important;
       display: flex;
       align-items: center;
@@ -8081,7 +8081,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=321">
+<link rel="manifest" href="manifest.json?v=322">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8136,7 +8136,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.21</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.22</span></div>
     </div>
   </div>
 
@@ -9359,7 +9359,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.21</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.22</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9384,6 +9384,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.22</h3>
+          <ul>
+            <li>положення блока пошуку тепер визначається стабільною висотою шапки й не змінюється після відкриття клавіатури;</li>
+            <li>між полем пошуку та рядком останньої вибраної позиції додано трохи більше простору.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.21</h3>
           <ul>
@@ -10585,7 +10592,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.21";
+  const APP_VERSION = "3.22";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -15897,8 +15904,9 @@
   function updateAppHeaderBottomMetric() {
     const header = document.querySelector(".app-header");
     if (!header) return;
-    const bottom = Math.max(0, Math.ceil(header.getBoundingClientRect().bottom));
-    document.documentElement.style.setProperty("--app-header-bottom", `${bottom}px`);
+    const rect = header.getBoundingClientRect();
+    const headerHeight = Math.max(0, Math.ceil(rect.height || header.offsetHeight || 0));
+    document.documentElement.style.setProperty("--app-header-bottom", `${headerHeight}px`);
   }
 
   function initAppHeaderBottomMetric() {
@@ -18822,7 +18830,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=321")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=322")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
