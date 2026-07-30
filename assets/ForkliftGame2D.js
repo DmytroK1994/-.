@@ -408,15 +408,15 @@
         }
       }
       this.workers = Array.from({ length: 9 }, (_, index) => {
-        const point = this.randomAislePoint(18);
-        const target = this.randomAislePoint(18);
+        const point = this.randomWorkerPoint(false);
+        const target = this.randomWorkerPoint(false);
         return {
           x: point.x, y: point.y, targetX: target.x, targetY: target.y,
           speed: 42 + Math.random() * 24,
           color: index % 2 ? "#4d82aa" : "#5a926a",
           phase: Math.random() * TAU,
           avoidUntil: 0,
-          aware: Math.random() > .28
+          aware: Math.random() > .1
         };
       });
       this.bot = { x: 520, y: 1300, angle: 0, targetX: 950, targetY: 1300, speed: 82, speedBoostUntil: 0 };
@@ -442,6 +442,55 @@
       return { x: 550, y: 700 };
     }
 
+    randomWorkerPoint(allowMainAisle) {
+      if (allowMainAisle) {
+        for (let attempt = 0; attempt < 40; attempt++) {
+          const point = {
+            x: 500 + Math.random() * 1080,
+            y: 625 + Math.random() * 150
+          };
+          const blocked = this.obstacles.some(obstacle => circleRect(point.x, point.y, 18, obstacle));
+          const insideTrailer = this.modeConfig.trailer
+            && point.x > this.trailer.x - 25
+            && point.x < this.trailer.x + this.trailer.w + 180
+            && point.y > this.trailer.y - 25
+            && point.y < this.trailer.y + this.trailer.h + 25;
+          if (!blocked && !insideTrailer) return point;
+        }
+      }
+      const pedestrianObstacles = this.obstacles.filter(rect =>
+        rect.type === "rack" || rect.type === "maze-wall"
+      );
+      for (let attempt = 0; attempt < 70 && pedestrianObstacles.length; attempt++) {
+        const rect = pedestrianObstacles[Math.floor(Math.random() * pedestrianObstacles.length)];
+        const verticalSide = Math.random() < .5;
+        const side = Math.random() < .5 ? -1 : 1;
+        const clearance = 36 + Math.random() * 18;
+        const point = verticalSide
+          ? {
+              x: side < 0 ? rect.x - clearance : rect.x + rect.w + clearance,
+              y: rect.y + 30 + Math.random() * Math.max(20, rect.h - 60)
+            }
+          : {
+              x: rect.x + 30 + Math.random() * Math.max(20, rect.w - 60),
+              y: side < 0 ? rect.y - clearance : rect.y + rect.h + clearance
+            };
+        point.x = clamp(point.x, 45, this.world.w - 45);
+        point.y = clamp(point.y, 45, this.world.h - 45);
+        const blocked = this.obstacles.some(obstacle => circleRect(point.x, point.y, 18, obstacle));
+        const insideTrailer = this.modeConfig.trailer
+          && point.x > this.trailer.x - 25
+          && point.x < this.trailer.x + this.trailer.w + 180
+          && point.y > this.trailer.y - 25
+          && point.y < this.trailer.y + this.trailer.h + 25;
+        const insideSafeZone = this.modeConfig.trailer
+          && circleRect(point.x, point.y, 24, this.trailerSafeZone);
+        const inMainLane = point.x > 455 && point.x < 1630 && point.y > 585 && point.y < 815;
+        if (!blocked && !insideTrailer && !insideSafeZone && !inMainLane) return point;
+      }
+      return this.randomAislePoint(18);
+    }
+
     randomPalletPoint() {
       for (let attempt = 0; attempt < 100; attempt++) {
         const minY = this.modeConfig.trailer ? 500 : 170;
@@ -454,12 +503,15 @@
         const onVehicle = Math.hypot(point.x - this.vehicle.x, point.y - this.vehicle.y) < 100;
         const onWorker = this.workers.some(worker => Math.hypot(point.x - worker.x, point.y - worker.y) < 70);
         const onBot = this.bot && Math.hypot(point.x - this.bot.x, point.y - this.bot.y) < 90;
+        const inBotLane = (point.y > 1210 && point.x > 455 && point.x < 1030)
+          || (point.x > 890 && point.x < 1025 && point.y > 600 && point.y < 1335)
+          || (this.modeConfig.trailer && point.x > 930 && point.x < 1240 && point.y > 590 && point.y < 655);
         const insideTrailer = this.modeConfig.trailer
           && point.x > this.trailer.x - 20
           && point.x < this.trailer.x + this.trailer.w + 180
           && point.y > this.trailer.y - 20
           && point.y < this.trailer.y + this.trailer.h + 20;
-        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot && !insideTrailer) return point;
+        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot && !inBotLane && !insideTrailer) return point;
       }
       return { x: 180 + (this.pallets.length % 3) * 100, y: 500 + (this.pallets.length % 5) * 90 };
     }
@@ -884,6 +936,7 @@
         this.trailerRound = this.trucksCompleted + 1;
         this.trailerAwaitingDeparture = false;
         this.trafficLight = "red";
+        if (this.bot) this.bot.task = "collect";
         this.root.querySelector("[data-fg2='goal']").textContent = this.levelGoalText();
         this.notice(`Фура ${this.trailerRound}/${this.trucksRequired} готова до завантаження`, "good");
       }
@@ -917,7 +970,7 @@
           worker.targetY = clamp(worker.y + dy / length * 190, 50, this.world.h - 50);
           worker.avoidUntil = this.elapsed + 1.4;
         } else if (distance(worker, { x: worker.targetX, y: worker.targetY }) < 15 || Math.random() < dt * .08) {
-          const target = this.randomAislePoint(18);
+          const target = this.randomWorkerPoint(Math.random() < .1);
           worker.targetX = target.x;
           worker.targetY = target.y;
         }
@@ -936,13 +989,15 @@
           && worker.x < this.trailer.x + this.trailer.w + 175
           && worker.y > this.trailer.y - 10
           && worker.y < this.trailer.y + this.trailer.h + 10;
+        const enteredSafeZone = this.modeConfig.trailer
+          && circleRect(worker.x, worker.y, 18, this.trailerSafeZone);
         const hitsWorker = this.workers.some((other, otherIndex) =>
           otherIndex !== workerIndex && !other.injured && Math.hypot(worker.x - other.x, worker.y - other.y) < 27
         );
-        if (hitsObstacle || hitsPallet || hitsBot || hitsWorker || enteredTrailer) {
+        if (hitsObstacle || hitsPallet || hitsBot || hitsWorker || enteredTrailer || enteredSafeZone) {
           worker.x = previous.x;
           worker.y = previous.y;
-          const target = this.randomAislePoint(18);
+          const target = this.randomWorkerPoint(Math.random() < .1);
           worker.targetX = target.x;
           worker.targetY = target.y;
         }
@@ -1034,12 +1089,36 @@
       const bot = this.bot;
       if (!bot) return;
       bot.beacon += dt * 8;
-      const taskPoints = {
-        collect: { x: 520, y: 1300 },
-        outbound: { x: 950, y: 1300 },
-        load: { x: 950, y: 700 },
-        return: { x: 950, y: 1300 }
-      };
+      const taskPoints = this.modeConfig.trailer
+        ? {
+            collect: { x: 520, y: 1300 },
+            outbound: { x: 1110, y: 1300 },
+            approach: { x: 1110, y: 930 },
+            staging: { x: 990, y: 930 },
+            entrance: { x: 990, y: 622 },
+            load: { x: 1180, y: 622 },
+            exit: { x: 990, y: 622 },
+            bypass: { x: 990, y: 930 },
+            home: { x: 1110, y: 930 },
+            return: { x: 1110, y: 1300 },
+            parked: { x: 1110, y: 1300 }
+          }
+        : {
+            collect: { x: 520, y: 1300 },
+            outbound: { x: 950, y: 1300 },
+            load: { x: 950, y: 700 },
+            return: { x: 950, y: 1300 }
+          };
+      if (this.modeConfig.trailer && (this.trailerAwaitingDeparture || this.trailerTransition)) {
+        if (bot.task !== "parked") {
+          if (bot.y > 1200) bot.task = "parked";
+          else if (bot.x >= this.trailer.x) bot.task = "exit";
+          else if (bot.y < 900) bot.task = "bypass";
+          else if (bot.x < 1060) bot.task = "home";
+          else bot.task = "parked";
+        }
+        bot.carrying = false;
+      }
       const taskTarget = taskPoints[bot.task] || taskPoints.collect;
       bot.targetX = taskTarget.x;
       bot.targetY = taskTarget.y;
@@ -1048,12 +1127,25 @@
           bot.task = "outbound";
           bot.carrying = true;
         } else if (bot.task === "outbound") {
+          bot.task = this.modeConfig.trailer ? "approach" : "load";
+        } else if (bot.task === "approach") {
+          bot.task = "staging";
+        } else if (bot.task === "staging") {
+          bot.task = "entrance";
+        } else if (bot.task === "entrance") {
           bot.task = "load";
         } else if (bot.task === "load") {
-          bot.task = "return";
+          bot.task = this.modeConfig.trailer ? "exit" : "return";
           bot.carrying = false;
+          this.botScore += 100;
           if (Math.random() < .65) this.say(bot, ["Піддон передано!", "Проїзд вільний?", "Не стій на маршруті."][Math.floor(Math.random() * 3)]);
-        } else {
+        } else if (bot.task === "exit") {
+          bot.task = "bypass";
+        } else if (bot.task === "bypass") {
+          bot.task = "home";
+        } else if (bot.task === "home") {
+          bot.task = "return";
+        } else if (bot.task !== "parked") {
           bot.task = "collect";
         }
       }
@@ -1065,15 +1157,17 @@
       const botBoost = this.elapsed < (bot.speedBoostUntil || 0) ? 1.35 : 1;
       bot.x += dx / length * bot.speed * botBoost * dt;
       bot.y += dy / length * bot.speed * botBoost * dt;
-      const botHitObstacle = this.obstacles.some(rect => circleRect(bot.x, bot.y, 43, rect));
-      const botHitPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(bot.x - pallet.x, bot.y - pallet.y) < 62);
-      const botHitWorker = this.workers.some(worker => !worker.injured && Math.hypot(bot.x - worker.x, bot.y - worker.y) < 58);
+      const botHitObstacle = this.obstacles.some(rect => circleRect(bot.x, bot.y, 34, rect));
+      const botHitPallet = this.pallets.some(pallet =>
+        !pallet.carried && !pallet.delivered && Math.hypot(bot.x - pallet.x, bot.y - pallet.y) < 50
+      );
+      const botHitWorker = this.workers.some(worker => !worker.injured && Math.hypot(bot.x - worker.x, bot.y - worker.y) < 48);
       if (botHitObstacle || botHitPallet || botHitWorker) {
         bot.x = previous.x;
         bot.y = previous.y;
         bot.y = clamp(bot.y + (bot.y < 700 ? -45 : 45), 55, this.world.h - 55);
       }
-      if (Math.hypot(bot.x - this.vehicle.x, bot.y - this.vehicle.y) < 76) {
+      if (Math.hypot(bot.x - this.vehicle.x, bot.y - this.vehicle.y) < 65) {
         this.vehicle.speed = 0;
         this.say(bot, "Ти куди преш? У мене маячок!");
         this.gameOver("Зіткнення зі службовою карою. Її потрібно обов’язково пропускати.");
@@ -1272,6 +1366,13 @@
       gradient.addColorStop(1, "#58666c");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, this.world.w, this.world.h);
+      ctx.fillStyle = "rgba(42,57,63,.25)";
+      ctx.fillRect(455, 585, 1175, 230);
+      ctx.strokeStyle = "rgba(250,215,91,.72)";
+      ctx.lineWidth = 4;
+      ctx.setLineDash([24, 18]);
+      ctx.strokeRect(465, 595, 1155, 210);
+      ctx.setLineDash([]);
       ctx.strokeStyle = "rgba(255,255,255,.08)";
       ctx.lineWidth = 2;
       for (let x = 0; x <= this.world.w; x += 100) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.world.h); ctx.stroke(); }
@@ -1509,16 +1610,16 @@
         ctx.textAlign = "center";
         ctx.fillText("БЕЗПЕЧНА ЗОНА", safeZone.x + safeZone.w / 2, safeZone.y - 10);
 
-        const lightX = rearX - 42;
-        const lightY = this.trailer.y + this.trailer.h + 48;
+        const lightX = rearX + 22;
+        const lightY = this.trailer.y - 48;
         ctx.fillStyle = "#17262d";
         ctx.beginPath();
-        ctx.roundRect(lightX - 22, lightY - 42, 44, 84, 11);
+        ctx.roundRect(lightX - 17, lightY - 32, 34, 64, 9);
         ctx.fill();
         ctx.fillStyle = this.trafficLight === "red" ? "#ff4e4e" : "#5f281f";
-        ctx.beginPath(); ctx.arc(lightX, lightY - 20, 12, 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.arc(lightX, lightY - 15, 9, 0, TAU); ctx.fill();
         ctx.fillStyle = this.trafficLight === "green" ? "#55e583" : "#234f34";
-        ctx.beginPath(); ctx.arc(lightX, lightY + 20, 12, 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.arc(lightX, lightY + 15, 9, 0, TAU); ctx.fill();
 
         // Відкрита площадка перед задньою частиною фури — без воріт і стінки.
         ctx.fillStyle = "#9aa7ac";
@@ -1757,7 +1858,10 @@
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
-      if (bot) ctx.scale(1.85, 1.85);
+      if (bot) {
+        ctx.save();
+        ctx.scale(1.18, 1.18);
+      }
       ctx.shadowColor = "rgba(0,0,0,.45)";
       ctx.shadowBlur = 12;
       ctx.fillStyle = color;
@@ -1767,6 +1871,21 @@
       ctx.fillRect(-22, -18, 26, 36);
       ctx.fillStyle = "#e8b58c";
       ctx.beginPath(); ctx.arc(-8, 0, 8, 0, TAU); ctx.fill();
+      if (bot) {
+        ctx.fillStyle = Math.sin(this.bot?.beacon || 0) > 0 ? "#ffd94a" : "#8b6d1e";
+        ctx.shadowColor = "#ffd94a";
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(0, -24, 7, 0, TAU);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 10px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("BOT", -9, 4);
+        ctx.restore();
+      }
+      // Вила і піддон мають однаковий реальний розмір у гравця та службової кари.
       ctx.fillStyle = "#18262b";
       ctx.fillRect(25, -20, 48, 7);
       ctx.fillRect(25, 13, 48, 7);
@@ -1780,22 +1899,11 @@
       if (bot) {
         if (this.bot?.carrying) {
           ctx.fillStyle = "#c68d4c";
-          ctx.fillRect(46, -27, 54, 54);
+          ctx.fillRect(48, -28, 58, 56);
           ctx.strokeStyle = "#f2d2a5";
           ctx.lineWidth = 2;
-          ctx.strokeRect(46, -27, 54, 54);
+          ctx.strokeRect(48, -28, 58, 56);
         }
-        ctx.fillStyle = Math.sin(this.bot?.beacon || 0) > 0 ? "#ffd94a" : "#8b6d1e";
-        ctx.shadowColor = "#ffd94a";
-        ctx.shadowBlur = 12;
-        ctx.beginPath();
-        ctx.arc(0, -24, 7, 0, TAU);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = "#fff";
-        ctx.font = "900 10px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("BOT", -9, 4);
       }
       ctx.restore();
     }
