@@ -165,6 +165,9 @@
       this.workers = [];
       this.bot = null;
       this.botScore = 0;
+      this.botRackPoints = [];
+      this.botStageSlots = [];
+      this.botStagedPallets = [];
       this.slots = [];
       this.trailerRound = 1;
       this.incident = null;
@@ -486,11 +489,27 @@
           color: index % 2 ? "#4d82aa" : "#5a926a",
           phase: Math.random() * TAU,
           avoidUntil: 0,
+          awayUntil: 0,
+          stuckFor: 0,
           aware: Math.random() > .1
         };
       });
-      this.bot = { x: 520, y: 1300, angle: 0, targetX: 950, targetY: 1300, speed: 82, speedBoostUntil: 0 };
-      this.bot.task = "collect";
+      this.botRackPoints = [
+        { x: 650, y: 275 },
+        { x: 650, y: 455 },
+        { x: 650, y: 930 },
+        { x: 650, y: 1110 }
+      ].filter(point => !this.obstacles.some(rect => circleRect(point.x, point.y, 34, rect)));
+      this.botStageSlots = Array.from({ length: 8 }, (_, index) => ({
+        x: 500 + (index % 2) * 105,
+        y: 970 + Math.floor(index / 2) * 78
+      }));
+      this.botStagedPallets = [];
+      this.bot = {
+        x: 520, y: 1300, angle: 0, targetX: 650, targetY: 1110,
+        speed: 82, speedBoostUntil: 0, task: "rack", carrying: false,
+        rackIndex: 0, stageIndex: 0, path: [], pathKey: "", blockedFor: 0
+      };
       this.bot.carrying = false;
       this.bot.beacon = 0;
       this.spawnBoosts();
@@ -576,12 +595,17 @@
         const inBotLane = (point.y > 1210 && point.x > 455 && point.x < 1030)
           || (point.x > 890 && point.x < 1025 && point.y > 600 && point.y < 1335)
           || (this.modeConfig.trailer && point.x > 930 && point.x < 1240 && point.y > 590 && point.y < 655);
+        const inBotStage = point.x > 430 && point.x < 685 && point.y > 900 && point.y < 1310;
+        const inBotRackService = [
+          { x: 650, y: 275 }, { x: 650, y: 455 },
+          { x: 650, y: 930 }, { x: 650, y: 1110 }
+        ].some(servicePoint => Math.hypot(point.x - servicePoint.x, point.y - servicePoint.y) < 90);
         const insideTrailer = this.modeConfig.trailer
           && point.x > this.trailer.x - 20
           && point.x < this.trailer.x + this.trailer.w + 180
           && point.y > this.trailer.y - 20
           && point.y < this.trailer.y + this.trailer.h + 20;
-        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot && !inBotLane && !insideTrailer) return point;
+        if (!blocked && !crowded && !onVehicle && !onWorker && !onBot && !inBotLane && !inBotStage && !inBotRackService && !insideTrailer) return point;
       }
       return { x: 180 + (this.pallets.length % 3) * 100, y: 500 + (this.pallets.length % 5) * 90 };
     }
@@ -733,8 +757,20 @@
       }
       this.updateBoosts();
       this.updateVehicle(dt);
+      if (this.incident || this.over) {
+        this.updateHUD();
+        return;
+      }
       this.updateWorkers(dt);
+      if (this.incident || this.over) {
+        this.updateHUD();
+        return;
+      }
       this.updateBot(dt);
+      if (this.incident || this.over) {
+        this.updateHUD();
+        return;
+      }
       this.checkTrailerDeparture();
       this.updateHUD();
     }
@@ -768,10 +804,36 @@
       v.y = clamp(v.y, 35, this.world.h - 35);
       const hitObstacle = this.obstacles.some(rect => circleRect(v.x, v.y, v.radius, rect));
       const hitPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(v.x - pallet.x, v.y - pallet.y) < 43);
-      if (hitObstacle || hitPallet) {
+      const hitStagePallet = this.botStagedPallets.some(pallet => Math.hypot(v.x - pallet.x, v.y - pallet.y) < 43);
+      const cargoPoint = v.carrying ? this.forkPoint() : null;
+      const hitCargoObstacle = cargoPoint && this.obstacles.some(rect => circleRect(cargoPoint.x, cargoPoint.y, 34, rect));
+      const hitCargoPallet = cargoPoint && this.pallets.some(pallet =>
+        pallet !== v.carrying && !pallet.carried && Math.hypot(cargoPoint.x - pallet.x, cargoPoint.y - pallet.y) < 66
+      );
+      const hitCargoStage = cargoPoint && this.botStagedPallets.some(pallet =>
+        Math.hypot(cargoPoint.x - pallet.x, cargoPoint.y - pallet.y) < 66
+      );
+      const hitCargoWorker = cargoPoint && this.workers.find(worker =>
+        !worker.injured && Math.hypot(cargoPoint.x - worker.x, cargoPoint.y - worker.y) < 43
+      );
+      const hitCargoBot = cargoPoint && this.bot && Math.hypot(cargoPoint.x - this.bot.x, cargoPoint.y - this.bot.y) < 62;
+      if (hitObstacle || hitPallet || hitStagePallet || hitCargoObstacle || hitCargoPallet || hitCargoStage || hitCargoWorker || hitCargoBot) {
         v.x = previous.x;
         v.y = previous.y;
-        if (v.speed > 70) this.damage("Зіткнення з перешкодою");
+        if (hitCargoWorker) {
+          const escape = this.workerEscapePoint(hitCargoWorker, this.vehicle);
+          hitCargoWorker.targetX = escape.x;
+          hitCargoWorker.targetY = escape.y;
+          hitCargoWorker.awayUntil = this.elapsed + 9;
+          if (v.speed > 65) this.startIncident(hitCargoWorker, "player");
+          else if (v.speed > 25) this.damage("Вантаж зачепив працівника");
+        } else if (hitCargoBot) {
+          this.gameOver("Вантаж зачепив службову кару. Її потрібно пропускати.");
+        } else if (v.speed > 28 && cargoPoint) {
+          this.damage(hitCargoPallet || hitCargoStage ? "Вантаж зачепив інший піддон" : "Вантаж зачепив перешкоду");
+        } else if (v.speed > 70) {
+          this.damage("Зіткнення з перешкодою");
+        }
         v.speed = 0;
       }
       if (this.controls.lift) this.lift();
@@ -1062,7 +1124,13 @@
         this.trailerRound = this.trucksCompleted + 1;
         this.trailerAwaitingDeparture = false;
         this.trafficLight = "red";
-        if (this.bot) this.bot.task = "collect";
+        this.botStagedPallets = [];
+        if (this.bot) {
+          this.bot.task = "rack";
+          this.bot.stageIndex = 0;
+          this.bot.path = [];
+          this.bot.pathKey = "";
+        }
         this.root.querySelector("[data-fg2='goal']").textContent = this.levelGoalText();
         this.notice(`Фура ${this.trailerRound}/${this.trucksRequired} готова до завантаження`, "good");
       }
@@ -1084,83 +1152,130 @@
       return Math.max(0, 1 - (timer - 5));
     }
 
+    workerPointBlocked(x, y, ignoredWorker) {
+      if (x < 28 || x > this.world.w - 28 || y < 28 || y > this.world.h - 28) return true;
+      if (this.obstacles.some(rect => circleRect(x, y, 16, rect))) return true;
+      if (this.pallets.some(pallet => !pallet.carried && Math.hypot(x - pallet.x, y - pallet.y) < 35)) return true;
+      if (this.botStagedPallets.some(pallet => Math.hypot(x - pallet.x, y - pallet.y) < 35)) return true;
+      if (this.bot && Math.hypot(x - this.bot.x, y - this.bot.y) < 48) return true;
+      if (this.workers.some(worker =>
+        worker !== ignoredWorker && !worker.injured && Math.hypot(x - worker.x, y - worker.y) < 28
+      )) return true;
+      const insideTrailer = this.modeConfig.trailer
+        && x > this.trailer.x - 12
+        && x < this.trailer.x + this.trailer.w + 175
+        && y > this.trailer.y - 12
+        && y < this.trailer.y + this.trailer.h + 12;
+      const insideSafeZone = this.modeConfig.trailer && circleRect(x, y, 18, this.trailerSafeZone);
+      const insideStagingZone = x > 440 && x < 675 && y > 910 && y < 1295;
+      return insideTrailer || insideSafeZone || insideStagingZone;
+    }
+
+    workerEscapePoint(worker, threat) {
+      const baseAngle = Math.atan2(worker.y - threat.y, worker.x - threat.x);
+      const offsets = [0, .45, -.45, .9, -.9, 1.35, -1.35, Math.PI];
+      for (const offset of offsets) {
+        const distanceAway = 190 + Math.random() * 70;
+        const x = clamp(worker.x + Math.cos(baseAngle + offset) * distanceAway, 35, this.world.w - 35);
+        const y = clamp(worker.y + Math.sin(baseAngle + offset) * distanceAway, 35, this.world.h - 35);
+        if (!this.workerPointBlocked(x, y, worker)) return { x, y };
+      }
+      return this.randomWorkerPoint(false);
+    }
+
+    recoverWorker(worker) {
+      for (let attempt = 0; attempt < 50; attempt++) {
+        const point = this.randomWorkerPoint(false);
+        if (!this.workerPointBlocked(point.x, point.y, worker)) {
+          worker.x = point.x;
+          worker.y = point.y;
+          worker.targetX = point.x;
+          worker.targetY = point.y;
+          worker.stuckFor = 0;
+          return;
+        }
+      }
+    }
+
     updateWorkers(dt) {
-      this.workers.forEach((worker, workerIndex) => {
+      this.workers.forEach(worker => {
         if (worker.injured) return;
-        const toVehicle = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y);
-        if (toVehicle < 135 && (worker.aware || worker.avoidUntil > this.elapsed)) {
-          let dx = worker.x - this.vehicle.x;
-          let dy = worker.y - this.vehicle.y;
-          const length = Math.hypot(dx, dy) || 1;
-          worker.targetX = clamp(worker.x + dx / length * 190, 50, this.world.w - 50);
-          worker.targetY = clamp(worker.y + dy / length * 190, 50, this.world.h - 50);
-          worker.avoidUntil = this.elapsed + 1.4;
-        } else if (distance(worker, { x: worker.targetX, y: worker.targetY }) < 15 || Math.random() < dt * .08) {
-          const target = this.randomWorkerPoint(Math.random() < .1);
-          worker.targetX = target.x;
-          worker.targetY = target.y;
-        }
-        let dx = worker.targetX - worker.x;
-        let dy = worker.targetY - worker.y;
-        const length = Math.hypot(dx, dy) || 1;
         const previous = { x: worker.x, y: worker.y };
-        const speed = worker.avoidUntil > this.elapsed ? worker.speed * 2.4 : worker.speed;
-        worker.x += dx / length * speed * dt;
-        worker.y += dy / length * speed * dt;
-        const hitsObstacle = this.obstacles.some(rect => circleRect(worker.x, worker.y, 14, rect));
-        const hitsPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(worker.x - pallet.x, worker.y - pallet.y) < 33);
-        const hitsBot = this.bot && Math.hypot(worker.x - this.bot.x, worker.y - this.bot.y) < 45;
-        const enteredTrailer = this.modeConfig.trailer
-          && worker.x > this.trailer.x - 10
-          && worker.x < this.trailer.x + this.trailer.w + 175
-          && worker.y > this.trailer.y - 10
-          && worker.y < this.trailer.y + this.trailer.h + 10;
-        const enteredSafeZone = this.modeConfig.trailer
-          && circleRect(worker.x, worker.y, 18, this.trailerSafeZone);
-        const hitsWorker = this.workers.some((other, otherIndex) =>
-          otherIndex !== workerIndex && !other.injured && Math.hypot(worker.x - other.x, worker.y - other.y) < 27
-        );
-        if (hitsObstacle || hitsPallet || hitsBot || hitsWorker || enteredTrailer || enteredSafeZone) {
-          worker.x = previous.x;
-          worker.y = previous.y;
-          const target = this.randomWorkerPoint(Math.random() < .1);
+        const toVehicle = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y);
+        if (toVehicle < 145 && (worker.aware || worker.avoidUntil > this.elapsed)) {
+          const escape = this.workerEscapePoint(worker, this.vehicle);
+          worker.targetX = escape.x;
+          worker.targetY = escape.y;
+          worker.avoidUntil = Math.max(worker.avoidUntil, this.elapsed + 2.2);
+          worker.awayUntil = Math.max(worker.awayUntil, this.elapsed + 7);
+        } else if (distance(worker, { x: worker.targetX, y: worker.targetY }) < 15 || Math.random() < dt * .06) {
+          const target = this.randomWorkerPoint(worker.awayUntil <= this.elapsed && Math.random() < .08);
           worker.targetX = target.x;
           worker.targetY = target.y;
         }
+        const dx = worker.targetX - worker.x;
+        const dy = worker.targetY - worker.y;
+        const length = Math.hypot(dx, dy) || 1;
+        const speed = worker.avoidUntil > this.elapsed ? worker.speed * 2.4 : worker.speed;
+        const nextX = worker.x + dx / length * speed * dt;
+        const nextY = worker.y + dy / length * speed * dt;
+        if (this.workerPointBlocked(nextX, nextY, worker)) {
+          worker.stuckFor += dt;
+          const target = this.randomWorkerPoint(false);
+          worker.targetX = target.x;
+          worker.targetY = target.y;
+        } else {
+          worker.x = nextX;
+          worker.y = nextY;
+          const moved = Math.hypot(worker.x - previous.x, worker.y - previous.y);
+          worker.stuckFor = moved < .15 ? worker.stuckFor + dt : Math.max(0, worker.stuckFor - dt * 2);
+        }
+        if (worker.stuckFor > 1.25) this.recoverWorker(worker);
         worker.phase += dt * speed * .12;
-        const collision = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) < 35;
-        if (collision) {
+
+        const bodyCollision = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) < 36;
+        const cargoPoint = this.vehicle.carrying ? this.forkPoint() : null;
+        const cargoCollision = cargoPoint && Math.hypot(worker.x - cargoPoint.x, worker.y - cargoPoint.y) < 43;
+        if (bodyCollision || cargoCollision) {
           worker.x = previous.x;
           worker.y = previous.y;
-          worker.avoidUntil = 0;
-          if (this.vehicle.speed > 118) {
-            this.startIncident(worker);
-          }
+          const escape = this.workerEscapePoint(worker, this.vehicle);
+          worker.targetX = escape.x;
+          worker.targetY = escape.y;
+          worker.avoidUntil = this.elapsed + 2.5;
+          worker.awayUntil = this.elapsed + 8;
+          if (this.vehicle.speed > (cargoCollision ? 65 : 110)) this.startIncident(worker, "player");
         }
       });
     }
 
-    startIncident(worker) {
+    startIncident(worker, source) {
       if (this.incident || worker.injured) return;
+      const causedByBot = source === "bot";
       worker.injured = true;
       this.vehicle.speed = 0;
-      if (!this.modeConfig.noPenalties) this.score = Math.max(0, this.score - 100);
+      if (!causedByBot && !this.modeConfig.noPenalties) this.score = Math.max(0, this.score - 100);
       const side = worker.x > this.world.w / 2 ? -1 : 1;
       this.incident = {
         timer: 0,
         victim: worker,
+        causedByBot,
         inspector: { x: worker.x + side * 260, y: worker.y - 130 },
         medics: [
           { x: worker.x + side * 300, y: worker.y + 100 },
           { x: worker.x + side * 340, y: worker.y + 145 }
         ],
         exit: { x: clamp(worker.x + side * 390, 55, this.world.w - 55), y: clamp(worker.y + 190, 55, this.world.h - 55) },
-        gameOverAfter: this.levelRules.strictSafety || (!this.modeConfig.noPenalties && this.score <= 0)
+        gameOverAfter: causedByBot
+          ? false
+          : this.levelRules.strictSafety || (!this.modeConfig.noPenalties && this.score <= 0)
       };
       this.root.querySelector("[data-fg2='goal']").textContent = "ПОРУШЕННЯ · інспектор оформлює подію, медики забирають постраждалого";
-      this.notice(this.modeConfig.noPenalties
-        ? "Небезпечний контакт із працівником — тренування продовжиться"
-        : "-100 балів: небезпечний контакт із працівником", "bad");
+      this.notice(causedByBot
+        ? "Службова кара зачепила працівника — роботу тимчасово зупинено"
+        : this.modeConfig.noPenalties
+          ? "Небезпечний контакт із працівником — тренування продовжиться"
+          : "-100 балів: небезпечний контакт із працівником", "bad");
       this.tone(110, .28, "square", .065);
     }
 
@@ -1211,91 +1326,212 @@
       }
     }
 
+    botPositionBlocked(x, y, ignoreTargetPallet) {
+      if (x < 42 || x > this.world.w - 42 || y < 42 || y > this.world.h - 42) return true;
+      if (this.obstacles.some(rect => circleRect(x, y, 36, rect))) return true;
+      if (this.pallets.some(pallet =>
+        pallet !== ignoreTargetPallet
+        && !pallet.carried
+        && Math.hypot(x - pallet.x, y - pallet.y) < 58
+      )) return true;
+      return this.botStagedPallets.some(pallet => Math.hypot(x - pallet.x, y - pallet.y) < 58);
+    }
+
+    planBotPath(target) {
+      const bot = this.bot;
+      if (!bot) return [];
+      const cell = 70;
+      const columns = Math.ceil(this.world.w / cell);
+      const rows = Math.ceil(this.world.h / cell);
+      const toIndex = (column, row) => row * columns + column;
+      const toCell = point => ({
+        column: clamp(Math.floor(point.x / cell), 0, columns - 1),
+        row: clamp(Math.floor(point.y / cell), 0, rows - 1)
+      });
+      const start = toCell(bot);
+      const end = toCell(target);
+      const startIndex = toIndex(start.column, start.row);
+      const endIndex = toIndex(end.column, end.row);
+      const open = [startIndex];
+      const cameFrom = new Map();
+      const score = new Map([[startIndex, 0]]);
+      const estimate = new Map([[startIndex, Math.hypot(end.column - start.column, end.row - start.row)]]);
+      const closed = new Set();
+      const directions = [
+        [1, 0], [-1, 0], [0, 1], [0, -1],
+        [1, 1], [1, -1], [-1, 1], [-1, -1]
+      ];
+
+      for (let iteration = 0; open.length && iteration < 900; iteration++) {
+        let bestPosition = 0;
+        for (let index = 1; index < open.length; index++) {
+          if ((estimate.get(open[index]) ?? Infinity) < (estimate.get(open[bestPosition]) ?? Infinity)) bestPosition = index;
+        }
+        const current = open.splice(bestPosition, 1)[0];
+        if (current === endIndex) {
+          const path = [];
+          let cursor = current;
+          while (cursor !== startIndex && cameFrom.has(cursor)) {
+            const column = cursor % columns;
+            const row = Math.floor(cursor / columns);
+            path.unshift({ x: column * cell + cell / 2, y: row * cell + cell / 2 });
+            cursor = cameFrom.get(cursor);
+          }
+          path.push({ x: target.x, y: target.y });
+          return path;
+        }
+        closed.add(current);
+        const currentColumn = current % columns;
+        const currentRow = Math.floor(current / columns);
+        directions.forEach(([stepX, stepY]) => {
+          const column = currentColumn + stepX;
+          const row = currentRow + stepY;
+          if (column < 0 || column >= columns || row < 0 || row >= rows) return;
+          const next = toIndex(column, row);
+          if (closed.has(next)) return;
+          const point = { x: column * cell + cell / 2, y: row * cell + cell / 2 };
+          if (next !== endIndex && this.botPositionBlocked(point.x, point.y)) return;
+          if (stepX && stepY) {
+            const sideA = { x: (currentColumn + stepX) * cell + cell / 2, y: currentRow * cell + cell / 2 };
+            const sideB = { x: currentColumn * cell + cell / 2, y: (currentRow + stepY) * cell + cell / 2 };
+            if (this.botPositionBlocked(sideA.x, sideA.y) || this.botPositionBlocked(sideB.x, sideB.y)) return;
+          }
+          const tentative = (score.get(current) ?? Infinity) + (stepX && stepY ? 1.414 : 1);
+          if (tentative >= (score.get(next) ?? Infinity)) return;
+          cameFrom.set(next, current);
+          score.set(next, tentative);
+          estimate.set(next, tentative + Math.hypot(end.column - column, end.row - row));
+          if (!open.includes(next)) open.push(next);
+        });
+      }
+      return [];
+    }
+
+    recoverBotPosition() {
+      const bot = this.bot;
+      if (!bot) return;
+      for (let radius = 70; radius <= 420; radius += 70) {
+        for (let index = 0; index < 16; index++) {
+          const angle = index / 16 * TAU;
+          const x = clamp(bot.x + Math.cos(angle) * radius, 45, this.world.w - 45);
+          const y = clamp(bot.y + Math.sin(angle) * radius, 45, this.world.h - 45);
+          const clearOfWorkers = this.workers.every(worker =>
+            worker.injured || Math.hypot(x - worker.x, y - worker.y) >= 62
+          );
+          const clearOfPlayer = Math.hypot(x - this.vehicle.x, y - this.vehicle.y) >= 90;
+          if (!this.botPositionBlocked(x, y) && clearOfWorkers && clearOfPlayer) {
+            bot.x = x;
+            bot.y = y;
+            bot.path = [];
+            bot.blockedFor = 0;
+            return;
+          }
+        }
+      }
+      bot.x = 520;
+      bot.y = 1300;
+      bot.path = [];
+      bot.blockedFor = 0;
+    }
+
     updateBot(dt) {
       const bot = this.bot;
       if (!bot) return;
       bot.beacon += dt * 8;
-      const taskPoints = this.modeConfig.trailer
-        ? {
-            collect: { x: 520, y: 1300 },
-            outbound: { x: 1110, y: 1300 },
-            approach: { x: 1110, y: 930 },
-            staging: { x: 990, y: 930 },
-            entrance: { x: 990, y: 622 },
-            load: { x: 1180, y: 622 },
-            exit: { x: 990, y: 622 },
-            bypass: { x: 990, y: 930 },
-            home: { x: 1110, y: 930 },
-            return: { x: 1110, y: 1300 },
-            parked: { x: 1110, y: 1300 }
-          }
-        : {
-            collect: { x: 520, y: 1300 },
-            outbound: { x: 950, y: 1300 },
-            load: { x: 950, y: 700 },
-            return: { x: 950, y: 1300 }
-          };
-      if (this.modeConfig.trailer && (this.trailerAwaitingDeparture || this.trailerTransition)) {
-        if (bot.task !== "parked") {
-          if (bot.y > 1200) bot.task = "parked";
-          else if (bot.x >= this.trailer.x) bot.task = "exit";
-          else if (bot.y < 900) bot.task = "bypass";
-          else if (bot.x < 1060) bot.task = "home";
-          else bot.task = "parked";
-        }
+
+      if (this.trailerAwaitingDeparture || this.trailerTransition || this.botStagedPallets.length >= this.botStageSlots.length) {
+        bot.task = "parked";
         bot.carrying = false;
       }
-      const taskTarget = taskPoints[bot.task] || taskPoints.collect;
-      bot.targetX = taskTarget.x;
-      bot.targetY = taskTarget.y;
-      if (Math.hypot(bot.x - taskTarget.x, bot.y - taskTarget.y) < 38) {
-        if (bot.task === "collect") {
-          bot.task = "outbound";
+      const rackPoint = this.botRackPoints[bot.rackIndex % Math.max(1, this.botRackPoints.length)] || { x: 650, y: 1110 };
+      const stagePoint = this.botStageSlots[bot.stageIndex % this.botStageSlots.length] || { x: 520, y: 1200 };
+      const stageDirectionX = stagePoint.x - rackPoint.x;
+      const stageDirectionY = stagePoint.y - rackPoint.y;
+      const stageDirectionLength = Math.hypot(stageDirectionX, stageDirectionY) || 1;
+      const stageStop = {
+        x: stagePoint.x - stageDirectionX / stageDirectionLength * 78,
+        y: stagePoint.y - stageDirectionY / stageDirectionLength * 78
+      };
+      const target = bot.task === "rack"
+        ? rackPoint
+        : bot.task === "stage"
+          ? stageStop
+          : { x: 520, y: 1300 };
+      bot.targetX = target.x;
+      bot.targetY = target.y;
+      const pathKey = `${bot.task}:${Math.round(target.x)}:${Math.round(target.y)}`;
+      if (bot.pathKey !== pathKey || !bot.path.length) {
+        bot.pathKey = pathKey;
+        bot.path = this.planBotPath(target);
+      }
+
+      let waypoint = bot.path[0] || target;
+      if (Math.hypot(bot.x - waypoint.x, bot.y - waypoint.y) < 28 && bot.path.length) {
+        bot.path.shift();
+        waypoint = bot.path[0] || target;
+      }
+      const dx = waypoint.x - bot.x;
+      const dy = waypoint.y - bot.y;
+      const length = Math.hypot(dx, dy) || 1;
+      const botBoost = this.elapsed < (bot.speedBoostUntil || 0) ? 1.35 : 1;
+      const step = Math.min(length, bot.speed * botBoost * dt);
+      const nextX = clamp(bot.x + dx / length * step, 42, this.world.w - 42);
+      const nextY = clamp(bot.y + dy / length * step, 42, this.world.h - 42);
+      bot.angle = Math.atan2(dy, dx);
+      const botCargoPoint = bot.carrying
+        ? {
+            x: nextX + Math.cos(bot.angle) * 77,
+            y: nextY + Math.sin(bot.angle) * 77
+          }
+        : null;
+
+      const struckWorker = this.workers.find(worker =>
+        !worker.injured && (
+          Math.hypot(nextX - worker.x, nextY - worker.y) < 48
+          || (botCargoPoint && Math.hypot(botCargoPoint.x - worker.x, botCargoPoint.y - worker.y) < 43)
+        )
+      );
+      if (struckWorker) {
+        this.startIncident(struckWorker, "bot");
+        return;
+      }
+      const cargoBlocked = botCargoPoint && (
+        this.obstacles.some(rect => circleRect(botCargoPoint.x, botCargoPoint.y, 34, rect))
+        || this.pallets.some(pallet => !pallet.carried && Math.hypot(botCargoPoint.x - pallet.x, botCargoPoint.y - pallet.y) < 66)
+        || this.botStagedPallets.some(pallet => Math.hypot(botCargoPoint.x - pallet.x, botCargoPoint.y - pallet.y) < 66)
+      );
+      if (this.botPositionBlocked(nextX, nextY) || cargoBlocked) {
+        bot.path = [];
+        bot.blockedFor += dt;
+        if (bot.blockedFor > 1.2) this.recoverBotPosition();
+      } else {
+        bot.x = nextX;
+        bot.y = nextY;
+        bot.blockedFor = Math.max(0, bot.blockedFor - dt * 2);
+      }
+
+      if (Math.hypot(bot.x - target.x, bot.y - target.y) < 38) {
+        if (bot.task === "rack") {
           bot.carrying = true;
-        } else if (bot.task === "outbound") {
-          bot.task = this.modeConfig.trailer ? "approach" : "load";
-        } else if (bot.task === "approach") {
-          bot.task = "staging";
-        } else if (bot.task === "staging") {
-          bot.task = "entrance";
-        } else if (bot.task === "entrance") {
-          bot.task = "load";
-        } else if (bot.task === "load") {
-          bot.task = this.modeConfig.trailer ? "exit" : "return";
+          bot.task = "stage";
+          bot.path = [];
+          bot.pathKey = "";
+        } else if (bot.task === "stage") {
+          this.botStagedPallets.push({ x: stagePoint.x, y: stagePoint.y });
           bot.carrying = false;
+          bot.stageIndex += 1;
+          bot.rackIndex += 1;
+          bot.task = this.botStagedPallets.length >= this.botStageSlots.length ? "parked" : "rack";
+          bot.path = [];
+          bot.pathKey = "";
           this.botScore += 100;
-          if (Math.random() < .65) this.say(bot, ["Піддон передано!", "Проїзд вільний?", "Не стій на маршруті."][Math.floor(Math.random() * 3)]);
-        } else if (bot.task === "exit") {
-          bot.task = "bypass";
-        } else if (bot.task === "bypass") {
-          bot.task = "home";
-        } else if (bot.task === "home") {
-          bot.task = "return";
-        } else if (bot.task !== "parked") {
-          bot.task = "collect";
+          if (Math.random() < .45) this.say(bot, ["Ряд готовий.", "Наступний піддон.", "Зона комплектації поповнена."][Math.floor(Math.random() * 3)]);
         }
       }
-      const dx = bot.targetX - bot.x;
-      const dy = bot.targetY - bot.y;
-      const length = Math.hypot(dx, dy) || 1;
-      const previous = { x: bot.x, y: bot.y };
-      bot.angle = Math.atan2(dy, dx);
-      const botBoost = this.elapsed < (bot.speedBoostUntil || 0) ? 1.35 : 1;
-      bot.x += dx / length * bot.speed * botBoost * dt;
-      bot.y += dy / length * bot.speed * botBoost * dt;
-      const botHitObstacle = this.obstacles.some(rect => circleRect(bot.x, bot.y, 34, rect));
-      const botHitPallet = this.pallets.some(pallet =>
-        !pallet.carried && !pallet.delivered && Math.hypot(bot.x - pallet.x, bot.y - pallet.y) < 50
-      );
-      const botHitWorker = this.workers.some(worker => !worker.injured && Math.hypot(bot.x - worker.x, bot.y - worker.y) < 48);
-      if (botHitObstacle || botHitPallet || botHitWorker) {
-        bot.x = previous.x;
-        bot.y = previous.y;
-        bot.y = clamp(bot.y + (bot.y < 700 ? -45 : 45), 55, this.world.h - 55);
-      }
+
       if (Math.hypot(bot.x - this.vehicle.x, bot.y - this.vehicle.y) < 65) {
         this.vehicle.speed = 0;
-        this.say(bot, "Ти куди преш? У мене маячок!");
+        this.say(bot, "Обережно, службова кара!");
         this.gameOver("Зіткнення зі службовою карою. Її потрібно обов’язково пропускати.");
       }
     }
@@ -1352,12 +1588,12 @@
       this.softHorn();
       this.workers.forEach(worker => {
         if (worker.injured || Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) >= 270) return;
-        const dx = worker.x - this.vehicle.x;
-        const dy = worker.y - this.vehicle.y;
-        const length = Math.hypot(dx, dy) || 1;
-        worker.targetX = clamp(worker.x + dx / length * 240, 50, this.world.w - 50);
-        worker.targetY = clamp(worker.y + dy / length * 240, 50, this.world.h - 50);
-        worker.avoidUntil = this.elapsed + 2;
+        const escape = this.workerEscapePoint(worker, this.vehicle);
+        worker.targetX = escape.x;
+        worker.targetY = escape.y;
+        worker.avoidUntil = this.elapsed + 3;
+        worker.awayUntil = this.elapsed + 9;
+        worker.stuckFor = 0;
         worker.aware = true;
       });
       if (this.elapsed - this.lastHornNotice > 4) {
@@ -1527,6 +1763,17 @@
       ctx.lineWidth = 5;
       ctx.beginPath(); ctx.moveTo(470, 700); ctx.lineTo(1610, 700); ctx.stroke();
       ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(75,185,215,.13)";
+      ctx.strokeStyle = "rgba(115,220,240,.72)";
+      ctx.lineWidth = 4;
+      ctx.setLineDash([13, 10]);
+      ctx.fillRect(455, 925, 205, 355);
+      ctx.strokeRect(455, 925, 205, 355);
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#d3f7ff";
+      ctx.font = "900 14px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("ЗОНА КОМПЛЕКТАЦІЇ", 557, 912);
     }
 
     drawTruckQueue(ctx) {
@@ -1941,6 +2188,24 @@
           ctx.textAlign = "center";
           ctx.fillText(`${Math.round(pallet.damage)}%`, 0, -29);
         }
+        ctx.restore();
+      });
+      this.botStagedPallets.forEach((pallet, index) => {
+        ctx.save();
+        ctx.translate(pallet.x, pallet.y);
+        ctx.fillStyle = "#8d5f31";
+        ctx.fillRect(-34, -25, 68, 50);
+        ctx.fillStyle = index % 2 ? "#d39a55" : "#8bc5dc";
+        ctx.fillRect(-29, -21, 58, 40);
+        ctx.strokeStyle = "rgba(255,255,255,.45)";
+        ctx.strokeRect(-29, -21, 58, 40);
+        ctx.fillStyle = "rgba(9,22,28,.9)";
+        ctx.fillRect(-29, -7, 58, 15);
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 8px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("ГОТОВО", 0, 1);
         ctx.restore();
       });
     }
