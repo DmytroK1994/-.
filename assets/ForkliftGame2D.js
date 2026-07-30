@@ -27,6 +27,11 @@
     }
   };
   const TRUCK_DESTINATIONS = ["Київ", "Львів", "Житомир", "Одеса", "Дніпро", "Харків", "Вінниця", "Черкаси", "Луцьк", "Тернопіль"];
+  const PALLET_CATEGORIES = [
+    { id: "raw", label: "СИРОВИНА", short: "СИРОВ." },
+    { id: "pack", label: "ПАКУВАННЯ", short: "ПАКУВ." },
+    { id: "finished", label: "ГОТОВА ПРОДУКЦІЯ", short: "ГОТОВА" }
+  ];
   let activeGame = null;
 
   function injectStyles() {
@@ -376,6 +381,10 @@
         || this.currentTruckDestination;
     }
 
+    palletCategory(sequenceIndex) {
+      return PALLET_CATEGORIES[(Number(sequenceIndex) || 0) % PALLET_CATEGORIES.length];
+    }
+
     levelGoalText() {
       const prefix = this.modeConfig.trailer
         ? `ФУРА ${Math.min(this.trucksCompleted + 1, this.trucksRequired)}/${this.trucksRequired} · ${this.currentTruckDestination.toUpperCase()} · `
@@ -458,6 +467,7 @@
           carried: false, delivered: false, slotId: null, damage: 0, awarded: false,
           destroyedPenalty: false, wrongPenaltyApplied: false, wrongInTruck: false,
           destination: this.palletDestination(index),
+          category: this.palletCategory(index),
           color: index % 3 === 0 ? "#8bc5dc" : "#d39a55"
         });
         this.totalPalletsCreated += 1;
@@ -475,7 +485,8 @@
               id: (10 - column) * 3 + row + 1,
               x: this.trailer.x + 60 + column * 79,
               y: this.trailer.y + 65 + row * 115,
-              occupied: false
+              occupied: false,
+              category: null
             });
           }
         }
@@ -490,7 +501,8 @@
               id: row * columns + column + 1,
               x: this.destination.x + 55 + column * xGap,
               y: this.destination.y + 65 + row * yGap,
-              occupied: false
+              occupied: false,
+              category: this.palletCategory(row * columns + column)
             });
           }
         }
@@ -528,7 +540,7 @@
         x: 520, y: 1300, angle: 0, targetX: 650, targetY: 1110,
         speed: 82, speedBoostUntil: 0, task: "rack", carrying: false,
         rackIndex: 0, stageIndex: 0, path: [], pathKey: "", blockedFor: 0,
-        cargoDestination: "", waitNoticeAt: -Infinity
+        cargoDestination: "", cargoCategory: null, waitNoticeAt: -Infinity
       };
       this.bot.carrying = false;
       this.bot.beacon = 0;
@@ -951,11 +963,35 @@
     lift() {
       if (this.vehicle.forksUp) return;
       const point = this.forkPoint();
-      const nearest = this.pallets
-        .filter(pallet => !pallet.carried && (pallet.damage || 0) < 100)
-        .map(pallet => ({ pallet, d: Math.hypot(point.x - pallet.x, point.y - pallet.y) }))
+      const nearest = [
+        ...this.pallets
+          .filter(pallet => !pallet.carried && (pallet.damage || 0) < 100)
+          .map(pallet => ({ pallet, staged: false })),
+        ...this.botStagedPallets
+          .map(pallet => ({ pallet, staged: true }))
+      ]
+        .map(item => ({ ...item, d: Math.hypot(point.x - item.pallet.x, point.y - item.pallet.y) }))
         .sort((a, b) => a.d - b.d)[0];
       if (!nearest || nearest.d > 66) return;
+      if (nearest.staged) {
+        const stagedIndex = this.botStagedPallets.indexOf(nearest.pallet);
+        if (stagedIndex >= 0) this.botStagedPallets.splice(stagedIndex, 1);
+        nearest.pallet.carried = false;
+        nearest.pallet.delivered = false;
+        nearest.pallet.slotId = null;
+        nearest.pallet.damage = 0;
+        nearest.pallet.awarded = false;
+        nearest.pallet.destroyedPenalty = false;
+        nearest.pallet.wrongPenaltyApplied = false;
+        nearest.pallet.wrongInTruck = false;
+        this.pallets.push(nearest.pallet);
+        if (this.bot?.task === "parked" && !this.trailerAwaitingDeparture && !this.trailerTransition) {
+          this.bot.task = "rack";
+          this.bot.path = [];
+          this.bot.pathKey = "";
+        }
+        this.notice(`Взято із зони комплектації: ${nearest.pallet.category?.label || "піддон"}`, "good");
+      }
       nearest.pallet.carried = true;
       if (nearest.pallet.slotId != null) {
         const occupiedSlot = this.slots.find(slot => slot.id === nearest.pallet.slotId);
@@ -1001,12 +1037,27 @@
         this.checkSupplyExhausted();
         return;
       }
+      if (
+        exactSlot
+        && !this.modeConfig.trailer
+        && pallet.category?.id
+        && exactSlot.category?.id !== pallet.category.id
+      ) {
+        this.notice(
+          `Це місце для категорії «${exactSlot.category?.label || "інша"}». Знайди місце «${pallet.category.label}»`,
+          "bad"
+        );
+        return;
+      }
       if (!exactSlot) {
         const blocked = this.obstacles.some(rect => circleRect(freePoint.x, freePoint.y, 35, rect));
         const overlapsPallet = this.pallets.some(item =>
           item !== pallet && !item.carried && Math.hypot(freePoint.x - item.x, freePoint.y - item.y) < 70
         );
-        if (blocked || overlapsPallet) {
+        const overlapsStagedPallet = this.botStagedPallets.some(item =>
+          Math.hypot(freePoint.x - item.x, freePoint.y - item.y) < 70
+        );
+        if (blocked || overlapsPallet || overlapsStagedPallet) {
           this.notice("Тут немає вільного місця для піддона", "bad");
           return;
         }
@@ -1041,11 +1092,9 @@
       this.vehicle.forksUp = false;
       this.delivered += 1;
       if (!pallet.awarded) {
-        const points = pallet.damage > 50 ? 50 : 100;
-        this.score += points;
+        this.score += 100;
         pallet.awarded = true;
         this.stats.total += 1;
-        if (pallet.damage > 50) this.notice("Вантаж пошкоджено більш ніж на 50%: зараховано половину балів", "bad");
       }
       if (wrongDestination) {
         if (!pallet.wrongPenaltyApplied) {
@@ -1060,7 +1109,7 @@
         }
       }
       saveStats(this.stats);
-      if (!wrongDestination) this.notice("Піддон точно встановлено", "good");
+      if (!wrongDestination) this.notice("Правильне місце: +100 балів", "good");
       this.tone(640, .16, "sine", .06);
       if (this.delivered >= this.target) {
         if (this.modeConfig.trailer) {
@@ -1099,6 +1148,7 @@
         carried: false, delivered: false, slotId: null, damage: 0, awarded: false,
         destroyedPenalty: false, wrongPenaltyApplied: false, wrongInTruck: false,
         destination: this.palletDestination(this.totalPalletsCreated),
+        category: this.palletCategory(this.totalPalletsCreated),
         color: index % 2 ? "#d39a55" : "#8bc5dc"
       });
       this.totalPalletsCreated += 1;
@@ -1281,6 +1331,7 @@
           this.bot.path = [];
           this.bot.pathKey = "";
           this.bot.cargoDestination = "";
+          this.bot.cargoCategory = null;
         }
         this.root.querySelector("[data-fg2='goal']").textContent = this.levelGoalText();
         this.notice(`Фура ${this.trailerRound}/${this.trucksRequired} готова до завантаження`, "good");
@@ -1600,6 +1651,10 @@
         bot.carrying = false;
       }
       const rackPoint = this.botRackPoints[bot.rackIndex % Math.max(1, this.botRackPoints.length)] || { x: 650, y: 1110 };
+      const freeStageIndex = this.botStageSlots.findIndex(slot =>
+        !this.botStagedPallets.some(pallet => Math.hypot(slot.x - pallet.x, slot.y - pallet.y) < 36)
+      );
+      if (freeStageIndex >= 0) bot.stageIndex = freeStageIndex;
       const stagePoint = this.botStageSlots[bot.stageIndex % this.botStageSlots.length] || { x: 520, y: 1200 };
       const stageDirectionX = stagePoint.x - rackPoint.x;
       const stageDirectionY = stagePoint.y - rackPoint.y;
@@ -1700,6 +1755,7 @@
         if (bot.task === "rack") {
           bot.carrying = true;
           bot.cargoDestination = this.palletDestination(bot.rackIndex + bot.stageIndex);
+          bot.cargoCategory = this.palletCategory(bot.rackIndex + bot.stageIndex);
           bot.task = "stage";
           bot.path = [];
           bot.pathKey = "";
@@ -1707,10 +1763,16 @@
           this.botStagedPallets.push({
             x: stagePoint.x,
             y: stagePoint.y,
-            destination: bot.cargoDestination
+            id: `stage-${Date.now()}-${bot.stageIndex}`,
+            destination: bot.cargoDestination,
+            category: bot.cargoCategory,
+            color: bot.cargoCategory?.id === "raw"
+              ? "#8bc5dc"
+              : bot.cargoCategory?.id === "pack" ? "#d39a55" : "#8bcf8f"
           });
           bot.carrying = false;
           bot.cargoDestination = "";
+          bot.cargoCategory = null;
           bot.stageIndex += 1;
           bot.rackIndex += 1;
           bot.task = this.botStagedPallets.length >= this.botStageSlots.length ? "parked" : "rack";
@@ -2103,12 +2165,21 @@
         };
       }
       if (!this.vehicle.carrying) {
+        const staged = this.botStagedPallets[0];
+        if (staged) return staged;
         const available = this.pallets.find(pallet =>
           !pallet.carried && !pallet.delivered && (pallet.damage || 0) < 100
         );
         return available || { x: this.source.x + this.source.w / 2, y: this.source.y + this.source.h / 2 };
       }
-      return this.slots.find(slot => !slot.occupied)
+      return this.slots.find(slot =>
+        !slot.occupied
+        && (
+          this.modeConfig.trailer
+          || !this.vehicle.carrying?.category?.id
+          || slot.category?.id === this.vehicle.carrying.category.id
+        )
+      )
         || (this.modeConfig.trailer
           ? { x: this.trailer.x + this.trailer.w / 2, y: this.trailer.y + this.trailer.h / 2 }
           : { x: this.destination.x + this.destination.w / 2, y: this.destination.y + this.destination.h / 2 });
@@ -2173,7 +2244,9 @@
           ctx.font = "900 22px Arial";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.fillText(String(slot.id), slot.x, slot.y);
+          ctx.fillText(String(slot.id), slot.x, slot.y - 8);
+          ctx.font = "900 9px Arial";
+          ctx.fillText(slot.category?.short || "", slot.x, slot.y + 19, 92);
         });
         this.drawTargetArrow(ctx, this.destination.x + this.destination.w / 2, this.destination.y - 35);
       } else {
@@ -2390,6 +2463,14 @@
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(pallet.destination.toUpperCase(), 0, 1, 54);
+        } else if (pallet.category) {
+          ctx.fillStyle = "rgba(9,22,28,.9)";
+          ctx.fillRect(-29, -7, 58, 15);
+          ctx.fillStyle = "#fff";
+          ctx.font = "900 7px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(pallet.category.short, 0, 1, 54);
         }
         if ((pallet.damage || 0) > 0) {
           ctx.fillStyle = pallet.damage >= 100 ? "#901f28" : pallet.damage > 50 ? "#c74343" : "#e5b442";
@@ -2406,7 +2487,7 @@
         ctx.translate(pallet.x, pallet.y);
         ctx.fillStyle = "#8d5f31";
         ctx.fillRect(-34, -25, 68, 50);
-        ctx.fillStyle = index % 2 ? "#d39a55" : "#8bc5dc";
+        ctx.fillStyle = pallet.color || (index % 2 ? "#d39a55" : "#8bc5dc");
         ctx.fillRect(-29, -21, 58, 40);
         ctx.strokeStyle = "rgba(255,255,255,.45)";
         ctx.strokeRect(-29, -21, 58, 40);
@@ -2416,7 +2497,12 @@
         ctx.font = "900 8px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText((pallet.destination || "ГОТОВО").toUpperCase(), 0, 1, 54);
+        ctx.fillText(
+          (pallet.destination || pallet.category?.short || "ГОТОВО").toUpperCase(),
+          0,
+          1,
+          54
+        );
         ctx.restore();
       });
     }
@@ -2538,14 +2624,26 @@
           ctx.strokeStyle = "#f2d2a5";
           ctx.lineWidth = 2;
           ctx.strokeRect(48, -28, 58, 56);
-          if (this.modeConfig.trailer && this.bot?.cargoDestination) {
+          if (
+            (this.modeConfig.trailer && this.bot?.cargoDestination)
+            || (!this.modeConfig.trailer && this.bot?.cargoCategory)
+          ) {
             ctx.fillStyle = "rgba(9,22,28,.9)";
             ctx.fillRect(48, -7, 58, 15);
             ctx.fillStyle = "#fff";
             ctx.font = "900 8px Arial";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText(this.bot.cargoDestination.toUpperCase(), 77, 1, 54);
+            ctx.fillText(
+              (
+                this.modeConfig.trailer
+                  ? this.bot.cargoDestination
+                  : this.bot.cargoCategory?.short
+              ).toUpperCase(),
+              77,
+              1,
+              54
+            );
           }
         }
       }
