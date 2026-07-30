@@ -4124,8 +4124,38 @@
     .entry-section-header .form-section-title {
       flex: 1;
     }
+    .entry-section-unit-select {
+      flex: 0 0 112px;
+      width: 112px !important;
+      min-width: 0 !important;
+      max-width: 112px !important;
+      min-height: 26px !important;
+      height: 26px !important;
+      margin: 0 0 0 auto !important;
+      padding: 3px 24px 3px 7px !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      background-color: var(--field-bg, var(--surface-strong)) !important;
+      color: var(--muted) !important;
+      box-shadow: none !important;
+      font-size: 11px !important;
+      font-weight: 750 !important;
+      line-height: 1 !important;
+    }
+    #orderEntryOverlay .entry-section-unit-select,
+    #quickEditOverlay .entry-section-unit-select {
+      flex-basis: 104px;
+      width: 104px !important;
+      max-width: 104px !important;
+      min-height: 22px !important;
+      height: 22px !important;
+      padding-top: 1px !important;
+      padding-bottom: 1px !important;
+      font-size: 10px !important;
+    }
     #pageToday .entry-form-card .entry-section-toggle,
-    #orderEntryOverlay .entry-section-toggle {
+    #orderEntryOverlay .entry-section-toggle,
+    #quickEditOverlay .entry-section-toggle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -4186,14 +4216,17 @@
     #productAddOverlay .product-editor-section .entry-section-content {
       padding-top: 6px;
     }
-    #orderEntryOverlay .order-entry-dialog-section .entry-section-header {
+    #orderEntryOverlay .order-entry-dialog-section .entry-section-header,
+    #quickEditOverlay .order-entry-dialog-section .entry-section-header {
       min-height: 22px;
       margin-bottom: 3px;
     }
-    #orderEntryOverlay .order-entry-dialog-section.is-collapsed .entry-section-header {
+    #orderEntryOverlay .order-entry-dialog-section.is-collapsed .entry-section-header,
+    #quickEditOverlay .order-entry-dialog-section.is-collapsed .entry-section-header {
       margin-bottom: 0;
     }
-    #orderEntryOverlay .order-entry-dialog-section .inventory-entry-section-title {
+    #orderEntryOverlay .order-entry-dialog-section .inventory-entry-section-title,
+    #quickEditOverlay .order-entry-dialog-section .inventory-entry-section-title {
       flex: 1;
       min-width: 0;
       margin: 0;
@@ -4203,8 +4236,95 @@
     .entry-collapsible-section.is-collapsed .entry-section-content {
       display: none;
     }
+    .entry-collapsible-section.is-collapsed .entry-section-unit-select {
+      display: none !important;
+    }
     .entry-collapsible-section.is-collapsed .form-section-title {
       margin-bottom: 0;
+    }
+    .expression-input-wrap {
+      position: relative;
+      min-width: 0;
+    }
+    .expression-input-wrap > input {
+      padding-right: 76px !important;
+    }
+    .expression-operator-control {
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      transform: translateY(-50%);
+    }
+    .expression-operator-insert,
+    .expression-operator-menu > summary {
+      display: grid;
+      place-items: center;
+      width: 34px !important;
+      min-width: 34px !important;
+      height: 32px !important;
+      min-height: 32px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 9px !important;
+      background: var(--surface-deep) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 18px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+    }
+    .expression-operator-menu {
+      position: relative;
+    }
+    .expression-operator-menu > summary {
+      width: 24px !important;
+      min-width: 24px !important;
+      color: var(--muted) !important;
+      font-size: 12px !important;
+      cursor: pointer;
+      list-style: none;
+    }
+    .expression-operator-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+    .expression-operator-options {
+      position: absolute;
+      top: calc(100% + 5px);
+      right: 0;
+      z-index: 460;
+      display: grid;
+      grid-template-columns: repeat(2, 36px);
+      gap: 4px;
+      padding: 5px;
+      border: 1px solid var(--border-strong);
+      border-radius: 11px;
+      background: var(--surface-strong);
+      box-shadow: 0 14px 34px var(--popover-shadow);
+    }
+    .expression-operator-options button {
+      width: 36px !important;
+      min-width: 36px !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 1px solid transparent !important;
+      border-radius: 8px !important;
+      background: transparent !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 18px !important;
+      font-weight: 900 !important;
+    }
+    .expression-operator-options button.active {
+      border-color: var(--selection-border) !important;
+      background: var(--selection-bg) !important;
+      color: var(--selection-text) !important;
     }
     @media (hover: none), (pointer: coarse), (max-width: 900px) {
       #pageToday .entry-form-card {
@@ -6610,6 +6730,21 @@
       padding: 8px 9px;
       font-size: 15px;
     }
+    #quickEditOverlay .order-entry-dialog-grid input,
+    #quickEditOverlay .order-entry-dialog-grid select {
+      min-height: 42px;
+      padding: 8px 9px;
+      font-size: 15px;
+    }
+    #quickEditOverlay #quickEditStandardFields .entry-breakdown-field {
+      order: 1;
+    }
+    #quickEditOverlay #quickEditStandardFields .order-entry-direct-field {
+      order: 2;
+    }
+    #quickEditOverlay #quickEditStandardFields .order-entry-comment-field {
+      order: 3;
+    }
     #orderEntryOverlay #orderEntryComment {
       min-height: 58px;
       height: 58px;
@@ -6734,6 +6869,7 @@
     }
     body.entry-dialog-mode .entry-form-card > .entry-collapsible-section,
     body.entry-dialog-mode .entry-form-card > #selectedProductLabel,
+    body.entry-dialog-mode .entry-form-card > #saveClassicEntryDefaultsBtn,
     body.entry-dialog-mode .entry-form-card > #saveEntryBtn,
     body.entry-dialog-mode .entry-form-card > #cancelEditBtn {
       display: none !important;
@@ -8081,7 +8217,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=323">
+<link rel="manifest" href="manifest.json?v=328">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8136,7 +8272,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.23</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.28</span></div>
     </div>
   </div>
 
@@ -8319,6 +8455,9 @@
       <section class="entry-collapsible-section" data-entry-section="pallets">
         <div class="entry-section-header">
           <div class="form-section-title">Піддони</div>
+          <select id="entryPalletUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для піддонів">
+            <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option><option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option><option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+          </select>
           <button type="button" class="entry-section-toggle" data-entry-section-toggle="pallets" data-entry-section-label="Піддони" aria-expanded="true" aria-controls="entrySectionPallets" aria-label="Згорнути розділ Піддони">−</button>
         </div>
         <div class="entry-section-content" id="entrySectionPallets">
@@ -8338,6 +8477,9 @@
       <section class="entry-collapsible-section" data-entry-section="pieces">
         <div class="entry-section-header">
           <div class="form-section-title">Поштучно</div>
+          <select id="entryPieceUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для поштучного підрахунку">
+            <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option><option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option><option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+          </select>
           <button type="button" class="entry-section-toggle" data-entry-section-toggle="pieces" data-entry-section-label="Поштучно" aria-expanded="true" aria-controls="entrySectionPieces" aria-label="Згорнути розділ Поштучно">−</button>
         </div>
         <div class="entry-section-content" id="entrySectionPieces">
@@ -8357,11 +8499,28 @@
       <section class="entry-collapsible-section" data-entry-section="direct">
         <div class="entry-section-header">
           <div class="form-section-title">Окрема кількість</div>
+          <select id="entryDirectUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для окремої кількості">
+            <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option><option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option><option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+          </select>
           <button type="button" class="entry-section-toggle" data-entry-section-toggle="direct" data-entry-section-label="Окрема кількість" aria-expanded="true" aria-controls="entrySectionDirect" aria-label="Згорнути розділ Окрема кількість">−</button>
         </div>
         <div class="entry-section-content" id="entrySectionDirect">
           <label id="directQuantityLabel" for="directKg">Окрема кількість, кг</label>
-          <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+          <div class="expression-input-wrap">
+            <input id="directKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+            <div class="expression-operator-control" data-expression-input="directKg">
+              <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+              <details class="expression-operator-menu">
+                <summary aria-label="Змінити математичний оператор">⌄</summary>
+                <div class="expression-operator-options">
+                  <button type="button" class="active" data-expression-operator="+">+</button>
+                  <button type="button" data-expression-operator="−">−</button>
+                  <button type="button" data-expression-operator="×">×</button>
+                  <button type="button" data-expression-operator="÷">÷</button>
+                </div>
+              </details>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -8390,24 +8549,10 @@
             <label for="orderNotes">Примітки до замовлення</label>
             <textarea id="orderNotes" rows="3" placeholder="Загальні примітки, які будуть у PDF"></textarea>
           </div>
-          <div id="entryUnitControl" class="hidden">
-            <label for="entryUnit">Одиниця виміру</label>
-            <select id="entryUnit">
-              <option value="kg">Кілограми (кг)</option>
-              <option value="g">Грами (г)</option>
-              <option value="t">Тонни (т)</option>
-              <option value="pcs">Штуки (шт)</option>
-              <option value="boxes">Коробки (кор.)</option>
-              <option value="bags">Мішки (міш.)</option>
-              <option value="pallets">Піддони (підд.)</option>
-              <option value="l">Літри (л)</option>
-              <option value="m">Метри (м)</option>
-              <option value="packs">Упаковки (уп.)</option>
-            </select>
-          </div>
         </div>
       </section>
 
+      <button type="button" class="secondary" id="saveClassicEntryDefaultsBtn">Зберегти типові значення</button>
       <button class="green" id="saveEntryBtn">Додати</button>
       <button class="secondary" id="cancelEditBtn">Очистити / скасувати</button>
     </div>
@@ -9216,12 +9361,6 @@
       <section class="card other-settings-group hidden" data-other-settings-panel="entry">
         <h2>Введення даних</h2>
         <p class="small settings-group-description">Налаштування полів на екрані поточного підрахунку.</p>
-        <label for="entryUnitVisibilitySelect">Одиниця виміру на головному екрані</label>
-        <select id="entryUnitVisibilitySelect">
-          <option value="hidden">Приховано</option>
-          <option value="visible">Показувати</option>
-        </select>
-        <p class="small">Коли поле приховано, застосунок продовжує використовувати збережену одиницю кожного найменування.</p>
         <label for="inventoryEntryModeSelect">Додавання позицій в інвентаризації</label>
         <select id="inventoryEntryModeSelect">
           <option value="classic">Розгорнута форма</option>
@@ -9359,7 +9498,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.23</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.28</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9384,6 +9523,46 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.28</h3>
+          <ul>
+            <li>до кількості піддонів у «Здачі ГП» додано математичний оператор у вікнах додавання та редагування;</li>
+            <li>можна вводити піддони з кількох місць одним виразом, наприклад 25 + 35 + 12;</li>
+            <li>вираз зберігається в записі, а загальна кількість пачок автоматично перераховується за його результатом.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.27</h3>
+          <ul>
+            <li>у вікні редагування склад і статус замовлення перенесено у верхню частину;</li>
+            <li>блок «Окрема кількість» розташовано після піддонів і поштучного підрахунку;</li>
+            <li>коментар завжди знаходиться безпосередньо під окремою кількістю.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.26</h3>
+          <ul>
+            <li>у згорнутих блоках разом із полями приховується і вибір одиниці виміру;</li>
+            <li>до всіх полів «Окрема кількість» додано компактний оператор із вибором додавання, віднімання, множення або ділення;</li>
+            <li>обраний знак можна повторно вставляти однією кнопкою, а математичний вираз обчислюється під час збереження.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.25</h3>
+          <ul>
+            <li>вікно редагування позиції отримало таку саму блочну структуру, як основне вікно додавання;</li>
+            <li>поля піддонів і поштучного підрахунку знову вирівняні у стабільні дві колонки;</li>
+            <li>одиниці виміру перенесено в заголовки відповідних блоків, а всі блоки можна згортати окремо.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.24</h3>
+          <ul>
+            <li>загальну одиницю виміру прибрано: піддони, поштучний підрахунок і окрема кількість мають власні компактні списки;</li>
+            <li>різні одиниці в одній позиції рахуються окремо й коректно відображаються у списках, попередньому перегляді та PDF;</li>
+            <li>типові одиниці та кількості можна зберегти одразу з вікна додавання або розгорнутої форми.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.23</h3>
           <ul>
@@ -10363,6 +10542,21 @@
       <div class="quick-edit-tabs configurable-dialog-menu" id="quickEditTabs"></div>
       <input type="hidden" id="quickEditProductId" />
       <input type="hidden" id="quickEditEntryId" />
+      <div class="quick-edit-order-fields hidden" id="quickEditOrderFields">
+        <div>
+          <label for="quickEditWarehouse">В інший склад</label>
+          <select id="quickEditWarehouse"></select>
+        </div>
+        <div>
+          <label for="quickEditOrderStatus">Статус</label>
+          <select id="quickEditOrderStatus">
+            <option value="normal">Звичайно</option>
+            <option value="important">Важливо</option>
+            <option value="urgent">Терміново</option>
+            <option value="critical">Критично</option>
+          </select>
+        </div>
+      </div>
       <div class="production-entry-fields hidden" id="quickEditProductionFields">
         <div class="production-entry-result" aria-live="polite">
           Загальна кількість пачок
@@ -10380,66 +10574,116 @@
         </div>
         <div>
           <label for="quickEditProductionPallets">Кількість піддонів</label>
-          <input id="quickEditProductionPallets" type="number" inputmode="decimal" min="0" />
+          <div class="expression-input-wrap">
+            <input id="quickEditProductionPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
+            <div class="expression-operator-control" data-expression-input="quickEditProductionPallets">
+              <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+              <details class="expression-operator-menu">
+                <summary aria-label="Змінити математичний оператор">⌄</summary>
+                <div class="expression-operator-options">
+                  <button type="button" class="active" data-expression-operator="+">+</button>
+                  <button type="button" data-expression-operator="−">−</button>
+                  <button type="button" data-expression-operator="×">×</button>
+                  <button type="button" data-expression-operator="÷">÷</button>
+                </div>
+              </details>
+            </div>
+          </div>
         </div>
         <div>
           <label for="quickEditProductionComment">Коментар</label>
           <textarea id="quickEditProductionComment" rows="2" placeholder="Необов’язково"></textarea>
         </div>
       </div>
-      <div id="quickEditStandardFields">
-      <label for="quickEditUnit">Одиниця виміру</label>
-      <select id="quickEditUnit">
-        <option value="kg">Кілограми (кг)</option>
-        <option value="g">Грами (г)</option>
-        <option value="t">Тонни (т)</option>
-        <option value="pcs">Штуки (шт)</option>
-        <option value="boxes">Коробки (кор.)</option>
-        <option value="bags">Мішки (міш.)</option>
-        <option value="pallets">Піддони (підд.)</option>
-        <option value="l">Літри (л)</option>
-        <option value="m">Метри (м)</option>
-        <option value="packs">Упаковки (уп.)</option>
-      </select>
-      <div class="quick-edit-grid">
-        <div>
-          <label for="quickEditPallets">Піддонів</label>
-          <input id="quickEditPallets" type="number" inputmode="decimal" />
-        </div>
-        <div>
-          <label id="quickEditPalletQuantityLabel" for="quickEditKgPerPallet">Кілограмів у піддоні</label>
-          <input id="quickEditKgPerPallet" type="number" inputmode="decimal" />
-        </div>
-        <div>
-          <label for="quickEditPieces">Кількість штук</label>
-          <input id="quickEditPieces" type="number" inputmode="decimal" />
-        </div>
-        <div>
-          <label id="quickEditPieceQuantityLabel" for="quickEditKgPerPiece">Кілограмів в одиниці</label>
-          <input id="quickEditKgPerPiece" type="number" inputmode="decimal" />
-        </div>
-      </div>
-      <div class="quick-edit-comment">
-        <label id="quickEditDirectQuantityLabel" for="quickEditDirectKg">Окрема кількість, кг</label>
-        <input id="quickEditDirectKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
-        <label for="quickEditComment">Коментар</label>
-        <input id="quickEditComment" />
-      </div>
-      </div>
-      <div class="quick-edit-order-fields hidden" id="quickEditOrderFields">
-        <div>
-          <label for="quickEditWarehouse">В інший склад</label>
-          <select id="quickEditWarehouse"></select>
-        </div>
-        <div>
-          <label for="quickEditOrderStatus">Статус</label>
-          <select id="quickEditOrderStatus">
-            <option value="normal">Звичайно</option>
-            <option value="important">Важливо</option>
-            <option value="urgent">Терміново</option>
-            <option value="critical">Критично</option>
-          </select>
-        </div>
+      <div class="order-entry-dialog-grid" id="quickEditStandardFields">
+        <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditDirect">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Окрема кількість</div>
+            <select id="quickEditDirectUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для окремої кількості">
+              <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option>
+              <option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option>
+              <option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+            </select>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickEditDirect" data-entry-section-label="Окрема кількість" aria-expanded="true" aria-controls="quickEditDirectContent" aria-label="Згорнути розділ Окрема кількість">−</button>
+          </div>
+          <div class="entry-section-content" id="quickEditDirectContent">
+            <label id="quickEditDirectQuantityLabel" for="quickEditDirectKg">Окрема кількість, кг</label>
+            <div class="expression-input-wrap">
+              <input id="quickEditDirectKg" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+              <div class="expression-operator-control" data-expression-input="quickEditDirectKg">
+                <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+                <details class="expression-operator-menu">
+                  <summary aria-label="Змінити математичний оператор">⌄</summary>
+                  <div class="expression-operator-options">
+                    <button type="button" class="active" data-expression-operator="+">+</button>
+                    <button type="button" data-expression-operator="−">−</button>
+                    <button type="button" data-expression-operator="×">×</button>
+                    <button type="button" data-expression-operator="÷">÷</button>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditPallets">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Піддони</div>
+            <select id="quickEditPalletUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для піддонів">
+              <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option>
+              <option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option>
+              <option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+            </select>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickEditPallets" data-entry-section-label="Піддони" aria-expanded="true" aria-controls="quickEditPalletsContent" aria-label="Згорнути розділ Піддони">−</button>
+          </div>
+          <div class="entry-section-content" id="quickEditPalletsContent">
+            <div class="inventory-entry-section-fields">
+              <div>
+                <label for="quickEditPallets">Піддонів</label>
+                <input id="quickEditPallets" type="number" inputmode="decimal" />
+              </div>
+              <div>
+                <label id="quickEditPalletQuantityLabel" for="quickEditKgPerPallet">Кілограмів у піддоні</label>
+                <input id="quickEditKgPerPallet" type="number" inputmode="decimal" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditPieces">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Поштучно / коробками</div>
+            <select id="quickEditPieceUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для поштучного підрахунку">
+              <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option>
+              <option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option>
+              <option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+            </select>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickEditPieces" data-entry-section-label="Поштучно / коробками" aria-expanded="true" aria-controls="quickEditPiecesContent" aria-label="Згорнути розділ Поштучно / коробками">−</button>
+          </div>
+          <div class="entry-section-content" id="quickEditPiecesContent">
+            <div class="inventory-entry-section-fields">
+              <div>
+                <label for="quickEditPieces">Кількість</label>
+                <input id="quickEditPieces" type="number" inputmode="decimal" />
+              </div>
+              <div>
+                <label id="quickEditPieceQuantityLabel" for="quickEditKgPerPiece">Кілограмів в одиниці</label>
+                <input id="quickEditKgPerPiece" type="number" inputmode="decimal" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="order-entry-comment-field order-entry-dialog-section entry-collapsible-section" data-entry-section="quickEditComment">
+          <div class="entry-section-header">
+            <div class="inventory-entry-section-title">Коментар</div>
+            <button type="button" class="entry-section-toggle" data-entry-section-toggle="quickEditComment" data-entry-section-label="Коментар" aria-expanded="true" aria-controls="quickEditCommentContent" aria-label="Згорнути розділ Коментар">−</button>
+          </div>
+          <div class="entry-section-content" id="quickEditCommentContent">
+            <label for="quickEditComment">Текст коментаря</label>
+            <input id="quickEditComment" />
+          </div>
+        </section>
       </div>
       <div class="quick-edit-actions">
         <button id="saveQuickEditBtn">Зберегти зміни</button>
@@ -10495,7 +10739,21 @@
         </div>
         <div>
           <label for="productionDialogPallets">Кількість піддонів</label>
-          <input id="productionDialogPallets" type="number" inputmode="decimal" min="0" placeholder="Наприклад: 25" />
+          <div class="expression-input-wrap">
+            <input id="productionDialogPallets" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 25+35" />
+            <div class="expression-operator-control" data-expression-input="productionDialogPallets">
+              <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+              <details class="expression-operator-menu">
+                <summary aria-label="Змінити математичний оператор">⌄</summary>
+                <div class="expression-operator-options">
+                  <button type="button" class="active" data-expression-operator="+">+</button>
+                  <button type="button" data-expression-operator="−">−</button>
+                  <button type="button" data-expression-operator="×">×</button>
+                  <button type="button" data-expression-operator="÷">÷</button>
+                </div>
+              </details>
+            </div>
+          </div>
         </div>
         <div>
           <label for="productionDialogComment">Коментар</label>
@@ -10506,29 +10764,31 @@
         <section class="order-entry-direct-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogDirect">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Окрема кількість</div>
+            <select id="orderEntryDirectUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для окремої кількості">
+              <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option><option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option><option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+            </select>
             <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogDirect" data-entry-section-label="Окрема кількість" aria-expanded="true" aria-controls="orderEntryDirectContent" aria-label="Згорнути розділ Окрема кількість">−</button>
           </div>
           <div class="entry-section-content" id="orderEntryDirectContent">
             <label id="orderEntryQuantityLabel" for="orderEntryQuantity">Окрема кількість</label>
-            <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+            <div class="expression-input-wrap">
+              <input id="orderEntryQuantity" type="text" inputmode="decimal" autocomplete="off" placeholder="Наприклад: 200" />
+              <div class="expression-operator-control" data-expression-input="orderEntryQuantity">
+                <button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Вставити оператор плюс">+</button>
+                <details class="expression-operator-menu">
+                  <summary aria-label="Змінити математичний оператор">⌄</summary>
+                  <div class="expression-operator-options">
+                    <button type="button" class="active" data-expression-operator="+">+</button>
+                    <button type="button" data-expression-operator="−">−</button>
+                    <button type="button" data-expression-operator="×">×</button>
+                    <button type="button" data-expression-operator="÷">÷</button>
+                  </div>
+                </details>
+              </div>
+            </div>
           </div>
         </section>
         <div class="order-entry-top-fields">
-          <div>
-            <label for="orderEntryUnit">Одиниця виміру</label>
-            <select id="orderEntryUnit">
-              <option value="kg">Кілограми (кг)</option>
-              <option value="g">Грами (г)</option>
-              <option value="t">Тонни (т)</option>
-              <option value="pcs">Штуки (шт)</option>
-              <option value="boxes">Коробки (кор.)</option>
-              <option value="bags">Мішки (міш.)</option>
-              <option value="pallets">Піддони (підд.)</option>
-              <option value="l">Літри (л)</option>
-              <option value="m">Метри (м)</option>
-              <option value="packs">Упаковки (уп.)</option>
-            </select>
-          </div>
           <div class="order-only-entry-field">
             <label for="orderEntryStatus">Терміновість</label>
             <select id="orderEntryStatus">
@@ -10542,6 +10802,9 @@
         <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPallets">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Піддони</div>
+            <select id="orderEntryPalletUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для піддонів">
+              <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option><option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option><option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+            </select>
             <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogPallets" data-entry-section-label="Піддони" aria-expanded="true" aria-controls="orderEntryPalletsContent" aria-label="Згорнути розділ Піддони">−</button>
           </div>
           <div class="entry-section-content" id="orderEntryPalletsContent">
@@ -10560,6 +10823,9 @@
         <section class="entry-breakdown-field order-entry-dialog-section entry-collapsible-section" data-entry-section="dialogPieces">
           <div class="entry-section-header">
             <div class="inventory-entry-section-title">Поштучно / коробками</div>
+            <select id="orderEntryPieceUnit" class="entry-section-unit-select" aria-label="Одиниця виміру для поштучного підрахунку">
+              <option value="kg">Кілограми</option><option value="g">Грами</option><option value="t">Тонни</option><option value="pcs">Штуки</option><option value="boxes">Коробки</option><option value="bags">Мішки</option><option value="pallets">Піддони</option><option value="l">Літри</option><option value="m">Метри</option><option value="packs">Упаковки</option>
+            </select>
             <button type="button" class="entry-section-toggle" data-entry-section-toggle="dialogPieces" data-entry-section-label="Поштучно / коробками" aria-expanded="true" aria-controls="orderEntryPiecesContent" aria-label="Згорнути розділ Поштучно / коробками">−</button>
           </div>
           <div class="entry-section-content" id="orderEntryPiecesContent">
@@ -10600,7 +10866,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.23";
+  const APP_VERSION = "3.28";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13393,6 +13659,9 @@
 
     normalized.products.forEach(product => {
       product.defaultUnit = normalizeMeasurementUnit(product.defaultUnit);
+      product.defaultPalletUnit = normalizeMeasurementUnit(product.defaultPalletUnit || product.defaultUnit);
+      product.defaultPieceUnit = normalizeMeasurementUnit(product.defaultPieceUnit || product.defaultUnit);
+      product.defaultDirectUnit = normalizeMeasurementUnit(product.defaultDirectUnit || product.defaultUnit);
       product.defaultBoxesPerPallet = Math.max(0, Number(product.defaultBoxesPerPallet) || 0);
       product.defaultPacksPerBox = Math.max(0, Number(product.defaultPacksPerBox) || 0);
     });
@@ -13409,6 +13678,10 @@
         : [];
       day.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
+        entry.palletUnit = normalizeMeasurementUnit(entry.palletUnit || entry.unit);
+        entry.pieceUnit = normalizeMeasurementUnit(entry.pieceUnit || entry.unit);
+        entry.directUnit = normalizeMeasurementUnit(entry.directUnit || entry.unit);
+        recalcEntry(entry);
         if (!entry.warehouseId && day.warehouseId) {
           entry.warehouseId = day.warehouseId;
           entry.warehouseName = day.warehouseName;
@@ -13426,6 +13699,10 @@
         : [];
       order.entries.forEach(entry => {
         entry.unit = normalizeMeasurementUnit(entry.unit);
+        entry.palletUnit = normalizeMeasurementUnit(entry.palletUnit || entry.unit);
+        entry.pieceUnit = normalizeMeasurementUnit(entry.pieceUnit || entry.unit);
+        entry.directUnit = normalizeMeasurementUnit(entry.directUnit || entry.unit);
+        recalcEntry(entry);
         entry.orderStatus = normalizeOrderStatus(entry.orderStatus);
         entry.needDate = String(entry.needDate || entry.neededBy || order.date || todayISO());
         delete entry.neededBy;
@@ -13443,11 +13720,15 @@
       if (warehouse) delivery.warehouseName = warehouse.name;
       delivery.entries.forEach(entry => {
         entry.unit = "packs";
-        entry.pallets = Math.max(0, Number(entry.pallets) || 0);
+        const palletCalculation = calculateWeightExpression(entry.palletsExpression || entry.pallets || "");
+        entry.pallets = palletCalculation.valid ? Math.max(0, palletCalculation.value) : Math.max(0, Number(entry.pallets) || 0);
+        entry.palletsExpression = palletCalculation.valid && palletCalculation.display
+          ? palletCalculation.display
+          : formatPlainNumber(entry.pallets);
         entry.boxesPerPallet = Math.max(0, Number(entry.boxesPerPallet) || 0);
         entry.packsPerBox = Math.max(0, Number(entry.packsPerBox) || 0);
         entry.totalKg = entry.pallets * entry.boxesPerPallet * entry.packsPerBox;
-        entry.parts = [`${entry.pallets} підд. × ${entry.boxesPerPallet} кор. × ${entry.packsPerBox} пач. = ${formatPlainNumber(entry.totalKg)} пач.`];
+        entry.parts = [formatProductionEntryCalculation(entry.palletsExpression, entry.pallets, entry.boxesPerPallet, entry.packsPerBox, entry.totalKg)];
         if (entry.warehouseId) {
           const entryWarehouse = normalized.warehouses.find(item => item.id === entry.warehouseId);
           if (entryWarehouse) entry.warehouseName = entryWarehouse.name;
@@ -13547,6 +13828,26 @@
     if (palletLabel) palletLabel.textContent = `${definition.amount} у піддоні`;
     if (pieceLabel) pieceLabel.textContent = `${definition.amount} в одиниці`;
     if (directLabel) directLabel.textContent = `Окрема кількість, ${definition.short}`;
+  }
+
+  function updateEntryBlockUnitLabel(block, unit, prefix = "") {
+    const definition = MEASUREMENT_UNITS[normalizeMeasurementUnit(unit)];
+    const labels = prefix === "quickEdit"
+      ? {
+          pallet: "quickEditPalletQuantityLabel",
+          piece: "quickEditPieceQuantityLabel",
+          direct: "quickEditDirectQuantityLabel"
+        }
+      : {
+          pallet: "palletQuantityLabel",
+          piece: "pieceQuantityLabel",
+          direct: "directQuantityLabel"
+        };
+    const label = document.getElementById(labels[block]);
+    if (!label) return;
+    if (block === "pallet") label.textContent = `${definition.amount} у піддоні`;
+    if (block === "piece") label.textContent = `${definition.amount} в одиниці`;
+    if (block === "direct") label.textContent = `Окрема кількість, ${definition.short}`;
   }
 
   function setupEntryUnitPicker(selectId, rememberCheckboxId) {
@@ -13659,6 +13960,68 @@
 
   function interfaceText(source) {
     return source;
+  }
+
+  function insertExpressionOperator(control, operator) {
+    const input = document.getElementById(control.dataset.expressionInput || "");
+    if (!input) return;
+    const value = String(input.value || "");
+    if (!value.trim()) {
+      toast("Спочатку введи число", true);
+      input.focus({ preventScroll: true });
+      return;
+    }
+    let start = Number(control.dataset.selectionStart);
+    let end = Number(control.dataset.selectionEnd);
+    if (!Number.isFinite(start)) start = Number.isFinite(input.selectionStart) ? input.selectionStart : value.length;
+    if (!Number.isFinite(end)) end = Number.isFinite(input.selectionEnd) ? input.selectionEnd : start;
+    const before = value.slice(0, start);
+    const after = value.slice(end);
+    if (/[+\-−×*÷/:]$/.test(before)) start -= 1;
+    input.value = `${value.slice(0, start)}${operator}${after}`;
+    const cursor = start + operator.length;
+    input.focus({ preventScroll: true });
+    try { input.setSelectionRange(cursor, cursor); } catch (error) {}
+    control.dataset.selectionStart = String(cursor);
+    control.dataset.selectionEnd = String(cursor);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  function initExpressionOperatorControls() {
+    document.querySelectorAll(".expression-operator-control").forEach(control => {
+      if (control.dataset.operatorReady === "yes") return;
+      control.dataset.operatorReady = "yes";
+      const input = document.getElementById(control.dataset.expressionInput || "");
+      const insertButton = control.querySelector(".expression-operator-insert");
+      const menu = control.querySelector(".expression-operator-menu");
+      const saveCursor = () => {
+        if (!input) return;
+        control.dataset.selectionStart = String(Number.isFinite(input.selectionStart) ? input.selectionStart : input.value.length);
+        control.dataset.selectionEnd = String(Number.isFinite(input.selectionEnd) ? input.selectionEnd : input.value.length);
+      };
+      input?.addEventListener("input", saveCursor);
+      input?.addEventListener("click", saveCursor);
+      input?.addEventListener("keyup", saveCursor);
+      control.querySelectorAll("button, summary").forEach(element => {
+        element.addEventListener("pointerdown", saveCursor);
+      });
+      insertButton?.addEventListener("click", () => {
+        insertExpressionOperator(control, insertButton.dataset.selectedOperator || "+");
+      });
+      control.querySelectorAll("[data-expression-operator]").forEach(option => {
+        option.addEventListener("click", () => {
+          const operator = option.dataset.expressionOperator || "+";
+          insertButton.dataset.selectedOperator = operator;
+          insertButton.textContent = operator;
+          insertButton.setAttribute("aria-label", `Вставити оператор ${operator}`);
+          control.querySelectorAll("[data-expression-operator]").forEach(item => {
+            item.classList.toggle("active", item === option);
+          });
+          menu?.removeAttribute("open");
+          insertExpressionOperator(control, operator);
+        });
+      });
+    });
   }
 
   function calculateWeightExpression(rawValue) {
@@ -14330,9 +14693,8 @@
     }
     document.getElementById("orderWarehouseControl")?.classList.remove("hidden");
     document.getElementById("orderDocumentFields")?.classList.toggle("hidden", !orders);
-    const unitVisible = !production && (orders || getEntryUnitVisibility() === "visible");
-    document.getElementById("entryUnitControl")?.classList.toggle("hidden", !unitVisible);
-    document.getElementById("orderAdditionalSection")?.classList.toggle("hidden", !unitVisible);
+    document.getElementById("orderAdditionalSection")?.classList.toggle("hidden", !orders);
+    document.getElementById("saveClassicEntryDefaultsBtn")?.classList.toggle("hidden", production);
     renderWarehouseOptions();
     const desktopWarehouseContextLabel = document.getElementById("desktopWarehouseContextLabel");
     if (desktopWarehouseContextLabel) {
@@ -15797,14 +16159,8 @@
   }
 
   function applyEntryUnitVisibility(mode = getEntryUnitVisibility()) {
-    const normalizedMode = mode === "visible" ? "visible" : "hidden";
-    const control = document.getElementById("entryUnitControl");
     const additionalSection = document.getElementById("orderAdditionalSection");
-    const select = document.getElementById("entryUnitVisibilitySelect");
-    const shouldShow = !workspaceIsProduction() && (workspaceIsOrders() || normalizedMode === "visible");
-    if (control) control.classList.toggle("hidden", !shouldShow);
-    if (additionalSection) additionalSection.classList.toggle("hidden", !shouldShow);
-    if (select) select.value = normalizedMode;
+    if (additionalSection) additionalSection.classList.toggle("hidden", !workspaceIsOrders());
   }
 
   function getOrderEntryMode() {
@@ -15865,6 +16221,10 @@
       dialogPieces: true,
       dialogDirect: true,
       dialogComment: true,
+      quickEditPallets: true,
+      quickEditPieces: true,
+      quickEditDirect: true,
+      quickEditComment: true,
       productMain: true,
       productAmounts: false,
       productProduction: false
@@ -16752,34 +17112,77 @@
   }
 
   function recalcEntry(e) {
-    e.unit = normalizeMeasurementUnit(e.unit);
+    const legacyUnit = normalizeMeasurementUnit(e.unit);
+    e.palletUnit = normalizeMeasurementUnit(e.palletUnit || legacyUnit);
+    e.pieceUnit = normalizeMeasurementUnit(e.pieceUnit || legacyUnit);
+    e.directUnit = normalizeMeasurementUnit(e.directUnit || legacyUnit);
+    e.unit = e.directUnit || e.palletUnit || e.pieceUnit || legacyUnit;
     e.totalKg = 0;
+    e.unitTotals = {};
     e.parts = [];
+    const addTotal = (unit, value) => {
+      const normalizedUnit = normalizeMeasurementUnit(unit);
+      const amount = Number(value) || 0;
+      if (amount <= 0) return;
+      e.unitTotals[normalizedUnit] = (Number(e.unitTotals[normalizedUnit]) || 0) + amount;
+      e.totalKg += amount;
+    };
 
     if (Number(e.pallets) > 0 && Number(e.kgPerPallet) > 0) {
       const kg = Number(e.pallets) * Number(e.kgPerPallet);
-      e.totalKg += kg;
-      e.parts.push(`${e.pallets} ${interfaceText("підд.")} × ${formatQuantity(e.kgPerPallet, e.unit)} = ${formatQuantity(kg, e.unit)}`);
+      addTotal(e.palletUnit, kg);
+      e.parts.push(`${e.pallets} ${interfaceText("підд.")} × ${formatQuantity(e.kgPerPallet, e.palletUnit)} = ${formatQuantity(kg, e.palletUnit)}`);
     }
 
     if (Number(e.pieces) > 0 && Number(e.kgPerPiece) > 0) {
       const kg = Number(e.pieces) * Number(e.kgPerPiece);
-      e.totalKg += kg;
-      e.parts.push(`${e.pieces} ${interfaceText("шт")} × ${formatQuantity(e.kgPerPiece, e.unit)} = ${formatQuantity(kg, e.unit)}`);
+      addTotal(e.pieceUnit, kg);
+      e.parts.push(`${e.pieces} ${interfaceText("шт")} × ${formatQuantity(e.kgPerPiece, e.pieceUnit)} = ${formatQuantity(kg, e.pieceUnit)}`);
     }
 
     const directCalculation = calculateWeightExpression(e.directKgExpression || e.directKg || "");
     if (directCalculation.valid && directCalculation.value > 0) {
       e.directKg = directCalculation.value;
       e.directKgExpression = directCalculation.display;
-      e.directKgDetail = `${interfaceText("Окремо: ")}${formatDirectWeightCalculation(directCalculation.display, directCalculation.value, e.unit)}`;
-      e.totalKg += directCalculation.value;
+      e.directKgDetail = `${interfaceText("Окремо: ")}${formatDirectWeightCalculation(directCalculation.display, directCalculation.value, e.directUnit)}`;
+      addTotal(e.directUnit, directCalculation.value);
       e.parts.push(e.directKgDetail);
     } else {
       e.directKg = 0;
       e.directKgExpression = "";
       e.directKgDetail = "";
     }
+  }
+
+  function getEntryUnitTotals(entry) {
+    const totals = {};
+    const source = entry?.unitTotals && typeof entry.unitTotals === "object"
+      ? entry.unitTotals
+      : { [normalizeMeasurementUnit(entry?.unit)]: Number(entry?.totalKg) || 0 };
+    Object.entries(source).forEach(([unit, value]) => {
+      const amount = Number(value) || 0;
+      if (amount > 0) totals[normalizeMeasurementUnit(unit)] = (totals[normalizeMeasurementUnit(unit)] || 0) + amount;
+    });
+    return totals;
+  }
+
+  function addUnitTotals(target, source) {
+    Object.entries(source || {}).forEach(([unit, value]) => {
+      const normalizedUnit = normalizeMeasurementUnit(unit);
+      target[normalizedUnit] = (Number(target[normalizedUnit]) || 0) + (Number(value) || 0);
+    });
+    return target;
+  }
+
+  function formatUnitTotals(totals) {
+    const parts = Object.entries(totals || {})
+      .filter(([, value]) => Number(value) > 0)
+      .map(([unit, value]) => formatQuantity(value, unit));
+    return parts.length ? parts.join(" + ") : formatQuantity(0, "kg");
+  }
+
+  function formatEntryTotal(entry) {
+    return formatUnitTotals(getEntryUnitTotals(entry));
   }
 
   function getQuickEditEntries(productId) {
@@ -16789,19 +17192,25 @@
   function fillQuickEditForm(entry) {
     if (!entry) return;
     const production = workspaceIsProduction();
-    const unit = normalizeMeasurementUnit(entry.unit);
+    const palletUnit = normalizeMeasurementUnit(entry.palletUnit || entry.unit);
+    const pieceUnit = normalizeMeasurementUnit(entry.pieceUnit || entry.unit);
+    const directUnit = normalizeMeasurementUnit(entry.directUnit || entry.unit);
     document.getElementById("quickEditEntryId").value = entry.id;
     document.getElementById("quickEditProductionFields").classList.toggle("hidden", !production);
     document.getElementById("quickEditStandardFields").classList.toggle("hidden", production);
-    document.getElementById("quickEditUnit").value = unit;
-    updateEntryUnitLabels(unit, "quickEdit");
+    document.getElementById("quickEditPalletUnit").value = palletUnit;
+    document.getElementById("quickEditPieceUnit").value = pieceUnit;
+    document.getElementById("quickEditDirectUnit").value = directUnit;
+    updateEntryBlockUnitLabel("pallet", palletUnit, "quickEdit");
+    updateEntryBlockUnitLabel("piece", pieceUnit, "quickEdit");
+    updateEntryBlockUnitLabel("direct", directUnit, "quickEdit");
     document.getElementById("quickEditPallets").value = entry.pallets || "";
     document.getElementById("quickEditKgPerPallet").value = entry.kgPerPallet || "";
     document.getElementById("quickEditPieces").value = entry.pieces || "";
     document.getElementById("quickEditKgPerPiece").value = entry.kgPerPiece || "";
     document.getElementById("quickEditDirectKg").value = entry.directKgExpression || entry.directKg || "";
     document.getElementById("quickEditComment").value = entry.comment || "";
-    document.getElementById("quickEditProductionPallets").value = entry.pallets || "";
+    document.getElementById("quickEditProductionPallets").value = entry.palletsExpression || entry.pallets || "";
     document.getElementById("quickEditBoxesPerPallet").value = entry.boxesPerPallet || "";
     document.getElementById("quickEditPacksPerBox").value = entry.packsPerBox || "";
     document.getElementById("quickEditProductionComment").value = entry.comment || "";
@@ -16817,7 +17226,7 @@
     tabs.innerHTML = entries.map((entry, index) => `
       <button class="quick-edit-tab${entry.id === selectedId ? " active" : ""}"
         data-action="select-quick-edit-entry" data-id="${entry.id}">
-        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatQuantity(entry.totalKg, entry.unit)}${entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
+        ${index + 1}. ${workspaceIsProduction() ? `${formatPlainNumber(entry.totalKg)} пач.` : formatEntryTotal(entry)}${entry.warehouseName ? ` · ${escapeHtml(entry.warehouseName)}` : ""}
       </button>
     `).join("");
     tabs.classList.toggle("hidden", entries.length < 2);
@@ -16873,7 +17282,13 @@
       return;
     }
     if (workspaceIsProduction()) {
-      const pallets = Math.max(0, Number(document.getElementById("quickEditProductionPallets").value) || 0);
+      const palletsInput = document.getElementById("quickEditProductionPallets").value.trim();
+      const palletsCalculation = calculateWeightExpression(palletsInput);
+      if (palletsInput && (!palletsCalculation.valid || palletsCalculation.value <= 0)) {
+        toast("Перевір вираз кількості піддонів", true);
+        return;
+      }
+      const pallets = Math.max(0, palletsCalculation.value);
       const boxesPerPallet = Math.max(0, Number(document.getElementById("quickEditBoxesPerPallet").value) || 0);
       const packsPerBox = Math.max(0, Number(document.getElementById("quickEditPacksPerBox").value) || 0);
       const totalPacks = pallets * boxesPerPallet * packsPerBox;
@@ -16884,10 +17299,11 @@
       Object.assign(entry, {
         unit: "packs",
         pallets,
+        palletsExpression: palletsCalculation.display,
         boxesPerPallet,
         packsPerBox,
         totalKg: totalPacks,
-        parts: [`${formatPlainNumber(pallets)} підд. × ${formatPlainNumber(boxesPerPallet)} кор. × ${formatPlainNumber(packsPerBox)} пач. = ${formatPlainNumber(totalPacks)} пач.`],
+        parts: [formatProductionEntryCalculation(palletsCalculation.display, pallets, boxesPerPallet, packsPerBox, totalPacks)],
         comment: document.getElementById("quickEditProductionComment").value.trim(),
         editedAt: nowText(),
         editedTimestamp: new Date().toISOString()
@@ -16908,7 +17324,10 @@
     }
 
     const updated = {
-      unit: normalizeMeasurementUnit(document.getElementById("quickEditUnit").value),
+      unit: normalizeMeasurementUnit(document.getElementById("quickEditDirectUnit").value),
+      palletUnit: normalizeMeasurementUnit(document.getElementById("quickEditPalletUnit").value),
+      pieceUnit: normalizeMeasurementUnit(document.getElementById("quickEditPieceUnit").value),
+      directUnit: normalizeMeasurementUnit(document.getElementById("quickEditDirectUnit").value),
       pallets: Number(document.getElementById("quickEditPallets").value || 0),
       kgPerPallet: Number(document.getElementById("quickEditKgPerPallet").value || 0),
       pieces: Number(document.getElementById("quickEditPieces").value || 0),
@@ -16945,8 +17364,16 @@
     scheduleKeyboardScrollRestore();
   }
 
+  function formatProductionEntryCalculation(expression, pallets, boxesPerPallet, packsPerBox, totalPacks) {
+    const calculation = calculateWeightExpression(expression || pallets || "");
+    const hasOperators = calculation.valid && /[+\-−×*÷/:]/.test(calculation.display || "");
+    const palletText = hasOperators ? `(${calculation.display})` : formatPlainNumber(pallets);
+    return `${palletText} підд. × ${formatPlainNumber(boxesPerPallet)} кор. × ${formatPlainNumber(packsPerBox)} пач. = ${formatPlainNumber(totalPacks)} пач.`;
+  }
+
   function updateProductionDialogTotal() {
-    const pallets = Math.max(0, Number(document.getElementById("productionDialogPallets")?.value) || 0);
+    const palletCalculation = calculateWeightExpression(document.getElementById("productionDialogPallets")?.value || "");
+    const pallets = palletCalculation.valid ? Math.max(0, palletCalculation.value) : 0;
     const boxesPerPallet = Math.max(0, Number(document.getElementById("productionDialogBoxesPerPallet")?.value) || 0);
     const packsPerBox = Math.max(0, Number(document.getElementById("productionDialogPacksPerBox")?.value) || 0);
     const total = pallets * boxesPerPallet * packsPerBox;
@@ -16955,7 +17382,8 @@
   }
 
   function updateQuickEditProductionTotal() {
-    const pallets = Math.max(0, Number(document.getElementById("quickEditProductionPallets")?.value) || 0);
+    const palletCalculation = calculateWeightExpression(document.getElementById("quickEditProductionPallets")?.value || "");
+    const pallets = palletCalculation.valid ? Math.max(0, palletCalculation.value) : 0;
     const boxesPerPallet = Math.max(0, Number(document.getElementById("quickEditBoxesPerPallet")?.value) || 0);
     const packsPerBox = Math.max(0, Number(document.getElementById("quickEditPacksPerBox")?.value) || 0);
     const output = document.getElementById("quickEditProductionTotal");
@@ -16967,6 +17395,32 @@
     const product = state.products.find(item => item.id === productId);
     if (!product) {
       toast("Найменування не знайдено", true);
+      return;
+    }
+    if (!workspaceIsProduction()) {
+      const palletValue = Math.max(0, Number(document.getElementById("inventoryDialogPerPallet").value) || 0);
+      const pieceValue = Math.max(0, Number(document.getElementById("inventoryDialogPerPiece").value) || 0);
+      const palletUnit = normalizeMeasurementUnit(document.getElementById("orderEntryPalletUnit").value);
+      const pieceUnit = normalizeMeasurementUnit(document.getElementById("orderEntryPieceUnit").value);
+      const directUnit = normalizeMeasurementUnit(document.getElementById("orderEntryDirectUnit").value);
+      const confirmed = await showAppDialog({
+        label: "Типові значення",
+        title: `Зберегти типові значення для «${product.name}»?`,
+        message: "Одиниці виміру та кількість у піддоні/одиниці автоматично підставлятимуться наступного разу.",
+        confirmText: "Зберегти",
+        cancelText: "Скасувати"
+      });
+      if (!confirmed) return;
+      Object.assign(product, {
+        defaultUnit: directUnit,
+        defaultPalletUnit: palletUnit,
+        defaultPieceUnit: pieceUnit,
+        defaultDirectUnit: directUnit,
+        defaultPalletKg: palletValue,
+        defaultPieceKg: pieceValue
+      });
+      save();
+      toast("Типові значення збережено");
       return;
     }
     const boxesPerPallet = Math.max(0, Number(document.getElementById("productionDialogBoxesPerPallet").value) || 0);
@@ -16989,6 +17443,33 @@
     toast("Типові значення збережено");
   }
 
+  async function saveClassicEntryDefaults() {
+    const productId = document.getElementById("productSelect").value;
+    const product = state.products.find(item => item.id === productId);
+    if (!product) {
+      toast("Спочатку обери найменування", true);
+      return;
+    }
+    const confirmed = await showAppDialog({
+      label: "Типові значення",
+      title: `Зберегти типові значення для «${product.name}»?`,
+      message: "Одиниці виміру та кількість у піддоні/одиниці автоматично підставлятимуться наступного разу.",
+      confirmText: "Зберегти",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    Object.assign(product, {
+      defaultUnit: normalizeMeasurementUnit(document.getElementById("entryDirectUnit").value),
+      defaultPalletUnit: normalizeMeasurementUnit(document.getElementById("entryPalletUnit").value),
+      defaultPieceUnit: normalizeMeasurementUnit(document.getElementById("entryPieceUnit").value),
+      defaultDirectUnit: normalizeMeasurementUnit(document.getElementById("entryDirectUnit").value),
+      defaultPalletKg: Math.max(0, Number(document.getElementById("kgPerPallet").value) || 0),
+      defaultPieceKg: Math.max(0, Number(document.getElementById("kgPerPiece").value) || 0)
+    });
+    save();
+    toast("Типові значення збережено");
+  }
+
   function openOrderEntryDialog(productId) {
     if (!usesEntryDialogMode()) return;
     const product = state.products.find(item => item.id === productId);
@@ -17001,7 +17482,9 @@
     document.getElementById("orderEntryQuantityLabel").textContent = "Окрема кількість";
     document.getElementById("orderEntryDialogTitle").textContent = product.name;
     document.getElementById("orderEntryQuantity").value = "";
-    applyEntryProductUnitPreference(product, "orderEntryUnit", "rememberOrderEntryUnitForProduct");
+    document.getElementById("orderEntryPalletUnit").value = normalizeMeasurementUnit(product.defaultPalletUnit || product.defaultUnit);
+    document.getElementById("orderEntryPieceUnit").value = normalizeMeasurementUnit(product.defaultPieceUnit || product.defaultUnit);
+    document.getElementById("orderEntryDirectUnit").value = normalizeMeasurementUnit(product.defaultDirectUnit || product.defaultUnit);
     document.getElementById("inventoryDialogPallets").value = "";
     document.getElementById("inventoryDialogPerPallet").value = product.defaultPalletKg || "";
     document.getElementById("inventoryDialogPieces").value = "";
@@ -17016,7 +17499,10 @@
     document.getElementById("productionDialogPacksPerBox").value = product.defaultPacksPerBox || "";
     document.getElementById("productionDialogComment").value = "";
     updateProductionDialogTotal();
-    document.getElementById("saveProductionDefaultsBtn").classList.toggle("hidden", !production);
+    document.getElementById("saveProductionDefaultsBtn").classList.remove("hidden");
+    document.getElementById("saveProductionDefaultsBtn").textContent = production
+      ? "Редагувати типові значення"
+      : "Зберегти типові значення";
     if (production) {
       document.getElementById("orderEntryDialogEyebrow").textContent = getProductionWorkspaceName();
     }
@@ -17073,7 +17559,13 @@
         toast("Спочатку обери або додай склад", true);
         return;
       }
-      const pallets = Math.max(0, Number(document.getElementById("productionDialogPallets").value) || 0);
+      const palletsInput = document.getElementById("productionDialogPallets").value.trim();
+      const palletsCalculation = calculateWeightExpression(palletsInput);
+      if (palletsInput && (!palletsCalculation.valid || palletsCalculation.value <= 0)) {
+        toast("Перевір вираз кількості піддонів", true);
+        return;
+      }
+      const pallets = Math.max(0, palletsCalculation.value);
       const boxesPerPallet = Math.max(0, Number(document.getElementById("productionDialogBoxesPerPallet").value) || 0);
       const packsPerBox = Math.max(0, Number(document.getElementById("productionDialogPacksPerBox").value) || 0);
       const totalPacks = pallets * boxesPerPallet * packsPerBox;
@@ -17088,10 +17580,11 @@
         productName: product.name,
         unit: "packs",
         pallets,
+        palletsExpression: palletsCalculation.display,
         boxesPerPallet,
         packsPerBox,
         totalKg: totalPacks,
-        parts: [`${formatPlainNumber(pallets)} підд. × ${formatPlainNumber(boxesPerPallet)} кор. × ${formatPlainNumber(packsPerBox)} пач. = ${formatPlainNumber(totalPacks)} пач.`],
+        parts: [formatProductionEntryCalculation(palletsCalculation.display, pallets, boxesPerPallet, packsPerBox, totalPacks)],
         warehouseId: warehouse.id,
         warehouseName: warehouse.name,
         comment: document.getElementById("productionDialogComment").value.trim()
@@ -17117,7 +17610,6 @@
       toast("Введи правильну кількість", true);
       return;
     }
-    const unit = normalizeMeasurementUnit(document.getElementById("orderEntryUnit").value);
     const readEntryNumber = id => {
       const value = Number(document.getElementById(id).value || 0);
       return Number.isFinite(value) && value > 0 ? value : 0;
@@ -17131,7 +17623,10 @@
       createdAt: nowText(),
       productId: product.id,
       productName: product.name,
-      unit,
+      unit: normalizeMeasurementUnit(document.getElementById("orderEntryDirectUnit").value),
+      palletUnit: normalizeMeasurementUnit(document.getElementById("orderEntryPalletUnit").value),
+      pieceUnit: normalizeMeasurementUnit(document.getElementById("orderEntryPieceUnit").value),
+      directUnit: normalizeMeasurementUnit(document.getElementById("orderEntryDirectUnit").value),
       pallets,
       kgPerPallet,
       pieces,
@@ -17217,7 +17712,10 @@
     const entryData = {
       productId,
       productName: product.name,
-      unit: normalizeMeasurementUnit(document.getElementById("entryUnit").value),
+      unit: normalizeMeasurementUnit(document.getElementById("entryDirectUnit").value),
+      palletUnit: normalizeMeasurementUnit(document.getElementById("entryPalletUnit").value),
+      pieceUnit: normalizeMeasurementUnit(document.getElementById("entryPieceUnit").value),
+      directUnit: normalizeMeasurementUnit(document.getElementById("entryDirectUnit").value),
       pallets: Number(document.getElementById("pallets").value || 0),
       kgPerPallet: Number(document.getElementById("kgPerPallet").value || 0),
       pieces: Number(document.getElementById("pieces").value || 0),
@@ -17292,10 +17790,12 @@
 
     document.getElementById("editingEntryId").value = e.id;
     document.getElementById("productSelect").value = e.productId;
-    document.getElementById("entryUnit").value = normalizeMeasurementUnit(e.unit);
-    document.getElementById("rememberEntryUnitForProduct").checked = false;
-    document.getElementById("entryUnit").dispatchEvent(new Event("change", { bubbles: true }));
-    updateEntryUnitLabels(e.unit);
+    document.getElementById("entryPalletUnit").value = normalizeMeasurementUnit(e.palletUnit || e.unit);
+    document.getElementById("entryPieceUnit").value = normalizeMeasurementUnit(e.pieceUnit || e.unit);
+    document.getElementById("entryDirectUnit").value = normalizeMeasurementUnit(e.directUnit || e.unit);
+    updateEntryBlockUnitLabel("pallet", e.palletUnit || e.unit);
+    updateEntryBlockUnitLabel("piece", e.pieceUnit || e.unit);
+    updateEntryBlockUnitLabel("direct", e.directUnit || e.unit);
     document.getElementById("pallets").value = e.pallets || "";
     document.getElementById("kgPerPallet").value = e.kgPerPallet || "";
     document.getElementById("pieces").value = e.pieces || "";
@@ -17361,22 +17861,15 @@
 
   function fillDefaultWeights() {
     const product = state.products.find(p => p.id === document.getElementById("productSelect").value);
-    const unit = product
-      ? applyEntryProductUnitPreference(product, "entryUnit", "rememberEntryUnitForProduct")
-      : getLastEntryUnit();
-    if (!product) {
-      document.getElementById("entryUnit").value = unit;
-      document.getElementById("rememberEntryUnitForProduct").checked = false;
-      document.getElementById("entryUnit").dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    const fallbackUnit = product ? normalizeMeasurementUnit(product.defaultUnit) : getLastEntryUnit();
+    document.getElementById("entryPalletUnit").value = normalizeMeasurementUnit(product?.defaultPalletUnit || fallbackUnit);
+    document.getElementById("entryPieceUnit").value = normalizeMeasurementUnit(product?.defaultPieceUnit || fallbackUnit);
+    document.getElementById("entryDirectUnit").value = normalizeMeasurementUnit(product?.defaultDirectUnit || fallbackUnit);
+    updateEntryBlockUnitLabel("pallet", product?.defaultPalletUnit || fallbackUnit);
+    updateEntryBlockUnitLabel("piece", product?.defaultPieceUnit || fallbackUnit);
+    updateEntryBlockUnitLabel("direct", product?.defaultDirectUnit || fallbackUnit);
     document.getElementById("kgPerPallet").value = product?.defaultPalletKg || "";
     document.getElementById("kgPerPiece").value = product?.defaultPieceKg || "";
-    updateEntryUnitLabels(unit);
-  }
-
-  function changeEntryMeasurementUnit() {
-    const unit = normalizeMeasurementUnit(document.getElementById("entryUnit").value);
-    updateEntryUnitLabels(unit);
   }
 
   function clearCurrentDay() {
@@ -17490,8 +17983,14 @@
     if (editingId) {
       const p = state.products.find(x => x.id === editingId);
       if (!p) return;
+      const defaultUnitChanged = normalizeMeasurementUnit(p.defaultUnit) !== defaultUnit;
       p.name = name;
       p.defaultUnit = defaultUnit;
+      if (defaultUnitChanged) {
+        p.defaultPalletUnit = defaultUnit;
+        p.defaultPieceUnit = defaultUnit;
+        p.defaultDirectUnit = defaultUnit;
+      }
       p.defaultPalletKg = defaultPalletKg;
       p.defaultPieceKg = defaultPieceKg;
       p.defaultBoxesPerPallet = defaultBoxesPerPallet;
@@ -17519,6 +18018,9 @@
         id: uid(),
         name,
         defaultUnit,
+        defaultPalletUnit: defaultUnit,
+        defaultPieceUnit: defaultUnit,
+        defaultDirectUnit: defaultUnit,
         defaultPalletKg,
         defaultPieceKg,
         defaultBoxesPerPallet,
@@ -17689,22 +18191,22 @@
     const map = {};
     day.entries.forEach((e, entryIndex) => {
       const productId = e.productId || e.productName;
-      const unit = normalizeMeasurementUnit(e.unit);
       const warehouseId = e.warehouseId || day.warehouseId || "";
       const warehouseName = e.warehouseName || day.warehouseName || "Без складу";
       const warehouseKey = warehouseId || warehouseName || "without-warehouse";
-      const key = `${warehouseKey}::${productId}::${unit}`;
+      const key = `${warehouseKey}::${productId}`;
       if (!map[key]) map[key] = {
         productId,
         name: e.productName,
-        unit,
         warehouseId,
         warehouseName,
         totalKg: 0,
+        unitTotals: {},
         entries: [],
         firstEntryIndex: entryIndex
       };
       map[key].totalKg += Number(e.totalKg || 0);
+      addUnitTotals(map[key].unitTotals, getEntryUnitTotals(e));
       map[key].entries.push(e);
     });
     return Object.values(map);
@@ -17722,7 +18224,7 @@
     if (!groups.length) return text + "Записів немає.";
 
     groups.forEach((g, i) => {
-      text += `${i + 1}. ${g.name}: ${workspaceIsProduction() ? `${formatPlainNumber(g.totalKg)} пач.` : formatQuantity(g.totalKg, g.unit)}\n`;
+      text += `${i + 1}. ${g.name}: ${workspaceIsProduction() ? `${formatPlainNumber(g.totalKg)} пач.` : formatUnitTotals(g.unitTotals)}\n`;
       g.entries.forEach(e => {
         const line = e.parts && e.parts.length ? e.parts.join(" + ") : "";
         text += `   - ${line}`;
@@ -18848,7 +19350,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=323")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=328")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -19050,8 +19552,8 @@
 
         if (directKg > 0) {
           let directText = e.directKgExpression
-            ? formatDirectWeightCalculation(e.directKgExpression, directKg, e.unit)
-            : formatQuantity(directKg, e.unit);
+            ? formatDirectWeightCalculation(e.directKgExpression, directKg, e.directUnit || e.unit)
+            : formatQuantity(directKg, e.directUnit || e.unit);
           if (e.comment && parts.length === 1) directText += ` (${e.comment})`;
           directWeights.push(directText);
         }
@@ -19081,7 +19583,7 @@
             <div class="name">${escapeHtml(g.name)}</div>
             <div class="compact-details">${compactDetails}</div>
           </div>
-          <div class="print-total-cell">${formatQuantity(g.totalKg, g.unit)}</div>
+          <div class="print-total-cell">${formatUnitTotals(g.unitTotals)}</div>
         </div>
       `;
     };
@@ -19191,7 +19693,7 @@
             <div>${index}</div>
             <div><span class="order-status-badge">${escapeHtml(orderStatusLabel(status))}</span></div>
             <div>${escapeHtml(entry.productName)}</div>
-            <div>${formatQuantity(entry.totalKg, entry.unit)}</div>
+            <div>${formatEntryTotal(entry)}</div>
             <div>${escapeHtml(commentParts.join(" · "))}</div>
           </div>
         `;
@@ -19211,7 +19713,7 @@
     const longestNameLength = entries.reduce((max, entry) => {
       return Math.max(max, Array.from(String(entry.productName || "")).length);
     }, 0);
-    const quantityValues = entries.map(entry => String(formatQuantity(entry.totalKg, entry.unit) || ""));
+    const quantityValues = entries.map(entry => String(formatEntryTotal(entry) || ""));
     const numberDigits = Math.max(1, String(Math.max(entries.length, 1)).length);
 
     // Службові колонки займають лише стільки місця, скільки потрібно їхнім даним.
@@ -19387,7 +19889,7 @@
             <div class="name">${escapeHtml(g.name)}</div>
             <div class="report-edit-hint">Натисни позицію, щоб редагувати</div>
           </div>
-          <div class="total">${production ? `${formatPlainNumber(g.totalKg)} пач.` : formatQuantity(g.totalKg, g.unit)}</div>
+          <div class="total">${production ? `${formatPlainNumber(g.totalKg)} пач.` : formatUnitTotals(g.unitTotals)}</div>
         </div>
         <div class="report-item-content">${entriesHtml}</div>
       `;
@@ -20482,15 +20984,12 @@
     btn.addEventListener("click", () => showPage(btn.dataset.page));
   });
 
-  setupEntryUnitPicker("entryUnit", "rememberEntryUnitForProduct");
-  setupEntryUnitPicker("orderEntryUnit", "rememberOrderEntryUnitForProduct");
-  document.addEventListener("click", closeEntryUnitPickers);
-
   document.getElementById("saveEntryBtn").addEventListener("click", () => {
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
     saveEntry();
     scheduleKeyboardScrollRestore();
   });
+  document.getElementById("saveClassicEntryDefaultsBtn").addEventListener("click", saveClassicEntryDefaults);
   document.getElementById("cancelEditBtn").addEventListener("click", () => {
     const wasEditing = Boolean(document.getElementById("editingEntryId").value);
     if (isAppKeyboardField(document.activeElement)) document.activeElement.blur();
@@ -20499,7 +20998,9 @@
     if (wasEditing) restoreEditPosition("entry");
   });
   document.getElementById("productSelect").addEventListener("change", fillDefaultWeights);
-  document.getElementById("entryUnit").addEventListener("change", changeEntryMeasurementUnit);
+  document.getElementById("entryPalletUnit").addEventListener("change", event => updateEntryBlockUnitLabel("pallet", event.target.value));
+  document.getElementById("entryPieceUnit").addEventListener("change", event => updateEntryBlockUnitLabel("piece", event.target.value));
+  document.getElementById("entryDirectUnit").addEventListener("change", event => updateEntryBlockUnitLabel("direct", event.target.value));
   document.getElementById("orderWarehouseSelect").addEventListener("change", event => {
     setWorkspaceWarehouse(event.target.value || null);
     saveOnly();
@@ -20558,9 +21059,9 @@
   document.getElementById("orderEntryOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeOrderEntryDialog({ returnFocus: false });
   });
-  document.getElementById("quickEditUnit").addEventListener("change", event => {
-    updateEntryUnitLabels(event.target.value, "quickEdit");
-  });
+  document.getElementById("quickEditPalletUnit").addEventListener("change", event => updateEntryBlockUnitLabel("pallet", event.target.value, "quickEdit"));
+  document.getElementById("quickEditPieceUnit").addEventListener("change", event => updateEntryBlockUnitLabel("piece", event.target.value, "quickEdit"));
+  document.getElementById("quickEditDirectUnit").addEventListener("change", event => updateEntryBlockUnitLabel("direct", event.target.value, "quickEdit"));
   document.getElementById("productSearch").addEventListener("input", event => {
     renderSelect(true);
     if (isSecretGameSearch(event.currentTarget.value)) requestSecretGameLaunch();
@@ -20871,14 +21372,6 @@
       saveNavigationButtonSetting(config.key, event.target.value, event.target.value, config.label);
     });
   });
-  const entryUnitVisibilitySelect = document.getElementById("entryUnitVisibilitySelect");
-  entryUnitVisibilitySelect.value = getEntryUnitVisibility();
-  entryUnitVisibilitySelect.addEventListener("change", event => {
-    const mode = event.target.value === "visible" ? "visible" : "hidden";
-    try { localStorage.setItem(ENTRY_UNIT_VISIBILITY_KEY, mode); } catch (error) {}
-    applyEntryUnitVisibility(mode);
-    toast(mode === "visible" ? "Вибір одиниці показано" : "Вибір одиниці приховано");
-  });
   const orderEntryModeSelect = document.getElementById("orderEntryModeSelect");
   orderEntryModeSelect.value = getOrderEntryMode();
   orderEntryModeSelect.addEventListener("change", event => {
@@ -20985,6 +21478,9 @@
     if (!event.target.closest(".current-list-sort-menu")) {
       document.querySelectorAll(".current-list-sort-menu").forEach(menu => menu.removeAttribute("open"));
     }
+    if (!event.target.closest(".expression-operator-menu")) {
+      document.querySelectorAll(".expression-operator-menu[open]").forEach(menu => menu.removeAttribute("open"));
+    }
     if (!event.target.closest("#qrProductSearchPanel")) {
       document.getElementById("qrProductSearchResults")?.classList.add("hidden");
     }
@@ -21019,6 +21515,7 @@
   initAboutCardDeck();
   initOtherSettingsCategories();
   initModalScrollLock();
+  initExpressionOperatorControls();
   initAppKeyboardScrollRestore();
   initKeyboardEntryAction();
   initAppTopPosition();
