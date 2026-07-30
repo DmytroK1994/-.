@@ -2708,6 +2708,47 @@
     .combo-wrap input {
       padding-right: 46px;
     }
+    .recent-product-shortcut {
+      width: 100%;
+      min-height: 30px !important;
+      margin: 5px 0 0 !important;
+      padding: 5px 9px !important;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--surface-deep) 72%, transparent);
+      color: var(--muted);
+      box-shadow: none;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .recent-product-shortcut:hover,
+    .recent-product-shortcut:focus-visible {
+      border-color: var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--text);
+    }
+    .recent-product-shortcut-label {
+      flex: 0 0 auto;
+      opacity: .78;
+    }
+    .recent-product-shortcut-name {
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+      color: var(--text);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .recent-product-shortcut-arrow {
+      flex: 0 0 auto;
+      opacity: .58;
+      font-size: 14px;
+    }
     .clear-search-btn {
       position: absolute;
       right: 5px;
@@ -8040,7 +8081,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=315">
+<link rel="manifest" href="manifest.json?v=320">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8095,7 +8136,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.19</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.20</span></div>
     </div>
   </div>
 
@@ -8265,6 +8306,11 @@
           <button type="button" id="clearProductSearchBtn" class="clear-search-btn hidden" aria-label="Очистити пошук">×</button>
           <div id="productSearchResults" class="combo-list hidden"></div>
         </div>
+        <button type="button" id="recentProductShortcut" class="recent-product-shortcut hidden">
+          <span class="recent-product-shortcut-label">Остання вибрана:</span>
+          <strong class="recent-product-shortcut-name" id="recentProductShortcutName"></strong>
+          <span class="recent-product-shortcut-arrow" aria-hidden="true">↻</span>
+        </button>
       </div>
 
       <select id="productSelect" class="hidden-select"></select>
@@ -9313,7 +9359,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.19</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.20</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9338,6 +9384,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.20</h3>
+          <ul>
+            <li>під пошуком додано компактну стрічку з останньою вибраною позицією;</li>
+            <li>натискання на стрічку повторно відкриває звичайне вікно додавання цієї позиції без нового пошуку;</li>
+            <li>остання позиція запам’ятовується окремо для інвентаризації, замовлень і здачі продукції.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.19</h3>
           <ul>
@@ -10524,7 +10578,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.19";
+  const APP_VERSION = "3.20";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -10579,6 +10633,7 @@
   const INVENTORY_LIST_SORT_KEY = "warehouseJournalInventoryListSort";
   const ORDER_LIST_SORT_KEY = "warehouseJournalOrderListSort";
   const PRODUCTION_LIST_SORT_KEY = "warehouseJournalProductionListSort";
+  const LAST_SELECTED_PRODUCTS_KEY = "warehouseJournalLastSelectedProducts";
   const PRODUCTION_WORKSPACE_NAME_KEY = "warehouseJournalProductionWorkspaceName";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
@@ -10626,6 +10681,7 @@
     INVENTORY_LIST_SORT_KEY,
     ORDER_LIST_SORT_KEY,
     PRODUCTION_LIST_SORT_KEY,
+    LAST_SELECTED_PRODUCTS_KEY,
     PRODUCTION_WORKSPACE_NAME_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
@@ -18587,6 +18643,7 @@
     localStorage.removeItem(INITIAL_WORKSPACE_CHOICE_KEY);
     localStorage.removeItem(WORKSPACE_MODE_KEY);
     localStorage.removeItem(LAST_ENTRY_UNIT_KEY);
+    localStorage.removeItem(LAST_SELECTED_PRODUCTS_KEY);
     localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
     localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
     applyEntryUnitVisibility("hidden");
@@ -18688,6 +18745,40 @@
     renderSelect(true);
   }
 
+  function getLastSelectedProducts() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(LAST_SELECTED_PRODUCTS_KEY) || "{}");
+      return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function rememberLastSelectedProduct(productId) {
+    if (!productId) return;
+    const remembered = getLastSelectedProducts();
+    remembered[workspaceMode] = productId;
+    try {
+      localStorage.setItem(LAST_SELECTED_PRODUCTS_KEY, JSON.stringify(remembered));
+    } catch (error) {}
+    renderRecentProductShortcut();
+  }
+
+  function renderRecentProductShortcut() {
+    const shortcut = document.getElementById("recentProductShortcut");
+    const name = document.getElementById("recentProductShortcutName");
+    if (!shortcut || !name) return;
+    const productId = getLastSelectedProducts()[workspaceMode] || "";
+    const product = state.products.find(item => item.id === productId);
+    shortcut.classList.toggle("hidden", !product);
+    shortcut.dataset.id = product?.id || "";
+    name.textContent = product?.name || "";
+    shortcut.title = product ? `Повторно вибрати: ${product.name}` : "";
+    shortcut.setAttribute("aria-label", product
+      ? `Повторно вибрати останню позицію: ${product.name}`
+      : "Остання вибрана позиція відсутня");
+  }
+
   let productSearchKeyboardIndex = -1;
   let secretGamePromptActive = false;
   let secretGameScriptsPromise = null;
@@ -18724,7 +18815,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=319")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=320")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -18805,6 +18896,7 @@
     const productsSorted = sortedProducts();
     productSearchKeyboardIndex = -1;
 
+    renderRecentProductShortcut();
     updateClearSearchButton();
 
     select.innerHTML = "";
@@ -20163,6 +20255,7 @@
     const p = state.products.find(x => x.id === id);
     if (!p) return;
 
+    rememberLastSelectedProduct(p.id);
     const searchInput = document.getElementById("productSearch");
     const searchResults = document.getElementById("productSearchResults");
     document.getElementById("productSelect").value = id;
@@ -20227,6 +20320,7 @@
     if (action === "restore-trash") restoreTrashItem(id);
     if (action === "delete-trash") deleteTrashItemPermanently(id);
     if (action === "select-product") selectProduct(id);
+    if (action === "repeat-last-product") selectProduct(id);
     if (action === "launch-secret-game") requestSecretGameLaunch();
     if (action === "select-quick-edit-entry") selectQuickEditEntry(id);
     if (action === "open-theme-category") openThemeCategory(id);
@@ -20466,6 +20560,10 @@
     }
   });
   document.getElementById("clearProductSearchBtn").addEventListener("click", clearProductSearch);
+  document.getElementById("recentProductShortcut").addEventListener("click", event => {
+    const productId = event.currentTarget.dataset.id;
+    if (productId) selectProduct(productId);
+  });
   document.getElementById("saveProductionDefaultsBtn").addEventListener("click", saveProductionDefaultsFromDialog);
   ["productionDialogBoxesPerPallet", "productionDialogPacksPerBox", "productionDialogPallets"].forEach((id, index, ids) => {
     const input = document.getElementById(id);
