@@ -497,9 +497,8 @@
       }
       this.workers = Array.from({ length: 9 }, (_, index) => {
         const point = this.randomWorkerPoint(false);
-        const target = this.randomWorkerPoint(false);
         return {
-          x: point.x, y: point.y, targetX: target.x, targetY: target.y,
+          x: point.x, y: point.y, targetX: point.x, targetY: point.y,
           speed: 42 + Math.random() * 24,
           color: index % 2 ? "#4d82aa" : "#5a926a",
           phase: Math.random() * TAU,
@@ -508,6 +507,11 @@
           stuckFor: 0,
           aware: Math.random() > .1
         };
+      });
+      this.workers.forEach(worker => {
+        const target = this.randomReachableWorkerPoint(worker, false);
+        worker.targetX = target.x;
+        worker.targetY = target.y;
       });
       this.botRackPoints = [
         { x: 650, y: 275 },
@@ -560,7 +564,8 @@
             && point.x < this.trailer.x + this.trailer.w + 180
             && point.y > this.trailer.y - 25
             && point.y < this.trailer.y + this.trailer.h + 25;
-          if (!blocked && !insideTrailer) return point;
+          const insideClosedYard = this.modeConfig.trailer && point.y < 480;
+          if (!blocked && !insideTrailer && !insideClosedYard) return point;
         }
       }
       const pedestrianObstacles = this.obstacles.filter(rect =>
@@ -591,9 +596,50 @@
         const insideSafeZone = this.modeConfig.trailer
           && circleRect(point.x, point.y, 24, this.trailerSafeZone);
         const inMainLane = point.x > 455 && point.x < 1630 && point.y > 585 && point.y < 815;
-        if (!blocked && !insideTrailer && !insideSafeZone && !inMainLane) return point;
+        const insideClosedYard = this.modeConfig.trailer && point.y < 480;
+        if (!blocked && !insideTrailer && !insideSafeZone && !inMainLane && !insideClosedYard) return point;
       }
       return this.randomAislePoint(18);
+    }
+
+    workerStaticPointBlocked(x, y) {
+      if (x < 28 || x > this.world.w - 28 || y < 28 || y > this.world.h - 28) return true;
+      if (this.obstacles.some(rect => circleRect(x, y, 18, rect))) return true;
+      const insideTrailer = this.modeConfig.trailer
+        && x > this.trailer.x - 12
+        && x < this.trailer.x + this.trailer.w + 175
+        && y > this.trailer.y - 12
+        && y < this.trailer.y + this.trailer.h + 12;
+      const insideSafeZone = this.modeConfig.trailer && circleRect(x, y, 18, this.trailerSafeZone);
+      const insideStagingZone = x > 440 && x < 675 && y > 910 && y < 1295;
+      const insideClosedYard = this.modeConfig.trailer && y < 480;
+      return insideTrailer || insideSafeZone || insideStagingZone || insideClosedYard;
+    }
+
+    workerPathClear(worker, target) {
+      const dx = target.x - worker.x;
+      const dy = target.y - worker.y;
+      const length = Math.hypot(dx, dy);
+      if (!length) return true;
+      const steps = Math.max(1, Math.ceil(length / 20));
+      for (let index = 1; index <= steps; index++) {
+        const progress = index / steps;
+        if (this.workerStaticPointBlocked(
+          worker.x + dx * progress,
+          worker.y + dy * progress
+        )) return false;
+      }
+      return true;
+    }
+
+    randomReachableWorkerPoint(worker, allowMainAisle) {
+      for (let attempt = 0; attempt < 24; attempt++) {
+        const point = this.randomWorkerPoint(allowMainAisle && attempt < 5);
+        if (!this.workerPointBlocked(point.x, point.y, worker) && this.workerPathClear(worker, point)) {
+          return point;
+        }
+      }
+      return { x: worker.x, y: worker.y };
     }
 
     randomPalletPoint() {
@@ -821,6 +867,22 @@
       const hitObstacle = this.obstacles.some(rect => circleRect(v.x, v.y, v.radius, rect));
       const hitPallet = this.pallets.some(pallet => !pallet.carried && Math.hypot(v.x - pallet.x, v.y - pallet.y) < 43);
       const hitStagePallet = this.botStagedPallets.some(pallet => Math.hypot(v.x - pallet.x, v.y - pallet.y) < 43);
+      const forkPoints = this.forkCollisionPoints(v);
+      const hitForkObstacle = forkPoints.some(point =>
+        point.x < 10 || point.x > this.world.w - 10
+        || point.y < 10 || point.y > this.world.h - 10
+        || this.obstacles.some(rect => circleRect(point.x, point.y, 10, rect))
+      );
+      const hitForkPallet = this.pallets.find(pallet =>
+        !pallet.carried && forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
+      );
+      const hitForkStage = this.botStagedPallets.find(pallet =>
+        forkPoints.some(point => Math.hypot(point.x - pallet.x, point.y - pallet.y) < 38)
+      );
+      const hitForkWorker = this.workers.find(worker =>
+        !worker.injured && forkPoints.some(point => Math.hypot(point.x - worker.x, point.y - worker.y) < 24)
+      );
+      const hitForkBot = this.bot && forkPoints.some(point => Math.hypot(point.x - this.bot.x, point.y - this.bot.y) < 46);
       const cargoPoint = v.carrying ? this.forkPoint() : null;
       const hitCargoObstacle = cargoPoint && this.obstacles.some(rect => circleRect(cargoPoint.x, cargoPoint.y, 34, rect));
       const hitCargoPallet = cargoPoint && this.pallets.some(pallet =>
@@ -833,20 +895,29 @@
         !worker.injured && Math.hypot(cargoPoint.x - worker.x, cargoPoint.y - worker.y) < 43
       );
       const hitCargoBot = cargoPoint && this.bot && Math.hypot(cargoPoint.x - this.bot.x, cargoPoint.y - this.bot.y) < 62;
-      if (hitObstacle || hitPallet || hitStagePallet || hitCargoObstacle || hitCargoPallet || hitCargoStage || hitCargoWorker || hitCargoBot) {
+      if (
+        hitObstacle || hitPallet || hitStagePallet
+        || hitForkObstacle || hitForkPallet || hitForkStage || hitForkWorker || hitForkBot
+        || hitCargoObstacle || hitCargoPallet || hitCargoStage || hitCargoWorker || hitCargoBot
+      ) {
         v.x = previous.x;
         v.y = previous.y;
-        if (hitCargoWorker) {
-          const escape = this.workerEscapePoint(hitCargoWorker, this.vehicle);
-          hitCargoWorker.targetX = escape.x;
-          hitCargoWorker.targetY = escape.y;
-          hitCargoWorker.awayUntil = this.elapsed + 9;
-          if (v.speed > 65) this.startIncident(hitCargoWorker, "player");
-          else if (v.speed > 25) this.damage("Вантаж зачепив працівника");
-        } else if (hitCargoBot) {
+        const struckWorker = hitCargoWorker || hitForkWorker;
+        if (struckWorker) {
+          const escape = this.workerEscapePoint(struckWorker, this.vehicle);
+          struckWorker.targetX = escape.x;
+          struckWorker.targetY = escape.y;
+          struckWorker.awayUntil = this.elapsed + 9;
+          if (v.speed > 65) this.startIncident(struckWorker, "player");
+          else if (v.speed > 25) this.damage("Вила або вантаж зачепили працівника");
+        } else if (hitCargoBot || hitForkBot) {
           this.gameOver("Вантаж зачепив службову кару. Її потрібно пропускати.");
-        } else if (v.speed > 28 && cargoPoint) {
-          this.damage(hitCargoPallet || hitCargoStage ? "Вантаж зачепив інший піддон" : "Вантаж зачепив перешкоду");
+        } else if (v.speed > 28 && (cargoPoint || hitForkObstacle || hitForkPallet || hitForkStage)) {
+          this.damage(
+            hitCargoPallet || hitCargoStage || hitForkPallet || hitForkStage
+              ? "Вила або вантаж зачепили інший піддон"
+              : "Вила або вантаж зачепили перешкоду"
+          );
         } else if (v.speed > 70) {
           this.damage("Зіткнення з перешкодою");
         }
@@ -861,6 +932,20 @@
         x: this.vehicle.x + Math.cos(this.vehicle.angle) * 77,
         y: this.vehicle.y + Math.sin(this.vehicle.angle) * 77
       };
+    }
+
+    forkCollisionPoints(vehicle) {
+      const unit = vehicle || this.vehicle;
+      const points = [];
+      [43, 60, 76].forEach(forward => {
+        [-16, 16].forEach(side => {
+          points.push({
+            x: unit.x + Math.cos(unit.angle) * forward - Math.sin(unit.angle) * side,
+            y: unit.y + Math.sin(unit.angle) * forward + Math.cos(unit.angle) * side
+          });
+        });
+      });
+      return points;
     }
 
     lift() {
@@ -1219,22 +1304,14 @@
     }
 
     workerPointBlocked(x, y, ignoredWorker) {
-      if (x < 28 || x > this.world.w - 28 || y < 28 || y > this.world.h - 28) return true;
-      if (this.obstacles.some(rect => circleRect(x, y, 16, rect))) return true;
+      if (this.workerStaticPointBlocked(x, y)) return true;
       if (this.pallets.some(pallet => !pallet.carried && Math.hypot(x - pallet.x, y - pallet.y) < 35)) return true;
       if (this.botStagedPallets.some(pallet => Math.hypot(x - pallet.x, y - pallet.y) < 35)) return true;
       if (this.bot && Math.hypot(x - this.bot.x, y - this.bot.y) < 48) return true;
       if (this.workers.some(worker =>
         worker !== ignoredWorker && !worker.injured && Math.hypot(x - worker.x, y - worker.y) < 28
       )) return true;
-      const insideTrailer = this.modeConfig.trailer
-        && x > this.trailer.x - 12
-        && x < this.trailer.x + this.trailer.w + 175
-        && y > this.trailer.y - 12
-        && y < this.trailer.y + this.trailer.h + 12;
-      const insideSafeZone = this.modeConfig.trailer && circleRect(x, y, 18, this.trailerSafeZone);
-      const insideStagingZone = x > 440 && x < 675 && y > 910 && y < 1295;
-      return insideTrailer || insideSafeZone || insideStagingZone;
+      return false;
     }
 
     workerEscapePoint(worker, threat) {
@@ -1244,9 +1321,10 @@
         const distanceAway = 190 + Math.random() * 70;
         const x = clamp(worker.x + Math.cos(baseAngle + offset) * distanceAway, 35, this.world.w - 35);
         const y = clamp(worker.y + Math.sin(baseAngle + offset) * distanceAway, 35, this.world.h - 35);
-        if (!this.workerPointBlocked(x, y, worker)) return { x, y };
+        const point = { x, y };
+        if (!this.workerPointBlocked(x, y, worker) && this.workerPathClear(worker, point)) return point;
       }
-      return this.randomWorkerPoint(false);
+      return this.randomReachableWorkerPoint(worker, false);
     }
 
     recoverWorker(worker) {
@@ -1266,6 +1344,10 @@
     updateWorkers(dt) {
       this.workers.forEach(worker => {
         if (worker.injured) return;
+        if (this.workerStaticPointBlocked(worker.x, worker.y)) {
+          this.recoverWorker(worker);
+          return;
+        }
         const previous = { x: worker.x, y: worker.y };
         const toVehicle = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y);
         if (toVehicle < 145 && (worker.aware || worker.avoidUntil > this.elapsed)) {
@@ -1275,7 +1357,10 @@
           worker.avoidUntil = Math.max(worker.avoidUntil, this.elapsed + 2.2);
           worker.awayUntil = Math.max(worker.awayUntil, this.elapsed + 7);
         } else if (distance(worker, { x: worker.targetX, y: worker.targetY }) < 15 || Math.random() < dt * .06) {
-          const target = this.randomWorkerPoint(worker.awayUntil <= this.elapsed && Math.random() < .08);
+          const target = this.randomReachableWorkerPoint(
+            worker,
+            worker.awayUntil <= this.elapsed && Math.random() < .08
+          );
           worker.targetX = target.x;
           worker.targetY = target.y;
         }
@@ -1302,7 +1387,10 @@
         const bodyCollision = Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) < 36;
         const cargoPoint = this.vehicle.carrying ? this.forkPoint() : null;
         const cargoCollision = cargoPoint && Math.hypot(worker.x - cargoPoint.x, worker.y - cargoPoint.y) < 43;
-        if (bodyCollision || cargoCollision) {
+        const forkCollision = this.forkCollisionPoints(this.vehicle).some(point =>
+          Math.hypot(worker.x - point.x, worker.y - point.y) < 24
+        );
+        if (bodyCollision || cargoCollision || forkCollision) {
           worker.x = previous.x;
           worker.y = previous.y;
           const escape = this.workerEscapePoint(worker, this.vehicle);
@@ -1310,7 +1398,7 @@
           worker.targetY = escape.y;
           worker.avoidUntil = this.elapsed + 2.5;
           worker.awayUntil = this.elapsed + 8;
-          if (this.vehicle.speed > (cargoCollision ? 65 : 110)) this.startIncident(worker, "player");
+          if (this.vehicle.speed > (cargoCollision || forkCollision ? 65 : 110)) this.startIncident(worker, "player");
         }
       });
     }
@@ -1407,6 +1495,7 @@
     planBotPath(target) {
       const bot = this.bot;
       if (!bot) return [];
+      if (this.botPositionBlocked(target.x, target.y)) return [];
       const cell = 70;
       const columns = Math.ceil(this.world.w / cell);
       const rows = Math.ceil(this.world.h / cell);
@@ -1530,6 +1619,16 @@
       if (bot.pathKey !== pathKey || !bot.path.length) {
         bot.pathKey = pathKey;
         bot.path = this.planBotPath(target);
+      }
+      if (!bot.path.length && Math.hypot(bot.x - target.x, bot.y - target.y) >= 38) {
+        bot.blockedFor += dt;
+        if (bot.blockedFor > .8) {
+          if (bot.task === "rack") bot.rackIndex = (bot.rackIndex + 1) % Math.max(1, this.botRackPoints.length);
+          else if (bot.task === "stage") bot.stageIndex = (bot.stageIndex + 1) % Math.max(1, this.botStageSlots.length);
+          bot.pathKey = "";
+        }
+        if (bot.blockedFor > 3.2) this.recoverBotPosition();
+        return;
       }
 
       let waypoint = bot.path[0] || target;
@@ -1681,6 +1780,7 @@
       this.softHorn();
       this.workers.forEach(worker => {
         if (worker.injured || Math.hypot(worker.x - this.vehicle.x, worker.y - this.vehicle.y) >= 270) return;
+        if (this.workerStaticPointBlocked(worker.x, worker.y)) this.recoverWorker(worker);
         const escape = this.workerEscapePoint(worker, this.vehicle);
         worker.targetX = escape.x;
         worker.targetY = escape.y;
@@ -2226,7 +2326,25 @@
     }
 
     drawRack(ctx, rect) {
-      if (["trailer-wall", "trailer-cab", "outside-wall"].includes(rect.type)) return;
+      if (rect.type === "outside-wall") {
+        ctx.save();
+        ctx.fillStyle = "#26383f";
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.w, rect.h);
+        ctx.clip();
+        ctx.strokeStyle = "#e7bd3e";
+        ctx.lineWidth = 10;
+        for (let x = rect.x - rect.h; x < rect.x + rect.w + rect.h; x += 34) {
+          ctx.beginPath();
+          ctx.moveTo(x, rect.y + rect.h);
+          ctx.lineTo(x + rect.h, rect.y);
+          ctx.stroke();
+        }
+        ctx.restore();
+        return;
+      }
+      if (["trailer-wall", "trailer-cab"].includes(rect.type)) return;
       if (rect.type === "maze-wall" || rect.type === "maze-gate") {
         ctx.save();
         ctx.fillStyle = rect.type === "maze-gate" ? "#8b7440" : "#344a54";
