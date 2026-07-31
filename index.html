@@ -5603,6 +5603,10 @@
     .wifi-transfer-actions button {
       margin: 0;
     }
+    #startWifiCameraBtn,
+    #scanWifiResponseBtn {
+      grid-column: 1 / -1;
+    }
     .wifi-product-list {
       display: grid;
       gap: 6px;
@@ -8697,7 +8701,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=367">
+<link rel="manifest" href="manifest.json?v=368">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8752,7 +8756,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.67</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.68</span></div>
     </div>
   </div>
 
@@ -9987,7 +9991,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.67</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.68</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10012,6 +10016,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.68</h3>
+          <ul>
+            <li>виправлено формування QR-коду для Wi‑Fi підключення у встановленому PWA;</li>
+            <li>додано резервні STUN-адреси для стабільного прямого з’єднання Safari, Chrome, iPhone та комп’ютера;</li>
+            <li>кнопка камери тепер завжди доступна на екрані отримання, а системну камеру можна відкрити також через вибір QR-зображення;</li>
+            <li>повідомлення про помилку тепер показує конкретний етап, на якому зупинилося підключення.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.67</h3>
           <ul>
@@ -11379,7 +11392,7 @@
           <div class="qr-scanner-guide" aria-hidden="true"></div>
         </div>
         <canvas class="hidden" id="wifiScannerCanvas"></canvas>
-        <input class="hidden" id="wifiQrImageInput" type="file" accept="image/*">
+        <input class="hidden" id="wifiQrImageInput" type="file" accept="image/*" capture="environment">
         <textarea class="wifi-pairing-code hidden" id="wifiPairingCode" placeholder="Код підключення"></textarea>
         <div class="wifi-transfer-actions">
           <button type="button" class="hidden" id="startWifiCameraBtn">Увімкнути камеру</button>
@@ -11766,14 +11779,14 @@
     </div>
   </div>
 
-<script src="./assets/qrcode-generator.js?v=271"></script>
-<script src="./assets/jsQR.js?v=271"></script>
+<script src="./assets/qrcode-generator.js?v=368"></script>
+<script src="./assets/jsQR.js?v=368"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.67";
+  const APP_VERSION = "3.68";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -19668,6 +19681,7 @@
   let wifiScannerStream = null;
   let wifiScannerFrame = 0;
   let wifiScannerLastTime = 0;
+  let wifiScannerDecodeBusy = false;
   let wifiExpectedSignal = "";
   let wifiTransferRole = "";
   let wifiTransferId = "";
@@ -20482,6 +20496,7 @@
   function stopWifiScanner() {
     cancelAnimationFrame(wifiScannerFrame);
     wifiScannerFrame = 0;
+    wifiScannerDecodeBusy = false;
     if (wifiScannerStream) {
       wifiScannerStream.getTracks().forEach(track => track.stop());
       wifiScannerStream = null;
@@ -20551,13 +20566,19 @@
   }
 
   function createWifiPeerConnection() {
-    const connection = new RTCPeerConnection({ iceServers: [] });
+    const connection = new RTCPeerConnection({
+      iceServers: [
+        { urls: "stun:stun.cloudflare.com:3478" },
+        { urls: "stun:stun.l.google.com:19302" }
+      ],
+      iceCandidatePoolSize: 2
+    });
     connection.addEventListener("connectionstatechange", () => {
       if (connection !== wifiPeerConnection) return;
       if (connection.connectionState === "connected") {
         setWifiTransferStatus("Пристрої з’єднано через локальну мережу", 3);
       } else if (["failed", "disconnected"].includes(connection.connectionState)) {
-        setWifiTransferStatus("Локальне з’єднання втрачено. Перевір, чи обидва пристрої в одній Wi‑Fi мережі.", 0);
+        setWifiTransferStatus("З’єднання не встановлено. Повтори обмін QR-кодами й не закривай застосунок на жодному пристрої.", 0);
       }
     });
     return connection;
@@ -20609,15 +20630,25 @@
     document.getElementById("selectWifiQrImageBtn").classList.add("hidden");
     setWifiTransferStatus(instruction, 0);
     try {
+      if (typeof qrcode !== "function") throw new Error("qr-library-unavailable");
       if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
       const qr = qrcode(0, "L");
       qr.addData(raw);
       qr.make();
-      image.src = qr.createDataURL(5, 10);
+      try {
+        image.src = qr.createDataURL(5, 10);
+      } catch (dataUrlError) {
+        const svg = qr.createSvgTag(5, 10, "QR-код Wi‑Fi підключення");
+        image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      }
+      image.onerror = () => {
+        display.classList.add("hidden");
+        setWifiTransferStatus(`${instruction} Зображення QR не відкрилося — скористайся кнопкою «Скопіювати код».`, 0);
+      };
       display.classList.remove("hidden");
     } catch (error) {
       display.classList.add("hidden");
-      setWifiTransferStatus(`${instruction} QR завеликий — скопіюй код вручну.`, 0);
+      setWifiTransferStatus(`${instruction} Не вдалося намалювати QR — скористайся кнопкою «Скопіювати код».`, 0);
     }
   }
 
@@ -20744,11 +20775,11 @@
     closeWifiTransfer();
     wifiTransferRole = "sender";
     wifiTransferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
-    wifiOutgoingText = buildWifiTransferText(kind, products);
     document.getElementById("wifiTransferOverlay").classList.remove("hidden");
     resetWifiPairingView();
     setWifiTransferStatus("Створюю локальне Wi‑Fi з’єднання…", 0);
     try {
+      wifiOutgoingText = buildWifiTransferText(kind, products);
       wifiPeerConnection = createWifiPeerConnection();
       configureWifiDataChannel(wifiPeerConnection.createDataChannel("oblik-backup", { ordered: true }));
       const offer = await wifiPeerConnection.createOffer();
@@ -20763,7 +20794,12 @@
       }, "На другому пристрої натисни «Отримати через Wi‑Fi» та відскануй цей QR.");
       document.getElementById("scanWifiResponseBtn").classList.remove("hidden");
     } catch (error) {
-      setWifiTransferStatus("Не вдалося створити локальне з’єднання. Відкрий застосунок через HTTPS або як PWA.", 0);
+      const stage = error?.name === "NotAllowedError"
+        ? "система заборонила створення з’єднання"
+        : error?.name === "InvalidStateError"
+          ? "браузер перервав створення з’єднання"
+          : "не вдалося сформувати код підключення";
+      setWifiTransferStatus(`Помилка: ${stage}. Закрий це вікно й повтори передачу.`, 0);
     }
   }
 
@@ -20811,10 +20847,10 @@
     }
   }
 
-  function scanWifiVideoFrame(time = 0) {
+  async function scanWifiVideoFrame(time = 0) {
     if (!wifiScannerStream) return;
     wifiScannerFrame = requestAnimationFrame(scanWifiVideoFrame);
-    if (time - wifiScannerLastTime < 160 || typeof jsQR !== "function") return;
+    if (time - wifiScannerLastTime < 160 || wifiScannerDecodeBusy) return;
     wifiScannerLastTime = time;
     const video = document.getElementById("wifiScannerVideo");
     if (!video.videoWidth || video.readyState < 2) return;
@@ -20825,8 +20861,19 @@
     const context = canvas.getContext("2d", { willReadFrequently: true });
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const result = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "dontInvert" });
-    if (result?.data) applyWifiSignal(result.data);
+    wifiScannerDecodeBusy = true;
+    try {
+      let value = "";
+      if (typeof jsQR === "function") {
+        value = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "attemptBoth" })?.data || "";
+      } else if (typeof BarcodeDetector === "function") {
+        const codes = await new BarcodeDetector({ formats: ["qr_code"] }).detect(canvas);
+        value = codes[0]?.rawValue || "";
+      }
+      if (value) await applyWifiSignal(value);
+    } finally {
+      wifiScannerDecodeBusy = false;
+    }
   }
 
   async function startWifiScanner(expectedSignal) {
@@ -20845,7 +20892,7 @@
     setWifiTransferStatus(expectedSignal === "offer"
       ? "Скануй QR-код, показаний пристроєм-відправником"
       : "Скануй QR-відповідь, показану пристроєм-одержувачем", 0);
-    if (typeof jsQR !== "function") {
+    if (typeof jsQR !== "function" && typeof BarcodeDetector !== "function") {
       setWifiTransferStatus("Модуль розпізнавання QR не завантажився. Перезапусти застосунок або встав код вручну.", 0);
       return;
     }
@@ -20880,7 +20927,7 @@
   }
 
   async function scanWifiQrImage(file) {
-    if (!file || typeof jsQR !== "function") return false;
+    if (!file || (typeof jsQR !== "function" && typeof BarcodeDetector !== "function")) return false;
     let imageSource = null;
     let objectUrl = "";
     try {
@@ -20904,12 +20951,18 @@
       const context = canvas.getContext("2d", { willReadFrequently: true });
       context.drawImage(imageSource, 0, 0, canvas.width, canvas.height);
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const result = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "attemptBoth" });
-      if (!result?.data) {
+      let value = "";
+      if (typeof jsQR === "function") {
+        value = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "attemptBoth" })?.data || "";
+      } else {
+        const codes = await new BarcodeDetector({ formats: ["qr_code"] }).detect(canvas);
+        value = codes[0]?.rawValue || "";
+      }
+      if (!value) {
         toast("QR-код на зображенні не знайдено", true);
         return false;
       }
-      return applyWifiSignal(result.data);
+      return applyWifiSignal(value);
     } catch (error) {
       toast("Не вдалося прочитати зображення QR", true);
       return false;
@@ -21457,7 +21510,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=367")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=368")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23358,6 +23411,12 @@
       document.getElementById("startWifiCameraBtn").classList.remove("hidden");
       document.getElementById("selectWifiQrImageBtn").classList.remove("hidden");
       setWifiTransferStatus("Камеру вимкнено. Можна ввімкнути її повторно або вибрати фото QR.", 0);
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      const input = document.getElementById("wifiQrImageInput");
+      input.value = "";
+      input.click();
       return;
     }
     startWifiScanner(wifiExpectedSignal || (wifiTransferRole === "sender" ? "answer" : "offer"));

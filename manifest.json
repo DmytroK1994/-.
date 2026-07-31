@@ -3,7 +3,7 @@
   "short_name": "Облік",
   "description": "Інвентаризація, замовлення та здача продукції",
   "id": "./",
-  "start_url": "./index.html?v=367",
+  "start_url": "./index.html?v=368",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
