@@ -8601,7 +8601,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=362">
+<link rel="manifest" href="manifest.json?v=364">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8656,7 +8656,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.62</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.64</span></div>
     </div>
   </div>
 
@@ -9889,7 +9889,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.62</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.64</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9914,6 +9914,21 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.64</h3>
+          <ul>
+            <li>серійну передачу резервної копії переведено на фонтанні QR-кадри;</li>
+            <li>приймачу більше не потрібен кожен конкретний кадр: пропущені блоки відновлюються зі змішаних XOR-кадрів;</li>
+            <li>сканування можна почати посеред потоку, оскільки вихідні блоки регулярно повторюються між відновлювальними кадрами;</li>
+            <li>збережено підтримку одиночних QR найменувань і серій попереднього формату.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.63</h3>
+          <ul>
+            <li>швидкість анімованої QR-передачі підвищено до одного кадру кожні 140 мс — приблизно сім QR-кодів за секунду зі збереженням запасу для розпізнавання камерою.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.62</h3>
           <ul>
@@ -11599,7 +11614,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.62";
+  const APP_VERSION = "3.64";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11669,8 +11684,9 @@
   const BACKUP_SCHEMA_VERSION = 2;
   const QR_TRANSFER_FORMAT = "oblik-zalyshkiv-qr";
   const QR_TRANSFER_VERSION = 1;
-  const QR_TRANSFER_CHUNK_SIZE = 520;
-  const QR_TRANSFER_FRAME_INTERVAL = 170;
+  const QR_TRANSFER_FRAME_INTERVAL = 140;
+  const QR_FOUNTAIN_BLOCK_SIZE = 400;
+  const QR_FOUNTAIN_MAX_BLOCKS = 12000;
   const BACKUP_SETTING_KEYS = [
     THEME_KEY,
     CUSTOM_THEME_KEY,
@@ -19470,6 +19486,7 @@
 
   let qrTransferParts = [];
   let qrTransferPartIndex = 0;
+  let qrFountainTransfer = null;
   let qrTransferAnimationTimer = 0;
   let qrTransferAnimationRunning = false;
   let qrTransferSourceProducts = [];
@@ -19512,7 +19529,9 @@
     renderQrTransferPart();
     qrTransferAnimationTimer = window.setInterval(() => {
       if (document.hidden || document.getElementById("qrTransferOverlay").classList.contains("hidden")) return;
-      qrTransferPartIndex = (qrTransferPartIndex + 1) % qrTransferParts.length;
+      qrTransferPartIndex = qrFountainTransfer
+        ? qrTransferPartIndex + 1
+        : (qrTransferPartIndex + 1) % qrTransferParts.length;
       renderQrTransferPart();
     }, QR_TRANSFER_FRAME_INTERVAL);
   }
@@ -19525,15 +19544,6 @@
     } else {
       startQrTransferAnimation();
     }
-  }
-
-  function textToBase64(text) {
-    const bytes = new TextEncoder().encode(text);
-    let binary = "";
-    for (let index = 0; index < bytes.length; index += 8192) {
-      binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
-    }
-    return btoa(binary);
   }
 
   function base64ToText(value) {
@@ -19550,6 +19560,61 @@
       hash = Math.imul(hash, 16777619);
     }
     return (hash >>> 0).toString(36);
+  }
+
+  function bytesToBase64(bytes) {
+    let binary = "";
+    for (let index = 0; index < bytes.length; index += 8192) {
+      binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
+    }
+    return btoa(binary);
+  }
+
+  function base64ToBytes(value) {
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+    return bytes;
+  }
+
+  function xorBytes(target, source) {
+    const length = Math.min(target.length, source.length);
+    for (let index = 0; index < length; index++) target[index] ^= source[index];
+    return target;
+  }
+
+  function fountainFrameIndices(total, sequence) {
+    if (total <= 1) return [0];
+    const phase = sequence % 3;
+    const slot = Math.floor(sequence / 3);
+    const base = slot % total;
+    if (phase === 0) return [base];
+    const offsets = phase === 1 ? [0, 1] : [0, 1, 3];
+    const indices = [];
+    offsets.forEach(offset => {
+      const index = (base + offset) % total;
+      if (!indices.includes(index)) indices.push(index);
+    });
+    return indices;
+  }
+
+  function createFountainQrFrame(sequence) {
+    if (!qrFountainTransfer) return qrTransferParts[qrTransferPartIndex] || "";
+    const indices = fountainFrameIndices(qrFountainTransfer.blocks.length, sequence);
+    const mixed = new Uint8Array(qrFountainTransfer.blockSize);
+    indices.forEach(index => xorBytes(mixed, qrFountainTransfer.blocks[index]));
+    return JSON.stringify({
+      f: "ozf",
+      v: QR_TRANSFER_VERSION,
+      id: qrFountainTransfer.id,
+      s: sequence,
+      k: qrFountainTransfer.blocks.length,
+      b: qrFountainTransfer.blockSize,
+      l: qrFountainTransfer.byteLength,
+      h: qrFountainTransfer.checksum,
+      i: indices,
+      d: bytesToBase64(mixed)
+    });
   }
 
   function createProductsBackup(products) {
@@ -19579,22 +19644,23 @@
       kind,
       payload
     });
-    const encoded = textToBase64(transferText);
+    const bytes = new TextEncoder().encode(transferText);
     const transferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-    const checksum = transferChecksum(encoded);
-    const chunks = [];
-    for (let offset = 0; offset < encoded.length; offset += QR_TRANSFER_CHUNK_SIZE) {
-      chunks.push(encoded.slice(offset, offset + QR_TRANSFER_CHUNK_SIZE));
-    }
-    return chunks.map((data, index) => JSON.stringify({
-      f: "ozqr",
-      v: QR_TRANSFER_VERSION,
+    const blockCount = Math.max(1, Math.ceil(bytes.length / QR_FOUNTAIN_BLOCK_SIZE));
+    if (blockCount > QR_FOUNTAIN_MAX_BLOCKS) throw new Error("qr-transfer-too-large");
+    const blocks = Array.from({ length: blockCount }, (_, index) => {
+      const block = new Uint8Array(QR_FOUNTAIN_BLOCK_SIZE);
+      block.set(bytes.subarray(index * QR_FOUNTAIN_BLOCK_SIZE, (index + 1) * QR_FOUNTAIN_BLOCK_SIZE));
+      return block;
+    });
+    qrFountainTransfer = {
       id: transferId,
-      p: index + 1,
-      n: chunks.length,
-      h: checksum,
-      d: data
-    }));
+      blocks,
+      blockSize: QR_FOUNTAIN_BLOCK_SIZE,
+      byteLength: bytes.length,
+      checksum: transferChecksum(transferText)
+    };
+    return Array.from({ length: blockCount }, (_, index) => index);
   }
 
   function renderQrTransferPart() {
@@ -19610,21 +19676,29 @@
     try {
       if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
       const qr = qrcode(0, "L");
-      qr.addData(qrTransferParts[qrTransferPartIndex]);
+      qr.addData(qrFountainTransfer
+        ? createFountainQrFrame(qrTransferPartIndex)
+        : qrTransferParts[qrTransferPartIndex]);
       qr.make();
       image.src = qr.createDataURL(5, 10);
       const total = qrTransferParts.length;
       setQrTransferSubject(qrTransferSubjectText);
-      image.alt = `${qrTransferSubjectText}. QR-код ${qrTransferPartIndex + 1} із ${total}`;
+      image.alt = qrFountainTransfer
+        ? `${qrTransferSubjectText}. Фонтанний QR-кадр ${qrTransferPartIndex + 1}`
+        : `${qrTransferSubjectText}. QR-код ${qrTransferPartIndex + 1} із ${total}`;
       progress.textContent = total === 1
         ? "Один QR-код · відскануй його на іншому пристрої"
         : qrTransferAnimationRunning
-          ? `Швидка передача · кадр ${qrTransferPartIndex + 1} із ${total} · тримай камеру нерухомо`
-          : `Кадр ${qrTransferPartIndex + 1} із ${total} · автоматичну зміну зупинено`;
-      previousButton.classList.toggle("hidden", total <= 1);
-      nextButton.classList.toggle("hidden", total <= 1);
+          ? qrFountainTransfer
+            ? `Фонтанний кадр ${qrTransferPartIndex + 1} · базових блоків: ${total} · пропущені кадри не заважають`
+            : `Швидка передача · кадр ${qrTransferPartIndex + 1} із ${total} · тримай камеру нерухомо`
+          : qrFountainTransfer
+            ? `Фонтанну передачу зупинено на кадрі ${qrTransferPartIndex + 1}`
+            : `Кадр ${qrTransferPartIndex + 1} із ${total} · автоматичну зміну зупинено`;
+      previousButton.classList.toggle("hidden", total <= 1 || Boolean(qrFountainTransfer));
+      nextButton.classList.toggle("hidden", total <= 1 || Boolean(qrFountainTransfer));
       previousButton.disabled = qrTransferPartIndex === 0;
-      nextButton.disabled = qrTransferPartIndex === total - 1;
+      nextButton.disabled = !qrFountainTransfer && qrTransferPartIndex === total - 1;
       syncQrTransferAnimationControls();
     } catch (error) {
       progress.textContent = "Ця частина завелика для QR-коду.";
@@ -19654,6 +19728,7 @@
 
   function prepareQrSendParts(kind, products, subject) {
     stopQrTransferAnimation();
+    qrFountainTransfer = null;
     try {
       qrTransferParts = buildQrTransferParts(kind, products);
     } catch (error) {
@@ -19895,6 +19970,9 @@
     document.getElementById("qrProductSearchInput").value = "";
     document.getElementById("qrProductSearchResults").classList.add("hidden");
     qrTransferSourceProducts = [];
+    qrTransferParts = [];
+    qrFountainTransfer = null;
+    qrReceivedTransfer = null;
     qrTransferSendScope = "full";
     qrScanBusy = false;
   }
@@ -19965,10 +20043,10 @@
     toast(`Додано: ${added}. Оновлено: ${updated}.`);
   }
 
-  async function finishQrTransfer(encoded, kind) {
+  async function finishQrTransferText(transferText) {
     let transfer;
     try {
-      transfer = JSON.parse(base64ToText(encoded));
+      transfer = JSON.parse(transferText);
       if (transfer.format !== QR_TRANSFER_FORMAT || transfer.version !== QR_TRANSFER_VERSION || !transfer.payload) {
         throw new Error("bad-transfer");
       }
@@ -19977,17 +20055,134 @@
       return;
     }
     closeQrTransfer();
-    if (kind === "full") {
+    if (transfer.kind === "full") {
       await restoreBackup(JSON.stringify(transfer.payload), "QR-передачі");
       return;
     }
-    await importTransferredProducts(transfer.payload?.state?.products, kind === "product");
+    await importTransferredProducts(transfer.payload?.state?.products, transfer.kind === "product");
+  }
+
+  async function finishQrTransfer(encoded) {
+    try {
+      await finishQrTransferText(base64ToText(encoded));
+    } catch (error) {
+      toast("QR-передача пошкоджена або має невідомий формат", true);
+    }
+  }
+
+  function fountainLearnBlock(transfer, blockIndex, blockData) {
+    const queue = [{ index: blockIndex, data: blockData }];
+    while (queue.length) {
+      const solved = queue.shift();
+      if (transfer.blocks[solved.index]) continue;
+      transfer.blocks[solved.index] = solved.data.slice();
+      for (let equationIndex = transfer.equations.length - 1; equationIndex >= 0; equationIndex--) {
+        const equation = transfer.equations[equationIndex];
+        const position = equation.indices.indexOf(solved.index);
+        if (position < 0) continue;
+        xorBytes(equation.data, solved.data);
+        equation.indices.splice(position, 1);
+        if (equation.indices.length === 0) {
+          transfer.equations.splice(equationIndex, 1);
+        } else if (equation.indices.length === 1) {
+          transfer.equations.splice(equationIndex, 1);
+          queue.push({ index: equation.indices[0], data: equation.data });
+        }
+      }
+    }
+  }
+
+  async function acceptFountainQrPart(part) {
+    let packetData;
+    const validMetadata = part?.f === "ozf"
+      && part.v === QR_TRANSFER_VERSION
+      && typeof part.id === "string"
+      && Number.isInteger(part.s) && part.s >= 0
+      && Number.isInteger(part.k) && part.k >= 1 && part.k <= QR_FOUNTAIN_MAX_BLOCKS
+      && Number.isInteger(part.b) && part.b >= 64 && part.b <= 700
+      && Number.isInteger(part.l) && part.l >= 1 && part.l <= part.k * part.b
+      && typeof part.h === "string"
+      && Array.isArray(part.i) && part.i.length >= 1 && part.i.length <= 12
+      && part.i.every(index => Number.isInteger(index) && index >= 0 && index < part.k)
+      && new Set(part.i).size === part.i.length
+      && typeof part.d === "string";
+    if (!validMetadata) {
+      toast("Це не фонтанний QR-код цього застосунку", true);
+      return false;
+    }
+    try {
+      packetData = base64ToBytes(part.d);
+      if (packetData.length !== part.b) throw new Error("bad-fountain-block");
+    } catch (error) {
+      toast("Фонтанний QR-кадр пошкоджено", true);
+      return false;
+    }
+
+    if (!qrReceivedTransfer) {
+      qrReceivedTransfer = {
+        format: "fountain",
+        id: part.id,
+        total: part.k,
+        blockSize: part.b,
+        byteLength: part.l,
+        checksum: part.h,
+        blocks: new Array(part.k),
+        equations: [],
+        seen: new Set()
+      };
+    }
+    const transfer = qrReceivedTransfer;
+    if (transfer.format !== "fountain" || transfer.id !== part.id || transfer.total !== part.k ||
+        transfer.blockSize !== part.b || transfer.byteLength !== part.l || transfer.checksum !== part.h) {
+      toast("Цей кадр належить до іншої передачі", true);
+      return false;
+    }
+    if (transfer.seen.has(part.s)) return true;
+    transfer.seen.add(part.s);
+
+    const indices = [...part.i];
+    const reducedData = packetData.slice();
+    for (let index = indices.length - 1; index >= 0; index--) {
+      const knownBlock = transfer.blocks[indices[index]];
+      if (!knownBlock) continue;
+      xorBytes(reducedData, knownBlock);
+      indices.splice(index, 1);
+    }
+    if (indices.length === 1) {
+      fountainLearnBlock(transfer, indices[0], reducedData);
+    } else if (indices.length > 1) {
+      transfer.equations.push({ indices, data: reducedData });
+      if (transfer.equations.length > transfer.total * 4) transfer.equations.shift();
+    }
+
+    const solved = transfer.blocks.filter(Boolean).length;
+    const estimatedProgress = Math.min(99, Math.max(
+      Math.round(solved / transfer.total * 100),
+      Math.round(Math.min(transfer.seen.size, transfer.total) / transfer.total * 90)
+    ));
+    document.getElementById("qrReceiveProgress").textContent = solved === transfer.total
+      ? "Дані відновлено · перевіряю цілісність…"
+      : `Фонтанних кадрів: ${transfer.seen.size} · відновлено блоків: ${solved} із ${transfer.total} · ${estimatedProgress}%`;
+    if (solved !== transfer.total) return true;
+
+    const combined = new Uint8Array(transfer.total * transfer.blockSize);
+    transfer.blocks.forEach((block, index) => combined.set(block, index * transfer.blockSize));
+    const transferText = new TextDecoder().decode(combined.subarray(0, transfer.byteLength));
+    if (transferChecksum(transferText) !== transfer.checksum) {
+      toast("Не вдалося перевірити цілісність фонтанної передачі", true);
+      qrReceivedTransfer = null;
+      return false;
+    }
+    await finishQrTransferText(transferText);
+    return true;
   }
 
   async function acceptQrTransferPart(rawValue) {
     const rawText = String(rawValue || "").trim();
+    let parsedValue = null;
     try {
       const compactProduct = JSON.parse(rawText);
+      parsedValue = compactProduct;
       if (
         compactProduct?.f === "oblik-item"
         && compactProduct.v === QR_TRANSFER_VERSION
@@ -20004,9 +20199,11 @@
       }
     } catch (error) {}
 
+    if (parsedValue?.f === "ozf") return acceptFountainQrPart(parsedValue);
+
     let part;
     try {
-      part = JSON.parse(rawText);
+      part = parsedValue || JSON.parse(rawText);
       if (part.f !== "ozqr" || part.v !== QR_TRANSFER_VERSION || !part.id || !part.d ||
           !Number.isInteger(part.p) || !Number.isInteger(part.n) || part.p < 1 || part.p > part.n) {
         throw new Error("bad-part");
@@ -20045,11 +20242,7 @@
       qrReceivedTransfer = null;
       return false;
     }
-    let kind = "";
-    try {
-      kind = JSON.parse(base64ToText(encoded)).kind;
-    } catch (error) {}
-    await finishQrTransfer(encoded, kind);
+    await finishQrTransfer(encoded);
     return true;
   }
 
@@ -20581,7 +20774,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=362")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=364")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
