@@ -5314,7 +5314,8 @@
     }
 
     .changelog-overlay,
-    .qr-transfer-overlay {
+    .qr-transfer-overlay,
+    .wifi-transfer-overlay {
       position: fixed;
       inset: 0;
       z-index: 220;
@@ -5325,6 +5326,9 @@
     }
     .qr-transfer-overlay {
       z-index: 280;
+    }
+    .wifi-transfer-overlay {
+      z-index: 290;
     }
     body.modal-scroll-locked {
       position: fixed;
@@ -5348,7 +5352,8 @@
       overscroll-behavior: contain;
     }
     .changelog-dialog,
-    .qr-transfer-dialog {
+    .qr-transfer-dialog,
+    .wifi-transfer-dialog {
       width: min(100%, 620px);
       max-height: min(86dvh, 760px);
       overflow: auto;
@@ -5362,14 +5367,16 @@
       padding: 18px;
     }
     .changelog-header,
-    .qr-transfer-header {
+    .qr-transfer-header,
+    .wifi-transfer-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
     }
     .changelog-header h2,
-    .qr-transfer-header h2 {
+    .qr-transfer-header h2,
+    .wifi-transfer-header h2 {
       margin: 0;
     }
     .dialog-icon-close {
@@ -5530,6 +5537,95 @@
       min-height: 78px;
       margin-top: 10px;
       font-size: 11px;
+    }
+    .wifi-transfer-dialog {
+      max-height: min(90dvh, 780px);
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .wifi-transfer-body {
+      display: grid;
+      gap: 11px;
+      margin-top: 12px;
+    }
+    .wifi-transfer-status {
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .wifi-transfer-progress-track {
+      height: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-deep);
+    }
+    .wifi-transfer-progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary-bg);
+      transition: width .14s linear;
+    }
+    .wifi-pairing-display {
+      display: grid;
+      place-items: center;
+      min-height: 250px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .wifi-pairing-display img {
+      display: block;
+      width: min(100%, 340px);
+      max-height: 48dvh;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .wifi-pairing-code {
+      min-height: 74px;
+      margin: 0;
+      font-size: 10px;
+    }
+    .wifi-transfer-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .wifi-transfer-actions button {
+      margin: 0;
+    }
+    .wifi-product-list {
+      display: grid;
+      gap: 6px;
+      max-height: min(48dvh, 360px);
+      padding: 4px;
+      overflow-y: auto;
+    }
+    .wifi-product-option {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface-deep);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .wifi-product-option input {
+      width: 19px;
+      height: 19px;
+      flex: 0 0 19px;
+      margin: 0;
     }
     @media (max-height: 620px) {
       #pageAbout { --about-edge-gap: 9px; }
@@ -8601,7 +8697,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=364">
+<link rel="manifest" href="manifest.json?v=366">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8656,7 +8752,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.64</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.66</span></div>
     </div>
   </div>
 
@@ -9523,6 +9619,8 @@
           <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
           <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
           <button type="button" id="qrBackupBtn">Передати резервну копію через QR</button>
+          <button type="button" id="wifiBackupSendBtn">Передати через Wi‑Fi</button>
+          <button type="button" class="secondary" id="wifiBackupReceiveBtn">Отримати через Wi‑Fi</button>
           <div class="backup-product-copy">
             <label for="backupProductNameSelect">Окреме найменування</label>
             <select id="backupProductNameSelect" aria-label="Оберіть найменування для копіювання"></select>
@@ -9889,7 +9987,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.64</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.66</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9914,6 +10012,21 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.66</h3>
+          <ul>
+            <li>частоту фонтанної QR-передачі зменшено до п’яти кадрів за секунду, щоб камера надійніше розпізнавала кожен кадр.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.65</h3>
+          <ul>
+            <li>у резервних копіях додано пряму передачу через локальну Wi‑Fi мережу;</li>
+            <li>можна передати повну резервну копію або вибрати кілька конкретних найменувань;</li>
+            <li>пристрої сполучаються двостороннім QR-обміном без окремого сервера, після чого дані передаються через WebRTC;</li>
+            <li>додано прогрес передавання, поділ даних на безпечні частини та перевірку контрольної суми.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.64</h3>
           <ul>
@@ -11233,6 +11346,40 @@
     </div>
   </div>
 
+  <div class="wifi-transfer-overlay hidden" id="wifiTransferOverlay" role="dialog" aria-modal="true" aria-labelledby="wifiTransferTitle">
+    <div class="wifi-transfer-dialog">
+      <div class="wifi-transfer-header">
+        <h2 id="wifiTransferTitle">Передача через Wi‑Fi</h2>
+        <button type="button" class="dialog-icon-close" id="closeWifiTransferBtn" aria-label="Закрити">×</button>
+      </div>
+      <div class="wifi-transfer-body hidden" id="wifiProductPickerView">
+        <p class="wifi-transfer-status" id="wifiProductPickerStatus">Обери найменування, які потрібно передати.</p>
+        <input id="wifiProductSearchInput" placeholder="Пошук найменування…" autocomplete="off">
+        <div class="wifi-product-list" id="wifiProductList"></div>
+        <div class="wifi-transfer-actions">
+          <button type="button" class="secondary" id="wifiSelectAllProductsBtn">Обрати всі</button>
+          <button type="button" id="wifiStartSelectedProductsBtn">Передати вибрані</button>
+        </div>
+      </div>
+      <div class="wifi-transfer-body hidden" id="wifiPairingView">
+        <p class="wifi-transfer-status" id="wifiTransferStatus">Готую локальне з’єднання…</p>
+        <div class="wifi-transfer-progress-track" aria-hidden="true"><div class="wifi-transfer-progress-bar" id="wifiTransferProgressBar"></div></div>
+        <div class="wifi-pairing-display hidden" id="wifiPairingDisplay"><img id="wifiPairingImage" alt="QR-код підключення через Wi‑Fi"></div>
+        <div class="qr-scanner-frame hidden" id="wifiScannerFrame">
+          <video id="wifiScannerVideo" playsinline muted></video>
+          <div class="qr-scanner-guide" aria-hidden="true"></div>
+        </div>
+        <canvas class="hidden" id="wifiScannerCanvas"></canvas>
+        <textarea class="wifi-pairing-code hidden" id="wifiPairingCode" placeholder="Код підключення"></textarea>
+        <div class="wifi-transfer-actions">
+          <button type="button" class="secondary hidden" id="copyWifiPairingCodeBtn">Скопіювати код</button>
+          <button type="button" class="hidden" id="scanWifiResponseBtn">Сканувати відповідь</button>
+          <button type="button" class="secondary hidden" id="applyWifiPairingCodeBtn">Застосувати вставлений код</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
   <div class="success-check hidden" id="successCheck" role="status" aria-label="Позицію додано">
     <div class="success-check-mark" aria-hidden="true">✓</div>
@@ -11614,7 +11761,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.64";
+  const APP_VERSION = "3.66";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11684,9 +11831,12 @@
   const BACKUP_SCHEMA_VERSION = 2;
   const QR_TRANSFER_FORMAT = "oblik-zalyshkiv-qr";
   const QR_TRANSFER_VERSION = 1;
-  const QR_TRANSFER_FRAME_INTERVAL = 140;
+  const QR_TRANSFER_FRAME_INTERVAL = 200;
   const QR_FOUNTAIN_BLOCK_SIZE = 400;
   const QR_FOUNTAIN_MAX_BLOCKS = 12000;
+  const WIFI_TRANSFER_FORMAT = "oblik-wifi";
+  const WIFI_TRANSFER_VERSION = 1;
+  const WIFI_TRANSFER_CHUNK_SIZE = 16 * 1024;
   const BACKUP_SETTING_KEYS = [
     THEME_KEY,
     CUSTOM_THEME_KEY,
@@ -16340,7 +16490,7 @@
         swipeMode = "";
         return;
       }
-      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay"]
+      const overlayIsOpen = ["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay", "wifiTransferOverlay"]
         .some(id => !document.getElementById(id).classList.contains("hidden"));
       if (overlayIsOpen) {
         swipeMode = "";
@@ -17496,7 +17646,7 @@
   function canUsePageBackSwipe() {
     if (!hasPageBackDestination() || getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
-    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay"]
+    return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay", "wifiTransferOverlay"]
       .some(id => !document.getElementById(id).classList.contains("hidden"));
   }
 
@@ -19501,6 +19651,18 @@
   let qrScannerLastValueAt = 0;
   let qrScanBusy = false;
   let qrReceivedTransfer = null;
+  let wifiPeerConnection = null;
+  let wifiDataChannel = null;
+  let wifiScannerStream = null;
+  let wifiScannerFrame = 0;
+  let wifiScannerLastTime = 0;
+  let wifiExpectedSignal = "";
+  let wifiTransferRole = "";
+  let wifiTransferId = "";
+  let wifiOutgoingText = "";
+  let wifiIncomingTransfer = null;
+  let wifiReceiveQueue = Promise.resolve();
+  let wifiSelectedProductIds = new Set();
 
   function syncQrTransferAnimationControls() {
     const total = qrTransferParts.length;
@@ -20043,7 +20205,7 @@
     toast(`Додано: ${added}. Оновлено: ${updated}.`);
   }
 
-  async function finishQrTransferText(transferText) {
+  async function finishQrTransferText(transferText, transport = "qr") {
     let transfer;
     try {
       transfer = JSON.parse(transferText);
@@ -20054,7 +20216,8 @@
       toast("QR-передача пошкоджена або має невідомий формат", true);
       return;
     }
-    closeQrTransfer();
+    if (transport === "wifi") closeWifiTransfer();
+    else closeQrTransfer();
     if (transfer.kind === "full") {
       await restoreBackup(JSON.stringify(transfer.payload), "QR-передачі");
       return;
@@ -20295,6 +20458,415 @@
       stopQrScanner();
       toast("Не вдалося відкрити камеру. Перевір дозвіл або встав код вручну.", true);
     }
+  }
+
+  function setWifiTransferStatus(message, percent = null) {
+    const status = document.getElementById("wifiTransferStatus");
+    const progress = document.getElementById("wifiTransferProgressBar");
+    if (status) status.textContent = message;
+    if (progress && percent !== null) progress.style.width = `${clamp(Number(percent) || 0, 0, 100)}%`;
+  }
+
+  function stopWifiScanner() {
+    cancelAnimationFrame(wifiScannerFrame);
+    wifiScannerFrame = 0;
+    if (wifiScannerStream) {
+      wifiScannerStream.getTracks().forEach(track => track.stop());
+      wifiScannerStream = null;
+    }
+    const video = document.getElementById("wifiScannerVideo");
+    if (video) video.srcObject = null;
+    document.getElementById("wifiScannerFrame")?.classList.add("hidden");
+  }
+
+  function closeWifiTransfer() {
+    stopWifiScanner();
+    if (wifiDataChannel) {
+      try { wifiDataChannel.close(); } catch (error) {}
+    }
+    if (wifiPeerConnection) {
+      try { wifiPeerConnection.close(); } catch (error) {}
+    }
+    wifiDataChannel = null;
+    wifiPeerConnection = null;
+    wifiExpectedSignal = "";
+    wifiTransferRole = "";
+    wifiTransferId = "";
+    wifiOutgoingText = "";
+    wifiIncomingTransfer = null;
+    wifiReceiveQueue = Promise.resolve();
+    document.getElementById("wifiTransferOverlay")?.classList.add("hidden");
+    document.getElementById("wifiProductPickerView")?.classList.add("hidden");
+    document.getElementById("wifiPairingView")?.classList.add("hidden");
+  }
+
+  function resetWifiPairingView() {
+    document.getElementById("wifiProductPickerView").classList.add("hidden");
+    document.getElementById("wifiPairingView").classList.remove("hidden");
+    document.getElementById("wifiPairingDisplay").classList.add("hidden");
+    document.getElementById("wifiScannerFrame").classList.add("hidden");
+    document.getElementById("copyWifiPairingCodeBtn").classList.add("hidden");
+    document.getElementById("scanWifiResponseBtn").classList.add("hidden");
+    document.getElementById("applyWifiPairingCodeBtn").classList.add("hidden");
+    const code = document.getElementById("wifiPairingCode");
+    code.value = "";
+    code.readOnly = false;
+    code.classList.add("hidden");
+    document.getElementById("wifiTransferProgressBar").style.width = "0%";
+  }
+
+  function waitForWifiIceGathering(connection, timeout = 7000) {
+    if (connection.iceGatheringState === "complete") return Promise.resolve();
+    return new Promise(resolve => {
+      let finished = false;
+      const done = () => {
+        if (finished) return;
+        finished = true;
+        connection.removeEventListener("icegatheringstatechange", check);
+        window.clearTimeout(timer);
+        resolve();
+      };
+      const check = () => {
+        if (connection.iceGatheringState === "complete") done();
+      };
+      const timer = window.setTimeout(done, timeout);
+      connection.addEventListener("icegatheringstatechange", check);
+    });
+  }
+
+  function createWifiPeerConnection() {
+    const connection = new RTCPeerConnection({ iceServers: [] });
+    connection.addEventListener("connectionstatechange", () => {
+      if (connection !== wifiPeerConnection) return;
+      if (connection.connectionState === "connected") {
+        setWifiTransferStatus("Пристрої з’єднано через локальну мережу", 3);
+      } else if (["failed", "disconnected"].includes(connection.connectionState)) {
+        setWifiTransferStatus("Локальне з’єднання втрачено. Перевір, чи обидва пристрої в одній Wi‑Fi мережі.", 0);
+      }
+    });
+    return connection;
+  }
+
+  function renderWifiPairingSignal(signal, instruction) {
+    const raw = JSON.stringify(signal);
+    const code = document.getElementById("wifiPairingCode");
+    const display = document.getElementById("wifiPairingDisplay");
+    const image = document.getElementById("wifiPairingImage");
+    code.value = raw;
+    code.readOnly = true;
+    code.classList.remove("hidden");
+    document.getElementById("copyWifiPairingCodeBtn").classList.remove("hidden");
+    setWifiTransferStatus(instruction, 0);
+    try {
+      if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+      const qr = qrcode(0, "L");
+      qr.addData(raw);
+      qr.make();
+      image.src = qr.createDataURL(4, 8);
+      display.classList.remove("hidden");
+    } catch (error) {
+      display.classList.add("hidden");
+      setWifiTransferStatus(`${instruction} QR завеликий — скопіюй код вручну.`, 0);
+    }
+  }
+
+  async function sendWifiPayload() {
+    if (wifiTransferRole !== "sender" || !wifiDataChannel || wifiDataChannel.readyState !== "open") return;
+    const bytes = new TextEncoder().encode(wifiOutgoingText);
+    wifiDataChannel.send(JSON.stringify({
+      f: "oblik-wifi-data",
+      v: WIFI_TRANSFER_VERSION,
+      id: wifiTransferId,
+      length: bytes.length,
+      checksum: transferChecksum(wifiOutgoingText)
+    }));
+    wifiDataChannel.bufferedAmountLowThreshold = 128 * 1024;
+    for (let offset = 0; offset < bytes.length; offset += WIFI_TRANSFER_CHUNK_SIZE) {
+      while (wifiDataChannel.bufferedAmount > 512 * 1024) {
+        await new Promise(resolve => {
+          const fallback = window.setTimeout(resolve, 120);
+          wifiDataChannel.addEventListener("bufferedamountlow", () => {
+            window.clearTimeout(fallback);
+            resolve();
+          }, { once: true });
+        });
+      }
+      if (wifiDataChannel.readyState !== "open") throw new Error("wifi-channel-closed");
+      const end = Math.min(bytes.length, offset + WIFI_TRANSFER_CHUNK_SIZE);
+      wifiDataChannel.send(bytes.slice(offset, end));
+      const percent = Math.round(end / bytes.length * 100);
+      setWifiTransferStatus(`Передаю резервну копію через Wi‑Fi · ${percent}%`, percent);
+    }
+    setWifiTransferStatus("Передачу завершено · очікую підтвердження другого пристрою", 100);
+  }
+
+  async function receiveWifiData(event) {
+    if (typeof event.data === "string") {
+      let message;
+      try { message = JSON.parse(event.data); } catch (error) { return; }
+      if (message?.f === "oblik-wifi-data" && message.v === WIFI_TRANSFER_VERSION &&
+          Number.isInteger(message.length) && message.length > 0 && typeof message.checksum === "string") {
+        wifiIncomingTransfer = {
+          id: message.id,
+          length: message.length,
+          checksum: message.checksum,
+          chunks: [],
+          received: 0
+        };
+        setWifiTransferStatus("З’єднання встановлено · отримую дані…", 0);
+      }
+      return;
+    }
+    if (!wifiIncomingTransfer) return;
+    let buffer = event.data;
+    if (buffer instanceof Blob) buffer = await buffer.arrayBuffer();
+    const chunk = buffer instanceof ArrayBuffer
+      ? new Uint8Array(buffer)
+      : new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+    wifiIncomingTransfer.chunks.push(chunk.slice());
+    wifiIncomingTransfer.received += chunk.byteLength;
+    const percent = Math.min(100, Math.round(wifiIncomingTransfer.received / wifiIncomingTransfer.length * 100));
+    setWifiTransferStatus(`Отримую резервну копію через Wi‑Fi · ${percent}%`, percent);
+    if (wifiIncomingTransfer.received < wifiIncomingTransfer.length) return;
+
+    const combined = new Uint8Array(wifiIncomingTransfer.received);
+    let offset = 0;
+    wifiIncomingTransfer.chunks.forEach(part => {
+      combined.set(part, offset);
+      offset += part.length;
+    });
+    const transferText = new TextDecoder().decode(combined.subarray(0, wifiIncomingTransfer.length));
+    if (transferChecksum(transferText) !== wifiIncomingTransfer.checksum) {
+      setWifiTransferStatus("Помилка перевірки даних. Спробуй передачу ще раз.", 0);
+      return;
+    }
+    if (wifiDataChannel?.readyState === "open") {
+      wifiDataChannel.send(JSON.stringify({ f: "oblik-wifi-complete", v: WIFI_TRANSFER_VERSION }));
+    }
+    setWifiTransferStatus("Отримано 100% · дані перевірено", 100);
+    await finishQrTransferText(transferText, "wifi");
+  }
+
+  function configureWifiDataChannel(channel) {
+    wifiDataChannel = channel;
+    channel.binaryType = "arraybuffer";
+    channel.addEventListener("open", () => {
+      if (wifiTransferRole === "sender") {
+        sendWifiPayload().catch(() => setWifiTransferStatus("Не вдалося передати дані через Wi‑Fi", 0));
+      } else {
+        setWifiTransferStatus("З’єднання встановлено · очікую дані…", 2);
+      }
+    });
+    channel.addEventListener("message", event => {
+      if (typeof event.data === "string") {
+        try {
+          const message = JSON.parse(event.data);
+          if (message?.f === "oblik-wifi-complete") {
+            setWifiTransferStatus("Другий пристрій отримав і перевірив дані", 100);
+            return;
+          }
+        } catch (error) {}
+      }
+      if (wifiTransferRole === "receiver") {
+        wifiReceiveQueue = wifiReceiveQueue
+          .then(() => receiveWifiData(event))
+          .catch(() => setWifiTransferStatus("Помилка отримання частини резервної копії", 0));
+      }
+    });
+  }
+
+  function buildWifiTransferText(kind, products = []) {
+    const payload = kind === "full" ? createBackupPayload("full") : createProductsBackup(products);
+    return JSON.stringify({
+      format: QR_TRANSFER_FORMAT,
+      version: QR_TRANSFER_VERSION,
+      kind,
+      payload
+    });
+  }
+
+  async function beginWifiSend(kind, products = []) {
+    if (typeof RTCPeerConnection !== "function") {
+      toast("Цей браузер не підтримує локальну передачу через Wi‑Fi", true);
+      return;
+    }
+    closeWifiTransfer();
+    wifiTransferRole = "sender";
+    wifiTransferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+    wifiOutgoingText = buildWifiTransferText(kind, products);
+    document.getElementById("wifiTransferOverlay").classList.remove("hidden");
+    resetWifiPairingView();
+    setWifiTransferStatus("Створюю локальне Wi‑Fi з’єднання…", 0);
+    try {
+      wifiPeerConnection = createWifiPeerConnection();
+      configureWifiDataChannel(wifiPeerConnection.createDataChannel("oblik-backup", { ordered: true }));
+      const offer = await wifiPeerConnection.createOffer();
+      await wifiPeerConnection.setLocalDescription(offer);
+      await waitForWifiIceGathering(wifiPeerConnection);
+      renderWifiPairingSignal({
+        f: WIFI_TRANSFER_FORMAT,
+        v: WIFI_TRANSFER_VERSION,
+        t: "offer",
+        id: wifiTransferId,
+        s: wifiPeerConnection.localDescription.sdp
+      }, "На другому пристрої натисни «Отримати через Wi‑Fi» та відскануй цей QR.");
+      document.getElementById("scanWifiResponseBtn").classList.remove("hidden");
+    } catch (error) {
+      setWifiTransferStatus("Не вдалося створити локальне з’єднання. Відкрий застосунок через HTTPS або як PWA.", 0);
+    }
+  }
+
+  async function applyWifiSignal(rawValue) {
+    let signal;
+    try {
+      signal = JSON.parse(String(rawValue || "").trim());
+      if (signal.f !== WIFI_TRANSFER_FORMAT || signal.v !== WIFI_TRANSFER_VERSION ||
+          signal.t !== wifiExpectedSignal || !signal.id || typeof signal.s !== "string") {
+        throw new Error("bad-wifi-signal");
+      }
+    } catch (error) {
+      toast("Це не код Wi‑Fi підключення цього застосунку", true);
+      return false;
+    }
+    stopWifiScanner();
+    try {
+      if (signal.t === "offer") {
+        wifiTransferRole = "receiver";
+        wifiTransferId = signal.id;
+        wifiPeerConnection = createWifiPeerConnection();
+        wifiPeerConnection.addEventListener("datachannel", event => configureWifiDataChannel(event.channel), { once: true });
+        await wifiPeerConnection.setRemoteDescription({ type: "offer", sdp: signal.s });
+        const answer = await wifiPeerConnection.createAnswer();
+        await wifiPeerConnection.setLocalDescription(answer);
+        await waitForWifiIceGathering(wifiPeerConnection);
+        renderWifiPairingSignal({
+          f: WIFI_TRANSFER_FORMAT,
+          v: WIFI_TRANSFER_VERSION,
+          t: "answer",
+          id: wifiTransferId,
+          s: wifiPeerConnection.localDescription.sdp
+        }, "Покажи цей QR пристрою-відправнику. На ньому потрібно натиснути «Сканувати відповідь». ");
+      } else {
+        await wifiPeerConnection.setRemoteDescription({ type: "answer", sdp: signal.s });
+        document.getElementById("wifiPairingDisplay").classList.add("hidden");
+        document.getElementById("wifiPairingCode").classList.add("hidden");
+        document.getElementById("copyWifiPairingCodeBtn").classList.add("hidden");
+        setWifiTransferStatus("Відповідь отримано · встановлюю пряме Wi‑Fi з’єднання…", 1);
+      }
+      return true;
+    } catch (error) {
+      setWifiTransferStatus("Не вдалося погодити з’єднання. Перевір, чи пристрої в одній Wi‑Fi мережі.", 0);
+      return false;
+    }
+  }
+
+  function scanWifiVideoFrame(time = 0) {
+    if (!wifiScannerStream) return;
+    wifiScannerFrame = requestAnimationFrame(scanWifiVideoFrame);
+    if (time - wifiScannerLastTime < 160 || typeof jsQR !== "function") return;
+    wifiScannerLastTime = time;
+    const video = document.getElementById("wifiScannerVideo");
+    if (!video.videoWidth || video.readyState < 2) return;
+    const canvas = document.getElementById("wifiScannerCanvas");
+    const scale = Math.min(1, 900 / Math.max(video.videoWidth, video.videoHeight));
+    canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+    canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const result = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "dontInvert" });
+    if (result?.data) applyWifiSignal(result.data);
+  }
+
+  async function startWifiScanner(expectedSignal) {
+    stopWifiScanner();
+    wifiExpectedSignal = expectedSignal;
+    document.getElementById("wifiPairingDisplay").classList.add("hidden");
+    const code = document.getElementById("wifiPairingCode");
+    code.value = "";
+    code.readOnly = false;
+    code.classList.remove("hidden");
+    document.getElementById("copyWifiPairingCodeBtn").classList.add("hidden");
+    document.getElementById("scanWifiResponseBtn").classList.add("hidden");
+    document.getElementById("applyWifiPairingCodeBtn").classList.remove("hidden");
+    setWifiTransferStatus(expectedSignal === "offer"
+      ? "Скануй QR-код, показаний пристроєм-відправником"
+      : "Скануй QR-відповідь, показану пристроєм-одержувачем", 0);
+    if (!navigator.mediaDevices?.getUserMedia || typeof jsQR !== "function") return;
+    try {
+      wifiScannerStream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: "environment" } }
+      });
+      const video = document.getElementById("wifiScannerVideo");
+      video.srcObject = wifiScannerStream;
+      await video.play();
+      document.getElementById("wifiScannerFrame").classList.remove("hidden");
+      wifiScannerFrame = requestAnimationFrame(scanWifiVideoFrame);
+    } catch (error) {
+      setWifiTransferStatus("Камера недоступна. Скопіюй код підключення та встав його в поле вручну.", 0);
+    }
+  }
+
+  function openWifiReceiver() {
+    if (typeof RTCPeerConnection !== "function") {
+      toast("Цей браузер не підтримує локальну передачу через Wi‑Fi", true);
+      return;
+    }
+    closeWifiTransfer();
+    document.getElementById("wifiTransferOverlay").classList.remove("hidden");
+    resetWifiPairingView();
+    wifiTransferRole = "receiver";
+    startWifiScanner("offer");
+  }
+
+  function renderWifiProductPicker() {
+    const query = String(document.getElementById("wifiProductSearchInput").value || "").trim().toLocaleLowerCase("uk-UA");
+    const products = sortedProducts().filter(product => !query || String(product.name || "").toLocaleLowerCase("uk-UA").includes(query));
+    const list = document.getElementById("wifiProductList");
+    list.innerHTML = "";
+    products.forEach(product => {
+      const label = document.createElement("label");
+      label.className = "wifi-product-option";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = product.id;
+      checkbox.checked = wifiSelectedProductIds.has(product.id);
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) wifiSelectedProductIds.add(product.id);
+        else wifiSelectedProductIds.delete(product.id);
+        document.getElementById("wifiProductPickerStatus").textContent = `Обрано найменувань: ${wifiSelectedProductIds.size}`;
+      });
+      const name = document.createElement("span");
+      name.textContent = product.name;
+      label.append(checkbox, name);
+      list.appendChild(label);
+    });
+  }
+
+  function openWifiProductPicker() {
+    closeWifiTransfer();
+    wifiSelectedProductIds = new Set();
+    document.getElementById("wifiTransferOverlay").classList.remove("hidden");
+    document.getElementById("wifiProductPickerView").classList.remove("hidden");
+    document.getElementById("wifiPairingView").classList.add("hidden");
+    document.getElementById("wifiProductSearchInput").value = "";
+    document.getElementById("wifiProductPickerStatus").textContent = "Обери найменування, які потрібно передати.";
+    renderWifiProductPicker();
+  }
+
+  async function chooseWifiBackupScope() {
+    const choice = await showAppDialog({
+      label: "Швидка передача",
+      title: "Що передати через Wi‑Fi?",
+      message: "Пристрої мають бути підключені до однієї локальної Wi‑Fi мережі.",
+      confirmText: "Повну копію",
+      alternativeText: "Вибрані найменування",
+      alternativeResult: "products",
+      cancelText: "Скасувати"
+    });
+    if (choice === true) beginWifiSend("full");
+    else if (choice === "products") openWifiProductPicker();
   }
 
   async function currentQrPngBlob() {
@@ -20774,7 +21346,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=364")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=366")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -22634,6 +23206,49 @@
     closeBackupActionMenu();
     chooseQrBackupScope();
   });
+  document.getElementById("wifiBackupSendBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    chooseWifiBackupScope();
+  });
+  document.getElementById("wifiBackupReceiveBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    openWifiReceiver();
+  });
+  document.getElementById("closeWifiTransferBtn").addEventListener("click", closeWifiTransfer);
+  document.getElementById("wifiTransferOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeWifiTransfer();
+  });
+  document.getElementById("wifiProductSearchInput").addEventListener("input", renderWifiProductPicker);
+  document.getElementById("wifiSelectAllProductsBtn").addEventListener("click", () => {
+    const allIds = sortedProducts().map(product => product.id);
+    const allSelected = allIds.length > 0 && allIds.every(id => wifiSelectedProductIds.has(id));
+    wifiSelectedProductIds = allSelected ? new Set() : new Set(allIds);
+    document.getElementById("wifiProductPickerStatus").textContent = allSelected
+      ? "Вибір очищено"
+      : `Обрано найменувань: ${wifiSelectedProductIds.size}`;
+    renderWifiProductPicker();
+  });
+  document.getElementById("wifiStartSelectedProductsBtn").addEventListener("click", () => {
+    const products = state.products.filter(product => wifiSelectedProductIds.has(product.id));
+    if (!products.length) {
+      toast("Обери хоча б одне найменування", true);
+      return;
+    }
+    beginWifiSend("products", products);
+  });
+  document.getElementById("copyWifiPairingCodeBtn").addEventListener("click", async () => {
+    const copied = await copyTextToClipboard(document.getElementById("wifiPairingCode").value);
+    toast(copied ? "Код підключення скопійовано" : "Не вдалося скопіювати код", !copied);
+  });
+  document.getElementById("scanWifiResponseBtn").addEventListener("click", () => startWifiScanner("answer"));
+  document.getElementById("applyWifiPairingCodeBtn").addEventListener("click", () => {
+    const value = document.getElementById("wifiPairingCode").value;
+    if (!value.trim()) {
+      toast("Встав код підключення", true);
+      return;
+    }
+    applyWifiSignal(value);
+  });
   document.getElementById("copyBackupProductNameBtn").addEventListener("click", copyBackupProductName);
   document.getElementById("qrBackupProductNameBtn").addEventListener("click", shareBackupProductByQr);
   document.getElementById("copyAllBackupProductNamesBtn").addEventListener("click", copyAllBackupProductNames);
@@ -22862,6 +23477,11 @@
 
     if (!document.getElementById("qrTransferOverlay").classList.contains("hidden")) {
       closeQrTransfer();
+      return;
+    }
+
+    if (!document.getElementById("wifiTransferOverlay").classList.contains("hidden")) {
+      closeWifiTransfer();
       return;
     }
 
