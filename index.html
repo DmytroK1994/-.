@@ -5475,6 +5475,17 @@
       object-fit: contain;
       image-rendering: pixelated;
     }
+    .qr-display.qr-animated {
+      border-color: var(--primary-bg);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-bg) 16%, transparent);
+    }
+    .qr-display.qr-animated img {
+      animation: qrFramePulse .48s steps(1, end) infinite;
+    }
+    @keyframes qrFramePulse {
+      0%, 100% { opacity: 1; }
+      96% { opacity: .9; }
+    }
     .qr-transfer-progress {
       margin: 9px 0 0;
       color: var(--muted);
@@ -8590,7 +8601,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=360">
+<link rel="manifest" href="manifest.json?v=362">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8645,7 +8656,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.60</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.62</span></div>
     </div>
   </div>
 
@@ -9511,13 +9522,14 @@
         <div class="backup-action-options">
           <button id="copyBackupBtn">Скопіювати текст резервної копії</button>
           <button id="downloadBackupBtn">Завантажити файл резервної копії</button>
+          <button type="button" id="qrBackupBtn">Передати резервну копію через QR</button>
           <div class="backup-product-copy">
             <label for="backupProductNameSelect">Окреме найменування</label>
             <select id="backupProductNameSelect" aria-label="Оберіть найменування для копіювання"></select>
             <button type="button" id="copyBackupProductNameBtn">Скопіювати обране найменування</button>
             <button type="button" id="qrBackupProductNameBtn">Передати обране через QR</button>
             <button type="button" id="copyAllBackupProductNamesBtn">Скопіювати всі найменування списком</button>
-            <button type="button" class="secondary" id="receiveQrProductBtn">Отримати найменування через QR</button>
+            <button type="button" class="secondary" id="receiveQrProductBtn">Отримати дані через QR</button>
           </div>
         </div>
       </details>
@@ -9877,7 +9889,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.60</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.62</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9902,6 +9914,21 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.62</h3>
+          <ul>
+            <li>анімацію QR-передачі прискорено до одного кадру кожні 170 мс — приблизно шість QR-кодів за секунду.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.61</h3>
+          <ul>
+            <li>додано швидку передачу резервної копії через анімовану серію QR-кодів;</li>
+            <li>один QR залишається нерухомим, а серія з двох і більше кадрів перемикається автоматично;</li>
+            <li>сканер безперервно збирає унікальні частини, показує відсоток і перевіряє цілісність передачі;</li>
+            <li>анімацію можна зупинити й продовжити, а пропущені кадри повторюються по колу.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.60</h3>
           <ul>
@@ -11169,6 +11196,7 @@
         <div class="qr-transfer-actions">
           <button type="button" class="secondary" id="previousQrPartBtn">Попередній</button>
           <button type="button" id="nextQrPartBtn">Наступний</button>
+          <button type="button" class="secondary hidden" id="toggleQrAnimationBtn">Зупинити кадри</button>
           <button type="button" class="secondary" id="copyQrPartBtn">Скопіювати зображення QR</button>
           <button type="button" class="secondary" id="copyQrSubjectBtn">Скопіювати назву</button>
           <button type="button" id="shareQrPartBtn">Поділитися зображенням QR</button>
@@ -11571,7 +11599,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.60";
+  const APP_VERSION = "3.62";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11642,6 +11670,7 @@
   const QR_TRANSFER_FORMAT = "oblik-zalyshkiv-qr";
   const QR_TRANSFER_VERSION = 1;
   const QR_TRANSFER_CHUNK_SIZE = 520;
+  const QR_TRANSFER_FRAME_INTERVAL = 170;
   const BACKUP_SETTING_KEYS = [
     THEME_KEY,
     CUSTOM_THEME_KEY,
@@ -19441,6 +19470,8 @@
 
   let qrTransferParts = [];
   let qrTransferPartIndex = 0;
+  let qrTransferAnimationTimer = 0;
+  let qrTransferAnimationRunning = false;
   let qrTransferSourceProducts = [];
   let qrTransferActiveProducts = [];
   let qrTransferSendScope = "full";
@@ -19453,6 +19484,48 @@
   let qrScannerLastValueAt = 0;
   let qrScanBusy = false;
   let qrReceivedTransfer = null;
+
+  function syncQrTransferAnimationControls() {
+    const total = qrTransferParts.length;
+    const toggleButton = document.getElementById("toggleQrAnimationBtn");
+    const display = document.querySelector("#qrSendView .qr-display");
+    if (toggleButton) {
+      toggleButton.classList.toggle("hidden", total <= 1);
+      toggleButton.textContent = qrTransferAnimationRunning ? "Зупинити кадри" : "Продовжити кадри";
+      toggleButton.setAttribute("aria-pressed", qrTransferAnimationRunning ? "true" : "false");
+    }
+    display?.classList.toggle("qr-animated", total > 1 && qrTransferAnimationRunning);
+  }
+
+  function stopQrTransferAnimation() {
+    if (qrTransferAnimationTimer) window.clearInterval(qrTransferAnimationTimer);
+    qrTransferAnimationTimer = 0;
+    qrTransferAnimationRunning = false;
+    syncQrTransferAnimationControls();
+  }
+
+  function startQrTransferAnimation() {
+    stopQrTransferAnimation();
+    if (qrTransferParts.length <= 1) return;
+    qrTransferAnimationRunning = true;
+    syncQrTransferAnimationControls();
+    renderQrTransferPart();
+    qrTransferAnimationTimer = window.setInterval(() => {
+      if (document.hidden || document.getElementById("qrTransferOverlay").classList.contains("hidden")) return;
+      qrTransferPartIndex = (qrTransferPartIndex + 1) % qrTransferParts.length;
+      renderQrTransferPart();
+    }, QR_TRANSFER_FRAME_INTERVAL);
+  }
+
+  function toggleQrTransferAnimation() {
+    if (qrTransferParts.length <= 1) return;
+    if (qrTransferAnimationRunning) {
+      stopQrTransferAnimation();
+      renderQrTransferPart();
+    } else {
+      startQrTransferAnimation();
+    }
+  }
 
   function textToBase64(text) {
     const bytes = new TextEncoder().encode(text);
@@ -19545,11 +19618,14 @@
       image.alt = `${qrTransferSubjectText}. QR-код ${qrTransferPartIndex + 1} із ${total}`;
       progress.textContent = total === 1
         ? "Один QR-код · відскануй його на іншому пристрої"
-        : `QR-код ${qrTransferPartIndex + 1} із ${total} · сканувати можна в будь-якому порядку`;
+        : qrTransferAnimationRunning
+          ? `Швидка передача · кадр ${qrTransferPartIndex + 1} із ${total} · тримай камеру нерухомо`
+          : `Кадр ${qrTransferPartIndex + 1} із ${total} · автоматичну зміну зупинено`;
       previousButton.classList.toggle("hidden", total <= 1);
       nextButton.classList.toggle("hidden", total <= 1);
       previousButton.disabled = qrTransferPartIndex === 0;
       nextButton.disabled = qrTransferPartIndex === total - 1;
+      syncQrTransferAnimationControls();
     } catch (error) {
       progress.textContent = "Ця частина завелика для QR-коду.";
       image.removeAttribute("src");
@@ -19577,6 +19653,7 @@
   }
 
   function prepareQrSendParts(kind, products, subject) {
+    stopQrTransferAnimation();
     try {
       qrTransferParts = buildQrTransferParts(kind, products);
     } catch (error) {
@@ -19588,6 +19665,7 @@
     qrTransferActiveProducts = Array.isArray(products) ? [...products] : [];
     setQrTransferSubject(subject);
     renderQrTransferPart();
+    if (qrTransferParts.length > 1) startQrTransferAnimation();
     return true;
   }
 
@@ -19810,6 +19888,7 @@
   }
 
   function closeQrTransfer() {
+    stopQrTransferAnimation();
     stopQrScanner();
     document.getElementById("qrTransferOverlay").classList.add("hidden");
     document.getElementById("qrManualInput").value = "";
@@ -19833,7 +19912,7 @@
       ? "Наведи камеру на QR-код найменування."
       : "Наведи камеру на будь-який QR-код серії.";
     document.getElementById("qrTransferOverlay").classList.remove("hidden");
-    if (productMode) startQrScanner();
+    startQrScanner();
   }
 
   async function importTransferredProducts(products, singleProduct) {
@@ -19953,8 +20032,11 @@
 
     qrReceivedTransfer.parts[part.p - 1] = part.d;
     const received = qrReceivedTransfer.parts.filter(Boolean).length;
+    const percent = Math.round(received / part.n * 100);
     document.getElementById("qrReceiveProgress").textContent =
-      received === part.n ? "Усі частини отримано. Перевіряю дані…" : `Отримано ${received} із ${part.n}. Покажи наступний QR-код.`;
+      received === part.n
+        ? "Отримано 100% · перевіряю цілісність даних…"
+        : `Отримано ${received} із ${part.n} · ${percent}% · тримай камеру нерухомо`;
     if (received !== part.n) return true;
 
     const encoded = qrReceivedTransfer.parts.join("");
@@ -19974,7 +20056,7 @@
   function scanQrVideoFrame(time = 0) {
     if (!qrScannerStream) return;
     qrScannerFrame = requestAnimationFrame(scanQrVideoFrame);
-    if (qrScanBusy || time - qrScannerLastTime < 170) return;
+    if (qrScanBusy || time - qrScannerLastTime < 120) return;
     qrScannerLastTime = time;
     const video = document.getElementById("qrScannerVideo");
     if (!video.videoWidth || video.readyState < 2 || typeof jsQR !== "function") return;
@@ -20014,6 +20096,7 @@
       video.srcObject = qrScannerStream;
       await video.play();
       document.getElementById("startQrScannerBtn").textContent = "Вимкнути камеру";
+      document.getElementById("qrReceiveProgress").textContent = "Камера працює · наведи її на QR і тримай нерухомо";
       qrScannerFrame = requestAnimationFrame(scanQrVideoFrame);
     } catch (error) {
       stopQrScanner();
@@ -20051,6 +20134,8 @@
   }
 
   async function copyCurrentQrPart() {
+    stopQrTransferAnimation();
+    renderQrTransferPart();
     try {
       const blob = await currentQrPngBlob();
       if (navigator.clipboard?.write && typeof ClipboardItem === "function") {
@@ -20081,6 +20166,8 @@
   }
 
   async function shareCurrentQrPart() {
+    stopQrTransferAnimation();
+    renderQrTransferPart();
     try {
       const blob = await currentQrPngBlob();
       const file = new File([blob], "qr-najmenuvannia.png", { type: "image/png" });
@@ -20494,7 +20581,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=360")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=362")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -22350,6 +22437,10 @@
     closeBackupActionMenu();
     downloadBackup();
   });
+  document.getElementById("qrBackupBtn").addEventListener("click", () => {
+    closeBackupActionMenu();
+    chooseQrBackupScope();
+  });
   document.getElementById("copyBackupProductNameBtn").addEventListener("click", copyBackupProductName);
   document.getElementById("qrBackupProductNameBtn").addEventListener("click", shareBackupProductByQr);
   document.getElementById("copyAllBackupProductNamesBtn").addEventListener("click", copyAllBackupProductNames);
@@ -22379,13 +22470,16 @@
   });
   document.getElementById("qrSendAllProductsBtn").addEventListener("click", selectAllQrTransferProducts);
   document.getElementById("previousQrPartBtn").addEventListener("click", () => {
+    stopQrTransferAnimation();
     qrTransferPartIndex = Math.max(0, qrTransferPartIndex - 1);
     renderQrTransferPart();
   });
   document.getElementById("nextQrPartBtn").addEventListener("click", () => {
+    stopQrTransferAnimation();
     qrTransferPartIndex = Math.min(qrTransferParts.length - 1, qrTransferPartIndex + 1);
     renderQrTransferPart();
   });
+  document.getElementById("toggleQrAnimationBtn").addEventListener("click", toggleQrTransferAnimation);
   document.getElementById("copyQrPartBtn").addEventListener("click", copyCurrentQrPart);
   document.getElementById("copyQrSubjectBtn").addEventListener("click", copyCurrentQrSubject);
   document.getElementById("shareQrPartBtn").addEventListener("click", shareCurrentQrPart);
