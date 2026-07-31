@@ -8697,7 +8697,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=366">
+<link rel="manifest" href="manifest.json?v=367">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8752,7 +8752,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.66</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.67</span></div>
     </div>
   </div>
 
@@ -9987,7 +9987,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.66</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.67</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10012,6 +10012,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.67</h3>
+          <ul>
+            <li>WebRTC-код підключення стискається перед створенням QR, тому QR тепер відображається значно меншим і краще сканується;</li>
+            <li>до Wi‑Fi приймання додано явну кнопку ввімкнення та повторного запуску камери;</li>
+            <li>додано зрозумілі повідомлення про заборонений доступ, відсутню камеру та необхідність HTTPS або встановленого PWA;</li>
+            <li>QR підключення можна прочитати з вибраного фото або передати текстовим кодом вручну.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.66</h3>
           <ul>
@@ -11366,12 +11375,15 @@
         <div class="wifi-transfer-progress-track" aria-hidden="true"><div class="wifi-transfer-progress-bar" id="wifiTransferProgressBar"></div></div>
         <div class="wifi-pairing-display hidden" id="wifiPairingDisplay"><img id="wifiPairingImage" alt="QR-код підключення через Wi‑Fi"></div>
         <div class="qr-scanner-frame hidden" id="wifiScannerFrame">
-          <video id="wifiScannerVideo" playsinline muted></video>
+          <video id="wifiScannerVideo" playsinline muted autoplay></video>
           <div class="qr-scanner-guide" aria-hidden="true"></div>
         </div>
         <canvas class="hidden" id="wifiScannerCanvas"></canvas>
+        <input class="hidden" id="wifiQrImageInput" type="file" accept="image/*">
         <textarea class="wifi-pairing-code hidden" id="wifiPairingCode" placeholder="Код підключення"></textarea>
         <div class="wifi-transfer-actions">
+          <button type="button" class="hidden" id="startWifiCameraBtn">Увімкнути камеру</button>
+          <button type="button" class="secondary hidden" id="selectWifiQrImageBtn">Вибрати фото QR</button>
           <button type="button" class="secondary hidden" id="copyWifiPairingCodeBtn">Скопіювати код</button>
           <button type="button" class="hidden" id="scanWifiResponseBtn">Сканувати відповідь</button>
           <button type="button" class="secondary hidden" id="applyWifiPairingCodeBtn">Застосувати вставлений код</button>
@@ -11761,7 +11773,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.66";
+  const APP_VERSION = "3.67";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -20477,6 +20489,8 @@
     const video = document.getElementById("wifiScannerVideo");
     if (video) video.srcObject = null;
     document.getElementById("wifiScannerFrame")?.classList.add("hidden");
+    const cameraButton = document.getElementById("startWifiCameraBtn");
+    if (cameraButton) cameraButton.textContent = "Увімкнути камеру";
   }
 
   function closeWifiTransfer() {
@@ -20508,6 +20522,8 @@
     document.getElementById("copyWifiPairingCodeBtn").classList.add("hidden");
     document.getElementById("scanWifiResponseBtn").classList.add("hidden");
     document.getElementById("applyWifiPairingCodeBtn").classList.add("hidden");
+    document.getElementById("startWifiCameraBtn").classList.add("hidden");
+    document.getElementById("selectWifiQrImageBtn").classList.add("hidden");
     const code = document.getElementById("wifiPairingCode");
     code.value = "";
     code.readOnly = false;
@@ -20547,8 +20563,41 @@
     return connection;
   }
 
-  function renderWifiPairingSignal(signal, instruction) {
+  async function compressWifiSignal(text) {
+    if (typeof CompressionStream !== "function") return "";
+    const stream = new Blob([text]).stream().pipeThrough(new CompressionStream("gzip"));
+    const buffer = await new Response(stream).arrayBuffer();
+    return bytesToBase64(new Uint8Array(buffer));
+  }
+
+  async function decompressWifiSignal(value) {
+    if (typeof DecompressionStream !== "function") throw new Error("wifi-decompression-unavailable");
+    const bytes = base64ToBytes(value);
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+    return new Response(stream).text();
+  }
+
+  async function encodeWifiPairingSignal(signal) {
     const raw = JSON.stringify(signal);
+    try {
+      const compressed = await compressWifiSignal(raw);
+      if (compressed) {
+        const wrapped = JSON.stringify({ f: "oblik-wifi-z", v: WIFI_TRANSFER_VERSION, d: compressed });
+        if (wrapped.length < raw.length) return wrapped;
+      }
+    } catch (error) {}
+    return raw;
+  }
+
+  async function decodeWifiPairingSignal(rawValue) {
+    const parsed = JSON.parse(String(rawValue || "").trim());
+    if (parsed?.f !== "oblik-wifi-z") return parsed;
+    if (parsed.v !== WIFI_TRANSFER_VERSION || typeof parsed.d !== "string") throw new Error("bad-compressed-wifi-signal");
+    return JSON.parse(await decompressWifiSignal(parsed.d));
+  }
+
+  async function renderWifiPairingSignal(signal, instruction) {
+    const raw = await encodeWifiPairingSignal(signal);
     const code = document.getElementById("wifiPairingCode");
     const display = document.getElementById("wifiPairingDisplay");
     const image = document.getElementById("wifiPairingImage");
@@ -20556,13 +20605,15 @@
     code.readOnly = true;
     code.classList.remove("hidden");
     document.getElementById("copyWifiPairingCodeBtn").classList.remove("hidden");
+    document.getElementById("startWifiCameraBtn").classList.add("hidden");
+    document.getElementById("selectWifiQrImageBtn").classList.add("hidden");
     setWifiTransferStatus(instruction, 0);
     try {
       if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
       const qr = qrcode(0, "L");
       qr.addData(raw);
       qr.make();
-      image.src = qr.createDataURL(4, 8);
+      image.src = qr.createDataURL(5, 10);
       display.classList.remove("hidden");
     } catch (error) {
       display.classList.add("hidden");
@@ -20703,7 +20754,7 @@
       const offer = await wifiPeerConnection.createOffer();
       await wifiPeerConnection.setLocalDescription(offer);
       await waitForWifiIceGathering(wifiPeerConnection);
-      renderWifiPairingSignal({
+      await renderWifiPairingSignal({
         f: WIFI_TRANSFER_FORMAT,
         v: WIFI_TRANSFER_VERSION,
         t: "offer",
@@ -20719,7 +20770,7 @@
   async function applyWifiSignal(rawValue) {
     let signal;
     try {
-      signal = JSON.parse(String(rawValue || "").trim());
+      signal = await decodeWifiPairingSignal(rawValue);
       if (signal.f !== WIFI_TRANSFER_FORMAT || signal.v !== WIFI_TRANSFER_VERSION ||
           signal.t !== wifiExpectedSignal || !signal.id || typeof signal.s !== "string") {
         throw new Error("bad-wifi-signal");
@@ -20739,7 +20790,7 @@
         const answer = await wifiPeerConnection.createAnswer();
         await wifiPeerConnection.setLocalDescription(answer);
         await waitForWifiIceGathering(wifiPeerConnection);
-        renderWifiPairingSignal({
+        await renderWifiPairingSignal({
           f: WIFI_TRANSFER_FORMAT,
           v: WIFI_TRANSFER_VERSION,
           t: "answer",
@@ -20789,10 +20840,21 @@
     document.getElementById("copyWifiPairingCodeBtn").classList.add("hidden");
     document.getElementById("scanWifiResponseBtn").classList.add("hidden");
     document.getElementById("applyWifiPairingCodeBtn").classList.remove("hidden");
+    document.getElementById("startWifiCameraBtn").classList.remove("hidden");
+    document.getElementById("selectWifiQrImageBtn").classList.remove("hidden");
     setWifiTransferStatus(expectedSignal === "offer"
       ? "Скануй QR-код, показаний пристроєм-відправником"
       : "Скануй QR-відповідь, показану пристроєм-одержувачем", 0);
-    if (!navigator.mediaDevices?.getUserMedia || typeof jsQR !== "function") return;
+    if (typeof jsQR !== "function") {
+      setWifiTransferStatus("Модуль розпізнавання QR не завантажився. Перезапусти застосунок або встав код вручну.", 0);
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setWifiTransferStatus(window.isSecureContext
+        ? "Браузер не надав доступ до камери. Вибери фото QR або встав код вручну."
+        : "Камера працює лише через HTTPS або у встановленому PWA. Вибери фото QR або встав код вручну.", 0);
+      return;
+    }
     try {
       wifiScannerStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
@@ -20802,9 +20864,58 @@
       video.srcObject = wifiScannerStream;
       await video.play();
       document.getElementById("wifiScannerFrame").classList.remove("hidden");
+      document.getElementById("startWifiCameraBtn").textContent = "Вимкнути камеру";
+      setWifiTransferStatus(expectedSignal === "offer"
+        ? "Камера працює · наведи її на QR відправника"
+        : "Камера працює · наведи її на QR-відповідь", 0);
       wifiScannerFrame = requestAnimationFrame(scanWifiVideoFrame);
     } catch (error) {
-      setWifiTransferStatus("Камера недоступна. Скопіюй код підключення та встав його в поле вручну.", 0);
+      const message = error?.name === "NotAllowedError"
+        ? "Доступ до камери заборонено. Дозволь камеру в налаштуваннях браузера або вибери фото QR."
+        : error?.name === "NotFoundError"
+          ? "Камеру не знайдено. Вибери фото QR або встав код вручну."
+          : "Не вдалося відкрити камеру. Спробуй кнопку ще раз, вибери фото QR або встав код вручну.";
+      setWifiTransferStatus(message, 0);
+    }
+  }
+
+  async function scanWifiQrImage(file) {
+    if (!file || typeof jsQR !== "function") return false;
+    let imageSource = null;
+    let objectUrl = "";
+    try {
+      if (typeof createImageBitmap === "function") {
+        imageSource = await createImageBitmap(file);
+      } else {
+        objectUrl = URL.createObjectURL(file);
+        imageSource = await new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = objectUrl;
+        });
+      }
+      const sourceWidth = imageSource.width || imageSource.naturalWidth;
+      const sourceHeight = imageSource.height || imageSource.naturalHeight;
+      const scale = Math.min(1, 1600 / Math.max(sourceWidth, sourceHeight));
+      const canvas = document.getElementById("wifiScannerCanvas");
+      canvas.width = Math.max(1, Math.round(sourceWidth * scale));
+      canvas.height = Math.max(1, Math.round(sourceHeight * scale));
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      context.drawImage(imageSource, 0, 0, canvas.width, canvas.height);
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const result = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "attemptBoth" });
+      if (!result?.data) {
+        toast("QR-код на зображенні не знайдено", true);
+        return false;
+      }
+      return applyWifiSignal(result.data);
+    } catch (error) {
+      toast("Не вдалося прочитати зображення QR", true);
+      return false;
+    } finally {
+      imageSource?.close?.();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     }
   }
 
@@ -21346,7 +21457,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=366")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=367")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23241,6 +23352,24 @@
     toast(copied ? "Код підключення скопійовано" : "Не вдалося скопіювати код", !copied);
   });
   document.getElementById("scanWifiResponseBtn").addEventListener("click", () => startWifiScanner("answer"));
+  document.getElementById("startWifiCameraBtn").addEventListener("click", () => {
+    if (wifiScannerStream) {
+      stopWifiScanner();
+      document.getElementById("startWifiCameraBtn").classList.remove("hidden");
+      document.getElementById("selectWifiQrImageBtn").classList.remove("hidden");
+      setWifiTransferStatus("Камеру вимкнено. Можна ввімкнути її повторно або вибрати фото QR.", 0);
+      return;
+    }
+    startWifiScanner(wifiExpectedSignal || (wifiTransferRole === "sender" ? "answer" : "offer"));
+  });
+  document.getElementById("selectWifiQrImageBtn").addEventListener("click", () => {
+    const input = document.getElementById("wifiQrImageInput");
+    input.value = "";
+    input.click();
+  });
+  document.getElementById("wifiQrImageInput").addEventListener("change", event => {
+    scanWifiQrImage(event.target.files?.[0]);
+  });
   document.getElementById("applyWifiPairingCodeBtn").addEventListener("click", () => {
     const value = document.getElementById("wifiPairingCode").value;
     if (!value.trim()) {
