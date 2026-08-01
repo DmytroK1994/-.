@@ -8601,7 +8601,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=369">
+<link rel="manifest" href="manifest.json?v=370">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8656,7 +8656,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.69</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.70</span></div>
     </div>
   </div>
 
@@ -9889,7 +9889,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.69</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.70</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9914,6 +9914,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.70</h3>
+          <ul>
+            <li>передачу великих резервних копій через QR переведено на протокол Decimen Optical Transfer;</li>
+            <li>застосовано LT-фонтанне кодування: приймачу достатньо будь-якої потрібної кількості кадрів, а пропущені кадри не блокують завершення;</li>
+            <li>кожен кадр містить параметри сесії та контрольну суму, тому нова передача розпізнається автоматично, а результат перевіряється перед відновленням.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.69</h3>
           <ul>
@@ -11621,12 +11629,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
+<script src="./assets/decimen-optical-transfer.js?v=370"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.69";
+  const APP_VERSION = "3.70";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11696,9 +11705,10 @@
   const BACKUP_SCHEMA_VERSION = 2;
   const QR_TRANSFER_FORMAT = "oblik-zalyshkiv-qr";
   const QR_TRANSFER_VERSION = 1;
-  const QR_TRANSFER_FRAME_INTERVAL = 200;
-  const QR_FOUNTAIN_BLOCK_SIZE = 400;
-  const QR_FOUNTAIN_MAX_BLOCKS = 12000;
+  const QR_TRANSFER_FRAME_INTERVAL = 80;
+  const OPTICAL_TRANSFER_BLOCK_SIZE = 620;
+  const OPTICAL_TRANSFER_MAX_BLOCKS = 65535;
+  const OPTICAL_TRANSFER_OVERHEAD = 1.18;
   const BACKUP_SETTING_KEYS = [
     THEME_KEY,
     CUSTOM_THEME_KEY,
@@ -19574,59 +19584,25 @@
     return (hash >>> 0).toString(36);
   }
 
-  function bytesToBase64(bytes) {
-    let binary = "";
+  function bytesToBinaryString(bytes) {
+    let result = "";
     for (let index = 0; index < bytes.length; index += 8192) {
-      binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
+      result += String.fromCharCode(...bytes.subarray(index, index + 8192));
     }
-    return btoa(binary);
+    return result;
   }
 
-  function base64ToBytes(value) {
-    const binary = atob(value);
-    const bytes = new Uint8Array(binary.length);
-    for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
-    return bytes;
-  }
-
-  function xorBytes(target, source) {
-    const length = Math.min(target.length, source.length);
-    for (let index = 0; index < length; index++) target[index] ^= source[index];
-    return target;
-  }
-
-  function fountainFrameIndices(total, sequence) {
-    if (total <= 1) return [0];
-    const phase = sequence % 3;
-    const slot = Math.floor(sequence / 3);
-    const base = slot % total;
-    if (phase === 0) return [base];
-    const offsets = phase === 1 ? [0, 1] : [0, 1, 3];
-    const indices = [];
-    offsets.forEach(offset => {
-      const index = (base + offset) % total;
-      if (!indices.includes(index)) indices.push(index);
-    });
-    return indices;
-  }
-
-  function createFountainQrFrame(sequence) {
-    if (!qrFountainTransfer) return qrTransferParts[qrTransferPartIndex] || "";
-    const indices = fountainFrameIndices(qrFountainTransfer.blocks.length, sequence);
-    const mixed = new Uint8Array(qrFountainTransfer.blockSize);
-    indices.forEach(index => xorBytes(mixed, qrFountainTransfer.blocks[index]));
-    return JSON.stringify({
-      f: "ozf",
-      v: QR_TRANSFER_VERSION,
-      id: qrFountainTransfer.id,
-      s: sequence,
-      k: qrFountainTransfer.blocks.length,
-      b: qrFountainTransfer.blockSize,
-      l: qrFountainTransfer.byteLength,
-      h: qrFountainTransfer.checksum,
-      i: indices,
-      d: bytesToBase64(mixed)
-    });
+  function createOpticalQrFrame(sequence) {
+    if (!qrFountainTransfer || !window.DecimenOpticalTransfer) return null;
+    const block = qrFountainTransfer.encoder.encode(sequence);
+    return window.DecimenOpticalTransfer.packFrame({
+      sessionId: qrFountainTransfer.sessionId,
+      seq: sequence >>> 0,
+      k: qrFountainTransfer.encoder.k,
+      blockLen: qrFountainTransfer.blockSize,
+      totalLen: qrFountainTransfer.byteLength,
+      payloadFnv: qrFountainTransfer.payloadFnv
+    }, block);
   }
 
   function createProductsBackup(products) {
@@ -19656,23 +19632,24 @@
       kind,
       payload
     });
+    if (!window.DecimenOpticalTransfer) throw new Error("optical-codec-unavailable");
     const bytes = new TextEncoder().encode(transferText);
-    const transferId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-    const blockCount = Math.max(1, Math.ceil(bytes.length / QR_FOUNTAIN_BLOCK_SIZE));
-    if (blockCount > QR_FOUNTAIN_MAX_BLOCKS) throw new Error("qr-transfer-too-large");
-    const blocks = Array.from({ length: blockCount }, (_, index) => {
-      const block = new Uint8Array(QR_FOUNTAIN_BLOCK_SIZE);
-      block.set(bytes.subarray(index * QR_FOUNTAIN_BLOCK_SIZE, (index + 1) * QR_FOUNTAIN_BLOCK_SIZE));
-      return block;
-    });
+    const sessionId = (Math.floor(Math.random() * 0xffff) + 1) & 0xffff;
+    const encoder = new window.DecimenOpticalTransfer.LTEncoder(
+      bytes,
+      OPTICAL_TRANSFER_BLOCK_SIZE,
+      sessionId
+    );
+    if (encoder.k > OPTICAL_TRANSFER_MAX_BLOCKS) throw new Error("qr-transfer-too-large");
     qrFountainTransfer = {
-      id: transferId,
-      blocks,
-      blockSize: QR_FOUNTAIN_BLOCK_SIZE,
+      format: "decimen",
+      sessionId,
+      encoder,
+      blockSize: OPTICAL_TRANSFER_BLOCK_SIZE,
       byteLength: bytes.length,
-      checksum: transferChecksum(transferText)
+      payloadFnv: window.DecimenOpticalTransfer.fnv1a(bytes)
     };
-    return Array.from({ length: blockCount }, (_, index) => index);
+    return Array.from({ length: encoder.k }, (_, index) => index);
   }
 
   function renderQrTransferPart() {
@@ -19686,11 +19663,16 @@
       return;
     }
     try {
-      if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
       const qr = qrcode(0, "L");
-      qr.addData(qrFountainTransfer
-        ? createFountainQrFrame(qrTransferPartIndex)
-        : qrTransferParts[qrTransferPartIndex]);
+      if (qrFountainTransfer) {
+        const frame = createOpticalQrFrame(qrTransferPartIndex);
+        if (!frame) throw new Error("optical-frame-unavailable");
+        qrcode.stringToBytes = qrcode.stringToBytesFuncs.default;
+        qr.addData(bytesToBinaryString(frame), "Byte");
+      } else {
+        if (qrcode.stringToBytesFuncs?.["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+        qr.addData(qrTransferParts[qrTransferPartIndex]);
+      }
       qr.make();
       image.src = qr.createDataURL(5, 10);
       const total = qrTransferParts.length;
@@ -19702,10 +19684,10 @@
         ? "Один QR-код · відскануй його на іншому пристрої"
         : qrTransferAnimationRunning
           ? qrFountainTransfer
-            ? `Фонтанний кадр ${qrTransferPartIndex + 1} · базових блоків: ${total} · пропущені кадри не заважають`
+            ? `Оптичний кадр ${qrTransferPartIndex + 1} · блоків: ${total} · пропущені кадри відновлюються автоматично`
             : `Швидка передача · кадр ${qrTransferPartIndex + 1} із ${total} · тримай камеру нерухомо`
           : qrFountainTransfer
-            ? `Фонтанну передачу зупинено на кадрі ${qrTransferPartIndex + 1}`
+            ? `Оптичну передачу зупинено на кадрі ${qrTransferPartIndex + 1}`
             : `Кадр ${qrTransferPartIndex + 1} із ${total} · автоматичну зміну зупинено`;
       previousButton.classList.toggle("hidden", total <= 1 || Boolean(qrFountainTransfer));
       nextButton.classList.toggle("hidden", total <= 1 || Boolean(qrFountainTransfer));
@@ -20082,114 +20064,74 @@
     }
   }
 
-  function fountainLearnBlock(transfer, blockIndex, blockData) {
-    const queue = [{ index: blockIndex, data: blockData }];
-    while (queue.length) {
-      const solved = queue.shift();
-      if (transfer.blocks[solved.index]) continue;
-      transfer.blocks[solved.index] = solved.data.slice();
-      for (let equationIndex = transfer.equations.length - 1; equationIndex >= 0; equationIndex--) {
-        const equation = transfer.equations[equationIndex];
-        const position = equation.indices.indexOf(solved.index);
-        if (position < 0) continue;
-        xorBytes(equation.data, solved.data);
-        equation.indices.splice(position, 1);
-        if (equation.indices.length === 0) {
-          transfer.equations.splice(equationIndex, 1);
-        } else if (equation.indices.length === 1) {
-          transfer.equations.splice(equationIndex, 1);
-          queue.push({ index: equation.indices[0], data: equation.data });
-        }
-      }
-    }
-  }
-
-  async function acceptFountainQrPart(part) {
-    let packetData;
-    const validMetadata = part?.f === "ozf"
-      && part.v === QR_TRANSFER_VERSION
-      && typeof part.id === "string"
-      && Number.isInteger(part.s) && part.s >= 0
-      && Number.isInteger(part.k) && part.k >= 1 && part.k <= QR_FOUNTAIN_MAX_BLOCKS
-      && Number.isInteger(part.b) && part.b >= 64 && part.b <= 700
-      && Number.isInteger(part.l) && part.l >= 1 && part.l <= part.k * part.b
-      && typeof part.h === "string"
-      && Array.isArray(part.i) && part.i.length >= 1 && part.i.length <= 12
-      && part.i.every(index => Number.isInteger(index) && index >= 0 && index < part.k)
-      && new Set(part.i).size === part.i.length
-      && typeof part.d === "string";
-    if (!validMetadata) {
-      toast("Це не фонтанний QR-код цього застосунку", true);
-      return false;
-    }
-    try {
-      packetData = base64ToBytes(part.d);
-      if (packetData.length !== part.b) throw new Error("bad-fountain-block");
-    } catch (error) {
-      toast("Фонтанний QR-кадр пошкоджено", true);
+  async function acceptOpticalQrFrame(frameBytes) {
+    if (!window.DecimenOpticalTransfer) return false;
+    const parsed = window.DecimenOpticalTransfer.parseFrame(
+      frameBytes instanceof Uint8Array ? frameBytes : new Uint8Array(frameBytes || 0)
+    );
+    if (!parsed) return false;
+    const { header, block } = parsed;
+    const metadataIsValid = header.k >= 1
+      && header.k <= OPTICAL_TRANSFER_MAX_BLOCKS
+      && header.blockLen >= 64
+      && header.blockLen <= 2000
+      && header.totalLen >= 1
+      && header.totalLen <= header.k * header.blockLen;
+    if (!metadataIsValid) {
+      toast("Оптичний QR-кадр має некоректні параметри", true);
       return false;
     }
 
-    if (!qrReceivedTransfer) {
+    const sessionChanged = !qrReceivedTransfer
+      || qrReceivedTransfer.format !== "decimen"
+      || qrReceivedTransfer.sessionId !== header.sessionId;
+    if (sessionChanged) {
       qrReceivedTransfer = {
-        format: "fountain",
-        id: part.id,
-        total: part.k,
-        blockSize: part.b,
-        byteLength: part.l,
-        checksum: part.h,
-        blocks: new Array(part.k),
-        equations: [],
-        seen: new Set()
+        format: "decimen",
+        sessionId: header.sessionId,
+        blockCount: header.k,
+        blockSize: header.blockLen,
+        byteLength: header.totalLen,
+        payloadFnv: header.payloadFnv,
+        decoder: new window.DecimenOpticalTransfer.LTDecoder(
+          header.k,
+          header.blockLen,
+          header.sessionId,
+          header.totalLen
+        )
       };
     }
+
     const transfer = qrReceivedTransfer;
-    if (transfer.format !== "fountain" || transfer.id !== part.id || transfer.total !== part.k ||
-        transfer.blockSize !== part.b || transfer.byteLength !== part.l || transfer.checksum !== part.h) {
-      toast("Цей кадр належить до іншої передачі", true);
+    if (transfer.blockCount !== header.k
+        || transfer.blockSize !== header.blockLen
+        || transfer.byteLength !== header.totalLen
+        || transfer.payloadFnv !== header.payloadFnv) {
+      toast("Цей кадр не відповідає поточній оптичній передачі", true);
       return false;
     }
-    if (transfer.seen.has(part.s)) return true;
-    transfer.seen.add(part.s);
 
-    const indices = [...part.i];
-    const reducedData = packetData.slice();
-    for (let index = indices.length - 1; index >= 0; index--) {
-      const knownBlock = transfer.blocks[indices[index]];
-      if (!knownBlock) continue;
-      xorBytes(reducedData, knownBlock);
-      indices.splice(index, 1);
-    }
-    if (indices.length === 1) {
-      fountainLearnBlock(transfer, indices[0], reducedData);
-    } else if (indices.length > 1) {
-      transfer.equations.push({ indices, data: reducedData });
-      if (transfer.equations.length > transfer.total * 4) transfer.equations.shift();
-    }
-
-    const solved = transfer.blocks.filter(Boolean).length;
-    const estimatedProgress = Math.min(99, Math.max(
-      Math.round(solved / transfer.total * 100),
-      Math.round(Math.min(transfer.seen.size, transfer.total) / transfer.total * 90)
-    ));
-    document.getElementById("qrReceiveProgress").textContent = solved === transfer.total
+    transfer.decoder.addFrame(header.seq, block);
+    const estimatedFrames = Math.max(1, transfer.blockCount * OPTICAL_TRANSFER_OVERHEAD);
+    const percent = Math.min(99, Math.round(transfer.decoder.framesNew / estimatedFrames * 100));
+    document.getElementById("qrReceiveProgress").textContent = transfer.decoder.isComplete
       ? "Дані відновлено · перевіряю цілісність…"
-      : `Фонтанних кадрів: ${transfer.seen.size} · відновлено блоків: ${solved} із ${transfer.total} · ${estimatedProgress}%`;
-    if (solved !== transfer.total) return true;
+      : `Оптичних кадрів: ${transfer.decoder.framesNew} · відновлено блоків: ${transfer.decoder.solvedCount} із ${transfer.blockCount} · ${percent}%`;
+    if (!transfer.decoder.isComplete) return true;
 
-    const combined = new Uint8Array(transfer.total * transfer.blockSize);
-    transfer.blocks.forEach((block, index) => combined.set(block, index * transfer.blockSize));
-    const transferText = new TextDecoder().decode(combined.subarray(0, transfer.byteLength));
-    if (transferChecksum(transferText) !== transfer.checksum) {
-      toast("Не вдалося перевірити цілісність фонтанної передачі", true);
+    const payload = transfer.decoder.assemble();
+    if (!payload || window.DecimenOpticalTransfer.fnv1a(payload) !== transfer.payloadFnv) {
+      toast("Контрольна сума оптичної передачі не збігається", true);
       qrReceivedTransfer = null;
       return false;
     }
+    const transferText = new TextDecoder().decode(payload);
     await finishQrTransferText(transferText);
     return true;
   }
 
-  async function acceptQrTransferPart(rawValue) {
+  async function acceptQrTransferPart(rawValue, binaryData = null) {
+    if (binaryData && await acceptOpticalQrFrame(binaryData)) return true;
     const rawText = String(rawValue || "").trim();
     let parsedValue = null;
     try {
@@ -20210,8 +20152,6 @@
         return true;
       }
     } catch (error) {}
-
-    if (parsedValue?.f === "ozf") return acceptFountainQrPart(parsedValue);
 
     let part;
     try {
@@ -20274,13 +20214,20 @@
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const result = jsQR(imageData.data, canvas.width, canvas.height, { inversionAttempts: "dontInvert" });
-    if (!result?.data) return;
-    const now = Date.now();
-    if (result.data === qrScannerLastValue && now - qrScannerLastValueAt < 1200) return;
-    qrScannerLastValue = result.data;
-    qrScannerLastValueAt = now;
+    if (!result) return;
+    const binaryData = result.binaryData instanceof Uint8Array
+      ? result.binaryData
+      : new Uint8Array(result.binaryData || 0);
+    const isOpticalFrame = binaryData.length > 20 && binaryData[0] === 0xd1 && binaryData[1] === 0x0c;
+    if (!isOpticalFrame) {
+      if (!result.data) return;
+      const now = Date.now();
+      if (result.data === qrScannerLastValue && now - qrScannerLastValueAt < 1200) return;
+      qrScannerLastValue = result.data;
+      qrScannerLastValueAt = now;
+    }
     qrScanBusy = true;
-    acceptQrTransferPart(result.data).finally(() => { qrScanBusy = false; });
+    acceptQrTransferPart(result.data, binaryData).finally(() => { qrScanBusy = false; });
   }
 
   async function startQrScanner() {
@@ -20786,7 +20733,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=369")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=370")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
