@@ -4417,6 +4417,18 @@
     #productAddOverlay .product-editor-section .entry-section-content {
       padding-top: 6px;
     }
+    .product-default-weight-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(112px, 150px);
+      gap: 8px;
+      align-items: center;
+    }
+    .product-default-weight-row input,
+    .product-default-weight-row select {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+    }
     #orderEntryOverlay .order-entry-dialog-section .entry-section-header,
     #quickEditOverlay .order-entry-dialog-section .entry-section-header {
       min-height: 22px;
@@ -9972,7 +9984,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=407">
+<link rel="manifest" href="manifest.json?v=408">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10027,7 +10039,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.07</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.08</span></div>
     </div>
   </div>
 
@@ -10557,11 +10569,11 @@
             <label class="pallet-calculator-format-name hidden" id="palletCalculatorFormatNameField" for="palletCalculatorEditorFormatName">Назва формату<input id="palletCalculatorEditorFormatName" autocomplete="off" maxlength="80" placeholder="Наприклад: 216 г · 16 × 84" /></label>
             <div class="pallet-calculator-dialog-parameters">
               <div class="pallet-calculator-fields">
-                <div class="pallet-calculator-field"><label for="palletCalculatorBoxesPerPallet">Коробок у піддоні</label><input id="palletCalculatorBoxesPerPallet" type="number" inputmode="numeric" min="1" /></div>
-                <div class="pallet-calculator-field"><label for="palletCalculatorPacksPerBox">Пачок у коробці</label><input id="palletCalculatorPacksPerBox" type="number" inputmode="numeric" min="1" /></div>
-                <div class="pallet-calculator-field"><div class="pallet-calculator-field-heading"><label for="palletCalculatorPackWeight">Вага однієї пачки</label><select id="palletCalculatorPackWeightUnit" class="entry-section-unit-select pallet-calculator-weight-unit" aria-label="Одиниця ваги пачки"><option value="g">Грами</option><option value="kg">Кілограми</option></select></div><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" min="0" step="0.001" /></div>
-                <div class="pallet-calculator-field" id="palletCalculatorTransitionField"><label for="palletCalculatorTransitionBoxes">Коробок уже в перехідному піддоні</label><input id="palletCalculatorTransitionBoxes" type="number" inputmode="numeric" min="0" /></div>
-                <div class="pallet-calculator-field full" id="palletCalculatorPlanField"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" min="0" step="0.01" /></div>
+                <div class="pallet-calculator-field"><label for="palletCalculatorBoxesPerPallet">Коробок у піддоні</label><input id="palletCalculatorBoxesPerPallet" type="number" inputmode="numeric" enterkeyhint="next" min="1" /></div>
+                <div class="pallet-calculator-field"><label for="palletCalculatorPacksPerBox">Пачок у коробці</label><input id="palletCalculatorPacksPerBox" type="number" inputmode="numeric" enterkeyhint="next" min="1" /></div>
+                <div class="pallet-calculator-field"><div class="pallet-calculator-field-heading"><label for="palletCalculatorPackWeight">Вага однієї пачки</label><select id="palletCalculatorPackWeightUnit" class="entry-section-unit-select pallet-calculator-weight-unit" aria-label="Одиниця ваги пачки"><option value="g">Грами</option><option value="kg">Кілограми</option></select></div><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" enterkeyhint="next" min="0" step="0.001" /></div>
+                <div class="pallet-calculator-field" id="palletCalculatorTransitionField"><label for="palletCalculatorTransitionBoxes">Коробок уже в перехідному піддоні</label><input id="palletCalculatorTransitionBoxes" type="number" inputmode="numeric" enterkeyhint="next" min="0" /></div>
+                <div class="pallet-calculator-field full" id="palletCalculatorPlanField"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" enterkeyhint="done" min="0" step="0.01" /></div>
               </div>
             </div>
             <div class="pallet-calculator-actions" id="palletCalculatorCalculationActions"><button type="button" id="calculatePalletTransitionBtn">Розрахувати</button></div>
@@ -10922,6 +10934,15 @@
 
             <label for="newDefaultPacksPerBox">Пачок у коробці</label>
             <input id="newDefaultPacksPerBox" type="number" inputmode="numeric" min="0" placeholder="Наприклад: 12" />
+
+            <label for="newDefaultPackWeight">Вага однієї пачки</label>
+            <div class="product-default-weight-row">
+              <input id="newDefaultPackWeight" type="number" inputmode="decimal" min="0" step="0.001" placeholder="Наприклад: 216" />
+              <select id="newDefaultPackWeightUnit" aria-label="Одиниця ваги пачки">
+                <option value="g">Грами</option>
+                <option value="kg">Кілограми</option>
+              </select>
+            </div>
           </div>
         </section>
 
@@ -11477,7 +11498,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.07</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.08</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11502,6 +11523,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.08</h3>
+          <ul>
+            <li>додано керування калькулятором через Enter, а типову вагу пачки включено до редактора найменування.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.07</h3>
           <ul>
@@ -13480,13 +13507,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=407"></script>
+<script src="./assets/decimen-optical-transfer.js?v=408"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.07";
+  const APP_VERSION = "4.08";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -21212,6 +21239,8 @@
     const defaultPieceKg = Number(document.getElementById("newDefaultPieceKg").value || 0);
     const defaultBoxesPerPallet = Math.max(0, Number(document.getElementById("newDefaultBoxesPerPallet").value) || 0);
     const defaultPacksPerBox = Math.max(0, Number(document.getElementById("newDefaultPacksPerBox").value) || 0);
+    const defaultPackWeight = Math.max(0, Number(document.getElementById("newDefaultPackWeight").value) || 0);
+    const defaultPackWeightUnit = document.getElementById("newDefaultPackWeightUnit").value === "kg" ? "kg" : "g";
 
     if (!name) {
       toast("Введи назву", true);
@@ -21239,6 +21268,8 @@
       p.defaultPieceKg = defaultPieceKg;
       p.defaultBoxesPerPallet = defaultBoxesPerPallet;
       p.defaultPacksPerBox = defaultPacksPerBox;
+      p.defaultPackWeight = defaultPackWeight;
+      p.defaultPackWeightUnit = defaultPackWeightUnit;
 
       state.days.forEach(day => {
         day.entries.forEach(e => {
@@ -21268,7 +21299,9 @@
         defaultPalletKg,
         defaultPieceKg,
         defaultBoxesPerPallet,
-        defaultPacksPerBox
+        defaultPacksPerBox,
+        defaultPackWeight,
+        defaultPackWeightUnit
       });
       toast("Найменування додано");
     }
@@ -21293,6 +21326,8 @@
     document.getElementById("newDefaultPieceKg").value = p.defaultPieceKg || "";
     document.getElementById("newDefaultBoxesPerPallet").value = p.defaultBoxesPerPallet || "";
     document.getElementById("newDefaultPacksPerBox").value = p.defaultPacksPerBox || "";
+    document.getElementById("newDefaultPackWeight").value = p.defaultPackWeight || "";
+    document.getElementById("newDefaultPackWeightUnit").value = p.defaultPackWeightUnit === "kg" ? "kg" : "g";
     document.getElementById("productFormTitle").textContent = "Редагувати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти зміни";
     document.getElementById("cancelProductBtn").textContent = "Скасувати";
@@ -21344,6 +21379,8 @@
     document.getElementById("newDefaultPieceKg").value = "";
     document.getElementById("newDefaultBoxesPerPallet").value = "";
     document.getElementById("newDefaultPacksPerBox").value = "";
+    document.getElementById("newDefaultPackWeight").value = "";
+    document.getElementById("newDefaultPackWeightUnit").value = "g";
     document.getElementById("productFormTitle").textContent = "Додати найменування";
     document.getElementById("saveProductBtn").textContent = "Зберегти найменування";
     document.getElementById("cancelProductBtn").textContent = "Закрити";
@@ -22773,7 +22810,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=407")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=408")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24837,20 +24874,51 @@
     }
   }
 
+  function initPalletCalculatorEnterFlow() {
+    const fieldIds = [
+      "palletCalculatorBoxesPerPallet",
+      "palletCalculatorPacksPerBox",
+      "palletCalculatorPackWeight",
+      "palletCalculatorTransitionBoxes",
+      "palletCalculatorPlanKg"
+    ];
+    fieldIds.forEach((id, index) => {
+      document.getElementById(id)?.addEventListener("keydown", event => {
+        if (event.key !== "Enter" || event.isComposing) return;
+        event.preventDefault();
+        if (id === "palletCalculatorPlanKg") {
+          calculatePalletTransition();
+          return;
+        }
+        const nextField = fieldIds
+          .slice(index + 1)
+          .map(nextId => document.getElementById(nextId))
+          .find(field => field && !field.closest(".hidden") && !field.disabled);
+        if (!nextField) return;
+        nextField.focus({ preventScroll: true });
+        if (typeof nextField.select === "function") nextField.select();
+      });
+    });
+  }
+
   function calculatePalletTransition() {
     const product = palletCalculatorDialogContext.type === "product"
       ? state.products.find(item => item.id === palletCalculatorDialogContext.id)
       : null;
     const sourceName = product?.name || palletCalculatorDialogContext.id || "Розрахунок";
-    const planKg = Number(document.getElementById("palletCalculatorPlanKg").value);
-    const boxesPerPallet = parseInt(document.getElementById("palletCalculatorBoxesPerPallet").value, 10);
-    const packsPerBox = parseInt(document.getElementById("palletCalculatorPacksPerBox").value, 10);
-    const packWeightValue = Number(document.getElementById("palletCalculatorPackWeight").value);
+    const numberOrZero = id => {
+      const value = Number(document.getElementById(id).value);
+      return Number.isFinite(value) ? value : 0;
+    };
+    const planKg = Math.max(0, numberOrZero("palletCalculatorPlanKg"));
+    const boxesPerPallet = Math.max(0, Math.trunc(numberOrZero("palletCalculatorBoxesPerPallet")));
+    const packsPerBox = Math.max(0, Math.trunc(numberOrZero("palletCalculatorPacksPerBox")));
+    const packWeightValue = Math.max(0, numberOrZero("palletCalculatorPackWeight"));
     const packWeightUnit = document.getElementById("palletCalculatorPackWeightUnit").value === "kg" ? "kg" : "g";
-    const transitionBoxes = parseInt(document.getElementById("palletCalculatorTransitionBoxes").value, 10) || 0;
+    const transitionBoxes = Math.max(0, Math.trunc(numberOrZero("palletCalculatorTransitionBoxes")));
     const result = document.getElementById("palletCalculatorResult");
-    if (!(planKg > 0) || !(boxesPerPallet > 0) || !(packsPerBox > 0) || !(packWeightValue > 0) || transitionBoxes < 0) {
-      toast("Заповніть усі поля правильними значеннями", true);
+    if (!(planKg > 0) || !(boxesPerPallet > 0) || !(packsPerBox > 0) || !(packWeightValue > 0)) {
+      toast("Коробки, пачки, вага та план мають бути більшими за нуль", true);
       return;
     }
 
@@ -25675,6 +25743,7 @@
     const option = event.target.closest("[data-pallet-calculator-format]");
     if (option) selectPalletCalculatorFormat(option.dataset.palletCalculatorFormat);
   });
+  initPalletCalculatorEnterFlow();
   document.getElementById("calculatePalletTransitionBtn").addEventListener("click", calculatePalletTransition);
   document.getElementById("palletCalculatorProductSearch").addEventListener("focus", event => {
     renderPalletCalculatorSearchResults(event.target.value);
