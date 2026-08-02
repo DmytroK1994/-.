@@ -9771,7 +9771,12 @@
       color: var(--text);
       font-weight: 900;
     }
-    .shift-mini-day.is-today { outline: 1px solid var(--primary-bg); }
+    .shift-mini-day.is-today {
+      outline: 1px solid var(--primary-bg);
+      background: var(--primary-bg) !important;
+      color: var(--primary-text) !important;
+      font-weight: 900;
+    }
     .shift-mini-day.empty { visibility: hidden; }
     .shift-mini-count { margin-top: auto; text-align: center; }
     .shift-month-preview-calendar { display: grid; gap: 7px; }
@@ -9816,6 +9821,16 @@
       background: color-mix(in srgb, var(--shift-color) 22%, var(--surface)) !important;
     }
     .shift-calendar-day.is-today { outline: 2px solid var(--primary-bg); outline-offset: -2px; }
+    .shift-calendar-day.is-today .shift-calendar-day-number {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      margin: 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--primary-bg);
+      color: var(--primary-text);
+    }
     .shift-calendar-day.is-selected { box-shadow: inset 0 0 0 2px var(--primary-bg) !important; }
     .shift-calendar-day-number { display: block; font-size: 12px; font-weight: 900; }
     .shift-calendar-day-type,
@@ -10169,8 +10184,18 @@
       border-radius: 14px;
       background: var(--surface-deep);
     }
-    .shift-analytics-filter label { margin: 0; color: var(--muted); font-size: 10px; }
-    .shift-analytics-filter input { min-height: 38px; margin-top: 5px; padding: 7px 8px; font-size: 12px; }
+    .shift-analytics-filter label { min-width: 0; margin: 0; overflow: hidden; color: var(--muted); font-size: 10px; }
+    .shift-analytics-filter input {
+      width: 100%;
+      min-width: 0 !important;
+      max-width: 100%;
+      min-height: 36px;
+      margin-top: 5px;
+      padding: 6px 5px;
+      box-sizing: border-box;
+      overflow: hidden;
+      font-size: 11px;
+    }
     .shift-analytics-filter-actions { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
     .shift-analytics-filter-actions button { width: 100%; min-height: 36px; margin: 0; padding: 6px 8px; font-size: 11px; }
     .shift-analytics-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
@@ -10244,6 +10269,9 @@
     .shift-analytics-entry-row small { display: block; }
     .shift-analytics-entry-row small { margin-top: 3px; color: var(--muted); line-height: 1.35; }
     .shift-analytics-entry-value { font-size: 11px; font-weight: 850; text-align: right; white-space: nowrap; }
+    @media (max-width: 390px) {
+      .shift-analytics-filter { grid-template-columns: minmax(0, 1fr); }
+    }
     @media (max-width: 760px) {
       .additional-shell { padding: 9px; }
       .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -10447,7 +10475,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=424">
+<link rel="manifest" href="manifest.json?v=425">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10502,7 +10530,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.24</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.25</span></div>
     </div>
   </div>
 
@@ -12024,7 +12052,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.24</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.25</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12050,6 +12078,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.25</h3>
+          <ul>
+            <li>поля вибору періоду у «Статистиці роботи» зменшено та захищено від накладання на мобільних екранах;</li>
+            <li>сьогоднішнє число отримало помітне кругле підсвічування в календарі та мінікалендарях.</li>
+          </ul>
+
           <h3>Версія 4.24</h3>
           <ul>
             <li>календар піднято вище, а перемикачі «Місяць / Тиждень / Рік» перенесено під нього;</li>
@@ -14133,14 +14167,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=424"></script>
-<script src="./firebase-config.js?v=424"></script>
+<script src="./assets/decimen-optical-transfer.js?v=425"></script>
+<script src="./firebase-config.js?v=425"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.24";
+  const APP_VERSION = "4.25";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23478,7 +23512,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=424")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=425")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
