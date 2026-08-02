@@ -9216,12 +9216,16 @@
       box-shadow: 0 22px 60px var(--popover-shadow);
     }
     .pallet-calculator-dialog-header {
-      display: flex;
+      position: relative;
+      display: block;
       min-width: 0;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 24px;
+      padding-top: 43px;
       margin-bottom: 17px;
+    }
+    .pallet-calculator-dialog-heading {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: center;
     }
     .pallet-calculator-dialog-header .small {
       margin: 0 0 3px;
@@ -9230,12 +9234,31 @@
     }
     .pallet-calculator-dialog-header h3 {
       margin: 0;
+      width: 100%;
       overflow-wrap: anywhere;
       font-size: 21px;
       font-weight: 950;
       line-height: 1.16;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .pallet-calculator-dialog-header h3:not(.expanded) {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+    .pallet-calculator-dialog-header h3.expanded {
+      display: block;
+      overflow: visible;
     }
     .pallet-calculator-dialog-header-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
       display: flex;
       flex: 0 0 auto;
       align-items: center;
@@ -10020,7 +10043,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=410">
+<link rel="manifest" href="manifest.json?v=411">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10075,7 +10098,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.10</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.11</span></div>
     </div>
   </div>
 
@@ -10596,7 +10619,7 @@
         <div class="pallet-calculator-overlay hidden" id="palletCalculatorOverlay" role="dialog" aria-modal="true" aria-labelledby="palletCalculatorDialogTitle">
           <section class="pallet-calculator-dialog">
             <div class="pallet-calculator-dialog-header">
-              <div class="pallet-calculator-dialog-heading"><div class="small" id="palletCalculatorDialogLabel">Розрахунок</div><h3 id="palletCalculatorDialogTitle">Перехідний піддон</h3></div>
+              <div class="pallet-calculator-dialog-heading"><div class="small" id="palletCalculatorDialogLabel">Розрахунок</div><h3 id="palletCalculatorDialogTitle" role="button" tabindex="0" aria-expanded="false">Перехідний піддон</h3></div>
               <div class="pallet-calculator-dialog-header-actions">
                 <button type="button" class="pallet-calculator-save-defaults hidden" id="savePalletCalculatorProductDefaultsBtn">Зберегти типові значення</button>
                 <button type="button" class="pallet-calculator-format-icon hidden" id="savePalletCalculatorFormatBtn" aria-label="Зберегти формат" title="Зберегти формат">💾</button>
@@ -11535,7 +11558,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.10</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.11</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11560,6 +11583,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.11</h3>
+          <ul>
+            <li>назву в калькуляторі обмежено двома рядками з можливістю розгорнути повний текст натисканням.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.10</h3>
           <ul>
@@ -13556,13 +13585,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=410"></script>
+<script src="./assets/decimen-optical-transfer.js?v=411"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.10";
+  const APP_VERSION = "4.11";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22859,7 +22888,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=410")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=411")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24797,6 +24826,9 @@
     const settingsMode = type === "format-settings";
     label.textContent = type === "product" ? "Найменування" : (settingsMode ? "Налаштування формату" : "Збережений формат");
     title.textContent = product?.name || id || "Новий формат";
+    title.title = title.textContent;
+    title.classList.remove("expanded");
+    title.setAttribute("aria-expanded", "false");
     nameField.classList.toggle("hidden", !settingsMode);
     saveDefaults.classList.toggle("hidden", type !== "product");
     saveFormat.classList.toggle("hidden", !settingsMode);
@@ -24814,6 +24846,13 @@
     document.getElementById("palletCalculatorOverlay").classList.remove("hidden");
     if (settingsMode && !id) window.setTimeout(() => nameInput.focus(), 50);
     updateAdditionalHeaderUI();
+  }
+
+  function togglePalletCalculatorDialogTitle() {
+    const title = document.getElementById("palletCalculatorDialogTitle");
+    if (!title) return;
+    const expanded = title.classList.toggle("expanded");
+    title.setAttribute("aria-expanded", String(expanded));
   }
 
   function closePalletCalculatorDialog(options = {}) {
@@ -25771,6 +25810,12 @@
   document.getElementById("backToPalletCalculatorBtn").addEventListener("click", openPalletCalculator);
   document.getElementById("addPalletCalculatorFormatBtn").addEventListener("click", () => openPalletCalculatorDialog("format-settings"));
   document.getElementById("closePalletCalculatorDialogBtn").addEventListener("click", closePalletCalculatorDialog);
+  document.getElementById("palletCalculatorDialogTitle").addEventListener("click", togglePalletCalculatorDialogTitle);
+  document.getElementById("palletCalculatorDialogTitle").addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    togglePalletCalculatorDialogTitle();
+  });
   document.getElementById("palletCalculatorOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closePalletCalculatorDialog();
   });
