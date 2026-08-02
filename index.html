@@ -8814,6 +8814,10 @@
     .shift-calendar-card.is-week-view,
     .shift-calendar-card.is-year-view { aspect-ratio: auto; min-height: 0; }
     .shift-calendar-card.is-week-view { min-height: 190px; }
+    .shift-calendar-card.is-week-view .shift-week-number-label {
+      margin-block: auto;
+      padding-top: 4px;
+    }
     .shift-month-navigation {
       justify-content: space-between;
       margin-bottom: 10px;
@@ -8845,6 +8849,36 @@
       text-align: center;
     }
     .shift-week-number-label[hidden] { display: none !important; }
+
+    .header-held-search {
+      --search-hand-opacity: 0;
+      --search-hand-offset: -20px;
+      position: relative;
+      isolation: isolate;
+    }
+    .header-held-search::before,
+    .header-held-search::after {
+      content: "✋";
+      position: absolute;
+      top: -15px;
+      z-index: 12;
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+      opacity: var(--search-hand-opacity);
+      filter: drop-shadow(0 3px 3px color-mix(in srgb, var(--popover-shadow) 48%, transparent));
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      will-change: opacity, transform;
+    }
+    .header-held-search::before {
+      left: 18%;
+      transform: translateY(var(--search-hand-offset)) rotate(158deg);
+    }
+    .header-held-search::after {
+      right: 18%;
+      transform: translateY(var(--search-hand-offset)) rotate(202deg);
+    }
     .shift-weekdays,
     .shift-calendar-grid {
       display: grid;
@@ -9206,12 +9240,14 @@
       .shift-calendar-day-type,
       .shift-calendar-day-hours { margin-top: 2px; }
       .shift-editor-overlay {
-        align-items: start;
-        padding: clamp(calc(env(safe-area-inset-top) + 70px), 15vh, calc(env(safe-area-inset-top) + 128px)) 7px calc(env(safe-area-inset-bottom) + 7px);
+        align-items: center;
+        justify-content: center;
+        place-items: center;
+        padding: max(7px, env(safe-area-inset-top)) 7px max(7px, env(safe-area-inset-bottom));
       }
       .shift-editor-overlay .shift-editor-panel {
         width: 100%;
-        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - clamp(84px, 15vh, 142px));
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 14px);
         padding: 9px;
         border-radius: 18px;
       }
@@ -9291,6 +9327,15 @@
     html.modal-scroll-locked::before {
       background: var(--modal-safe-background, color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%)) !important;
     }
+    [role="dialog"][aria-modal="true"]:not(.hidden) {
+      align-items: center !important;
+      justify-content: center !important;
+      place-items: center !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .header-held-search::before,
+      .header-held-search::after { transition: none; }
+    }
   </style>
 
 <script>
@@ -9303,7 +9348,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=384">
+<link rel="manifest" href="manifest.json?v=385">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9358,7 +9403,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.84</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.85</span></div>
     </div>
   </div>
 
@@ -10732,7 +10777,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.84</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.85</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10757,6 +10802,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.85</h3>
+          <ul>
+            <li>вікно вибору місяця й року та інші діалоги відцентровано відносно видимої області екрана;</li>
+            <li>номер тижня розташовано посередині вільного простору між квадратами й нижнім краєм календарної картки;</li>
+            <li>додано декоративні руки, які плавно з’являються, коли блок пошуку майже доходить до шапки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.84</h3>
           <ul>
@@ -12580,13 +12633,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=384"></script>
+<script src="./assets/decimen-optical-transfer.js?v=385"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.84";
+  const APP_VERSION = "3.85";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18258,6 +18311,50 @@
     }
   }
 
+  let searchHeaderHandsFrame = 0;
+  function updateSearchHeaderHands() {
+    if (searchHeaderHandsFrame) return;
+    searchHeaderHandsFrame = window.requestAnimationFrame(() => {
+      searchHeaderHandsFrame = 0;
+      const header = document.querySelector(".app-header");
+      if (!header) return;
+      const headerBottom = header.getBoundingClientRect().bottom;
+      document.querySelectorAll(".header-held-search").forEach(target => {
+        if (target.offsetParent === null) {
+          target.style.setProperty("--search-hand-opacity", "0");
+          target.style.setProperty("--search-hand-offset", "-20px");
+          return;
+        }
+        const rect = target.getBoundingClientRect();
+        const distance = rect.top - headerBottom;
+        const inApproachZone = distance <= 48 && distance >= -24 && rect.bottom > headerBottom;
+        const progress = inApproachZone ? Math.max(0, Math.min(1, (48 - distance) / 48)) : 0;
+        target.style.setProperty("--search-hand-opacity", progress.toFixed(2));
+        target.style.setProperty("--search-hand-offset", `${(-20 + progress * 20).toFixed(1)}px`);
+      });
+    });
+  }
+
+  function initSearchHeaderHands() {
+    [
+      document.querySelector("#pageToday .entry-product-search-block"),
+      document.querySelector("#pageToday .current-list-search-card"),
+      document.querySelector("#pageProducts .product-list-search-card")
+    ].filter(Boolean).forEach(target => target.classList.add("header-held-search"));
+    window.addEventListener("scroll", updateSearchHeaderHands, { passive: true });
+    window.addEventListener("resize", updateSearchHeaderHands, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("scroll", updateSearchHeaderHands, { passive: true });
+      window.visualViewport.addEventListener("resize", updateSearchHeaderHands, { passive: true });
+    }
+    new MutationObserver(updateSearchHeaderHands).observe(document.body, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ["class"]
+    });
+    updateSearchHeaderHands();
+  }
+
   let backupFitObserver = null;
   function updateAppBottomObstructionMetric() {
     const nav = document.getElementById("appBottomNav");
@@ -21766,7 +21863,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=384")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=385")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24902,6 +24999,7 @@
   render();
   updatePageBackButton();
   initAppHeaderBottomMetric();
+  initSearchHeaderHands();
   initBackupSectionFit();
   initAboutCardDeck();
   initOtherSettingsCategories();
