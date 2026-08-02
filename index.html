@@ -3079,7 +3079,7 @@
     body.page-today.workspace-additional .compact-header-hints {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
       gap: 12px;
       width: 100%;
       min-height: 14px;
@@ -3135,26 +3135,28 @@
     }
     .compact-menu-btn {
       display: none;
-      width: auto;
-      min-width: 110px;
-      min-height: 38px;
+      width: 40px;
+      min-width: 40px;
+      height: 36px;
+      min-height: 36px;
       margin: 0;
-      padding: 8px 16px;
+      padding: 0;
       border: 1px solid var(--border-strong);
-      border-radius: 12px;
+      border-radius: 11px;
       background: var(--surface-strong);
       color: var(--text);
       box-shadow: none;
+      place-items: center;
     }
     @media (min-width: 901px) {
       body:not(.page-today) .compact-header-row {
         display: grid;
-        grid-template-columns: 110px minmax(0, 1fr) 110px;
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
         align-items: center;
         gap: 10px;
       }
       body:not(.page-today) .compact-menu-btn {
-        display: block;
+        display: grid;
       }
       body:not(.page-today) .compact-header-spacer {
         display: block;
@@ -3165,20 +3167,48 @@
         display: block;
       }
       body:not(.page-today) .compact-header-content {
+        grid-column: 2;
         width: 100%;
         text-align: center;
+      }
+      body:not(.page-today) .compact-header-row {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr) 34px;
+        align-items: center;
+        min-height: 40px;
+        gap: 7px;
+      }
+      body:not(.page-today) .compact-menu-btn {
+        display: grid;
+        grid-column: 1;
+        grid-row: 1;
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+        min-height: 34px;
+        padding: 0;
+        place-items: center;
+        border-radius: 10px;
+      }
+      body:not(.page-today) .compact-header-spacer {
+        display: block;
+        grid-column: 3;
+        grid-row: 1;
+        width: 34px;
       }
       body:not(.page-today) .section-header-title {
         text-align: center;
       }
       body:not(.page-today) .compact-header-hints {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-items: center;
-        width: 100%;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        display: block;
+        width: auto;
         min-height: 25px;
-        margin-top: 3px;
-        padding-inline: 5px;
+        margin: 0;
+        padding: 0;
+        transform: translateY(-50%);
       }
       body:not(.page-today) .page-back-swipe-hint,
       body:not(.page-today) .menu-open-swipe-hint {
@@ -3198,14 +3228,7 @@
         transform: none;
       }
       body:not(.page-today) .page-back-swipe-hint {
-        grid-column: 1;
-        grid-row: 1;
-        justify-self: start;
-      }
-      body:not(.page-today) .menu-open-swipe-hint {
-        grid-column: 2;
-        grid-row: 1;
-        justify-self: end;
+        text-align: right;
       }
     }
     .product-list-search-card,
@@ -8041,7 +8064,7 @@
         grid-template-columns: auto auto minmax(0, 1fr);
       }
       body:not(.page-today) #compactMenuBtn {
-        display: block !important;
+        display: grid !important;
       }
       body:not(.page-today) .compact-header-content {
         text-align: left;
@@ -10215,7 +10238,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=416">
+<link rel="manifest" href="manifest.json?v=417">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10270,7 +10293,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.16</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.17</span></div>
     </div>
   </div>
 
@@ -10337,13 +10360,12 @@
     </div>
     <div class="date-line" id="activeDateLabel"></div>
     <div class="compact-header-row">
-      <button class="compact-menu-btn" id="compactMenuBtn">Меню</button>
+      <button class="compact-menu-btn" id="compactMenuBtn" type="button" aria-label="Відкрити меню" title="Меню"><span class="hamburger-icon" aria-hidden="true"></span></button>
       <button class="desktop-back-btn" id="desktopBackBtn" type="button" aria-label="Назад" title="Назад"><span aria-hidden="true">←</span></button>
       <div class="compact-header-content">
         <div class="section-header-title" id="sectionHeaderTitle"></div>
         <div class="compact-header-hints">
-          <button type="button" class="page-back-swipe-hint hidden" id="pageBackSwipeHint">← Назад</button>
-          <button type="button" class="menu-open-swipe-hint" id="compactSwipeMenuBtn">→ Меню</button>
+          <button type="button" class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Назад</button>
         </div>
       </div>
       <div class="compact-header-spacer" aria-hidden="true"></div>
@@ -11769,7 +11791,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.16</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.17</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11795,6 +11817,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.17</h3>
+          <ul>
+            <li>текстову кнопку «Меню» зі стрілкою прибрано з усіх вкладених сторінок;</li>
+            <li>квадратну кнопку меню з трьома рисками закріплено ліворуч, а текстову кнопку «Назад» без стрілки — праворуч лише там, де вона потрібна;</li>
+            <li>нижню панель навігації прибрано, щоб не дублювати нову єдину шапку.</li>
+          </ul>
+
           <h3>Версія 4.16</h3>
           <ul>
             <li>мобільні кнопки «Назад» і «Меню» у вкладених налаштуваннях вирівняно по краях за зразком додаткових інструментів та трохи зменшено по висоті;</li>
@@ -13826,14 +13855,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=416"></script>
-<script src="./firebase-config.js?v=416"></script>
+<script src="./assets/decimen-optical-transfer.js?v=417"></script>
+<script src="./firebase-config.js?v=417"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.16";
+  const APP_VERSION = "4.17";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18925,14 +18954,13 @@
     const bottomNav = document.getElementById("appBottomNav");
     const swipeHint = document.getElementById("pageBackSwipeHint");
     const hasParent = hasPageBackDestination();
-    const swipeMode = isMobileDevice && getResolvedBackNavigationMode() === "swipe";
-    const showBottomNav = currentPage !== "today" && !swipeMode;
+    const showBottomNav = false;
     if (bottomNav) bottomNav.classList.toggle("hidden", !showBottomNav);
     const showAdditionalSwipeBackHint = isMobileDevice
       && currentPage === "today"
       && workspaceIsAdditional()
       && hasAdditionalBackDestination();
-    const showSwipeBackHint = (hasParent && swipeMode && currentPage !== "today") || showAdditionalSwipeBackHint;
+    const showSwipeBackHint = (hasParent && currentPage !== "today") || showAdditionalSwipeBackHint;
     if (swipeHint) swipeHint.classList.toggle("hidden", !showSwipeBackHint);
     document.body.classList.toggle("subpage-swipe-back", showSwipeBackHint && currentPage !== "today");
     document.body.classList.toggle("bottom-nav-visible", showBottomNav);
@@ -23169,7 +23197,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=416")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=417")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -26169,7 +26197,6 @@
     button.addEventListener("click", () => togglePalletCalculatorSection(button.dataset.togglePalletCalculatorSection));
   });
   document.getElementById("compactMenuBtn").addEventListener("click", openMenu);
-  document.getElementById("compactSwipeMenuBtn").addEventListener("click", openMenu);
   document.getElementById("pageBackSwipeHint").addEventListener("click", navigateBack);
   document.getElementById("desktopBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("workspaceSwitcherBtn").addEventListener("click", event => {
