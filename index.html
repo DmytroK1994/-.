@@ -554,6 +554,7 @@
       align-self: start;
     }
     .topbar-right-actions { align-self: start; }
+    #additionalDesktopHeaderBackBtn { display: none; }
     body.page-today .topbar {
       grid-template-columns: 40px 1fr 40px;
       gap: 6px;
@@ -7813,6 +7814,33 @@
       body.page-today .topbar {
         grid-template-columns: 46px minmax(0, 1fr) 46px;
       }
+      body.workspace-additional .topbar-left-actions {
+        position: relative;
+      }
+      body.workspace-additional #additionalDesktopHeaderBackBtn.desktop-visible {
+        position: absolute;
+        top: 0;
+        left: 54px;
+        display: grid;
+        width: 46px;
+        min-width: 46px;
+        height: 46px;
+        min-height: 46px;
+        margin: 0;
+        padding: 0;
+        place-items: center;
+        border-radius: 15px;
+        background: var(--surface-deep);
+        color: var(--text);
+        box-shadow: none;
+        font-size: 23px;
+        line-height: 1;
+      }
+      body.workspace-additional.additional-settings-screen .workspace-switcher {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
       body.page-today .workspace-switcher {
         justify-self: center;
         text-align: center;
@@ -7837,6 +7865,15 @@
       }
       body:not(.page-today) .compact-header-content {
         text-align: left;
+      }
+      body.page-management .compact-header-content {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+      }
+      body.page-management .section-header-title {
+        text-align: center;
       }
       .drawer-bg {
         z-index: 110;
@@ -8776,6 +8813,7 @@
     .additional-settings-toggle small { margin-top: 3px; color: var(--muted); font-size: 10px; }
     .additional-settings-toggle input { width: 22px; height: 22px; margin: 0; }
     body.additional-hide-tool-back #backFromPalletCalculatorBtn,
+    body.additional-hide-tool-back #backToPalletCalculatorBtn,
     body.additional-hide-tool-back #backToAdditionalDesktopBtn { display: none !important; }
     .additional-tool-name {
       display: flex;
@@ -8968,9 +9006,9 @@
     .pallet-calculator-search-mode-button[aria-expanded="true"] .pallet-calculator-search-mode-arrow { transform: rotate(180deg); }
     .pallet-calculator-search-mode-menu {
       position: absolute;
-      top: calc(100% + 4px);
-      right: 8px;
-      left: 8px;
+      top: 0;
+      right: 0;
+      left: 0;
       z-index: 25;
       display: grid;
       gap: 3px;
@@ -8982,10 +9020,11 @@
     }
     .pallet-calculator-search-mode-menu.hidden { display: none; }
     .pallet-calculator-search-mode-caption {
-      padding: 6px 8px 4px;
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 800;
+      min-height: 42px;
+      padding: 11px 10px 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
     }
     .pallet-calculator-search-mode-menu button {
       width: 100%;
@@ -9845,7 +9884,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=403">
+<link rel="manifest" href="manifest.json?v=404">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9900,7 +9939,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.03</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.04</span></div>
     </div>
   </div>
 
@@ -9934,6 +9973,7 @@
     <div class="topbar">
       <div class="topbar-left-actions">
         <button class="icon-btn" id="openMenuBtn" aria-label="Відкрити меню"><span class="hamburger-icon"></span></button>
+        <button type="button" class="icon-btn" id="additionalDesktopHeaderBackBtn" aria-label="Назад" title="Назад"><span aria-hidden="true">←</span></button>
       </div>
       <div class="workspace-switcher">
         <button type="button" class="workspace-switcher-button" id="workspaceSwitcherBtn" aria-expanded="false" aria-haspopup="true">
@@ -11349,7 +11389,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.03</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.04</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11374,6 +11414,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.04</h3>
+          <ul>
+            <li>список способу пошуку відкривається від заголовка, на комп’ютері додано постійну кнопку «Назад» у шапці та жест повернення мишею від правого краю.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.03</h3>
           <ul>
@@ -13328,13 +13374,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=403"></script>
+<script src="./assets/decimen-optical-transfer.js?v=404"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.03";
+  const APP_VERSION = "4.04";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -19372,6 +19418,82 @@
     };
     document.addEventListener("touchend", finishSwipe, { capture: true, passive: true });
     document.addEventListener("touchcancel", finishSwipe, { capture: true, passive: true });
+
+    let mousePointerId = null;
+    let mouseTracking = false;
+    let mouseHorizontal = false;
+    let mouseStartX = 0;
+    let mouseStartY = 0;
+    let mouseDistanceX = 0;
+
+    document.addEventListener("pointerdown", event => {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+      mouseTracking = false;
+      mouseHorizontal = false;
+      mouseDistanceX = 0;
+      hideIndicator();
+      if (gestureStartsOnHorizontalControl(event.target) || !canUsePageBackSwipe()) return;
+      if (event.clientX < window.innerWidth - 42) return;
+      mousePointerId = event.pointerId;
+      mouseTracking = true;
+      mouseStartX = event.clientX;
+      mouseStartY = event.clientY;
+    }, { capture: true });
+
+    document.addEventListener("pointermove", event => {
+      if (event.pointerType !== "mouse" || event.pointerId !== mousePointerId || !mouseTracking) return;
+      if (document.body.classList.contains("additional-desktop-dragging")) {
+        mouseTracking = false;
+        mouseHorizontal = false;
+        mousePointerId = null;
+        hideIndicator();
+        return;
+      }
+      const deltaX = event.clientX - mouseStartX;
+      const deltaY = event.clientY - mouseStartY;
+      if (!mouseHorizontal) {
+        if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX) || deltaX >= 0) {
+          mouseTracking = false;
+          mousePointerId = null;
+          hideIndicator();
+          return;
+        }
+        mouseHorizontal = true;
+      }
+      mouseDistanceX = Math.abs(deltaX);
+      if (indicator) {
+        const threshold = Math.min(90, window.innerWidth * .2);
+        const travel = Math.min(72, Math.max(0, mouseDistanceX - 8) * .82);
+        const scale = Math.min(1.08, .78 + mouseDistanceX / Math.max(1, threshold) * .3);
+        indicator.classList.add("active");
+        indicator.classList.toggle("ready", mouseDistanceX >= threshold);
+        if (mouseDistanceX < threshold) indicator.style.transform = `translate3d(${-travel}px, -50%, 0) scale(${scale})`;
+      }
+      if (event.cancelable) event.preventDefault();
+    }, { capture: true, passive: false });
+
+    const finishMouseSwipe = event => {
+      if (event.pointerType !== "mouse" || event.pointerId !== mousePointerId) return;
+      const shouldGoBack = event.type !== "pointercancel"
+        && mouseTracking
+        && mouseHorizontal
+        && mouseDistanceX >= Math.min(90, window.innerWidth * .2);
+      mouseTracking = false;
+      mouseHorizontal = false;
+      mousePointerId = null;
+      if (shouldGoBack) {
+        indicator?.classList.add("active", "ready");
+        window.setTimeout(() => {
+          hideIndicator();
+          navigateBack();
+        }, 110);
+      } else {
+        hideIndicator();
+      }
+    };
+    document.addEventListener("pointerup", finishMouseSwipe, { capture: true });
+    document.addEventListener("pointercancel", finishMouseSwipe, { capture: true });
   }
 
   function showPage(page, options = {}) {
@@ -19395,6 +19517,7 @@
     }
 
     document.body.classList.toggle("page-today", page === "today");
+    document.body.classList.toggle("page-management", page === "management");
     const sectionTitle = page === "today" ? workspaceLabel() : (PAGE_TITLES[page] || "Облік");
     document.getElementById("sectionHeaderTitle").textContent = sectionTitle;
     if (page !== "backup") document.getElementById("backupActionMenu").removeAttribute("open");
@@ -22544,7 +22667,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=403")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=404")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24171,15 +24294,21 @@
 
   function updateAdditionalHeaderUI() {
     if (!workspaceIsAdditional()) {
-      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active");
+      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active", "additional-settings-screen");
+      document.getElementById("additionalDesktopHeaderBackBtn")?.classList.remove("desktop-visible");
       return;
     }
     const activeTool = getAdditionalLastTool();
     const toolOpen = activeTool !== "desktop";
-    const label = activeTool === "shifts"
-      ? "Графік змін"
-      : (activeTool === "palletCalculator" ? "Перехідний піддон" : "Додатково");
+    const settingsScreenOpen = additionalSettingsAreOpen() || shiftSettingsAreOpen() || palletCalculatorSettingsAreOpen();
+    const label = settingsScreenOpen
+      ? "Налаштування"
+      : (activeTool === "shifts"
+        ? "Графік змін"
+        : (activeTool === "palletCalculator" ? "Перехідний піддон" : "Додатково"));
     document.body.classList.toggle("additional-tool-open", toolOpen);
+    document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
+    document.getElementById("additionalDesktopHeaderBackBtn")?.classList.toggle("desktop-visible", hasAdditionalBackDestination());
     const settingsAvailable = (activeTool === "desktop" && !additionalSettingsAreOpen())
       || (activeTool === "shifts" && !shiftSettingsAreOpen())
       || (activeTool === "palletCalculator" && !palletCalculatorSettingsAreOpen() && !palletCalculatorDialogIsOpen());
@@ -25393,6 +25522,7 @@
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("additionalDesktopHeaderBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("backFromAdditionalSettingsBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("additionalShowBackButton").addEventListener("change", event => setAdditionalBackButtonVisibility(event.target.checked));
