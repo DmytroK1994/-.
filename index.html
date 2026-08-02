@@ -821,7 +821,7 @@
       padding-top: calc(env(safe-area-inset-top) + 100px);
     }
     body.subpage-swipe-back .product-list-search-card {
-      top: calc(env(safe-area-inset-top) + 68px);
+      top: calc(var(--app-header-bottom, 68px) + 8px);
     }
     .hamburger-icon,
     .hamburger-icon::before,
@@ -3048,7 +3048,7 @@
       z-index: 9;
     }
     body:not(.page-today):not(.subpage-swipe-back) .product-list-search-card {
-      top: calc(env(safe-area-inset-top) + 52px);
+      top: calc(var(--app-header-bottom, 68px) + 8px);
     }
     @media (min-width: 901px) {
       body:not(.page-today):not(.subpage-swipe-back) .product-list-search-card {
@@ -3059,7 +3059,7 @@
       border-top: 2px solid var(--border-strong);
     }
     body.page-today .current-list-search-card {
-      top: calc(var(--app-header-bottom, 98px) - 6px);
+      top: calc(var(--app-header-bottom, 98px) + 8px);
     }
     .app-bottom-nav {
       position: fixed;
@@ -8863,31 +8863,100 @@
     .header-held-search {
       --search-hand-opacity: 0;
       --search-hand-offset: -20px;
-      position: relative;
       isolation: isolate;
     }
-    .header-held-search::before,
-    .header-held-search::after {
-      content: "✋";
+    .entry-product-search-block.header-held-search { position: relative; }
+    .search-grip-hands {
       position: absolute;
-      top: -15px;
+      top: 0;
+      right: 0;
+      left: 0;
       z-index: 12;
-      display: block;
-      font-size: 24px;
-      line-height: 1;
+      height: 0;
       opacity: var(--search-hand-opacity);
       filter: drop-shadow(0 3px 3px color-mix(in srgb, var(--popover-shadow) 48%, transparent));
       pointer-events: none;
-      transition: opacity .18s ease, transform .18s ease;
-      will-change: opacity, transform;
+      transition: opacity .18s ease;
     }
-    .header-held-search::before {
-      left: 18%;
-      transform: translateY(var(--search-hand-offset)) rotate(158deg);
+    .search-grip-hand {
+      position: absolute;
+      top: -22px;
+      width: 42px;
+      height: 42px;
+      transform: translateY(var(--search-hand-offset));
+      transition: transform .18s ease;
+      will-change: transform;
     }
-    .header-held-search::after {
-      right: 18%;
-      transform: translateY(var(--search-hand-offset)) rotate(202deg);
+    .search-grip-hand.left { left: 13px; }
+    .search-grip-hand.right { right: 13px; transform: translateY(var(--search-hand-offset)) scaleX(-1); }
+    .search-grip-wrist,
+    .search-grip-palm,
+    .search-grip-thumb,
+    .search-grip-finger {
+      position: absolute;
+      display: block;
+      border: 1px solid rgba(124, 71, 48, .28);
+      background: linear-gradient(145deg, #ffe0c5 12%, #e7a77d 88%);
+    }
+    .search-grip-wrist {
+      top: -4px;
+      left: 14px;
+      z-index: 0;
+      width: 15px;
+      height: 24px;
+      border-radius: 8px 8px 6px 6px;
+      box-shadow: inset -3px 0 5px rgba(129, 69, 42, .16);
+    }
+    .search-grip-thumb {
+      top: 13px;
+      left: 2px;
+      z-index: 1;
+      width: 17px;
+      height: 13px;
+      border-radius: 9px 5px 8px 9px;
+      background: linear-gradient(145deg, #e6a078, #c9805e);
+      transform: rotate(-28deg);
+      box-shadow: inset 0 -3px 4px rgba(115, 56, 34, .16);
+    }
+    .search-grip-palm {
+      top: 8px;
+      left: 9px;
+      z-index: 2;
+      width: 26px;
+      height: 25px;
+      border-radius: 12px 12px 9px 9px;
+      box-shadow:
+        inset 4px 3px 6px rgba(255, 255, 255, .32),
+        inset -4px -3px 6px rgba(115, 56, 34, .14);
+    }
+    .search-grip-fingers {
+      position: absolute;
+      top: 18px;
+      left: 10px;
+      z-index: 3;
+      display: flex;
+      gap: 1px;
+    }
+    .search-grip-finger {
+      position: relative;
+      width: 6px;
+      height: 19px;
+      border-radius: 5px 5px 4px 4px;
+      box-shadow: inset -1px -3px 3px rgba(115, 56, 34, .14);
+    }
+    .search-grip-finger:nth-child(1) { height: 16px; margin-top: 2px; }
+    .search-grip-finger:nth-child(2) { height: 19px; }
+    .search-grip-finger:nth-child(3) { height: 18px; margin-top: 1px; }
+    .search-grip-finger:nth-child(4) { height: 15px; margin-top: 3px; }
+    .search-grip-finger::after {
+      content: "";
+      position: absolute;
+      right: 1px;
+      bottom: 2px;
+      left: 1px;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 235, 218, .46);
     }
     .shift-weekdays,
     .shift-calendar-grid {
@@ -9343,8 +9412,8 @@
       place-items: center !important;
     }
     @media (prefers-reduced-motion: reduce) {
-      .header-held-search::before,
-      .header-held-search::after { transition: none; }
+      .search-grip-hands,
+      .search-grip-hand { transition: none; }
     }
   </style>
 
@@ -9358,7 +9427,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=386">
+<link rel="manifest" href="manifest.json?v=387">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9413,7 +9482,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.86</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.87</span></div>
     </div>
   </div>
 
@@ -10786,7 +10855,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.86</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.87</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10811,6 +10880,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.87</h3>
+          <ul>
+            <li>відновлено фіксацію пошуку найменувань і пошуку поточного документа під шапкою з постійним відступом;</li>
+            <li>емодзі замінено на окремо намальовані об’ємні руки з чотирма пальцями спереду та великим пальцем позаду;</li>
+            <li>пошукова панель більше не прокручується разом зі списком і не повинна перекривати його перші позиції.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.86</h3>
           <ul>
@@ -12649,13 +12726,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=386"></script>
+<script src="./assets/decimen-optical-transfer.js?v=387"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.86";
+  const APP_VERSION = "3.87";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18365,11 +18442,18 @@
   }
 
   function initSearchHeaderHands() {
+    const handMarkup = `<span class="search-grip-hands" aria-hidden="true">
+      <span class="search-grip-hand left"><span class="search-grip-wrist"></span><span class="search-grip-thumb"></span><span class="search-grip-palm"></span><span class="search-grip-fingers"><span class="search-grip-finger"></span><span class="search-grip-finger"></span><span class="search-grip-finger"></span><span class="search-grip-finger"></span></span></span>
+      <span class="search-grip-hand right"><span class="search-grip-wrist"></span><span class="search-grip-thumb"></span><span class="search-grip-palm"></span><span class="search-grip-fingers"><span class="search-grip-finger"></span><span class="search-grip-finger"></span><span class="search-grip-finger"></span><span class="search-grip-finger"></span></span></span>
+    </span>`;
     [
       document.querySelector("#pageToday .entry-product-search-block"),
       document.querySelector("#pageToday .current-list-search-card"),
       document.querySelector("#pageProducts .product-list-search-card")
-    ].filter(Boolean).forEach(target => target.classList.add("header-held-search"));
+    ].filter(Boolean).forEach(target => {
+      target.classList.add("header-held-search");
+      if (!target.querySelector(":scope > .search-grip-hands")) target.insertAdjacentHTML("beforeend", handMarkup);
+    });
     window.addEventListener("scroll", updateSearchHeaderHands, { passive: true });
     window.addEventListener("resize", updateSearchHeaderHands, { passive: true });
     if (window.visualViewport) {
@@ -21900,7 +21984,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=386")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=387")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
