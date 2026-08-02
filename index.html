@@ -812,8 +812,15 @@
       box-shadow: none;
     }
     .page-back-swipe-hint {
+      width: auto;
+      min-width: 0;
+      min-height: 0;
       margin: 3px 0 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
       color: var(--muted-soft);
+      box-shadow: none;
       font-size: 12px;
       line-height: 1.35;
       text-align: center;
@@ -2975,8 +2982,15 @@
     }
     .menu-open-swipe-hint {
       display: none;
+      width: auto;
+      min-width: 0;
+      min-height: 0;
       margin: 4px 0 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
       color: var(--muted-soft);
+      box-shadow: none;
       font-size: 11px;
       line-height: 1.3;
       text-align: center;
@@ -2994,17 +3008,36 @@
     body.page-today.workspace-additional .compact-header-hints {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 14px;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
       min-height: 14px;
+      padding-inline: 5px;
     }
     body.page-today.workspace-additional .menu-open-swipe-hint,
     body.page-today.workspace-additional .page-back-swipe-hint {
+      width: auto;
+      min-width: 0;
+      min-height: 27px;
       margin: 0;
-      font-size: 10px;
-      font-weight: 800;
+      padding: 4px 9px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+      font-size: 11px;
+      font-weight: 850;
       line-height: 1;
       transform: none;
+    }
+    body.workspace-additional .workspace-switcher,
+    body.workspace-additional .workspace-switcher-button,
+    body.workspace-additional #workspaceSwitcherLabel {
+      text-align: center;
+    }
+    body.workspace-additional .workspace-switcher-button {
+      justify-content: center;
     }
     .compact-header-row {
       display: block;
@@ -10068,7 +10101,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=413">
+<link rel="manifest" href="manifest.json?v=414">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10123,7 +10156,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.13</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.14</span></div>
     </div>
   </div>
 
@@ -10195,8 +10228,8 @@
       <div class="compact-header-content">
         <div class="section-header-title" id="sectionHeaderTitle"></div>
         <div class="compact-header-hints">
-          <div class="menu-open-swipe-hint">→ Меню</div>
-          <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">← Назад</div>
+          <button type="button" class="page-back-swipe-hint hidden" id="pageBackSwipeHint">← Назад</button>
+          <button type="button" class="menu-open-swipe-hint" id="compactSwipeMenuBtn">→ Меню</button>
         </div>
       </div>
       <div class="compact-header-spacer" aria-hidden="true"></div>
@@ -11583,7 +11616,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.13</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.14</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11608,6 +11641,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.14</h3>
+          <ul>
+            <li>підказки жестів у «Додатково» перетворено на активні кнопки по краях, а назву розділу закріплено по центру.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.13</h3>
           <ul>
@@ -13622,13 +13661,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=413"></script>
+<script src="./assets/decimen-optical-transfer.js?v=414"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.13";
+  const APP_VERSION = "4.14";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22929,7 +22968,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=413")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=414")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25929,6 +25968,8 @@
     button.addEventListener("click", () => togglePalletCalculatorSection(button.dataset.togglePalletCalculatorSection));
   });
   document.getElementById("compactMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("compactSwipeMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("pageBackSwipeHint").addEventListener("click", navigateBack);
   document.getElementById("desktopBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("workspaceSwitcherBtn").addEventListener("click", event => {
     event.stopPropagation();
