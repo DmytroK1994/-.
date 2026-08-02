@@ -8835,6 +8835,16 @@
       text-transform: capitalize;
     }
     .shift-month-picker-button strong { min-width: 0; }
+    .shift-week-number-label {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.1;
+      text-align: center;
+    }
+    .shift-week-number-label[hidden] { display: none !important; }
     .shift-weekdays,
     .shift-calendar-grid {
       display: grid;
@@ -9268,7 +9278,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=379">
+<link rel="manifest" href="manifest.json?v=380">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9323,7 +9333,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.79</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.80</span></div>
     </div>
   </div>
 
@@ -9806,7 +9816,7 @@
         <div class="shift-calendar-card">
           <div class="shift-month-navigation">
             <button type="button" class="secondary" id="previousShiftMonthBtn" aria-label="Попередній місяць">←</button>
-            <button type="button" class="shift-month-picker-button" id="openShiftMonthPickerBtn" aria-label="Обрати місяць і рік"><strong id="shiftMonthLabel"></strong></button>
+            <button type="button" class="shift-month-picker-button" id="openShiftMonthPickerBtn" aria-label="Обрати місяць і рік"><strong id="shiftMonthLabel"></strong><span class="shift-week-number-label" id="shiftWeekNumberLabel" hidden></span></button>
             <button type="button" class="secondary" id="nextShiftMonthBtn" aria-label="Наступний місяць">→</button>
           </div>
           <div class="shift-weekdays" aria-hidden="true">
@@ -10696,7 +10706,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.79</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.80</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10721,6 +10731,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.80</h3>
+          <ul>
+            <li>у тижневому вигляді під діапазоном дат додано порядковий номер тижня року за системою ISO.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.79</h3>
           <ul>
@@ -12511,13 +12527,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=379"></script>
+<script src="./assets/decimen-optical-transfer.js?v=380"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.79";
+  const APP_VERSION = "3.80";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -21690,7 +21706,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=379")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=380")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23422,6 +23438,14 @@
     return start;
   }
 
+  function getISOWeekNumber(date) {
+    const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const weekday = target.getUTCDay() || 7;
+    target.setUTCDate(target.getUTCDate() + 4 - weekday);
+    const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+    return Math.ceil((((target - yearStart) / DAY_MS) + 1) / 7);
+  }
+
   function renderShiftDay(dateObject, selectedDate) {
     const date = shiftDateKey(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate());
     const entry = shiftScheduleState.entries[date];
@@ -23451,6 +23475,7 @@
     const year = shiftCalendarMonth.getFullYear();
     const month = shiftCalendarMonth.getMonth();
     const monthLabel = document.getElementById("shiftMonthLabel");
+    const weekNumberLabel = document.getElementById("shiftWeekNumberLabel");
     const calendarCard = grid.closest(".shift-calendar-card");
     const weekdays = calendarCard?.querySelector(".shift-weekdays");
     const previousButton = document.getElementById("previousShiftMonthBtn");
@@ -23468,6 +23493,7 @@
     grid.classList.toggle("is-week-view", shiftCalendarView === "week");
     grid.classList.toggle("is-year-view", shiftCalendarView === "year");
     if (weekdays) weekdays.hidden = shiftCalendarView === "year";
+    if (weekNumberLabel) weekNumberLabel.hidden = shiftCalendarView !== "week";
     const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const selectedDate = document.getElementById("shiftEditorDate")?.value || "";
@@ -23495,6 +23521,7 @@
         const endLabel = weekEnd.toLocaleDateString("uk-UA", { day: "numeric", month: "short", year: "numeric" });
         monthLabel.textContent = `${startLabel} — ${endLabel}`;
       }
+      if (weekNumberLabel) weekNumberLabel.textContent = `${getISOWeekNumber(weekStart)}-й тиждень`;
       grid.innerHTML = Array.from({ length: 7 }, (_, index) => {
         const date = new Date(weekStart);
         date.setDate(date.getDate() + index);
