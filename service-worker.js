@@ -1,14 +1,14 @@
-const CACHE_NAME = "oblik-v4-12";
+const CACHE_NAME = "oblik-v4-13";
 const APP_ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json?v=412",
+  "./manifest.json?v=413",
   "./icon-192.png?v=303",
   "./icon-512.png?v=303",
   "./assets/qrcode-generator.js?v=368",
   "./assets/jsQR.js?v=368",
-  "./assets/decimen-optical-transfer.js?v=412",
-  "./assets/ForkliftGame2D.js?v=412",
+  "./assets/decimen-optical-transfer.js?v=413",
+  "./assets/ForkliftGame2D.js?v=413",
   "./social-preview.png?v=302",
   "./banner.png?v=302"
 ];
