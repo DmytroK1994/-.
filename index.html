@@ -8842,6 +8842,14 @@
     /* Додаткові інструменти */
     body.workspace-additional #newDayBtn { visibility: hidden; pointer-events: none; }
     body.workspace-additional .date-line { display: none; }
+    body.workspace-additional.additional-shift-tool-active .date-line {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.15;
+      transform: none;
+    }
     #additionalToolSettingsBtn { display: none; }
     body.workspace-additional.additional-tool-settings-active #additionalToolSettingsBtn {
       display: grid;
@@ -9641,6 +9649,9 @@
     .shift-summary-card span { display: block; }
     .shift-summary-card strong { font-size: 18px; }
     .shift-summary-card span { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .shift-summary-card-full { grid-column: 1 / -1; min-height: 54px; }
+    .shift-summary-card-full strong { font-size: 15px; }
+    .shift-summary-card-full span { font-size: 11px; }
     .shift-workspace-grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
@@ -10041,6 +10052,73 @@
     .shift-stats-row span { display: block; }
     .shift-stats-row small { display: block; margin-top: 3px; color: var(--muted); }
     .shift-stats-value { font-weight: 850; text-align: right; }
+    .shift-analytics-periods {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+    }
+    .shift-analytics-periods button {
+      width: 100%;
+      min-height: 34px;
+      margin: 0;
+      padding: 6px 4px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 11px;
+    }
+    .shift-analytics-periods button.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 3px 10px color-mix(in srgb, var(--popover-shadow) 28%, transparent);
+    }
+    .shift-analytics-caption { color: var(--muted); font-size: 11px; text-align: center; }
+    .shift-analytics-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .shift-analytics-kpi {
+      min-width: 0;
+      padding: 11px 8px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      text-align: center;
+    }
+    .shift-analytics-kpi strong,
+    .shift-analytics-kpi span { display: block; }
+    .shift-analytics-kpi strong { overflow-wrap: anywhere; font-size: 16px; }
+    .shift-analytics-kpi span { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .shift-analytics-chart {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .shift-analytics-chart h4 { margin: 0 0 9px; font-size: 13px; }
+    .shift-analytics-currency-title { margin: 10px 0 6px; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .shift-analytics-chart-row {
+      display: grid;
+      grid-template-columns: minmax(58px, .75fr) minmax(86px, 2fr) minmax(68px, auto);
+      align-items: center;
+      gap: 7px;
+      min-height: 26px;
+    }
+    .shift-analytics-chart-label { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .shift-analytics-chart-value { font-size: 10px; font-weight: 800; text-align: right; white-space: nowrap; }
+    .shift-analytics-chart-track { height: 8px; overflow: hidden; border-radius: 999px; background: var(--surface); }
+    .shift-analytics-chart-track i {
+      display: block;
+      width: var(--bar-width, 0%);
+      min-width: var(--bar-min-width, 0);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width .28s ease;
+    }
+    .shift-analytics-chart-track.pay i { background: #35a66f; }
     @media (max-width: 760px) {
       .additional-shell { padding: 9px; }
       .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -10238,7 +10316,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=417">
+<link rel="manifest" href="manifest.json?v=419">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10293,7 +10371,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.17</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.19</span></div>
     </div>
   </div>
 
@@ -10865,6 +10943,7 @@
         <div class="shift-summary-grid">
           <button type="button" class="shift-summary-card" id="openShiftBreakdownBtn"><strong id="shiftMonthShifts">0</strong><span>зміни</span></button>
           <button type="button" class="shift-summary-card" id="openPayBreakdownBtn"><strong id="shiftMonthPay">0 ₴</strong><span>нараховано</span></button>
+          <button type="button" class="shift-summary-card shift-summary-card-full" id="openWorkAnalyticsBtn"><strong>Статистика роботи</strong><span>години та заробіток за періодами</span></button>
         </div>
         <button type="button" class="secondary shift-workspace-back-btn" id="backToAdditionalDesktopBtn">Назад</button>
 
@@ -11791,7 +11870,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.17</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.19</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11817,6 +11896,18 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.19</h3>
+          <ul>
+            <li>у «Графіку змін» додано окремий пункт «Статистика роботи»;</li>
+            <li>відпрацьовані години та заробіток тепер показуються графіками за днями, тижнями, місяцями й роками;</li>
+            <li>нарахування в різних валютах відображаються окремо, без некоректного складання.</li>
+          </ul>
+
+          <h3>Версія 4.18</h3>
+          <ul>
+            <li>у шапці «Графіка змін» додано компактний підпис із сьогоднішньою датою.</li>
+          </ul>
+
           <h3>Версія 4.17</h3>
           <ul>
             <li>текстову кнопку «Меню» зі стрілкою прибрано з усіх вкладених сторінок;</li>
@@ -13855,14 +13946,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=417"></script>
-<script src="./firebase-config.js?v=417"></script>
+<script src="./assets/decimen-optical-transfer.js?v=419"></script>
+<script src="./firebase-config.js?v=419"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.17";
+  const APP_VERSION = "4.19";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -15386,6 +15477,7 @@
       return "month";
     }
   })();
+  let shiftAnalyticsPeriod = "month";
   let additionalDesktopInitialized = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
@@ -23197,7 +23289,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=417")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=419")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24824,7 +24916,7 @@
 
   function updateAdditionalHeaderUI() {
     if (!workspaceIsAdditional()) {
-      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active", "additional-settings-screen");
+      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active", "additional-settings-screen", "additional-shift-tool-active");
       document.getElementById("additionalDesktopHeaderBackBtn")?.classList.remove("desktop-visible");
       return;
     }
@@ -24838,6 +24930,7 @@
         : (activeTool === "palletCalculator" ? "Перехідний піддон" : "Додатково"));
     document.body.classList.toggle("additional-tool-open", toolOpen);
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
+    document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
     document.getElementById("additionalDesktopHeaderBackBtn")?.classList.toggle("desktop-visible", hasAdditionalBackDestination());
     const settingsAvailable = (activeTool === "desktop" && !additionalSettingsAreOpen())
       || (activeTool === "shifts" && !shiftSettingsAreOpen())
@@ -24849,6 +24942,11 @@
     if (todayMenuButton) todayMenuButton.textContent = label;
     const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
     if (currentPage === "today" && sectionHeaderTitle) sectionHeaderTitle.textContent = label;
+    const activeDateLabel = document.getElementById("activeDateLabel");
+    if (activeDateLabel && activeTool === "shifts") {
+      activeDateLabel.textContent = `Сьогодні · ${niceDate(todayISO())}`;
+      activeDateLabel.setAttribute("aria-label", `Сьогодні ${niceDate(todayISO())}`);
+    }
     document.title = `${label} — Облік`;
     applyAdditionalBackButtonPreference();
     updatePageBackButton();
@@ -25649,12 +25747,113 @@
     document.getElementById("shiftStatsOverlay")?.classList.add("hidden");
   }
 
+  function getShiftAnalyticsGroups(period = shiftAnalyticsPeriod) {
+    const year = shiftCalendarMonth.getFullYear();
+    const month = shiftCalendarMonth.getMonth();
+    const allEntries = Object.values(shiftScheduleState.entries)
+      .filter(entry => entry && !entry.isDayOff && /^\d{4}-\d{2}-\d{2}$/.test(entry.date || ""))
+      .sort((left, right) => left.date.localeCompare(right.date));
+    const makeGroup = (key, label) => ({ key, label, entries: [], hours: 0, payByCurrency: new Map() });
+    let groups = [];
+    if (period === "day") {
+      const prefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
+      const days = new Map();
+      allEntries.filter(entry => entry.date.startsWith(prefix)).forEach(entry => {
+        const date = new Date(`${entry.date}T12:00:00`);
+        days.set(entry.date, makeGroup(entry.date, date.toLocaleDateString("uk-UA", { day: "numeric", month: "short" })));
+      });
+      groups = Array.from(days.values());
+    } else if (period === "week") {
+      const weeks = new Map();
+      allEntries.filter(entry => entry.date.startsWith(`${year}-`)).forEach(entry => {
+        const week = getISOWeekNumber(new Date(`${entry.date}T12:00:00`));
+        const key = `${year}-W${String(week).padStart(2, "0")}`;
+        if (!weeks.has(key)) weeks.set(key, makeGroup(key, `${week}-й тиж.`));
+      });
+      groups = Array.from(weeks.values());
+    } else if (period === "year") {
+      const years = new Set(allEntries.map(entry => entry.date.slice(0, 4)));
+      years.add(String(year));
+      groups = Array.from(years).sort().map(value => makeGroup(value, value));
+    } else {
+      groups = Array.from({ length: 12 }, (_, monthIndex) => makeGroup(
+        `${year}-${String(monthIndex + 1).padStart(2, "0")}`,
+        new Date(year, monthIndex, 1).toLocaleDateString("uk-UA", { month: "short" })
+      ));
+    }
+    const groupMap = new Map(groups.map(group => [group.key, group]));
+    allEntries.forEach(entry => {
+      const date = new Date(`${entry.date}T12:00:00`);
+      let key = entry.date;
+      if (period === "week") key = `${date.getFullYear()}-W${String(getISOWeekNumber(date)).padStart(2, "0")}`;
+      if (period === "month") key = entry.date.slice(0, 7);
+      if (period === "year") key = entry.date.slice(0, 4);
+      const group = groupMap.get(key);
+      if (!group) return;
+      const currency = entry.currency || shiftScheduleState.currency || "UAH";
+      group.entries.push(entry);
+      group.hours += calculateShiftEntryHours(entry);
+      group.payByCurrency.set(currency, (group.payByCurrency.get(currency) || 0) + calculateShiftEntryPay(entry));
+    });
+    return groups;
+  }
+
+  function shiftAnalyticsPeriodCaption(period) {
+    const year = shiftCalendarMonth.getFullYear();
+    if (period === "day") return shiftCalendarMonth.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
+    if (period === "week") return `тижні ${year} року`;
+    if (period === "month") return `місяці ${year} року`;
+    return "за всі роки";
+  }
+
+  function renderShiftAnalyticsRows(groups, valueGetter, valueFormatter, kind = "hours") {
+    const values = groups.map(group => Math.max(0, Number(valueGetter(group)) || 0));
+    const maximum = Math.max(...values, 0);
+    return groups.map((group, index) => {
+      const value = values[index];
+      const width = maximum > 0 ? Math.max(value > 0 ? 3 : 0, (value / maximum) * 100) : 0;
+      return `<div class="shift-analytics-chart-row">
+        <span class="shift-analytics-chart-label" title="${escapeHtml(group.label)}">${escapeHtml(group.label)}</span>
+        <span class="shift-analytics-chart-track ${kind === "pay" ? "pay" : ""}"><i style="--bar-width:${width.toFixed(2)}%"></i></span>
+        <span class="shift-analytics-chart-value">${escapeHtml(valueFormatter(value))}</span>
+      </div>`;
+    }).join("");
+  }
+
+  function renderWorkAnalytics() {
+    const content = document.getElementById("shiftStatsContent");
+    if (!content) return;
+    const groups = getShiftAnalyticsGroups();
+    const entries = groups.flatMap(group => group.entries);
+    const totalHours = groups.reduce((sum, group) => sum + group.hours, 0);
+    const currencies = new Set();
+    groups.forEach(group => group.payByCurrency.forEach((value, currency) => currencies.add(currency)));
+    const payCharts = currencies.size ? Array.from(currencies).map(currency => {
+      const heading = currencies.size > 1 ? `<div class="shift-analytics-currency-title">${escapeHtml(currency)} · ${escapeHtml(shiftCurrencySymbol(currency))}</div>` : "";
+      return `${heading}${renderShiftAnalyticsRows(groups, group => group.payByCurrency.get(currency) || 0, value => formatShiftMoney(value, currency), "pay")}`;
+    }).join("") : `<div class="small">Ще немає нарахувань за обраний період.</div>`;
+    content.innerHTML = `
+      <div class="shift-analytics-periods" role="group" aria-label="Період статистики">
+        ${[["day", "Дні"], ["week", "Тижні"], ["month", "Місяці"], ["year", "Роки"]].map(([value, label]) => `<button type="button" class="${shiftAnalyticsPeriod === value ? "active" : ""}" data-shift-analytics-period="${value}" aria-pressed="${shiftAnalyticsPeriod === value}">${label}</button>`).join("")}
+      </div>
+      <div class="shift-analytics-caption">${escapeHtml(shiftAnalyticsPeriodCaption(shiftAnalyticsPeriod))}</div>
+      <div class="shift-analytics-kpis">
+        <div class="shift-analytics-kpi"><strong>${formatShiftNumber(totalHours)} год</strong><span>відпрацьовано</span></div>
+        <div class="shift-analytics-kpi"><strong>${escapeHtml(formatShiftMoneyTotals(entries))}</strong><span>зароблено</span></div>
+      </div>
+      <section class="shift-analytics-chart"><h4>Відпрацьовані години</h4>${groups.some(group => group.hours > 0) ? renderShiftAnalyticsRows(groups, group => group.hours, value => `${formatShiftNumber(value)} год`) : `<div class="small">Ще немає відпрацьованих годин.</div>`}</section>
+      <section class="shift-analytics-chart"><h4>Заробіток</h4>${payCharts}</section>`;
+  }
+
   function openShiftStats(kind) {
     const title = document.getElementById("shiftStatsTitle");
     const content = document.getElementById("shiftStatsContent");
     const entries = getCurrentMonthShiftEntries().filter(entry => !entry.isDayOff);
     if (!title || !content) return;
-    if (kind === "pay") {
+    if (kind === "analytics") {
+      title.textContent = "Статистика роботи";
+      renderWorkAnalytics();
+    } else if (kind === "pay") {
       title.textContent = "Нараховано за період";
       content.innerHTML = entries.length ? entries.map(entry => {
         const hours = calculateShiftEntryHours(entry);
@@ -26891,6 +27090,13 @@
   });
   document.getElementById("openShiftBreakdownBtn").addEventListener("click", () => openShiftStats("shifts"));
   document.getElementById("openPayBreakdownBtn").addEventListener("click", () => openShiftStats("pay"));
+  document.getElementById("openWorkAnalyticsBtn").addEventListener("click", () => openShiftStats("analytics"));
+  document.getElementById("shiftStatsContent").addEventListener("click", event => {
+    const button = event.target.closest("[data-shift-analytics-period]");
+    if (!button) return;
+    shiftAnalyticsPeriod = button.dataset.shiftAnalyticsPeriod;
+    renderWorkAnalytics();
+  });
   document.getElementById("closeShiftStatsBtn").addEventListener("click", closeShiftStats);
   document.getElementById("shiftStatsOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeShiftStats();
