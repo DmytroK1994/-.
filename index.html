@@ -8732,6 +8732,121 @@
       text-align: center;
       pointer-events: none;
     }
+    .pallet-calculator-shell {
+      display: grid;
+      gap: 12px;
+      width: min(100%, 760px);
+      margin: 0 auto;
+    }
+    .pallet-calculator-card,
+    .pallet-calculator-result {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 14px 34px color-mix(in srgb, var(--popover-shadow) 45%, transparent);
+    }
+    .pallet-calculator-card { padding: 14px; }
+    .pallet-calculator-search { position: relative; margin-bottom: 12px; }
+    .pallet-calculator-search > label,
+    .pallet-calculator-field label {
+      display: block;
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .pallet-calculator-search input,
+    .pallet-calculator-field input {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+    }
+    .pallet-calculator-results {
+      position: absolute;
+      top: calc(100% + 5px);
+      right: 0;
+      left: 0;
+      z-index: 15;
+      display: grid;
+      max-height: 240px;
+      overflow: auto;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 16px 34px var(--popover-shadow);
+    }
+    .pallet-calculator-results.hidden { display: none; }
+    .pallet-calculator-result-option {
+      width: 100%;
+      min-height: 42px;
+      margin: 0;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      box-shadow: none;
+    }
+    .pallet-calculator-result-option:hover,
+    .pallet-calculator-result-option:focus-visible { background: var(--surface-deep); }
+    .pallet-calculator-empty { padding: 11px; color: var(--muted); font-size: 12px; text-align: center; }
+    .pallet-calculator-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .pallet-calculator-field.full { grid-column: 1 / -1; }
+    .pallet-calculator-submit { width: 100%; margin: 13px 0 0; }
+    .pallet-calculator-result { padding: 14px; }
+    .pallet-calculator-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .pallet-calculator-summary-card {
+      min-width: 0;
+      padding: 13px 8px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface-deep);
+      text-align: center;
+    }
+    .pallet-calculator-summary-card strong { display: block; font-size: clamp(23px, 7vw, 34px); line-height: 1; }
+    .pallet-calculator-summary-card span { display: block; margin-top: 6px; color: var(--muted); font-size: 10px; line-height: 1.25; }
+    .pallet-calculator-flow { display: grid; gap: 6px; margin-top: 12px; }
+    .pallet-calculator-step {
+      display: grid;
+      grid-template-columns: 27px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      padding: 9px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--surface-deep) 82%, transparent);
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .pallet-calculator-step-number {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .pallet-calculator-back { width: 100%; margin: 0; }
+    @media (max-width: 520px) {
+      .pallet-calculator-card,
+      .pallet-calculator-result { border-radius: 16px; }
+      .pallet-calculator-card { padding: 11px; }
+      .pallet-calculator-fields { gap: 8px; }
+      .pallet-calculator-field label { min-height: 26px; }
+    }
     .shift-tool-header-actions,
     .shift-month-navigation,
     .shift-editor-actions,
@@ -9325,7 +9440,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=390">
+<link rel="manifest" href="manifest.json?v=391">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9380,7 +9495,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.90</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.91</span></div>
     </div>
   </div>
 
@@ -9849,7 +9964,34 @@
             <span class="additional-tool-icon" aria-hidden="true">▦</span>
             <span class="additional-tool-name">Графік змін</span>
           </button>
+          <button type="button" class="additional-tool-tile" id="openPalletCalculatorTool" data-additional-tool="palletCalculator">
+            <span class="additional-tool-icon" aria-hidden="true">▥</span>
+            <span class="additional-tool-name">Калькулятор піддонів</span>
+          </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
+        </div>
+      </section>
+
+      <section id="palletCalculatorView" class="hidden">
+        <div class="pallet-calculator-shell">
+          <div class="pallet-calculator-card">
+            <div class="pallet-calculator-search">
+              <label for="palletCalculatorProductSearch">Найменування</label>
+              <input id="palletCalculatorProductSearch" autocomplete="off" placeholder="Почни вводити назву" />
+              <input id="palletCalculatorProductId" type="hidden" />
+              <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
+            </div>
+            <div class="pallet-calculator-fields">
+              <div class="pallet-calculator-field"><label for="palletCalculatorBoxesPerPallet">Коробок у піддоні</label><input id="palletCalculatorBoxesPerPallet" type="number" inputmode="numeric" min="1" /></div>
+              <div class="pallet-calculator-field"><label for="palletCalculatorPacksPerBox">Пачок у коробці</label><input id="palletCalculatorPacksPerBox" type="number" inputmode="numeric" min="1" /></div>
+              <div class="pallet-calculator-field"><label for="palletCalculatorPackWeight">Вага пачки, г</label><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" min="0" step="0.01" /></div>
+              <div class="pallet-calculator-field"><label for="palletCalculatorTransitionBoxes">Коробок уже в перехідному піддоні</label><input id="palletCalculatorTransitionBoxes" type="number" inputmode="numeric" min="0" value="0" /></div>
+              <div class="pallet-calculator-field full"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" min="0" step="0.01" /></div>
+            </div>
+            <button type="button" class="pallet-calculator-submit" id="calculatePalletTransitionBtn">Розрахувати</button>
+          </div>
+          <div class="pallet-calculator-result hidden" id="palletCalculatorResult" aria-live="polite"></div>
+          <button type="button" class="secondary pallet-calculator-back" id="backFromPalletCalculatorBtn">Назад</button>
         </div>
       </section>
 
@@ -10753,7 +10895,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.90</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.91</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10778,6 +10920,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.91</h3>
+          <ul>
+            <li>у «Додатково» додано калькулятор перехідних піддонів із формулою з окремого репозиторію;</li>
+            <li>формат замінено пошуком найменувань із бази «Обліку», а параметри автоматично запам’ятовуються для кожної позиції;</li>
+            <li>результат показує повні й перехідні піддони та всі сім етапів розрахунку.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.90</h3>
           <ul>
@@ -12645,13 +12795,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=390"></script>
+<script src="./assets/decimen-optical-transfer.js?v=391"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.90";
+  const APP_VERSION = "3.91";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12711,6 +12861,7 @@
   const PRODUCTION_WORKSPACE_NAME_KEY = "warehouseJournalProductionWorkspaceName";
   const ADDITIONAL_LAST_TOOL_KEY = "warehouseJournalAdditionalLastTool";
   const ADDITIONAL_DESKTOP_LAYOUT_KEY = "warehouseJournalAdditionalDesktopLayoutV1";
+  const PALLET_CALCULATOR_PROFILES_KEY = "warehouseJournalPalletCalculatorProfilesV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -12766,6 +12917,7 @@
     PRODUCTION_WORKSPACE_NAME_KEY,
     ADDITIONAL_LAST_TOOL_KEY,
     ADDITIONAL_DESKTOP_LAYOUT_KEY,
+    PALLET_CALCULATOR_PROFILES_KEY,
     SHIFT_SCHEDULE_KEY,
     SHIFT_CALENDAR_VIEW_KEY,
     TRASH_RETENTION_KEY,
@@ -21671,6 +21823,7 @@
     localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
     localStorage.removeItem(ADDITIONAL_LAST_TOOL_KEY);
     localStorage.removeItem(ADDITIONAL_DESKTOP_LAYOUT_KEY);
+    localStorage.removeItem(PALLET_CALCULATOR_PROFILES_KEY);
     localStorage.removeItem(SHIFT_SCHEDULE_KEY);
     shiftScheduleState = makeDefaultShiftScheduleState();
     applyEntryUnitVisibility("hidden");
@@ -21852,7 +22005,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=390")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=391")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23324,22 +23477,23 @@
 
   function getAdditionalLastTool() {
     try {
-      return localStorage.getItem(ADDITIONAL_LAST_TOOL_KEY) === "shifts" ? "shifts" : "desktop";
+      const saved = localStorage.getItem(ADDITIONAL_LAST_TOOL_KEY);
+      return ["shifts", "palletCalculator"].includes(saved) ? saved : "desktop";
     } catch (error) {
       return "desktop";
     }
   }
 
   function setAdditionalLastTool(tool) {
-    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, tool === "shifts" ? "shifts" : "desktop"); } catch (error) {}
+    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator"].includes(tool) ? tool : "desktop"); } catch (error) {}
   }
 
   function loadAdditionalDesktopLayout() {
     try {
       const parsed = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
-      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 } };
+      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 } };
     } catch (error) {
-      return { shifts: { column: 0, row: 0 } };
+      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 } };
     }
   }
 
@@ -23432,6 +23586,7 @@
           return;
         }
         if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
+        if (tile.dataset.additionalTool === "palletCalculator") openPalletCalculator();
       });
     });
   }
@@ -23441,9 +23596,11 @@
     const lastTool = getAdditionalLastTool();
     document.getElementById("additionalDesktopView")?.classList.toggle("hidden", lastTool !== "desktop");
     document.getElementById("shiftScheduleView")?.classList.toggle("hidden", lastTool !== "shifts");
+    document.getElementById("palletCalculatorView")?.classList.toggle("hidden", lastTool !== "palletCalculator");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     if (lastTool === "desktop") initializeAdditionalDesktop();
-    else renderShiftSchedule();
+    else if (lastTool === "shifts") renderShiftSchedule();
+    else preparePalletCalculator();
     updateAdditionalHeaderUI();
   }
 
@@ -23456,7 +23613,7 @@
   }
 
   function hasAdditionalBackDestination() {
-    return workspaceIsAdditional() && (getAdditionalLastTool() === "shifts" || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen());
+    return workspaceIsAdditional() && (getAdditionalLastTool() !== "desktop" || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen());
   }
 
   function updateAdditionalHeaderUI() {
@@ -23464,10 +23621,13 @@
       document.body.classList.remove("additional-tool-open", "additional-tool-settings-active");
       return;
     }
-    const toolOpen = getAdditionalLastTool() === "shifts";
-    const label = toolOpen ? "Графік змін" : "Додатково";
+    const activeTool = getAdditionalLastTool();
+    const toolOpen = activeTool !== "desktop";
+    const label = activeTool === "shifts"
+      ? "Графік змін"
+      : (activeTool === "palletCalculator" ? "Калькулятор піддонів" : "Додатково");
     document.body.classList.toggle("additional-tool-open", toolOpen);
-    document.body.classList.toggle("additional-tool-settings-active", toolOpen && !shiftSettingsAreOpen());
+    document.body.classList.toggle("additional-tool-settings-active", activeTool === "shifts" && !shiftSettingsAreOpen());
     const switcherLabel = document.getElementById("workspaceSwitcherLabel");
     if (switcherLabel) switcherLabel.textContent = label;
     const todayMenuButton = document.querySelector("#drawer .menu-btn[data-page='today']");
@@ -23501,6 +23661,10 @@
       openAdditionalDesktop();
       return true;
     }
+    if (getAdditionalLastTool() === "palletCalculator") {
+      openAdditionalDesktop();
+      return true;
+    }
     return false;
   }
 
@@ -23509,6 +23673,7 @@
     closeShiftEditor();
     closeShiftStats();
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("additionalDesktopView")?.classList.remove("hidden");
     initializeAdditionalDesktop();
@@ -23520,10 +23685,124 @@
     closeShiftEditor();
     closeShiftStats();
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("shiftScheduleView")?.classList.remove("hidden");
     renderShiftSchedule();
     updateAdditionalHeaderUI();
+  }
+
+  function openPalletCalculator() {
+    setAdditionalLastTool("palletCalculator");
+    closeShiftEditor();
+    closeShiftStats();
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.remove("hidden");
+    preparePalletCalculator();
+    updateAdditionalHeaderUI();
+  }
+
+  function loadPalletCalculatorProfiles() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(PALLET_CALCULATOR_PROFILES_KEY) || "{}");
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function savePalletCalculatorProfile(productId, profile) {
+    if (!productId) return;
+    const profiles = loadPalletCalculatorProfiles();
+    profiles[productId] = {
+      boxesPerPallet: Math.max(0, Number(profile.boxesPerPallet) || 0),
+      packsPerBox: Math.max(0, Number(profile.packsPerBox) || 0),
+      packWeightGrams: Math.max(0, Number(profile.packWeightGrams) || 0)
+    };
+    try { localStorage.setItem(PALLET_CALCULATOR_PROFILES_KEY, JSON.stringify(profiles)); } catch (error) {}
+  }
+
+  function renderPalletCalculatorSearchResults(query = "") {
+    const results = document.getElementById("palletCalculatorSearchResults");
+    if (!results) return;
+    const normalizedQuery = normalizeSearchValue(query);
+    const matches = sortedProducts()
+      .filter(product => !normalizedQuery || normalizeSearchValue(product.name).includes(normalizedQuery))
+      .slice(0, 30);
+    results.innerHTML = matches.length
+      ? matches.map(product => `<button type="button" class="pallet-calculator-result-option" data-pallet-calculator-product="${escapeHtml(product.id)}">${escapeHtml(product.name)}</button>`).join("")
+      : `<div class="pallet-calculator-empty">Найменування не знайдено</div>`;
+    results.classList.remove("hidden");
+  }
+
+  function selectPalletCalculatorProduct(productId) {
+    const product = state.products.find(item => item.id === productId);
+    if (!product) return;
+    const profile = loadPalletCalculatorProfiles()[product.id] || {};
+    document.getElementById("palletCalculatorProductId").value = product.id;
+    document.getElementById("palletCalculatorProductSearch").value = product.name;
+    document.getElementById("palletCalculatorBoxesPerPallet").value = profile.boxesPerPallet || product.defaultBoxesPerPallet || "";
+    document.getElementById("palletCalculatorPacksPerBox").value = profile.packsPerBox || product.defaultPacksPerBox || "";
+    document.getElementById("palletCalculatorPackWeight").value = profile.packWeightGrams || "";
+    document.getElementById("palletCalculatorSearchResults").classList.add("hidden");
+    document.getElementById("palletCalculatorResult").classList.add("hidden");
+  }
+
+  function preparePalletCalculator() {
+    const productId = document.getElementById("palletCalculatorProductId")?.value;
+    if (productId && !state.products.some(product => product.id === productId)) {
+      document.getElementById("palletCalculatorProductId").value = "";
+      document.getElementById("palletCalculatorProductSearch").value = "";
+    }
+    document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
+  }
+
+  function calculatePalletTransition() {
+    const productId = document.getElementById("palletCalculatorProductId").value;
+    const product = state.products.find(item => item.id === productId);
+    const planKg = Number(document.getElementById("palletCalculatorPlanKg").value);
+    const boxesPerPallet = parseInt(document.getElementById("palletCalculatorBoxesPerPallet").value, 10);
+    const packsPerBox = parseInt(document.getElementById("palletCalculatorPacksPerBox").value, 10);
+    const packWeightGrams = Number(document.getElementById("palletCalculatorPackWeight").value);
+    const transitionBoxes = parseInt(document.getElementById("palletCalculatorTransitionBoxes").value, 10) || 0;
+    const result = document.getElementById("palletCalculatorResult");
+    if (!product) {
+      toast("Оберіть найменування з бази", true);
+      document.getElementById("palletCalculatorProductSearch")?.focus();
+      return;
+    }
+    if (!(planKg > 0) || !(boxesPerPallet > 0) || !(packsPerBox > 0) || !(packWeightGrams > 0) || transitionBoxes < 0) {
+      toast("Заповніть усі поля правильними значеннями", true);
+      return;
+    }
+
+    // Формула перенесена без змін із калькулятора перехідних піддонів.
+    const packWeightKg = packWeightGrams / 1000;
+    const totalPacks = planKg / packWeightKg;
+    const totalBoxes = totalPacks / packsPerBox;
+    const totalBoxesAdjusted = totalBoxes - transitionBoxes;
+    const fullPallets = Math.floor(totalBoxesAdjusted / boxesPerPallet);
+    const leftoverBoxes = Math.round(totalBoxesAdjusted % boxesPerPallet);
+
+    savePalletCalculatorProfile(product.id, { boxesPerPallet, packsPerBox, packWeightGrams });
+    result.innerHTML = `
+      <div class="pallet-calculator-summary">
+        <div class="pallet-calculator-summary-card"><strong>${fullPallets}</strong><span>повних піддонів</span></div>
+        <div class="pallet-calculator-summary-card"><strong>${leftoverBoxes}</strong><span>коробок у перехідному піддоні</span></div>
+      </div>
+      <div class="pallet-calculator-flow" aria-label="Послідовність розрахунку">
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">1</span><span>Вага пачки: ${packWeightGrams} г = ${packWeightKg.toFixed(5)} кг</span></div>
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">2</span><span>Пачки: ${planKg} ÷ ${packWeightKg.toFixed(5)} = ${totalPacks.toFixed(2)}</span></div>
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">3</span><span>Коробки: ${totalPacks.toFixed(2)} ÷ ${packsPerBox} = ${totalBoxes.toFixed(2)}</span></div>
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">4</span><span>Віднято коробок, які вже є в перехідному піддоні: ${transitionBoxes}</span></div>
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">5</span><span>Залишилось коробок: ${totalBoxesAdjusted.toFixed(2)}</span></div>
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">6</span><span>Повні піддони: ${Math.floor(totalBoxesAdjusted)} ÷ ${boxesPerPallet} = ${fullPallets}</span></div>
+        <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">7</span><span>Перехідний піддон: ${leftoverBoxes} коробок</span></div>
+      </div>`;
+    result.classList.remove("hidden");
+    result.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function shiftDateKey(year, month, day) {
@@ -24268,6 +24547,28 @@
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
+  document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("calculatePalletTransitionBtn").addEventListener("click", calculatePalletTransition);
+  document.getElementById("palletCalculatorProductSearch").addEventListener("focus", event => {
+    renderPalletCalculatorSearchResults(event.target.value);
+  });
+  document.getElementById("palletCalculatorProductSearch").addEventListener("input", event => {
+    const selected = state.products.find(product => product.id === document.getElementById("palletCalculatorProductId").value);
+    if (!selected || selected.name !== event.target.value) document.getElementById("palletCalculatorProductId").value = "";
+    renderPalletCalculatorSearchResults(event.target.value);
+  });
+  document.getElementById("palletCalculatorProductSearch").addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    const firstMatch = document.querySelector("#palletCalculatorSearchResults [data-pallet-calculator-product]");
+    if (firstMatch && !document.getElementById("palletCalculatorSearchResults").classList.contains("hidden")) {
+      event.preventDefault();
+      selectPalletCalculatorProduct(firstMatch.dataset.palletCalculatorProduct);
+    }
+  });
+  document.getElementById("palletCalculatorSearchResults").addEventListener("click", event => {
+    const option = event.target.closest("[data-pallet-calculator-product]");
+    if (option) selectPalletCalculatorProduct(option.dataset.palletCalculatorProduct);
+  });
   document.getElementById("compactMenuBtn").addEventListener("click", openMenu);
   document.getElementById("desktopBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("workspaceSwitcherBtn").addEventListener("click", event => {
@@ -24281,6 +24582,7 @@
   });
   document.addEventListener("click", event => {
     if (!event.target.closest(".workspace-switcher")) closeWorkspaceDropdown();
+    if (!event.target.closest(".pallet-calculator-search")) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     if (!event.target.closest(".order-warehouse-dropdown")) {
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
