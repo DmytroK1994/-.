@@ -8744,6 +8744,33 @@
       gap: 8px;
       margin-top: 10px;
     }
+    .shift-calendar-view-switch {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      width: min(100%, 560px);
+      margin: 0 auto 8px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .shift-calendar-view-switch button {
+      width: 100%;
+      min-height: 34px;
+      margin: 0;
+      padding: 6px 8px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 12px;
+    }
+    .shift-calendar-view-switch button.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 3px 10px color-mix(in srgb, var(--popover-shadow) 30%, transparent);
+    }
     .shift-summary-card {
       display: block;
       width: 100%;
@@ -8784,6 +8811,9 @@
       flex-direction: column;
       overflow: hidden;
     }
+    .shift-calendar-card.is-week-view,
+    .shift-calendar-card.is-year-view { aspect-ratio: auto; min-height: 0; }
+    .shift-calendar-card.is-week-view { min-height: 190px; }
     .shift-month-navigation {
       justify-content: space-between;
       margin-bottom: 10px;
@@ -8811,6 +8841,32 @@
       grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 5px;
     }
+    .shift-weekdays[hidden] { display: none !important; }
+    .shift-calendar-grid.is-week-view { flex: 0 0 auto; }
+    .shift-calendar-grid.is-year-view {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: auto;
+      gap: 8px;
+    }
+    .shift-year-month {
+      display: grid;
+      width: 100%;
+      min-width: 0;
+      min-height: 94px;
+      margin: 0;
+      padding: 10px 7px;
+      place-items: center;
+      align-content: center;
+      gap: 4px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+      text-align: center;
+    }
+    .shift-year-month strong { text-transform: capitalize; }
+    .shift-year-month span { color: var(--muted); font-size: 10px; }
     .shift-calendar-grid {
       min-height: 0;
       flex: 1 1 auto;
@@ -9136,15 +9192,16 @@
       .shift-calendar-day { min-height: 0 !important; padding: 3px 2px !important; border-radius: 10px !important; }
       .shift-calendar-empty { min-height: 0; }
       .shift-calendar-day-type { font-size: 8px; }
+      .shift-calendar-day-number { font-size: 14px; }
       .shift-calendar-day-type,
       .shift-calendar-day-hours { margin-top: 2px; }
       .shift-editor-overlay {
-        align-items: center;
-        padding: calc(env(safe-area-inset-top) + 7px) 7px calc(env(safe-area-inset-bottom) + 7px);
+        align-items: start;
+        padding: clamp(calc(env(safe-area-inset-top) + 70px), 15vh, calc(env(safe-area-inset-top) + 128px)) 7px calc(env(safe-area-inset-bottom) + 7px);
       }
       .shift-editor-overlay .shift-editor-panel {
         width: 100%;
-        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 14px);
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - clamp(84px, 15vh, 142px));
         padding: 9px;
         border-radius: 18px;
       }
@@ -9157,6 +9214,20 @@
       .shift-editor-fields select,
       .shift-editor-fields textarea { min-width: 0; width: 100%; min-height: 38px; margin-top: 2px; padding-block: 5px; font-size: 13px; }
       .shift-editor-time-grid { gap: 5px; }
+      .shift-editor-time-grid > label { min-width: 0; overflow: hidden; }
+      .shift-editor-time-grid input[type="time"] {
+        display: block;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box;
+        overflow: hidden;
+        font-size: 12px !important;
+      }
+      .shift-editor-time-grid input[type="time"]::-webkit-date-and-time-value {
+        min-width: 0;
+        text-align: center;
+      }
       .shift-editor-section { border-radius: 11px; }
       .shift-editor-section-toggle { min-height: 32px; padding: 5px 8px; font-size: 12px; }
       .shift-editor-section-body { gap: 5px; padding: 0 7px 7px; }
@@ -9166,6 +9237,8 @@
       #shiftEditorNote { min-height: 50px; }
       .shift-picker-wheel { height: 160px; padding-block: 52px; }
       .shift-picker-option { min-height: 52px; }
+      .shift-calendar-grid.is-year-view { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+      .shift-year-month { min-height: 78px; padding: 7px 4px; font-size: 11px; }
     }
 
     /* Усі робочі діалоги залишають видимою поточну сторінку та лише м'яко її розмивають. */
@@ -9184,6 +9257,12 @@
       -webkit-backdrop-filter: blur(9px) saturate(1.05) !important;
     }
     body.workspace-additional { overscroll-behavior-y: none; }
+    html.modal-scroll-locked,
+    body.modal-scroll-locked,
+    body.modal-scroll-locked::before,
+    html.modal-scroll-locked::before {
+      background: color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%) !important;
+    }
   </style>
 
 <script>
@@ -9196,7 +9275,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=377">
+<link rel="manifest" href="manifest.json?v=378">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9251,7 +9330,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.77</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.78</span></div>
     </div>
   </div>
 
@@ -9726,6 +9805,11 @@
       </section>
 
       <section id="shiftScheduleView" class="hidden">
+        <div class="shift-calendar-view-switch" id="shiftCalendarViewSwitch" aria-label="Вигляд календаря">
+          <button type="button" class="active" data-shift-calendar-view="month">Місяць</button>
+          <button type="button" data-shift-calendar-view="week">Тиждень</button>
+          <button type="button" data-shift-calendar-view="year">Рік</button>
+        </div>
         <div class="shift-calendar-card">
           <div class="shift-month-navigation">
             <button type="button" class="secondary" id="previousShiftMonthBtn" aria-label="Попередній місяць">←</button>
@@ -10619,7 +10703,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.77</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.78</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10644,6 +10728,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.78</h3>
+          <ul>
+            <li>додано помісячний, потижневий і річний вигляд графіка змін із підсумками за вибраний період;</li>
+            <li>виправлено накладання полів початку й завершення роботи на вузьких екранах;</li>
+            <li>модальне вікно зміни зафіксовано з постійним верхнім відступом і внутрішнім прокручуванням лише за потреби;</li>
+            <li>прибрано світлі смуги над і під розмитим фоном діалогів, числа календаря трохи збільшено.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.77</h3>
           <ul>
@@ -12418,13 +12511,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=377"></script>
+<script src="./assets/decimen-optical-transfer.js?v=378"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.77";
+  const APP_VERSION = "3.78";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -12485,6 +12578,7 @@
   const ADDITIONAL_LAST_TOOL_KEY = "warehouseJournalAdditionalLastTool";
   const ADDITIONAL_DESKTOP_LAYOUT_KEY = "warehouseJournalAdditionalDesktopLayoutV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
+  const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
@@ -12539,6 +12633,7 @@
     ADDITIONAL_LAST_TOOL_KEY,
     ADDITIONAL_DESKTOP_LAYOUT_KEY,
     SHIFT_SCHEDULE_KEY,
+    SHIFT_CALENDAR_VIEW_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
   ];
@@ -13923,7 +14018,15 @@
   const orderWarehouseGroupOpenState = new Map();
   let workspaceMode = getWorkspaceModePreference();
   let shiftScheduleState = loadShiftScheduleState();
-  let shiftCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  let shiftCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 12);
+  let shiftCalendarView = (() => {
+    try {
+      const savedView = localStorage.getItem(SHIFT_CALENDAR_VIEW_KEY);
+      return ["month", "week", "year"].includes(savedView) ? savedView : "month";
+    } catch (error) {
+      return "month";
+    }
+  })();
   let additionalDesktopInitialized = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
@@ -21587,7 +21690,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=377")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=378")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23313,29 +23416,97 @@
     renderShiftSummary();
   }
 
+  function getShiftWeekStart(date = shiftCalendarMonth) {
+    const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+    start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+    return start;
+  }
+
+  function renderShiftDay(dateObject, selectedDate) {
+    const date = shiftDateKey(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate());
+    const entry = shiftScheduleState.entries[date];
+    const hours = calculateShiftEntryHours(entry);
+    const classes = ["shift-calendar-day"];
+    if (entry) classes.push("has-shift");
+    if (date === todayISO()) classes.push("is-today");
+    if (date === selectedDate) classes.push("is-selected");
+    return `<button type="button" class="${classes.join(" ")}" data-shift-date="${date}"${entry ? ` style="--shift-color:${escapeHtml(entry.color)}"` : ""}>
+      <span class="shift-calendar-day-number">${dateObject.getDate()}</span>
+      ${entry ? `<span class="shift-calendar-day-type">${escapeHtml(entry.typeName || "Зміна")}</span>${entry.isDayOff ? "" : `<span class="shift-calendar-day-hours">${formatShiftNumber(hours)} год</span>`}` : ""}
+    </button>`;
+  }
+
+  function setShiftCalendarView(view) {
+    if (!["month", "week", "year"].includes(view)) return;
+    shiftCalendarView = view;
+    try { localStorage.setItem(SHIFT_CALENDAR_VIEW_KEY, view); } catch (error) {}
+    closeShiftEditor();
+    closeShiftStats();
+    renderShiftSchedule();
+  }
+
   function renderShiftCalendar() {
     const grid = document.getElementById("shiftCalendarGrid");
     if (!grid) return;
     const year = shiftCalendarMonth.getFullYear();
     const month = shiftCalendarMonth.getMonth();
     const monthLabel = document.getElementById("shiftMonthLabel");
-    if (monthLabel) monthLabel.textContent = shiftCalendarMonth.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
+    const calendarCard = grid.closest(".shift-calendar-card");
+    const weekdays = calendarCard?.querySelector(".shift-weekdays");
+    const previousButton = document.getElementById("previousShiftMonthBtn");
+    const nextButton = document.getElementById("nextShiftMonthBtn");
+    const periodName = shiftCalendarView === "year" ? "рік" : shiftCalendarView === "week" ? "тиждень" : "місяць";
+    previousButton?.setAttribute("aria-label", `Попередній ${periodName}`);
+    nextButton?.setAttribute("aria-label", `Наступний ${periodName}`);
+    document.querySelectorAll("[data-shift-calendar-view]").forEach(button => {
+      const active = button.dataset.shiftCalendarView === shiftCalendarView;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    calendarCard?.classList.toggle("is-week-view", shiftCalendarView === "week");
+    calendarCard?.classList.toggle("is-year-view", shiftCalendarView === "year");
+    grid.classList.toggle("is-week-view", shiftCalendarView === "week");
+    grid.classList.toggle("is-year-view", shiftCalendarView === "year");
+    if (weekdays) weekdays.hidden = shiftCalendarView === "year";
     const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const selectedDate = document.getElementById("shiftEditorDate")?.value || "";
+
+    if (shiftCalendarView === "year") {
+      if (monthLabel) monthLabel.textContent = String(year);
+      grid.innerHTML = Array.from({ length: 12 }, (_, monthIndex) => {
+        const prefix = `${year}-${String(monthIndex + 1).padStart(2, "0")}-`;
+        const count = Object.values(shiftScheduleState.entries)
+          .filter(entry => entry.date.startsWith(prefix) && !entry.isDayOff).length;
+        const label = new Date(year, monthIndex, 1).toLocaleDateString("uk-UA", { month: "long" });
+        return `<button type="button" class="shift-year-month" data-shift-year-month="${monthIndex}">
+          <strong>${escapeHtml(label)}</strong><span>${count ? `${count} змін` : "Немає змін"}</span>
+        </button>`;
+      }).join("");
+      return;
+    }
+
+    if (shiftCalendarView === "week") {
+      const weekStart = getShiftWeekStart();
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      if (monthLabel) {
+        const startLabel = weekStart.toLocaleDateString("uk-UA", { day: "numeric", month: "short" });
+        const endLabel = weekEnd.toLocaleDateString("uk-UA", { day: "numeric", month: "short", year: "numeric" });
+        monthLabel.textContent = `${startLabel} — ${endLabel}`;
+      }
+      grid.innerHTML = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(weekStart);
+        date.setDate(date.getDate() + index);
+        return renderShiftDay(date, selectedDate);
+      }).join("");
+      return;
+    }
+
+    if (monthLabel) monthLabel.textContent = shiftCalendarMonth.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
     let html = Array.from({ length: firstWeekday }, () => `<div class="shift-calendar-empty"></div>`).join("");
     for (let day = 1; day <= daysInMonth; day += 1) {
-      const date = shiftDateKey(year, month, day);
-      const entry = shiftScheduleState.entries[date];
-      const hours = calculateShiftEntryHours(entry);
-      const classes = ["shift-calendar-day"];
-      if (entry) classes.push("has-shift");
-      if (date === todayISO()) classes.push("is-today");
-      if (date === selectedDate) classes.push("is-selected");
-      html += `<button type="button" class="${classes.join(" ")}" data-shift-date="${date}"${entry ? ` style="--shift-color:${escapeHtml(entry.color)}"` : ""}>
-        <span class="shift-calendar-day-number">${day}</span>
-        ${entry ? `<span class="shift-calendar-day-type">${escapeHtml(entry.typeName || "Зміна")}</span>${entry.isDayOff ? "" : `<span class="shift-calendar-day-hours">${formatShiftNumber(hours)} год</span>`}` : ""}
-      </button>`;
+      html += renderShiftDay(new Date(year, month, day, 12), selectedDate);
     }
     grid.innerHTML = html;
   }
@@ -23433,10 +23604,22 @@
   function getCurrentMonthShiftEntries() {
     const year = shiftCalendarMonth.getFullYear();
     const month = shiftCalendarMonth.getMonth();
-    const prefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
-    return Object.values(shiftScheduleState.entries)
-      .filter(entry => entry.date.startsWith(prefix))
-      .sort((left, right) => left.date.localeCompare(right.date));
+    const entries = Object.values(shiftScheduleState.entries);
+    let filteredEntries;
+    if (shiftCalendarView === "year") {
+      filteredEntries = entries.filter(entry => entry.date.startsWith(`${year}-`));
+    } else if (shiftCalendarView === "week") {
+      const start = getShiftWeekStart();
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      const startKey = shiftDateKey(start.getFullYear(), start.getMonth(), start.getDate());
+      const endKey = shiftDateKey(end.getFullYear(), end.getMonth(), end.getDate());
+      filteredEntries = entries.filter(entry => entry.date >= startKey && entry.date <= endKey);
+    } else {
+      const prefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
+      filteredEntries = entries.filter(entry => entry.date.startsWith(prefix));
+    }
+    return filteredEntries.sort((left, right) => left.date.localeCompare(right.date));
   }
 
   function shiftStatsAreOpen() {
@@ -23453,7 +23636,7 @@
     const entries = getCurrentMonthShiftEntries().filter(entry => !entry.isDayOff);
     if (!title || !content) return;
     if (kind === "pay") {
-      title.textContent = "Нараховано за місяць";
+      title.textContent = "Нараховано за період";
       content.innerHTML = entries.length ? entries.map(entry => {
         const hours = calculateShiftEntryHours(entry);
         const pay = calculateShiftEntryPay(entry);
@@ -23462,7 +23645,7 @@
           <div><strong>${escapeHtml(dateLabel)}</strong><small>${escapeHtml(entry.typeName || "Зміна")} · ${formatShiftNumber(hours)} год</small></div>
           <div class="shift-stats-value">${escapeHtml(formatShiftMoney(pay, entry.currency))}</div>
         </div>`;
-      }).join("") : `<div class="small">У цьому місяці ще немає нарахувань.</div>`;
+      }).join("") : `<div class="small">У цьому періоді ще немає нарахувань.</div>`;
     } else {
       title.textContent = "Статистика змін";
       const groups = new Map();
@@ -23476,7 +23659,7 @@
       content.innerHTML = groups.size ? Array.from(groups.values()).map(group => `<div class="shift-stats-row">
         <div><strong>${escapeHtml(group.name)}</strong><small>${group.count} ${group.count === 1 ? "зміна" : "змін"}</small></div>
         <div class="shift-stats-value">${formatShiftNumber(group.hours)} год</div>
-      </div>`).join("") : `<div class="small">У цьому місяці ще немає робочих змін.</div>`;
+      </div>`).join("") : `<div class="small">У цьому періоді ще немає робочих змін.</div>`;
     }
     document.getElementById("shiftStatsOverlay")?.classList.remove("hidden");
   }
@@ -24532,15 +24715,24 @@
     }
   });
 
-  document.getElementById("previousShiftMonthBtn").addEventListener("click", () => {
-    shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), shiftCalendarMonth.getMonth() - 1, 1);
+  function navigateShiftCalendar(direction) {
+    if (shiftCalendarView === "year") {
+      shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear() + direction, shiftCalendarMonth.getMonth(), 1);
+    } else if (shiftCalendarView === "week") {
+      const nextDate = new Date(shiftCalendarMonth);
+      nextDate.setDate(nextDate.getDate() + direction * 7);
+      shiftCalendarMonth = nextDate;
+    } else {
+      shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), shiftCalendarMonth.getMonth() + direction, 1);
+    }
     closeShiftEditor();
     renderShiftSchedule();
-  });
-  document.getElementById("nextShiftMonthBtn").addEventListener("click", () => {
-    shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), shiftCalendarMonth.getMonth() + 1, 1);
-    closeShiftEditor();
-    renderShiftSchedule();
+  }
+  document.getElementById("previousShiftMonthBtn").addEventListener("click", () => navigateShiftCalendar(-1));
+  document.getElementById("nextShiftMonthBtn").addEventListener("click", () => navigateShiftCalendar(1));
+  document.getElementById("shiftCalendarViewSwitch").addEventListener("click", event => {
+    const button = event.target.closest("[data-shift-calendar-view]");
+    if (button) setShiftCalendarView(button.dataset.shiftCalendarView);
   });
   document.getElementById("openShiftMonthPickerBtn").addEventListener("click", openShiftMonthPicker);
   document.getElementById("applyShiftMonthPickerBtn").addEventListener("click", applyShiftMonthPicker);
@@ -24557,6 +24749,12 @@
     wheel.addEventListener("scroll", () => syncShiftPickerFromScroll(wheel), { passive: true });
   });
   document.getElementById("shiftCalendarGrid").addEventListener("click", event => {
+    const yearMonth = event.target.closest("[data-shift-year-month]");
+    if (yearMonth) {
+      shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), Number(yearMonth.dataset.shiftYearMonth), 1);
+      setShiftCalendarView("month");
+      return;
+    }
     const day = event.target.closest("[data-shift-date]");
     if (day) openShiftEditor(day.dataset.shiftDate);
   });
