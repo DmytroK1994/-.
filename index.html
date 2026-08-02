@@ -9821,12 +9821,7 @@
       color: var(--text);
       font-weight: 900;
     }
-    .shift-mini-day.is-today {
-      outline: 1px solid var(--primary-bg);
-      background: var(--primary-bg) !important;
-      color: var(--primary-text) !important;
-      font-weight: 900;
-    }
+    .shift-mini-day.is-today { outline: 1px solid var(--primary-bg); outline-offset: -1px; }
     .shift-mini-day.empty { visibility: hidden; }
     .shift-mini-count { margin-top: auto; text-align: center; }
     .shift-month-preview-calendar { display: grid; gap: 7px; }
@@ -9871,16 +9866,6 @@
       background: color-mix(in srgb, var(--shift-color) 22%, var(--surface)) !important;
     }
     .shift-calendar-day.is-today { outline: 2px solid var(--primary-bg); outline-offset: -2px; }
-    .shift-calendar-day.is-today .shift-calendar-day-number {
-      display: grid;
-      width: 25px;
-      height: 25px;
-      margin: 0 auto;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--primary-bg);
-      color: var(--primary-text);
-    }
     .shift-calendar-day.is-selected { box-shadow: inset 0 0 0 2px var(--primary-bg) !important; }
     .shift-calendar-day-number { display: block; font-size: 12px; font-weight: 900; }
     .shift-calendar-day-type,
@@ -10526,7 +10511,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=429">
+<link rel="manifest" href="manifest.json?v=430">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10581,7 +10566,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.29</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.30</span></div>
     </div>
   </div>
 
@@ -12100,7 +12085,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.29</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.30</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12126,6 +12111,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.30</h3>
+          <ul>
+            <li>сьогоднішній день у календарі тепер виділяється лише рамкою комірки;</li>
+            <li>зміну фону, кольоровий круг і стилі всередині комірки прибрано, тому текст більше не зміщується.</li>
+          </ul>
+
           <h3>Версія 4.29</h3>
           <ul>
             <li>фактичну мобільну висоту шапки «Графіка змін» зменшено за рахунок компактнішого розташування дати;</li>
@@ -14239,14 +14230,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=429"></script>
-<script src="./firebase-config.js?v=429"></script>
+<script src="./assets/decimen-optical-transfer.js?v=430"></script>
+<script src="./firebase-config.js?v=430"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.29";
+  const APP_VERSION = "4.30";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23584,7 +23575,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=429")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=430")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
