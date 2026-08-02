@@ -8776,6 +8776,14 @@
       border-radius: 18px;
       background: var(--surface);
     }
+    .shift-calendar-card {
+      display: flex;
+      width: min(100%, 560px);
+      aspect-ratio: 1;
+      margin-inline: auto;
+      flex-direction: column;
+      overflow: hidden;
+    }
     .shift-month-navigation {
       justify-content: space-between;
       margin-bottom: 10px;
@@ -8803,6 +8811,11 @@
       grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 5px;
     }
+    .shift-calendar-grid {
+      min-height: 0;
+      flex: 1 1 auto;
+      grid-auto-rows: minmax(0, 1fr);
+    }
     .shift-weekdays div {
       padding: 4px 0;
       color: var(--muted);
@@ -8815,7 +8828,8 @@
       display: block;
       width: 100% !important;
       min-width: 0 !important;
-      min-height: 76px !important;
+      min-height: 0 !important;
+      aspect-ratio: 1;
       margin: 0 !important;
       padding: 7px 5px !important;
       overflow: hidden;
@@ -8844,7 +8858,7 @@
       white-space: nowrap;
     }
     .shift-calendar-day-hours { margin-top: 2px; color: var(--muted); }
-    .shift-calendar-empty { min-height: 76px; }
+    .shift-calendar-empty { min-height: 0; aspect-ratio: 1; }
     .shift-editor-panel h3,
     .shift-settings-panel h3 { margin: 0 0 10px; }
     .shift-editor-fields {
@@ -8931,8 +8945,10 @@
     .shift-editor-section.collapsed .shift-editor-section-body { display: none; }
     .shift-editor-section-mark { font-size: 18px; line-height: 1; }
     .shift-time-wheel-field {
-      min-height: 50px;
-      font-size: 19px;
+      min-width: 0;
+      min-height: 42px;
+      width: 100%;
+      font-size: 16px;
       font-weight: 800;
       text-align: center;
     }
@@ -8967,7 +8983,62 @@
     }
     .shift-settings-actions { margin-top: 11px; }
     .shift-settings-actions button { width: 100%; margin: 0; }
-    .shift-month-picker-grid { display: grid; grid-template-columns: 1.4fr .8fr; gap: 8px; }
+    .shift-month-picker-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 8px; }
+    .shift-picker-column { min-width: 0; margin: 0; }
+    .shift-picker-column > span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .shift-picker-wheel {
+      position: relative;
+      height: 174px;
+      overflow-y: auto;
+      padding-block: 58px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background:
+        linear-gradient(to bottom, var(--surface-deep), transparent 34%, transparent 66%, var(--surface-deep)),
+        var(--surface);
+      scroll-snap-type: y mandatory;
+      scrollbar-width: thin;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .shift-picker-wheel::after {
+      content: "";
+      position: sticky;
+      z-index: 0;
+      display: block;
+      bottom: 58px;
+      height: 56px;
+      margin-top: -56px;
+      border-top: 1px solid var(--border-strong);
+      border-bottom: 1px solid var(--border-strong);
+      pointer-events: none;
+    }
+    .shift-picker-option {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 56px;
+      margin: 0;
+      padding: 8px 6px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 15px;
+      scroll-snap-align: center;
+    }
+    .shift-picker-option.selected {
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+    }
     .page-back-swipe-indicator {
       position: fixed;
       top: 50%;
@@ -9003,9 +9074,9 @@
       place-items: center;
       padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
       overflow: auto;
-      background: rgba(10, 16, 25, .56);
-      backdrop-filter: blur(7px);
-      -webkit-backdrop-filter: blur(7px);
+      background: rgba(10, 16, 25, .14);
+      backdrop-filter: blur(9px) saturate(1.05);
+      -webkit-backdrop-filter: blur(9px) saturate(1.05);
     }
     .shift-editor-overlay.hidden { display: none; }
     .shift-editor-overlay .shift-editor-panel {
@@ -9033,12 +9104,61 @@
       .additional-shell { padding: 9px; }
       .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .shift-workspace-grid { grid-template-columns: 1fr; }
-      .shift-calendar-day { min-height: 62px !important; padding: 5px 3px !important; }
-      .shift-calendar-empty { min-height: 62px; }
+      .shift-calendar-card { padding: 9px; }
+      .shift-month-navigation { margin-bottom: 5px; }
+      .shift-month-navigation button { min-height: 34px; padding-block: 5px; }
+      .shift-weekdays div { padding: 2px 0; }
+      .shift-calendar-day { min-height: 0 !important; padding: 3px 2px !important; border-radius: 10px !important; }
+      .shift-calendar-empty { min-height: 0; }
       .shift-calendar-day-type { font-size: 8px; }
-      .shift-editor-overlay { align-items: end; padding-inline: 7px; }
-      .shift-editor-overlay .shift-editor-panel { width: 100%; max-height: calc(100dvh - 10px); border-radius: 20px 20px 12px 12px; }
+      .shift-calendar-day-type,
+      .shift-calendar-day-hours { margin-top: 2px; }
+      .shift-editor-overlay {
+        align-items: center;
+        padding: calc(env(safe-area-inset-top) + 7px) 7px calc(env(safe-area-inset-bottom) + 7px);
+      }
+      .shift-editor-overlay .shift-editor-panel {
+        width: 100%;
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 14px);
+        padding: 9px;
+        border-radius: 18px;
+      }
+      .shift-editor-heading { min-height: 34px; padding-inline: 40px; }
+      .shift-editor-heading h3 { font-size: 16px; line-height: 1.15; }
+      .shift-editor-delete { width: 34px !important; min-width: 34px !important; height: 34px !important; min-height: 34px !important; }
+      .shift-editor-fields { gap: 5px; }
+      .shift-editor-fields label { min-width: 0; font-size: 10px; }
+      .shift-editor-fields input,
+      .shift-editor-fields select,
+      .shift-editor-fields textarea { min-width: 0; width: 100%; min-height: 38px; margin-top: 2px; padding-block: 5px; font-size: 13px; }
+      .shift-editor-time-grid { gap: 5px; }
+      .shift-editor-section { border-radius: 11px; }
+      .shift-editor-section-toggle { min-height: 32px; padding: 5px 8px; font-size: 12px; }
+      .shift-editor-section-body { gap: 5px; padding: 0 7px 7px; }
+      .shift-editor-preview { margin-top: 5px; padding: 6px 8px; font-size: 11px; }
+      .shift-editor-actions { gap: 6px; margin-top: 6px; }
+      .shift-editor-actions button { min-height: 39px; padding-block: 6px; }
+      #shiftEditorNote { min-height: 50px; }
+      .shift-picker-wheel { height: 160px; padding-block: 52px; }
+      .shift-picker-option { min-height: 52px; }
     }
+
+    /* Усі робочі діалоги залишають видимою поточну сторінку та лише м'яко її розмивають. */
+    .quick-edit-overlay,
+    .order-entry-overlay,
+    .warehouse-manager-overlay,
+    .product-add-overlay,
+    .app-dialog-overlay,
+    .reset-confirmation-overlay,
+    .workspace-start-overlay,
+    .changelog-overlay,
+    .qr-transfer-overlay,
+    .shift-editor-overlay {
+      background: rgba(10, 16, 25, .14) !important;
+      backdrop-filter: blur(9px) saturate(1.05) !important;
+      -webkit-backdrop-filter: blur(9px) saturate(1.05) !important;
+    }
+    body.workspace-additional { overscroll-behavior-y: none; }
   </style>
 
 <script>
@@ -9051,7 +9171,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=375">
+<link rel="manifest" href="manifest.json?v=376">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9106,7 +9226,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.75</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.76</span></div>
     </div>
   </div>
 
@@ -9651,10 +9771,10 @@
 
         <div class="shift-editor-overlay hidden" id="shiftMonthPickerOverlay" role="dialog" aria-modal="true" aria-labelledby="shiftMonthPickerTitle">
           <section class="shift-editor-panel">
-            <h3 id="shiftMonthPickerTitle">Обрати місяць</h3>
+            <h3 id="shiftMonthPickerTitle">Обрати місяць і рік</h3>
             <div class="shift-month-picker-grid">
-              <label>Місяць<select id="shiftMonthPickerMonth"></select></label>
-              <label>Рік<input type="number" id="shiftMonthPickerYear" min="1900" max="2200" inputmode="numeric" /></label>
+              <div class="shift-picker-column"><span>Місяць</span><div class="shift-picker-wheel" id="shiftMonthPickerMonth" role="listbox" aria-label="Місяць"></div></div>
+              <div class="shift-picker-column"><span>Рік</span><div class="shift-picker-wheel" id="shiftMonthPickerYear" role="listbox" aria-label="Рік"></div></div>
             </div>
             <div class="shift-editor-actions">
               <button type="button" id="applyShiftMonthPickerBtn">Застосувати</button>
@@ -10474,7 +10594,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.75</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.76</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10499,6 +10619,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.76</h3>
+          <ul>
+            <li>календар і кнопки днів зроблено квадратними та відокремлено від шапки стабільним відступом;</li>
+            <li>вибір місяця й року перероблено на два прокручувані колеса поверх поточного календаря;</li>
+            <li>мобільний редактор зміни ущільнено: дата й кошик завжди видимі, а поля часу більше не накладаються;</li>
+            <li>робочі діалоги тепер розмивають поточну сторінку без суцільної сірої підкладки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.75</h3>
           <ul>
@@ -12256,13 +12385,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=375"></script>
+<script src="./assets/decimen-optical-transfer.js?v=376"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.75";
+  const APP_VERSION = "3.76";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -21425,7 +21554,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=375")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=376")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23179,18 +23308,63 @@
   }
 
   function openShiftMonthPicker() {
-    const monthSelect = document.getElementById("shiftMonthPickerMonth");
-    const yearInput = document.getElementById("shiftMonthPickerYear");
-    if (!monthSelect || !yearInput) return;
-    if (!monthSelect.options.length) {
-      monthSelect.innerHTML = Array.from({ length: 12 }, (_, month) => {
+    const monthWheel = document.getElementById("shiftMonthPickerMonth");
+    const yearWheel = document.getElementById("shiftMonthPickerYear");
+    if (!monthWheel || !yearWheel) return;
+    if (!monthWheel.children.length) {
+      monthWheel.innerHTML = Array.from({ length: 12 }, (_, month) => {
         const label = new Date(2024, month, 1).toLocaleDateString("uk-UA", { month: "long" });
-        return `<option value="${month}">${escapeHtml(label.charAt(0).toUpperCase() + label.slice(1))}</option>`;
+        return `<button type="button" class="shift-picker-option" data-shift-picker-value="${month}" role="option">${escapeHtml(label.charAt(0).toUpperCase() + label.slice(1))}</button>`;
       }).join("");
     }
-    monthSelect.value = String(shiftCalendarMonth.getMonth());
-    yearInput.value = String(shiftCalendarMonth.getFullYear());
+    if (!yearWheel.children.length) {
+      yearWheel.innerHTML = Array.from({ length: 301 }, (_, index) => {
+        const year = 1900 + index;
+        return `<button type="button" class="shift-picker-option" data-shift-picker-value="${year}" role="option">${year}</button>`;
+      }).join("");
+    }
+    selectShiftPickerValue(monthWheel, shiftCalendarMonth.getMonth(), false);
+    selectShiftPickerValue(yearWheel, shiftCalendarMonth.getFullYear(), false);
     document.getElementById("shiftMonthPickerOverlay")?.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      centerShiftPickerSelection(monthWheel);
+      centerShiftPickerSelection(yearWheel);
+    });
+  }
+
+  function selectShiftPickerValue(wheel, value, center = true) {
+    if (!wheel) return;
+    wheel.querySelectorAll(".shift-picker-option").forEach(option => {
+      const selected = option.dataset.shiftPickerValue === String(value);
+      option.classList.toggle("selected", selected);
+      option.setAttribute("aria-selected", selected ? "true" : "false");
+    });
+    if (center) centerShiftPickerSelection(wheel);
+  }
+
+  function centerShiftPickerSelection(wheel) {
+    wheel?.querySelector(".shift-picker-option.selected")?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }
+
+  function syncShiftPickerFromScroll(wheel) {
+    if (!wheel) return;
+    if (wheel.dataset.scrollSyncTimer) window.clearTimeout(Number(wheel.dataset.scrollSyncTimer));
+    const timer = window.setTimeout(() => {
+      const center = wheel.getBoundingClientRect().top + wheel.clientHeight / 2;
+      let closest = null;
+      let distance = Infinity;
+      wheel.querySelectorAll(".shift-picker-option").forEach(option => {
+        const rect = option.getBoundingClientRect();
+        const nextDistance = Math.abs(rect.top + rect.height / 2 - center);
+        if (nextDistance < distance) {
+          closest = option;
+          distance = nextDistance;
+        }
+      });
+      if (closest) selectShiftPickerValue(wheel, closest.dataset.shiftPickerValue, false);
+      delete wheel.dataset.scrollSyncTimer;
+    }, 90);
+    wheel.dataset.scrollSyncTimer = String(timer);
   }
 
   function closeShiftMonthPicker() {
@@ -23198,8 +23372,8 @@
   }
 
   function applyShiftMonthPicker() {
-    const month = Number(document.getElementById("shiftMonthPickerMonth")?.value);
-    const year = Number(document.getElementById("shiftMonthPickerYear")?.value);
+    const month = Number(document.querySelector("#shiftMonthPickerMonth .shift-picker-option.selected")?.dataset.shiftPickerValue);
+    const year = Number(document.querySelector("#shiftMonthPickerYear .shift-picker-option.selected")?.dataset.shiftPickerValue);
     if (!Number.isInteger(month) || month < 0 || month > 11 || !Number.isInteger(year) || year < 1900 || year > 2200) {
       toast("Вкажи коректний місяць і рік", true);
       return;
@@ -24334,6 +24508,14 @@
   document.getElementById("closeShiftMonthPickerBtn").addEventListener("click", closeShiftMonthPicker);
   document.getElementById("shiftMonthPickerOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeShiftMonthPicker();
+  });
+  ["shiftMonthPickerMonth", "shiftMonthPickerYear"].forEach(id => {
+    const wheel = document.getElementById(id);
+    wheel.addEventListener("click", event => {
+      const option = event.target.closest("[data-shift-picker-value]");
+      if (option) selectShiftPickerValue(wheel, option.dataset.shiftPickerValue);
+    });
+    wheel.addEventListener("scroll", () => syncShiftPickerFromScroll(wheel), { passive: true });
   });
   document.getElementById("shiftCalendarGrid").addEventListener("click", event => {
     const day = event.target.closest("[data-shift-date]");
