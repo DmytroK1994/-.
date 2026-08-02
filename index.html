@@ -8752,7 +8752,7 @@
     .pallet-calculator-shell {
       display: grid;
       gap: 12px;
-      width: min(100%, 760px);
+      width: 100%;
       margin: 0 auto;
     }
     .pallet-calculator-card,
@@ -9587,7 +9587,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=397">
+<link rel="manifest" href="manifest.json?v=398">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9642,7 +9642,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.97</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.98</span></div>
     </div>
   </div>
 
@@ -10154,9 +10154,9 @@
                 <div class="pallet-calculator-fields">
                   <div class="pallet-calculator-field"><label for="palletCalculatorBoxesPerPallet">Коробок у піддоні</label><input id="palletCalculatorBoxesPerPallet" type="number" inputmode="numeric" min="1" /></div>
                   <div class="pallet-calculator-field"><label for="palletCalculatorPacksPerBox">Пачок у коробці</label><input id="palletCalculatorPacksPerBox" type="number" inputmode="numeric" min="1" /></div>
-                  <div class="pallet-calculator-field full"><div class="pallet-calculator-field-heading"><label for="palletCalculatorPackWeight">Вага однієї пачки</label><select id="palletCalculatorPackWeightUnit" class="entry-section-unit-select pallet-calculator-weight-unit" aria-label="Одиниця ваги пачки"><option value="g">Грами</option><option value="kg">Кілограми</option></select></div><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" min="0" step="0.001" /></div>
+                  <div class="pallet-calculator-field"><div class="pallet-calculator-field-heading"><label for="palletCalculatorPackWeight">Вага однієї пачки</label><select id="palletCalculatorPackWeightUnit" class="entry-section-unit-select pallet-calculator-weight-unit" aria-label="Одиниця ваги пачки"><option value="g">Грами</option><option value="kg">Кілограми</option></select></div><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" min="0" step="0.001" /></div>
                   <div class="pallet-calculator-field"><label for="palletCalculatorTransitionBoxes">Коробок уже в перехідному піддоні</label><input id="palletCalculatorTransitionBoxes" type="number" inputmode="numeric" min="0" value="0" /></div>
-                  <div class="pallet-calculator-field"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" min="0" step="0.01" /></div>
+                  <div class="pallet-calculator-field full"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" min="0" step="0.01" /></div>
                 </div>
               </div>
             </section>
@@ -11069,7 +11069,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.97</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.98</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11094,6 +11094,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.98</h3>
+          <ul>
+            <li>вагу пачки та коробки в перехідному піддоні розміщено в одному рядку, план розтягнуто на всю ширину, а калькулятор розширено до доступних країв екрана.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.97</h3>
           <ul>
@@ -13012,13 +13018,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=397"></script>
+<script src="./assets/decimen-optical-transfer.js?v=398"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.97";
+  const APP_VERSION = "3.98";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22222,7 +22228,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=397")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=398")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
