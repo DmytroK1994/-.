@@ -8694,6 +8694,16 @@
       background: var(--surface) !important;
       box-shadow: 0 12px 28px var(--popover-shadow) !important;
     }
+    body.additional-desktop-dragging,
+    body.additional-desktop-dragging * {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+    body.additional-desktop-dragging #additionalDesktop {
+      touch-action: none !important;
+      overscroll-behavior: none;
+    }
     .additional-tool-icon {
       display: grid;
       width: 50px;
@@ -9348,7 +9358,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=385">
+<link rel="manifest" href="manifest.json?v=386">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9403,7 +9413,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.85</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.86</span></div>
     </div>
   </div>
 
@@ -9864,7 +9874,6 @@
       <section id="additionalDesktopView">
         <div class="additional-heading">
           <div>
-            <h2>Додатково</h2>
             <p class="small">Окремі інструменти застосунку</p>
           </div>
         </div>
@@ -10777,7 +10786,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.85</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.86</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10802,6 +10811,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.86</h3>
+          <ul>
+            <li>під час переміщення інструмента на робочому столі блокуються відкриття меню, жест повернення, прокручування та виділення тексту;</li>
+            <li>з робочого столу прибрано повторний заголовок «Додатково», залишено лише підпис «Окремі інструменти застосунку».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.85</h3>
           <ul>
@@ -12633,13 +12649,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=385"></script>
+<script src="./assets/decimen-optical-transfer.js?v=386"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.85";
+  const APP_VERSION = "3.86";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -17404,6 +17420,11 @@
 
     document.addEventListener("touchstart", event => {
       if (event.touches.length !== 1) return;
+      if (document.body.classList.contains("additional-desktop-dragging")) {
+        swipeMode = "";
+        clearSwipeStyles();
+        return;
+      }
       if (gestureStartsOnHorizontalControl(event.target)) {
         swipeMode = "";
         return;
@@ -17441,6 +17462,14 @@
     }, { passive: true });
 
     document.addEventListener("touchmove", event => {
+      if (document.body.classList.contains("additional-desktop-dragging")) {
+        swipeMode = "";
+        horizontalSwipe = false;
+        closeSwipeDirection = "";
+        clearSwipeStyles();
+        if (event.cancelable) event.preventDefault();
+        return;
+      }
       if (!swipeMode || event.touches.length !== 1) return;
       const touch = event.touches[0];
       const deltaX = touch.clientX - swipeStartX;
@@ -18608,6 +18637,7 @@
   }
 
   function canUsePageBackSwipe() {
+    if (document.body.classList.contains("additional-desktop-dragging")) return false;
     if (!hasPageBackDestination()) return false;
     if (!hasAdditionalBackDestination() && getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
@@ -18649,6 +18679,13 @@
     }, { capture: true, passive: true });
 
     document.addEventListener("touchmove", event => {
+      if (document.body.classList.contains("additional-desktop-dragging")) {
+        tracking = false;
+        horizontal = false;
+        hideIndicator();
+        if (event.cancelable) event.preventDefault();
+        return;
+      }
       if (!tracking || event.touches.length !== 1) return;
       const touch = event.touches[0];
       const deltaX = touch.clientX - startX;
@@ -21863,7 +21900,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=385")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=386")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23399,6 +23436,7 @@
         timer = window.setTimeout(() => {
           dragging = true;
           tile.classList.add("dragging");
+          document.body.classList.add("additional-desktop-dragging");
           tile.setPointerCapture?.(pointerId);
         }, 1000);
       });
@@ -23415,6 +23453,7 @@
       });
       const finish = event => {
         clearTimer();
+        document.body.classList.remove("additional-desktop-dragging");
         if (!dragging) return;
         dragging = false;
         tile.classList.remove("dragging");
