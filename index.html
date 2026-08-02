@@ -3164,6 +3164,49 @@
       .menu-open-swipe-hint {
         display: block;
       }
+      body:not(.page-today) .compact-header-content {
+        width: 100%;
+        text-align: center;
+      }
+      body:not(.page-today) .section-header-title {
+        text-align: center;
+      }
+      body:not(.page-today) .compact-header-hints {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        width: 100%;
+        min-height: 25px;
+        margin-top: 3px;
+        padding-inline: 5px;
+      }
+      body:not(.page-today) .page-back-swipe-hint,
+      body:not(.page-today) .menu-open-swipe-hint {
+        width: auto;
+        min-width: 0;
+        min-height: 25px;
+        margin: 0;
+        padding: 3px 8px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface-deep);
+        color: var(--text);
+        box-shadow: none;
+        font-size: 10px;
+        font-weight: 850;
+        line-height: 1;
+        transform: none;
+      }
+      body:not(.page-today) .page-back-swipe-hint {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: start;
+      }
+      body:not(.page-today) .menu-open-swipe-hint {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+      }
     }
     .product-list-search-card,
     .current-list-search-card {
@@ -10172,7 +10215,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=415">
+<link rel="manifest" href="manifest.json?v=416">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10227,7 +10270,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.15</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.16</span></div>
     </div>
   </div>
 
@@ -11726,7 +11769,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.15</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.16</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11752,6 +11795,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.16</h3>
+          <ul>
+            <li>мобільні кнопки «Назад» і «Меню» у вкладених налаштуваннях вирівняно по краях за зразком додаткових інструментів та трохи зменшено по висоті;</li>
+            <li>кожна кнопка зберігає своє місце, навіть коли друга кнопка прихована.</li>
+          </ul>
+
           <h3>Версія 4.15</h3>
           <ul>
             <li>у налаштування додано окремий пункт «Акаунт» зі станом локальної роботи, інтернету та майбутньої хмарної синхронізації;</li>
@@ -13777,14 +13826,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=415"></script>
-<script src="./firebase-config.js?v=415"></script>
+<script src="./assets/decimen-optical-transfer.js?v=416"></script>
+<script src="./firebase-config.js?v=416"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.15";
+  const APP_VERSION = "4.16";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23120,7 +23169,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=415")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=416")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
