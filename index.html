@@ -10471,6 +10471,32 @@
       }
     }
 
+    /* Єдині компактні службові кнопки без обведення. Кнопки «Назад» сюди навмисно не входять. */
+    #openMenuBtn,
+    #compactMenuBtn,
+    #newDayBtn,
+    #additionalToolSettingsBtn {
+      width: 34px !important;
+      min-width: 34px !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 10px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    #openMenuBtn:hover,
+    #openMenuBtn:focus-visible,
+    #compactMenuBtn:hover,
+    #compactMenuBtn:focus-visible,
+    #newDayBtn:hover,
+    #newDayBtn:focus-visible,
+    #additionalToolSettingsBtn:hover,
+    #additionalToolSettingsBtn:focus-visible {
+      background: color-mix(in srgb, var(--text) 7%, transparent) !important;
+    }
+
     /* Усі робочі діалоги залишають видимою поточну сторінку та лише м'яко її розмивають. */
     .quick-edit-overlay,
     .order-entry-overlay,
@@ -10511,7 +10537,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=430">
+<link rel="manifest" href="manifest.json?v=431">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10566,7 +10592,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.30</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.31</span></div>
     </div>
   </div>
 
@@ -12085,7 +12111,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.30</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.31</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12111,6 +12137,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.31</h3>
+          <ul>
+            <li>рамки прибрано з верхніх кнопок меню, створення нового документа та налаштувань додаткових інструментів;</li>
+            <li>ці службові кнопки уніфіковано до компактного розміру 34 × 34 пікселі в усіх розділах;</li>
+            <li>оформлення кнопок «Назад» залишено без змін.</li>
+          </ul>
+
           <h3>Версія 4.30</h3>
           <ul>
             <li>сьогоднішній день у календарі тепер виділяється лише рамкою комірки;</li>
@@ -14230,14 +14263,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=430"></script>
-<script src="./firebase-config.js?v=430"></script>
+<script src="./assets/decimen-optical-transfer.js?v=431"></script>
+<script src="./firebase-config.js?v=431"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.30";
+  const APP_VERSION = "4.31";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23575,7 +23608,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=430")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=431")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
