@@ -8603,7 +8603,7 @@
     body.workspace-additional #newDayBtn { visibility: hidden; pointer-events: none; }
     body.workspace-additional .date-line { display: none; }
     #additionalToolSettingsBtn { display: none; }
-    body.workspace-additional.additional-tool-open.additional-tool-settings-active #additionalToolSettingsBtn {
+    body.workspace-additional.additional-tool-settings-active #additionalToolSettingsBtn {
       display: grid;
       width: 40px;
       min-width: 40px;
@@ -8724,10 +8724,59 @@
     }
     .additional-tool-icon.pallet-tool-icon {
       background: linear-gradient(145deg, #55bfa0, #23806f);
-      font-size: 31px;
       font-weight: 700;
       box-shadow: 0 8px 18px rgba(35,128,111,.28);
     }
+    .pallet-stack-glyph {
+      position: relative;
+      display: grid;
+      width: 30px;
+      height: 27px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      align-items: end;
+      padding-bottom: 5px;
+    }
+    .pallet-stack-glyph::after {
+      content: "";
+      position: absolute;
+      right: 1px;
+      bottom: 1px;
+      left: 1px;
+      height: 3px;
+      border-radius: 2px;
+      background: currentColor;
+      box-shadow: 0 -3px 0 color-mix(in srgb, currentColor 72%, transparent);
+    }
+    .pallet-stack-glyph i {
+      display: block;
+      height: 16px;
+      border: 2px solid currentColor;
+      border-radius: 2px;
+      background: color-mix(in srgb, currentColor 12%, transparent);
+    }
+    .pallet-stack-glyph i:nth-child(2) { height: 20px; }
+    .additional-settings-panel {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+    }
+    .additional-settings-toggle {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface);
+    }
+    .additional-settings-toggle strong,
+    .additional-settings-toggle small { display: block; }
+    .additional-settings-toggle small { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .additional-settings-toggle input { width: 22px; height: 22px; margin: 0; }
+    body.additional-hide-tool-back #backFromPalletCalculatorBtn,
+    body.additional-hide-tool-back #backToAdditionalDesktopBtn { display: none !important; }
     .additional-tool-name {
       display: flex;
       height: 30px;
@@ -9796,7 +9845,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=402">
+<link rel="manifest" href="manifest.json?v=403">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9851,7 +9900,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.02</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.03</span></div>
     </div>
   </div>
 
@@ -10321,10 +10370,17 @@
             <span class="additional-tool-name">Графік змін</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openPalletCalculatorTool" data-additional-tool="palletCalculator">
-            <span class="additional-tool-icon pallet-tool-icon" aria-hidden="true">×</span>
+            <span class="additional-tool-icon pallet-tool-icon" aria-hidden="true"><span class="pallet-stack-glyph"><i></i><i></i><i></i></span></span>
             <span class="additional-tool-name">Перехідний піддон</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
+        </div>
+      </section>
+
+      <section id="additionalSettingsView" class="hidden">
+        <div class="additional-settings-panel">
+          <label class="additional-settings-toggle"><span><strong>Кнопка «Назад»</strong><small>Показувати нижню кнопку повернення в додаткових інструментах</small></span><input id="additionalShowBackButton" type="checkbox" checked /></label>
+          <button type="button" class="secondary" id="backFromAdditionalSettingsBtn">Назад</button>
         </div>
       </section>
 
@@ -10343,13 +10399,11 @@
             <div class="pallet-calculator-section-body">
               <div class="pallet-calculator-search">
                 <div class="pallet-calculator-active-search" id="palletCalculatorProductSearchWrap">
-                  <label for="palletCalculatorProductSearch">Пошук за найменуванням</label>
-                  <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Введіть назву" />
+                  <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Введіть назву" aria-label="Пошук за найменуванням" />
                   <input id="palletCalculatorProductId" type="hidden" />
                   <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
                 </div>
                 <div class="pallet-calculator-active-search pallet-calculator-format-search hidden" id="palletCalculatorFormatSearchWrap">
-                  <label for="palletCalculatorFormatSearch">Пошук за збереженими форматами</label>
                   <input id="palletCalculatorFormatSearch" type="search" autocomplete="off" maxlength="80" placeholder="Введіть назву формату" aria-label="Пошук збереженого формату" />
                   <input id="palletCalculatorSelectedFormat" type="hidden" />
                   <button type="button" class="pallet-calculator-format-clear hidden" id="clearPalletCalculatorFormatBtn" aria-label="Очистити поле">×</button>
@@ -11295,7 +11349,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.02</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.03</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11320,6 +11374,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.03</h3>
+          <ul>
+            <li>прибрано дублювання назви пошуку, додано загальні налаштування «Додатково» для нижньої кнопки «Назад», а хрестик калькулятора замінено значком піддона з коробками.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.02</h3>
           <ul>
@@ -13268,13 +13328,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=402"></script>
+<script src="./assets/decimen-optical-transfer.js?v=403"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.02";
+  const APP_VERSION = "4.03";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13334,6 +13394,7 @@
   const PRODUCTION_WORKSPACE_NAME_KEY = "warehouseJournalProductionWorkspaceName";
   const ADDITIONAL_LAST_TOOL_KEY = "warehouseJournalAdditionalLastTool";
   const ADDITIONAL_DESKTOP_LAYOUT_KEY = "warehouseJournalAdditionalDesktopLayoutV1";
+  const ADDITIONAL_SHOW_BACK_BUTTON_KEY = "warehouseJournalAdditionalShowBackButton";
   const PALLET_CALCULATOR_FORMATS_KEY = "warehouseJournalPalletCalculatorFormatsV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
@@ -13390,6 +13451,7 @@
     PRODUCTION_WORKSPACE_NAME_KEY,
     ADDITIONAL_LAST_TOOL_KEY,
     ADDITIONAL_DESKTOP_LAYOUT_KEY,
+    ADDITIONAL_SHOW_BACK_BUTTON_KEY,
     PALLET_CALCULATOR_FORMATS_KEY,
     SHIFT_SCHEDULE_KEY,
     SHIFT_CALENDAR_VIEW_KEY,
@@ -22299,6 +22361,7 @@
     localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
     localStorage.removeItem(ADDITIONAL_LAST_TOOL_KEY);
     localStorage.removeItem(ADDITIONAL_DESKTOP_LAYOUT_KEY);
+    localStorage.removeItem(ADDITIONAL_SHOW_BACK_BUTTON_KEY);
     localStorage.removeItem(PALLET_CALCULATOR_FORMATS_KEY);
     localStorage.removeItem(SHIFT_SCHEDULE_KEY);
     shiftScheduleState = makeDefaultShiftScheduleState();
@@ -22481,7 +22544,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=402")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=403")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24075,6 +24138,7 @@
     document.getElementById("palletCalculatorView")?.classList.toggle("hidden", lastTool !== "palletCalculator");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
     if (lastTool === "desktop") initializeAdditionalDesktop();
     else if (lastTool === "shifts") renderShiftSchedule();
     else preparePalletCalculator();
@@ -24097,8 +24161,12 @@
     return workspaceIsAdditional() && !document.getElementById("palletCalculatorOverlay")?.classList.contains("hidden");
   }
 
+  function additionalSettingsAreOpen() {
+    return workspaceIsAdditional() && !document.getElementById("additionalSettingsView")?.classList.contains("hidden");
+  }
+
   function hasAdditionalBackDestination() {
-    return workspaceIsAdditional() && (getAdditionalLastTool() !== "desktop" || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen() || palletCalculatorSettingsAreOpen() || palletCalculatorDialogIsOpen());
+    return workspaceIsAdditional() && (getAdditionalLastTool() !== "desktop" || additionalSettingsAreOpen() || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen() || palletCalculatorSettingsAreOpen() || palletCalculatorDialogIsOpen());
   }
 
   function updateAdditionalHeaderUI() {
@@ -24112,7 +24180,8 @@
       ? "Графік змін"
       : (activeTool === "palletCalculator" ? "Перехідний піддон" : "Додатково");
     document.body.classList.toggle("additional-tool-open", toolOpen);
-    const settingsAvailable = (activeTool === "shifts" && !shiftSettingsAreOpen())
+    const settingsAvailable = (activeTool === "desktop" && !additionalSettingsAreOpen())
+      || (activeTool === "shifts" && !shiftSettingsAreOpen())
       || (activeTool === "palletCalculator" && !palletCalculatorSettingsAreOpen() && !palletCalculatorDialogIsOpen());
     document.body.classList.toggle("additional-tool-settings-active", settingsAvailable);
     const switcherLabel = document.getElementById("workspaceSwitcherLabel");
@@ -24122,11 +24191,13 @@
     const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
     if (currentPage === "today" && sectionHeaderTitle) sectionHeaderTitle.textContent = label;
     document.title = `${label} — Облік`;
+    applyAdditionalBackButtonPreference();
     updatePageBackButton();
   }
 
   function openCurrentAdditionalToolSettings() {
     if (!workspaceIsAdditional()) return;
+    if (getAdditionalLastTool() === "desktop") openAdditionalSettings();
     if (getAdditionalLastTool() === "shifts") openShiftSettings();
     if (getAdditionalLastTool() === "palletCalculator") openPalletCalculatorSettings();
   }
@@ -24135,6 +24206,10 @@
     if (!workspaceIsAdditional()) return false;
     if (shiftStatsAreOpen()) {
       closeShiftStats();
+      return true;
+    }
+    if (additionalSettingsAreOpen()) {
+      openAdditionalDesktop();
       return true;
     }
     if (shiftEditorIsOpen()) {
@@ -24172,6 +24247,7 @@
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
     closePalletCalculatorDialog();
     document.getElementById("additionalDesktopView")?.classList.remove("hidden");
     initializeAdditionalDesktop();
@@ -24186,6 +24262,7 @@
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
     closePalletCalculatorDialog();
     document.getElementById("shiftScheduleView")?.classList.remove("hidden");
     renderShiftSchedule();
@@ -24200,6 +24277,7 @@
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.remove("hidden");
     preparePalletCalculator();
     updateAdditionalHeaderUI();
@@ -24211,9 +24289,39 @@
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.remove("hidden");
     renderPalletCalculatorSettings();
+    updateAdditionalHeaderUI();
+  }
+
+  function additionalBackButtonIsVisible() {
+    try { return localStorage.getItem(ADDITIONAL_SHOW_BACK_BUTTON_KEY) !== "hidden"; }
+    catch (error) { return true; }
+  }
+
+  function applyAdditionalBackButtonPreference() {
+    const visible = additionalBackButtonIsVisible();
+    document.body.classList.toggle("additional-hide-tool-back", !visible);
+    const checkbox = document.getElementById("additionalShowBackButton");
+    if (checkbox) checkbox.checked = visible;
+  }
+
+  function setAdditionalBackButtonVisibility(visible) {
+    try { localStorage.setItem(ADDITIONAL_SHOW_BACK_BUTTON_KEY, visible ? "shown" : "hidden"); } catch (error) {}
+    applyAdditionalBackButtonPreference();
+  }
+
+  function openAdditionalSettings() {
+    setAdditionalLastTool("desktop");
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.remove("hidden");
+    applyAdditionalBackButtonPreference();
     updateAdditionalHeaderUI();
   }
 
@@ -25286,6 +25394,8 @@
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
+  document.getElementById("backFromAdditionalSettingsBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("additionalShowBackButton").addEventListener("change", event => setAdditionalBackButtonVisibility(event.target.checked));
   document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("backToPalletCalculatorBtn").addEventListener("click", openPalletCalculator);
   document.getElementById("addPalletCalculatorFormatBtn").addEventListener("click", () => openPalletCalculatorDialog("format-settings"));
