@@ -8997,10 +8997,11 @@
     }
     .pallet-calculator-search-mode-arrow {
       flex: 0 0 auto;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 800;
+      color: var(--text);
+      font-size: 23px;
+      font-weight: 950;
       line-height: 1;
+      text-shadow: 0 1px 0 color-mix(in srgb, var(--text) 22%, transparent);
       transition: transform .16s ease;
     }
     .pallet-calculator-search-mode-button[aria-expanded="true"] .pallet-calculator-search-mode-arrow { transform: rotate(180deg); }
@@ -9011,32 +9012,34 @@
       left: 0;
       z-index: 25;
       display: grid;
-      gap: 3px;
-      padding: 6px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
+      gap: 4px;
+      min-height: calc(42px + 36px + 20px);
+      padding: 0 10px 10px;
+      border: 0;
+      border-radius: 14px;
       background: var(--surface);
-      box-shadow: 0 16px 34px var(--popover-shadow);
+      box-shadow: none;
     }
     .pallet-calculator-search-mode-menu.hidden { display: none; }
     .pallet-calculator-search-mode-caption {
       min-height: 42px;
-      padding: 11px 10px 8px;
+      padding: 11px 0 8px;
       color: var(--text);
       font-size: 13px;
       font-weight: 900;
     }
     .pallet-calculator-search-mode-menu button {
       width: 100%;
-      min-height: 38px;
+      min-height: 40px;
       margin: 0;
       padding: 7px 9px;
-      border: 0;
-      border-radius: 9px;
-      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface-deep);
       color: var(--text);
       box-shadow: none;
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 800;
       text-align: left;
     }
     .pallet-calculator-search-mode-menu button.active { background: var(--surface-deep); font-weight: 850; }
@@ -9845,6 +9848,76 @@
       .shift-year-month { min-height: 78px; padding: 7px 4px; font-size: 11px; }
     }
 
+    @media screen and (min-width: 761px) and (hover: hover) and (pointer: fine) {
+      .drawer .menu-header {
+        position: relative;
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        min-height: 48px;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 2px 0;
+      }
+      .drawer .menu-title {
+        grid-column: 2;
+        justify-self: center;
+        text-align: center;
+      }
+      .drawer .drawer-close-btn {
+        grid-column: 3;
+        display: grid !important;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+        margin: 0;
+        padding: 0;
+        place-items: center;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--text);
+        box-shadow: none;
+        font-size: 27px;
+        font-weight: 500;
+        line-height: 1;
+      }
+      #shiftScheduleView {
+        display: grid;
+        grid-template-columns: minmax(420px, 560px) minmax(220px, 290px);
+        grid-template-areas:
+          "view summary"
+          "calendar summary";
+        gap: 12px 16px;
+        align-items: start;
+        justify-content: center;
+      }
+      #shiftScheduleView > .shift-calendar-view-switch {
+        grid-area: view;
+        width: 100%;
+        margin: 0;
+      }
+      #shiftScheduleView > .shift-calendar-card {
+        grid-area: calendar;
+        width: 100%;
+        margin: 0;
+      }
+      #shiftScheduleView > .shift-summary-grid {
+        position: sticky;
+        top: calc(var(--desktop-header-height) + 12px);
+        grid-area: summary;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 0;
+      }
+      #backFromPalletCalculatorBtn,
+      #backToPalletCalculatorBtn,
+      #backToAdditionalDesktopBtn,
+      #backFromAdditionalSettingsBtn {
+        display: none !important;
+      }
+    }
+
     /* Усі робочі діалоги залишають видимою поточну сторінку та лише м'яко її розмивають. */
     .quick-edit-overlay,
     .order-entry-overlay,
@@ -9884,7 +9957,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=404">
+<link rel="manifest" href="manifest.json?v=405">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9939,7 +10012,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.04</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.05</span></div>
     </div>
   </div>
 
@@ -9951,7 +10024,7 @@
           <span class="mobile-menu-title">Меню</span>
           <span class="desktop-sidebar-title">Облік</span>
         </div>
-        <button class="drawer-close-btn" id="closeMenuBtn">Закрити</button>
+        <button class="drawer-close-btn" id="closeMenuBtn" aria-label="Закрити меню" title="Закрити">×</button>
       </div>
       <p class="menu-swipe-hint">Свайпни вліво або вправо, щоб закрити меню</p>
       <div class="menu-wheel" id="menuWheel">
@@ -10429,7 +10502,7 @@
           <section class="pallet-calculator-section pallet-calculator-search-section" data-pallet-calculator-section="search">
             <div class="pallet-calculator-search-mode-picker">
               <input id="palletCalculatorSearchMode" type="hidden" value="products" />
-              <button type="button" class="pallet-calculator-search-mode-button" id="palletCalculatorSearchModeBtn" aria-expanded="false" aria-controls="palletCalculatorSearchModeMenu"><span id="palletCalculatorSearchModeLabel">Пошук за найменуванням</span><span class="pallet-calculator-search-mode-arrow" aria-hidden="true">⌄</span></button>
+              <button type="button" class="pallet-calculator-search-mode-button" id="palletCalculatorSearchModeBtn" aria-expanded="false" aria-controls="palletCalculatorSearchModeMenu"><span id="palletCalculatorSearchModeLabel">Пошук за найменуванням</span><span class="pallet-calculator-search-mode-arrow" aria-hidden="true">▼</span></button>
               <div class="pallet-calculator-search-mode-menu hidden" id="palletCalculatorSearchModeMenu">
                 <div class="pallet-calculator-search-mode-caption">Оберіть спосіб пошуку</div>
                 <button type="button" data-pallet-search-mode="products">За найменуванням</button>
@@ -11389,7 +11462,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.04</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.05</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11414,6 +11487,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.05</h3>
+          <ul>
+            <li>збільшено стрілку вибору пошуку, список об’єднано з пошуковою карткою, а комп’ютерний вигляд графіка та меню адаптовано окремо.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.04</h3>
           <ul>
@@ -13374,13 +13453,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=404"></script>
+<script src="./assets/decimen-optical-transfer.js?v=405"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.04";
+  const APP_VERSION = "4.05";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22667,7 +22746,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=404")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=405")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
