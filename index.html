@@ -545,6 +545,15 @@
       background: transparent;
       padding: 0;
     }
+    .topbar-left-actions,
+    .topbar-right-actions {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      justify-items: center;
+      align-self: start;
+    }
+    .topbar-right-actions { align-self: start; }
     body.page-today .topbar {
       grid-template-columns: 40px 1fr 40px;
       gap: 6px;
@@ -8317,7 +8326,7 @@
     }
     .loading-summary {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
       margin-bottom: 10px;
     }
@@ -8589,6 +8598,447 @@
       52% { transform: translate(5px,3px); filter: contrast(1.7); }
       72% { transform: translate(-3px,-2px); }
     }
+
+    /* Додаткові інструменти */
+    body.workspace-additional #newDayBtn { visibility: hidden; pointer-events: none; }
+    body.workspace-additional .date-line { display: none; }
+    #additionalToolSettingsBtn { display: none; }
+    body.workspace-additional.additional-tool-open.additional-tool-settings-active #additionalToolSettingsBtn {
+      display: grid;
+      width: 40px;
+      min-width: 40px;
+      height: 40px;
+      min-height: 40px;
+      margin: 0;
+      padding: 0;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+      font-size: 21px;
+    }
+    body.workspace-additional.additional-tool-open #newDayBtn { display: none; }
+    body.workspace-additional.additional-tool-open .topbar {
+      grid-template-columns: 46px minmax(0, 1fr) 46px;
+      align-items: start;
+    }
+    body.page-today.workspace-additional.additional-tool-open .topbar-left-actions,
+    body.page-today.workspace-additional.additional-tool-open .topbar-right-actions {
+      width: 46px;
+    }
+    .additional-shell {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: 14px;
+    }
+    .additional-heading,
+    .shift-tool-header,
+    .shift-settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .additional-heading h2,
+    .shift-tool-header h2,
+    .shift-settings-header h2 {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 28px);
+    }
+    .additional-heading p { margin: 4px 0 0; }
+    .additional-desktop {
+      position: relative;
+      min-height: clamp(430px, 66dvh, 760px);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 14%, color-mix(in srgb, var(--primary-bg) 13%, transparent), transparent 35%),
+        linear-gradient(145deg, var(--surface), var(--surface-deep));
+      box-shadow: 0 18px 45px color-mix(in srgb, var(--popover-shadow) 55%, transparent);
+      touch-action: pan-y;
+    }
+    .additional-tool-tile {
+      position: absolute;
+      display: grid;
+      width: 92px !important;
+      min-width: 92px !important;
+      height: 98px;
+      min-height: 98px !important;
+      margin: 0 !important;
+      padding: 8px 5px !important;
+      place-items: center;
+      align-content: center;
+      gap: 6px;
+      border: 1px solid transparent !important;
+      border-radius: 17px !important;
+      background: transparent !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+    .additional-tool-tile:hover,
+    .additional-tool-tile:focus-visible {
+      border-color: var(--border) !important;
+      background: color-mix(in srgb, var(--surface) 82%, transparent) !important;
+    }
+    .additional-tool-tile.dragging {
+      z-index: 5;
+      transform: scale(1.06);
+      border-color: var(--primary-bg) !important;
+      background: var(--surface) !important;
+      box-shadow: 0 12px 28px var(--popover-shadow) !important;
+    }
+    .additional-tool-icon {
+      display: grid;
+      width: 50px;
+      height: 50px;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #77a9ff, #765ed9);
+      color: #fff;
+      font-size: 25px;
+      box-shadow: 0 8px 18px rgba(66,76,180,.28);
+    }
+    .additional-tool-name {
+      max-width: 86px;
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.18;
+      text-align: center;
+    }
+    .additional-desktop-hint {
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      left: 12px;
+      color: var(--muted);
+      font-size: 10px;
+      text-align: center;
+      pointer-events: none;
+    }
+    .shift-tool-header-actions,
+    .shift-month-navigation,
+    .shift-editor-actions,
+    .shift-settings-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .shift-tool-header button,
+    .shift-settings-header button,
+    .shift-month-navigation button {
+      width: auto;
+      min-height: 38px;
+      margin: 0;
+      padding: 8px 12px;
+    }
+    .shift-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .shift-summary-card {
+      display: block;
+      width: 100%;
+      min-height: 64px;
+      margin: 0;
+      padding: 11px 10px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: none;
+      text-align: center;
+    }
+    .shift-summary-card:active { transform: scale(.985); }
+    .shift-summary-card strong,
+    .shift-summary-card span { display: block; }
+    .shift-summary-card strong { font-size: 18px; }
+    .shift-summary-card span { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .shift-workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
+      gap: 10px;
+      align-items: start;
+    }
+    .shift-calendar-card,
+    .shift-editor-panel,
+    .shift-settings-panel {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+    .shift-month-navigation {
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .shift-month-navigation strong {
+      min-width: 150px;
+      text-align: center;
+      text-transform: capitalize;
+    }
+    .shift-month-picker-button {
+      width: auto !important;
+      min-width: 150px;
+      margin: 0 !important;
+      padding: 7px 12px !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      text-transform: capitalize;
+    }
+    .shift-month-picker-button strong { min-width: 0; }
+    .shift-weekdays,
+    .shift-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 5px;
+    }
+    .shift-weekdays div {
+      padding: 4px 0;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      text-align: center;
+    }
+    .shift-calendar-day {
+      position: relative;
+      display: block;
+      width: 100% !important;
+      min-width: 0 !important;
+      min-height: 76px !important;
+      margin: 0 !important;
+      padding: 7px 5px !important;
+      overflow: hidden;
+      border: 1px solid var(--border) !important;
+      border-radius: 12px !important;
+      background: var(--surface-deep) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      text-align: center;
+    }
+    .shift-calendar-day.has-shift {
+      border-color: color-mix(in srgb, var(--shift-color) 64%, var(--border)) !important;
+      background: color-mix(in srgb, var(--shift-color) 22%, var(--surface)) !important;
+    }
+    .shift-calendar-day.is-today { outline: 2px solid var(--primary-bg); outline-offset: -2px; }
+    .shift-calendar-day.is-selected { box-shadow: inset 0 0 0 2px var(--primary-bg) !important; }
+    .shift-calendar-day-number { display: block; font-size: 12px; font-weight: 900; }
+    .shift-calendar-day-type,
+    .shift-calendar-day-hours {
+      display: block;
+      margin-top: 5px;
+      overflow: hidden;
+      font-size: 9px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .shift-calendar-day-hours { margin-top: 2px; color: var(--muted); }
+    .shift-calendar-empty { min-height: 76px; }
+    .shift-editor-panel h3,
+    .shift-settings-panel h3 { margin: 0 0 10px; }
+    .shift-editor-fields {
+      display: grid;
+      gap: 8px;
+    }
+    .shift-editor-time-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .shift-editor-fields label,
+    .shift-type-row label { margin: 0; }
+    .shift-editor-preview {
+      margin-top: 9px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: var(--surface-deep);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .shift-editor-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 10px;
+    }
+    .shift-editor-actions button { width: 100%; margin: 0; }
+    .shift-editor-heading {
+      position: relative;
+      display: grid;
+      min-height: 38px;
+      padding: 0 44px;
+      place-items: center;
+    }
+    .shift-editor-heading h3 { margin: 0; text-align: center; }
+    .shift-editor-delete {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: grid;
+      width: 36px !important;
+      min-width: 36px !important;
+      height: 36px !important;
+      min-height: 36px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      place-items: center;
+      border: 1px solid transparent !important;
+      border-radius: 11px !important;
+      background: transparent !important;
+      color: #e33434 !important;
+      box-shadow: none !important;
+    }
+    .shift-editor-delete:hover,
+    .shift-editor-delete:active {
+      border-color: rgba(227, 52, 52, .22) !important;
+      background: rgba(227, 52, 52, .07) !important;
+    }
+    .shift-editor-section {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .shift-editor-section-toggle {
+      display: flex;
+      width: 100%;
+      min-height: 38px;
+      margin: 0;
+      padding: 8px 10px;
+      align-items: center;
+      justify-content: space-between;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      font-weight: 850;
+      text-align: left;
+    }
+    .shift-editor-section-toggle:hover,
+    .shift-editor-section-toggle:active { background: color-mix(in srgb, var(--primary-bg) 8%, transparent); }
+    .shift-editor-section-body { display: grid; gap: 8px; padding: 0 10px 10px; }
+    .shift-editor-section.collapsed .shift-editor-section-body { display: none; }
+    .shift-editor-section-mark { font-size: 18px; line-height: 1; }
+    .shift-time-wheel-field {
+      min-height: 50px;
+      font-size: 19px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .shift-type-list { display: grid; gap: 9px; }
+    .shift-type-list-item {
+      display: grid;
+      grid-template-columns: 12px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 56px;
+      margin: 0;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+      text-align: left;
+    }
+    .shift-type-list-item-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--shift-color); }
+    .shift-type-list-item strong,
+    .shift-type-list-item small { display: block; }
+    .shift-type-list-item small { margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .shift-type-list-item-arrow { color: var(--muted); font-size: 22px; }
+    .shift-workspace-back-btn {
+      width: 100%;
+      margin: 10px 0 0;
+      background: var(--surface-deep);
+      color: var(--text);
+      box-shadow: none;
+    }
+    .shift-settings-actions { margin-top: 11px; }
+    .shift-settings-actions button { width: 100%; margin: 0; }
+    .shift-month-picker-grid { display: grid; grid-template-columns: 1.4fr .8fr; gap: 8px; }
+    .page-back-swipe-indicator {
+      position: fixed;
+      top: 50%;
+      right: max(8px, env(safe-area-inset-right));
+      z-index: 520;
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 12px 30px var(--popover-shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate3d(28px, -50%, 0) scale(.78);
+      transition: opacity .12s ease, background .12s ease, color .12s ease, transform .08s linear;
+    }
+    .page-back-swipe-indicator.active { opacity: 1; }
+    .page-back-swipe-indicator.ready {
+      border-color: var(--primary-bg);
+      background: var(--primary-bg);
+      color: var(--primary-text);
+      transform: translate3d(-72px, -50%, 0) scale(1.08) !important;
+    }
+    .page-back-swipe-indicator span { font-size: 25px; font-weight: 900; line-height: 1; }
+    .shift-editor-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 430;
+      display: grid;
+      place-items: center;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      overflow: auto;
+      background: rgba(10, 16, 25, .56);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+    .shift-editor-overlay.hidden { display: none; }
+    .shift-editor-overlay .shift-editor-panel {
+      width: min(100%, 430px);
+      max-height: calc(100dvh - 28px);
+      overflow: auto;
+      box-shadow: 0 22px 60px var(--popover-shadow);
+    }
+    .shift-stats-content { display: grid; gap: 7px; }
+    .shift-stats-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-deep);
+    }
+    .shift-stats-row strong,
+    .shift-stats-row span { display: block; }
+    .shift-stats-row small { display: block; margin-top: 3px; color: var(--muted); }
+    .shift-stats-value { font-weight: 850; text-align: right; }
+    @media (max-width: 760px) {
+      .additional-shell { padding: 9px; }
+      .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .shift-workspace-grid { grid-template-columns: 1fr; }
+      .shift-calendar-day { min-height: 62px !important; padding: 5px 3px !important; }
+      .shift-calendar-empty { min-height: 62px; }
+      .shift-calendar-day-type { font-size: 8px; }
+      .shift-editor-overlay { align-items: end; padding-inline: 7px; }
+      .shift-editor-overlay .shift-editor-panel { width: 100%; max-height: calc(100dvh - 10px); border-radius: 20px 20px 12px 12px; }
+    }
   </style>
 
 <script>
@@ -8601,7 +9051,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=370">
+<link rel="manifest" href="manifest.json?v=375">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -8656,7 +9106,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.70</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.75</span></div>
     </div>
   </div>
 
@@ -8688,7 +9138,9 @@
 
   <div class="app-header no-print">
     <div class="topbar">
-      <button class="icon-btn" id="openMenuBtn" aria-label="Відкрити меню"><span class="hamburger-icon"></span></button>
+      <div class="topbar-left-actions">
+        <button class="icon-btn" id="openMenuBtn" aria-label="Відкрити меню"><span class="hamburger-icon"></span></button>
+      </div>
       <div class="workspace-switcher">
         <button type="button" class="workspace-switcher-button" id="workspaceSwitcherBtn" aria-expanded="false" aria-haspopup="true">
           <span id="workspaceSwitcherLabel">Інвентаризація</span>
@@ -8707,9 +9159,16 @@
             <span class="workspace-option-name" id="productionWorkspaceOptionLabel">Здача ГП</span>
             <span class="workspace-option-mark"></span>
           </button>
+          <button type="button" class="workspace-option" data-workspace="additional">
+            <span class="workspace-option-name">Додатково</span>
+            <span class="workspace-option-mark"></span>
+          </button>
         </div>
       </div>
-      <button class="icon-btn" id="newDayBtn" aria-label="Створити новий підрахунок"><span class="plus-icon"></span></button>
+      <div class="topbar-right-actions">
+        <button class="icon-btn" id="additionalToolSettingsBtn" type="button" aria-label="Налаштування інструмента"><span aria-hidden="true">⚙</span></button>
+        <button class="icon-btn" id="newDayBtn" aria-label="Створити новий підрахунок"><span class="plus-icon"></span></button>
+      </div>
     </div>
     <div class="date-line" id="activeDateLabel"></div>
     <div class="compact-header-row">
@@ -9102,6 +9561,132 @@
       </div>
     </div>
   </div>
+
+  <div id="pageAdditional" class="hidden">
+    <div class="additional-shell">
+      <section id="additionalDesktopView">
+        <div class="additional-heading">
+          <div>
+            <h2>Додатково</h2>
+            <p class="small">Окремі інструменти застосунку</p>
+          </div>
+        </div>
+        <div class="additional-desktop" id="additionalDesktop" aria-label="Робочий стіл додаткових інструментів">
+          <button type="button" class="additional-tool-tile" id="openShiftScheduleTool" data-additional-tool="shifts">
+            <span class="additional-tool-icon" aria-hidden="true">▦</span>
+            <span class="additional-tool-name">Графік змін</span>
+          </button>
+          <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
+        </div>
+      </section>
+
+      <section id="shiftScheduleView" class="hidden">
+        <div class="shift-calendar-card">
+          <div class="shift-month-navigation">
+            <button type="button" class="secondary" id="previousShiftMonthBtn" aria-label="Попередній місяць">←</button>
+            <button type="button" class="shift-month-picker-button" id="openShiftMonthPickerBtn" aria-label="Обрати місяць і рік"><strong id="shiftMonthLabel"></strong></button>
+            <button type="button" class="secondary" id="nextShiftMonthBtn" aria-label="Наступний місяць">→</button>
+          </div>
+          <div class="shift-weekdays" aria-hidden="true">
+            <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Нд</div>
+          </div>
+          <div class="shift-calendar-grid" id="shiftCalendarGrid"></div>
+        </div>
+
+        <div class="shift-summary-grid">
+          <button type="button" class="shift-summary-card" id="openShiftBreakdownBtn"><strong id="shiftMonthShifts">0</strong><span>зміни</span></button>
+          <button type="button" class="shift-summary-card" id="openPayBreakdownBtn"><strong id="shiftMonthPay">0 ₴</strong><span>нараховано</span></button>
+        </div>
+        <button type="button" class="secondary shift-workspace-back-btn" id="backToAdditionalDesktopBtn">Назад</button>
+
+        <div class="shift-editor-overlay hidden" id="shiftEditorOverlay" role="dialog" aria-modal="true" aria-labelledby="shiftEditorTitle">
+          <aside class="shift-editor-panel" id="shiftEditorPanel">
+            <div class="shift-editor-heading">
+              <h3 id="shiftEditorTitle">Зміна</h3>
+              <button type="button" class="shift-editor-delete hidden" id="deleteShiftEditorBtn" aria-label="Видалити" title="Видалити"><span class="product-trash-icon" aria-hidden="true"></span></button>
+            </div>
+            <input type="hidden" id="shiftEditorContext" value="entry" />
+            <input type="hidden" id="shiftEditorTypeId" />
+            <input type="hidden" id="shiftEditorDate" />
+            <div class="shift-editor-fields">
+              <label class="hidden" id="shiftEditorNameField">Назва
+                <input type="text" id="shiftEditorName" maxlength="40" />
+              </label>
+              <label id="shiftEditorTypeField">Тип зміни
+                <select id="shiftEditorType"></select>
+              </label>
+              <section class="shift-editor-section" data-shift-editor-section="time">
+                <button type="button" class="shift-editor-section-toggle" data-toggle-shift-editor-section="time"><span>Робочий час</span><span class="shift-editor-section-mark">−</span></button>
+                <div class="shift-editor-section-body">
+                  <div class="shift-editor-time-grid">
+                    <label>Початок<input class="shift-time-wheel-field" type="time" id="shiftEditorStart" /></label>
+                    <label>Кінець<input class="shift-time-wheel-field" type="time" id="shiftEditorEnd" /></label>
+                  </div>
+                  <label>Перерва, год<input type="number" id="shiftEditorBreak" min="0" max="24" step="0.25" inputmode="decimal" /></label>
+                </div>
+              </section>
+              <section class="shift-editor-section" data-shift-editor-section="payment">
+                <button type="button" class="shift-editor-section-toggle" data-toggle-shift-editor-section="payment"><span>Оплата</span><span class="shift-editor-section-mark">−</span></button>
+                <div class="shift-editor-section-body">
+                  <div class="shift-editor-time-grid">
+                    <label>Спосіб оплати
+                      <select id="shiftEditorPayMode"><option value="hourly">За годину</option><option value="fixed">Ставка за зміну</option></select>
+                    </label>
+                    <label>Валюта
+                      <select id="shiftEditorCurrency"><option value="UAH">Гривня (₴)</option><option value="USD">Долар ($)</option><option value="EUR">Євро (€)</option><option value="PLN">Злотий (zł)</option><option value="CZK">Чеська крона (Kč)</option></select>
+                    </label>
+                  </div>
+                  <label><span id="shiftEditorRateLabel">Оплата за годину</span><input type="number" id="shiftEditorRate" min="0" step="0.01" inputmode="decimal" /></label>
+                </div>
+              </section>
+              <label id="shiftEditorNoteField">Примітка<textarea id="shiftEditorNote" rows="3" placeholder="За бажанням"></textarea></label>
+            </div>
+            <div class="shift-editor-preview" id="shiftEditorPreview"></div>
+            <div class="shift-editor-actions">
+              <button type="button" id="saveShiftEditorBtn">Зберегти</button>
+              <button type="button" class="secondary" id="closeShiftEditorBtn">Закрити</button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="shiftMonthPickerOverlay" role="dialog" aria-modal="true" aria-labelledby="shiftMonthPickerTitle">
+          <section class="shift-editor-panel">
+            <h3 id="shiftMonthPickerTitle">Обрати місяць</h3>
+            <div class="shift-month-picker-grid">
+              <label>Місяць<select id="shiftMonthPickerMonth"></select></label>
+              <label>Рік<input type="number" id="shiftMonthPickerYear" min="1900" max="2200" inputmode="numeric" /></label>
+            </div>
+            <div class="shift-editor-actions">
+              <button type="button" id="applyShiftMonthPickerBtn">Застосувати</button>
+              <button type="button" class="secondary" id="closeShiftMonthPickerBtn">Закрити</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="shiftStatsOverlay" role="dialog" aria-modal="true" aria-labelledby="shiftStatsTitle">
+          <section class="shift-editor-panel">
+            <h3 id="shiftStatsTitle">Статистика</h3>
+            <div class="shift-stats-content" id="shiftStatsContent"></div>
+            <div class="shift-editor-actions">
+              <button type="button" class="secondary" id="closeShiftStatsBtn">Закрити</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="shiftSettingsView" class="hidden">
+        <div class="shift-settings-panel">
+          <div class="shift-type-list" id="shiftTypeList"></div>
+          <div class="shift-settings-actions">
+            <button type="button" id="addShiftTypeBtn">+ Додати</button>
+          </div>
+          <button type="button" class="secondary shift-workspace-back-btn" id="backToShiftScheduleBtn">Назад</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="page-back-swipe-indicator" id="pageBackSwipeIndicator" aria-hidden="true"><span>←</span></div>
 
   <div class="document-preview-overlay hidden" id="documentPreview">
     <div class="preview-toolbar">
@@ -9889,7 +10474,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.70</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.75</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -9914,6 +10499,48 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.75</h3>
+          <ul>
+            <li>налаштування графіка змін спрощено до компактного списку назв із окремим вікном редагування;</li>
+            <li>додано погодинну та фіксовану оплату, окрему валюту для кожного типу зміни й коректні підсумки за валютами;</li>
+            <li>редактор дня та типу зміни отримав згортані блоки, верхній кошик і кнопки «Зберегти» та «Закрити»;</li>
+            <li>натискання на назву місяця відкриває вибір місяця й року, а повернення перенесено в повноширинну нижню кнопку.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.74</h3>
+          <ul>
+            <li>під календарем залишено лише два мінімалістичні показники: «Зміни» та «Нараховано»;</li>
+            <li>натискання на «Зміни» відкриває статистику за типами, кількістю змін і відпрацьованими годинами;</li>
+            <li>натискання на «Нараховано» показує оплату й відпрацьовані години окремо за кожний день;</li>
+            <li>кнопки меню та повернення стиснуто до початкової висоти шапки без зміщення центральної назви.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.73</h3>
+          <ul>
+            <li>кнопку меню залишено на звичному місці, а компактну стрілку повернення розташовано безпосередньо під нею;</li>
+            <li>налаштування додаткового інструмента перенесено в правий кут шапки у вигляді шестерні;</li>
+            <li>прибрано повторний заголовок під шапкою та додано візуальний індикатор свайпа назад від правого краю.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.72</h3>
+          <ul>
+            <li>редагування зміни тепер відкривається окремим вікном після натискання на число календаря;</li>
+            <li>місячні підсумки перенесено під календар і додано окремий підрахунок денних та нічних змін;</li>
+            <li>додано тип «Вихідний», вибір валюти оплати та внутрішню навігацію через верхню стрілку або свайп.</li>
+          </ul>
+        </section>
+        <section class="changelog-entry">
+          <h3>Версія 3.71</h3>
+          <ul>
+            <li>додано окремий розділ «Додатково» з робочим столом та невидимою сіткою для переміщення ярликів;</li>
+            <li>додано «Графік змін» із календарем, денними, нічними й власними типами змін, підрахунком годин та оплати;</li>
+            <li>останній відкритий додатковий інструмент, його дані, налаштування та розташування ярлика зберігаються між запусками.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.70</h3>
           <ul>
@@ -11629,13 +12256,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=370"></script>
+<script src="./assets/decimen-optical-transfer.js?v=375"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.70";
+  const APP_VERSION = "3.75";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -11693,6 +12320,9 @@
   const PRODUCTION_LIST_SORT_KEY = "warehouseJournalProductionListSort";
   const LAST_SELECTED_PRODUCTS_KEY = "warehouseJournalLastSelectedProducts";
   const PRODUCTION_WORKSPACE_NAME_KEY = "warehouseJournalProductionWorkspaceName";
+  const ADDITIONAL_LAST_TOOL_KEY = "warehouseJournalAdditionalLastTool";
+  const ADDITIONAL_DESKTOP_LAYOUT_KEY = "warehouseJournalAdditionalDesktopLayoutV1";
+  const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
   const DEMO_STATE_KEY = "warehouseJournalDemoState";
   const DEMO_DATA_VERSION_KEY = "warehouseJournalDemoDataVersion";
@@ -11744,6 +12374,9 @@
     PRODUCTION_LIST_SORT_KEY,
     LAST_SELECTED_PRODUCTS_KEY,
     PRODUCTION_WORKSPACE_NAME_KEY,
+    ADDITIONAL_LAST_TOOL_KEY,
+    ADDITIONAL_DESKTOP_LAYOUT_KEY,
+    SHIFT_SCHEDULE_KEY,
     TRASH_RETENTION_KEY,
     TRASH_CUSTOM_DAYS_KEY
   ];
@@ -13127,6 +13760,9 @@
   let themeGestureLastActivation = 0;
   const orderWarehouseGroupOpenState = new Map();
   let workspaceMode = getWorkspaceModePreference();
+  let shiftScheduleState = loadShiftScheduleState();
+  let shiftCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  let additionalDesktopInitialized = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
   let keyboardScrollY = null;
@@ -15050,7 +15686,7 @@
   function getWorkspaceModePreference() {
     try {
       const saved = localStorage.getItem(WORKSPACE_MODE_KEY);
-      return ["inventory", "orders", "production"].includes(saved) ? saved : "inventory";
+      return ["inventory", "orders", "production", "additional"].includes(saved) ? saved : "inventory";
     } catch (error) {
       return "inventory";
     }
@@ -15069,6 +15705,7 @@
     if (mode === "inventory") return "Порахувати фактичні залишки на складах.";
     if (mode === "orders") return "Сформувати нове замовлення на потрібний склад.";
     if (mode === "production") return "Порахувати піддони й автоматично визначити загальну кількість продукції.";
+    if (mode === "additional") return "Відкрити календар змін та інші додаткові інструменти.";
     return `Почати роботу в розділі «${name}».`;
   }
 
@@ -15126,14 +15763,16 @@
       localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode);
       localStorage.setItem(INITIAL_WORKSPACE_CHOICE_KEY, "done");
     } catch (error) {}
-    if (!workspaceIsLoading()) ensureActiveDay();
+    if (!workspaceIsLoading() && !workspaceIsAdditional()) ensureActiveDay();
     saveOnly();
     document.getElementById("workspaceStartOverlay").classList.add("hidden");
     updateWorkspaceUI();
     showPage("today");
-    toast(nextMode === "production"
+    toast(nextMode === "additional"
+      ? "Відкрито додаткові інструменти"
+      : (nextMode === "production"
       ? `Відкрито «${getProductionWorkspaceName()}»`
-      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію"));
+      : (nextMode === "orders" ? "Відкрито замовлення" : "Відкрито інвентаризацію")));
     const resolve = initialWorkspaceChoiceResolver;
     initialWorkspaceChoiceResolver = null;
     if (resolve) resolve(nextMode);
@@ -15154,6 +15793,10 @@
 
   function workspaceIsLoading() {
     return workspaceMode === "loading";
+  }
+
+  function workspaceIsAdditional() {
+    return workspaceMode === "additional";
   }
 
   function getProductionWorkspaceName() {
@@ -15206,6 +15849,7 @@
     if (workspaceIsOrders()) return "Замовлення";
     if (workspaceIsProduction()) return getProductionWorkspaceName();
     if (workspaceIsLoading()) return "Завантаження фури";
+    if (workspaceIsAdditional()) return "Додатково";
     return "Інвентаризація";
   }
 
@@ -15479,13 +16123,17 @@
     const orders = workspaceIsOrders();
     const production = workspaceIsProduction();
     const loading = workspaceIsLoading();
+    const additional = workspaceIsAdditional();
     const label = workspaceLabel();
     document.body.classList.toggle("workspace-orders", orders);
     document.body.classList.toggle("workspace-production", production);
     document.body.classList.toggle("workspace-loading", loading);
+    document.body.classList.toggle("workspace-additional", additional);
+    if (!additional) document.body.classList.remove("additional-tool-open", "additional-tool-settings-active");
     if (currentPage === "today") {
-      document.getElementById("pageToday")?.classList.toggle("hidden", loading);
+      document.getElementById("pageToday")?.classList.toggle("hidden", loading || additional);
       document.getElementById("pageLoadingPlanner")?.classList.toggle("hidden", !loading);
+      document.getElementById("pageAdditional")?.classList.toggle("hidden", !additional);
     }
     document.getElementById("orderWarehouseControl")?.classList.remove("hidden");
     document.getElementById("orderDocumentFields")?.classList.toggle("hidden", !orders);
@@ -15536,11 +16184,13 @@
       if (mark) mark.textContent = active ? "✓" : "";
     });
     const newButton = document.getElementById("newDayBtn");
-    if (newButton) newButton.setAttribute("aria-label", loading
+    if (newButton) newButton.setAttribute("aria-label", additional
+      ? "Новий документ недоступний у додаткових інструментах"
+      : (loading
       ? "Створити новий план завантаження"
       : (production
         ? `Створити новий документ «${label}»`
-        : (orders ? "Створити нове замовлення" : "Створити нову інвентаризацію")));
+        : (orders ? "Створити нове замовлення" : "Створити нову інвентаризацію"))));
     const formTitle = document.getElementById("formTitle");
     if (formTitle && !document.getElementById("editingEntryId")?.value) {
       formTitle.textContent = production ? "Здача на склад:" : (orders ? "Замовлення на:" : "Інвентаризація складу:");
@@ -15555,12 +16205,12 @@
   }
 
   function setWorkspaceMode(mode) {
-    const nextMode = ["inventory", "orders", "production"].includes(mode) ? mode : "inventory";
+    const nextMode = ["inventory", "orders", "production", "additional"].includes(mode) ? mode : "inventory";
     closeWorkspaceDropdown();
     if (workspaceMode === nextMode) return;
     workspaceMode = nextMode;
     try { localStorage.setItem(WORKSPACE_MODE_KEY, workspaceMode); } catch (error) {}
-    if (!workspaceIsLoading()) {
+    if (!workspaceIsLoading() && !workspaceIsAdditional()) {
       resetTodayListSearch();
       clearEntryForm();
       ensureActiveDay();
@@ -15569,11 +16219,13 @@
     updateWorkspaceUI();
     render();
     scrollAppToTop();
-    toast(workspaceIsLoading()
+    toast(workspaceIsAdditional()
+      ? "Відкрито додаткові інструменти"
+      : (workspaceIsLoading()
       ? "Відкрито планувальник завантаження"
       : (workspaceIsProduction()
       ? `Відкрито розділ «${workspaceLabel()}»`
-      : (workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію")));
+      : (workspaceIsOrders() ? "Відкрито розділ замовлень" : "Відкрито інвентаризацію"))));
   }
 
   function ensureActiveDay() {
@@ -16628,7 +17280,7 @@
   }
 
   function hasPageBackDestination(page = currentPage) {
-    return MENU_RETURN_PAGES.has(page) || Boolean(PAGE_PARENTS[page]);
+    return hasAdditionalBackDestination() || MENU_RETURN_PAGES.has(page) || Boolean(PAGE_PARENTS[page]);
   }
 
   function updatePageBackButton() {
@@ -16646,6 +17298,7 @@
   }
 
   function navigateBack() {
+    if (navigateAdditionalBack()) return;
     if (currentPage === "themes" && activeThemeCategory) {
       closeThemeCategory();
       return;
@@ -16673,6 +17326,7 @@
   }
 
   function navigateDesktopBack() {
+    if (navigateAdditionalBack()) return;
     if (currentPage === "themes" && activeThemeCategory) {
       closeThemeCategory();
       return;
@@ -17516,7 +18170,8 @@
   }
 
   function canUsePageBackSwipe() {
-    if (!hasPageBackDestination() || getResolvedBackNavigationMode() !== "swipe") return false;
+    if (!hasPageBackDestination()) return false;
+    if (!hasAdditionalBackDestination() && getResolvedBackNavigationMode() !== "swipe") return false;
     if (document.getElementById("drawer").classList.contains("open")) return false;
     return !["documentPreview", "appDialogOverlay", "resetConfirmation", "quickEditOverlay", "productAddOverlay", "warehouseManagerOverlay", "orderEntryOverlay", "changelogOverlay", "qrTransferOverlay"]
       .some(id => !document.getElementById(id).classList.contains("hidden"));
@@ -17528,16 +18183,24 @@
   }
 
   function initPageBackSwipe() {
+    const indicator = document.getElementById("pageBackSwipeIndicator");
     let tracking = false;
     let horizontal = false;
     let startX = 0;
     let startY = 0;
     let distanceX = 0;
 
+    const hideIndicator = () => {
+      if (!indicator) return;
+      indicator.classList.remove("active", "ready");
+      indicator.style.transform = "";
+    };
+
     document.addEventListener("touchstart", event => {
       tracking = false;
       horizontal = false;
       distanceX = 0;
+      hideIndicator();
       if (gestureStartsOnHorizontalControl(event.target)) return;
       if (event.touches.length !== 1 || !canUsePageBackSwipe() || isVirtualKeyboardVisible()) return;
       const touch = event.touches[0];
@@ -17556,11 +18219,22 @@
         if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) return;
         if (Math.abs(deltaY) >= Math.abs(deltaX) || deltaX >= 0) {
           tracking = false;
+          hideIndicator();
           return;
         }
         horizontal = true;
       }
       distanceX = Math.abs(deltaX);
+      if (indicator) {
+        const threshold = Math.min(90, window.innerWidth * .2);
+        const travel = Math.min(72, Math.max(0, distanceX - 8) * .82);
+        const scale = Math.min(1.08, .78 + distanceX / Math.max(1, threshold) * .3);
+        indicator.classList.add("active");
+        indicator.classList.toggle("ready", distanceX >= threshold);
+        if (distanceX < threshold) {
+          indicator.style.transform = `translate3d(${-travel}px, -50%, 0) scale(${scale})`;
+        }
+      }
       event.preventDefault();
     }, { capture: true, passive: false });
 
@@ -17569,7 +18243,15 @@
       const shouldGoBack = event.type !== "touchcancel" && horizontal && distanceX >= Math.min(90, window.innerWidth * .2);
       tracking = false;
       horizontal = false;
-      if (shouldGoBack) navigateBack();
+      if (shouldGoBack) {
+        indicator?.classList.add("active", "ready");
+        window.setTimeout(() => {
+          hideIndicator();
+          navigateBack();
+        }, 110);
+      } else {
+        hideIndicator();
+      }
     };
     document.addEventListener("touchend", finishSwipe, { capture: true, passive: true });
     document.addEventListener("touchcancel", finishSwipe, { capture: true, passive: true });
@@ -17604,6 +18286,7 @@
     closeMenu();
     document.getElementById("pageToday").classList.add("hidden");
     document.getElementById("pageLoadingPlanner").classList.add("hidden");
+    document.getElementById("pageAdditional").classList.add("hidden");
     document.getElementById("pageHistory").classList.add("hidden");
     document.getElementById("pageManagement").classList.add("hidden");
     document.getElementById("pageProducts").classList.add("hidden");
@@ -17615,7 +18298,10 @@
     document.getElementById("pageInstall").classList.add("hidden");
 
     if (page === "today") {
-      document.getElementById(workspaceIsLoading() ? "pageLoadingPlanner" : "pageToday").classList.remove("hidden");
+      const todayPageId = workspaceIsLoading()
+        ? "pageLoadingPlanner"
+        : (workspaceIsAdditional() ? "pageAdditional" : "pageToday");
+      document.getElementById(todayPageId).classList.remove("hidden");
     }
     if (["history", "historyInventory", "historyOrders", "historyProduction"].includes(page)) {
       document.getElementById("pageHistory").classList.remove("hidden");
@@ -17674,6 +18360,7 @@
   }
 
   async function createNewDay() {
+    if (workspaceIsAdditional()) return;
     if (workspaceIsLoading()) {
       await resetLoadingPlanner();
       return;
@@ -17728,7 +18415,7 @@
   }
 
   async function promptForCurrentDayOnStartup() {
-    if (demoModeActive || appDialogResolver || workspaceIsLoading()) return;
+    if (demoModeActive || appDialogResolver || workspaceIsLoading() || workspaceIsAdditional()) return;
     const orders = workspaceIsOrders();
     const production = workspaceIsProduction();
     const documents = production ? state.productionDeliveries : (orders ? state.orders : state.days);
@@ -20389,6 +21076,7 @@
     applyEntryUnitVisibility();
     applyEntrySectionState();
     applyOrderEntryMode();
+    shiftScheduleState = loadShiftScheduleState();
   }
 
   function readBackupFileAsText(file) {
@@ -20460,7 +21148,7 @@
       state = normalizeState(cloneData(backup.state));
       restoreBackupSettings(backup.settings);
     }
-    ensureActiveDay();
+    if (!workspaceIsLoading() && !workspaceIsAdditional()) ensureActiveDay();
     save();
     document.getElementById("importData").value = "";
     showSuccessCheck();
@@ -20554,6 +21242,10 @@
     localStorage.removeItem(LAST_SELECTED_PRODUCTS_KEY);
     localStorage.removeItem(ENTRY_UNIT_VISIBILITY_KEY);
     localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
+    localStorage.removeItem(ADDITIONAL_LAST_TOOL_KEY);
+    localStorage.removeItem(ADDITIONAL_DESKTOP_LAYOUT_KEY);
+    localStorage.removeItem(SHIFT_SCHEDULE_KEY);
+    shiftScheduleState = makeDefaultShiftScheduleState();
     applyEntryUnitVisibility("hidden");
     applyEntrySectionState();
     workspaceMode = "inventory";
@@ -20733,7 +21425,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=370")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=375")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -22127,13 +22819,743 @@
     toast("Схему збережено як PNG");
   }
 
+  function makeDefaultShiftScheduleState() {
+    return {
+      version: 2,
+      currency: "UAH",
+      types: [
+        { id: "day", name: "Денна зміна", start: "08:00", end: "20:00", breakHours: 0, payMode: "hourly", rate: 0, currency: "UAH", color: "#e8ad35", isNight: false, isDayOff: false },
+        { id: "night", name: "Нічна зміна", start: "20:00", end: "08:00", breakHours: 0, payMode: "hourly", rate: 0, currency: "UAH", color: "#6676d9", isNight: true, isDayOff: false },
+        { id: "training", name: "Стажування", start: "08:00", end: "17:00", breakHours: 0, payMode: "hourly", rate: 0, currency: "UAH", color: "#55aa82", isNight: false, isDayOff: false },
+        { id: "off", name: "Вихідний", start: "00:00", end: "00:00", breakHours: 0, payMode: "fixed", rate: 0, currency: "UAH", color: "#9aa3ad", isNight: false, isDayOff: true }
+      ],
+      entries: {}
+    };
+  }
+
+  function normalizeShiftTime(value, fallback = "08:00") {
+    return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || "")) ? String(value) : fallback;
+  }
+
+  function normalizeShiftType(type, index = 0) {
+    const fallback = makeDefaultShiftScheduleState().types[index] || makeDefaultShiftScheduleState().types[0];
+    return {
+      id: String(type?.id || `custom-${Date.now()}-${index}`),
+      name: String(type?.name || fallback.name || "Зміна").trim().slice(0, 40) || "Зміна",
+      start: normalizeShiftTime(type?.start, fallback.start),
+      end: normalizeShiftTime(type?.end, fallback.end),
+      breakHours: Math.max(0, Math.min(24, Number(type?.breakHours) || 0)),
+      payMode: type?.payMode === "fixed" ? "fixed" : "hourly",
+      rate: Math.max(0, Number(type?.rate) || 0),
+      currency: ["UAH", "USD", "EUR", "PLN", "CZK"].includes(type?.currency) ? type.currency : "UAH",
+      color: /^#[0-9a-f]{6}$/i.test(String(type?.color || "")) ? String(type.color) : fallback.color,
+      isNight: Boolean(type?.isNight ?? fallback.isNight),
+      isDayOff: Boolean(type?.isDayOff ?? fallback.isDayOff)
+    };
+  }
+
+  function loadShiftScheduleState() {
+    const fallback = makeDefaultShiftScheduleState();
+    try {
+      const parsed = JSON.parse(localStorage.getItem(SHIFT_SCHEDULE_KEY) || "null");
+      if (!parsed || typeof parsed !== "object") return fallback;
+      const types = Array.isArray(parsed.types) && parsed.types.length
+        ? parsed.types.map((type, index) => normalizeShiftType({ ...type, currency: type?.currency || parsed.currency || "UAH" }, index))
+        : fallback.types;
+      if (!types.some(type => type.id === "off" || type.isDayOff)) {
+        types.push(normalizeShiftType(fallback.types.find(type => type.id === "off"), 3));
+      }
+      const entries = {};
+      Object.entries(parsed.entries || {}).forEach(([date, entry]) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !entry || typeof entry !== "object") return;
+        entries[date] = {
+          date,
+          typeId: String(entry.typeId || types[0].id),
+          typeName: String(entry.typeName || ""),
+          start: normalizeShiftTime(entry.start, types[0].start),
+          end: normalizeShiftTime(entry.end, types[0].end),
+          breakHours: Math.max(0, Math.min(24, Number(entry.breakHours) || 0)),
+          payMode: entry.payMode === "fixed" ? "fixed" : "hourly",
+          rate: Math.max(0, Number(entry.rate) || 0),
+          currency: ["UAH", "USD", "EUR", "PLN", "CZK"].includes(entry.currency) ? entry.currency : (types.find(type => type.id === entry.typeId)?.currency || parsed.currency || "UAH"),
+          color: /^#[0-9a-f]{6}$/i.test(String(entry.color || "")) ? String(entry.color) : types[0].color,
+          note: String(entry.note || "").slice(0, 500),
+          isNight: Boolean(entry.isNight),
+          isDayOff: Boolean(entry.isDayOff || entry.typeId === "off")
+        };
+      });
+      const currency = ["UAH", "USD", "EUR", "PLN", "CZK"].includes(parsed.currency) ? parsed.currency : "UAH";
+      return { version: 2, currency, types, entries };
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function saveShiftScheduleState() {
+    try { localStorage.setItem(SHIFT_SCHEDULE_KEY, JSON.stringify(shiftScheduleState)); } catch (error) {}
+  }
+
+  function getAdditionalLastTool() {
+    try {
+      return localStorage.getItem(ADDITIONAL_LAST_TOOL_KEY) === "shifts" ? "shifts" : "desktop";
+    } catch (error) {
+      return "desktop";
+    }
+  }
+
+  function setAdditionalLastTool(tool) {
+    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, tool === "shifts" ? "shifts" : "desktop"); } catch (error) {}
+  }
+
+  function loadAdditionalDesktopLayout() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
+      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 } };
+    } catch (error) {
+      return { shifts: { column: 0, row: 0 } };
+    }
+  }
+
+  function saveAdditionalDesktopLayout(layout) {
+    try { localStorage.setItem(ADDITIONAL_DESKTOP_LAYOUT_KEY, JSON.stringify(layout)); } catch (error) {}
+  }
+
+  function positionAdditionalDesktopTools() {
+    const desktop = document.getElementById("additionalDesktop");
+    if (!desktop) return;
+    const layout = loadAdditionalDesktopLayout();
+    const cellWidth = 104;
+    const cellHeight = 112;
+    const maxColumns = Math.max(1, Math.floor((desktop.clientWidth - 18) / cellWidth));
+    const maxRows = Math.max(1, Math.floor((desktop.clientHeight - 36) / cellHeight));
+    desktop.querySelectorAll("[data-additional-tool]").forEach((tile, index) => {
+      const saved = layout[tile.dataset.additionalTool] || { column: index % maxColumns, row: Math.floor(index / maxColumns) };
+      const column = Math.max(0, Math.min(maxColumns - 1, Number(saved.column) || 0));
+      const row = Math.max(0, Math.min(maxRows - 1, Number(saved.row) || 0));
+      tile.style.left = `${12 + column * cellWidth}px`;
+      tile.style.top = `${10 + row * cellHeight}px`;
+    });
+  }
+
+  function initializeAdditionalDesktop() {
+    if (additionalDesktopInitialized) {
+      positionAdditionalDesktopTools();
+      return;
+    }
+    const desktop = document.getElementById("additionalDesktop");
+    if (!desktop) return;
+    additionalDesktopInitialized = true;
+    positionAdditionalDesktopTools();
+    desktop.querySelectorAll("[data-additional-tool]").forEach(tile => {
+      let timer = 0;
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+      let pointerId = 0;
+      const clearTimer = () => { window.clearTimeout(timer); timer = 0; };
+      tile.addEventListener("pointerdown", event => {
+        if (event.button !== undefined && event.button !== 0) return;
+        startX = event.clientX;
+        startY = event.clientY;
+        pointerId = event.pointerId;
+        timer = window.setTimeout(() => {
+          dragging = true;
+          tile.classList.add("dragging");
+          tile.setPointerCapture?.(pointerId);
+        }, 1000);
+      });
+      tile.addEventListener("pointermove", event => {
+        const distance = Math.hypot(event.clientX - startX, event.clientY - startY);
+        if (!dragging && distance > 9) clearTimer();
+        if (!dragging) return;
+        event.preventDefault();
+        const rect = desktop.getBoundingClientRect();
+        const left = Math.max(8, Math.min(rect.width - tile.offsetWidth - 8, event.clientX - rect.left - tile.offsetWidth / 2));
+        const top = Math.max(8, Math.min(rect.height - tile.offsetHeight - 24, event.clientY - rect.top - tile.offsetHeight / 2));
+        tile.style.left = `${left}px`;
+        tile.style.top = `${top}px`;
+      });
+      const finish = event => {
+        clearTimer();
+        if (!dragging) return;
+        dragging = false;
+        tile.classList.remove("dragging");
+        tile.releasePointerCapture?.(pointerId);
+        const cellWidth = 104;
+        const cellHeight = 112;
+        const maxColumns = Math.max(1, Math.floor((desktop.clientWidth - 18) / cellWidth));
+        const maxRows = Math.max(1, Math.floor((desktop.clientHeight - 36) / cellHeight));
+        const column = Math.max(0, Math.min(maxColumns - 1, Math.round((parseFloat(tile.style.left) - 12) / cellWidth)));
+        const row = Math.max(0, Math.min(maxRows - 1, Math.round((parseFloat(tile.style.top) - 10) / cellHeight)));
+        const layout = loadAdditionalDesktopLayout();
+        layout[tile.dataset.additionalTool] = { column, row };
+        saveAdditionalDesktopLayout(layout);
+        tile.dataset.suppressClick = "true";
+        positionAdditionalDesktopTools();
+        window.setTimeout(() => { delete tile.dataset.suppressClick; }, 250);
+        event?.preventDefault();
+      };
+      tile.addEventListener("pointerup", finish);
+      tile.addEventListener("pointercancel", finish);
+      tile.addEventListener("click", event => {
+        if (tile.dataset.suppressClick) {
+          event.preventDefault();
+          return;
+        }
+        if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
+      });
+    });
+  }
+
+  function renderAdditionalWorkspace() {
+    if (!workspaceIsAdditional()) return;
+    const lastTool = getAdditionalLastTool();
+    document.getElementById("additionalDesktopView")?.classList.toggle("hidden", lastTool !== "desktop");
+    document.getElementById("shiftScheduleView")?.classList.toggle("hidden", lastTool !== "shifts");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    if (lastTool === "desktop") initializeAdditionalDesktop();
+    else renderShiftSchedule();
+    updateAdditionalHeaderUI();
+  }
+
+  function shiftSettingsAreOpen() {
+    return workspaceIsAdditional() && !document.getElementById("shiftSettingsView")?.classList.contains("hidden");
+  }
+
+  function shiftEditorIsOpen() {
+    return workspaceIsAdditional() && !document.getElementById("shiftEditorOverlay")?.classList.contains("hidden");
+  }
+
+  function hasAdditionalBackDestination() {
+    return workspaceIsAdditional() && (getAdditionalLastTool() === "shifts" || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen());
+  }
+
+  function updateAdditionalHeaderUI() {
+    if (!workspaceIsAdditional()) {
+      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active");
+      return;
+    }
+    const toolOpen = getAdditionalLastTool() === "shifts";
+    const label = toolOpen ? "Графік змін" : "Додатково";
+    document.body.classList.toggle("additional-tool-open", toolOpen);
+    document.body.classList.toggle("additional-tool-settings-active", toolOpen && !shiftSettingsAreOpen());
+    const switcherLabel = document.getElementById("workspaceSwitcherLabel");
+    if (switcherLabel) switcherLabel.textContent = label;
+    const todayMenuButton = document.querySelector("#drawer .menu-btn[data-page='today']");
+    if (todayMenuButton) todayMenuButton.textContent = label;
+    const sectionHeaderTitle = document.getElementById("sectionHeaderTitle");
+    if (currentPage === "today" && sectionHeaderTitle) sectionHeaderTitle.textContent = label;
+    document.title = `${label} — Облік`;
+    updatePageBackButton();
+  }
+
+  function openCurrentAdditionalToolSettings() {
+    if (!workspaceIsAdditional()) return;
+    if (getAdditionalLastTool() === "shifts") openShiftSettings();
+  }
+
+  function navigateAdditionalBack() {
+    if (!workspaceIsAdditional()) return false;
+    if (shiftStatsAreOpen()) {
+      closeShiftStats();
+      return true;
+    }
+    if (shiftEditorIsOpen()) {
+      closeShiftEditor();
+      return true;
+    }
+    if (shiftSettingsAreOpen()) {
+      openShiftSchedule();
+      return true;
+    }
+    if (getAdditionalLastTool() === "shifts") {
+      openAdditionalDesktop();
+      return true;
+    }
+    return false;
+  }
+
+  function openAdditionalDesktop() {
+    setAdditionalLastTool("desktop");
+    closeShiftEditor();
+    closeShiftStats();
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalDesktopView")?.classList.remove("hidden");
+    initializeAdditionalDesktop();
+    updateAdditionalHeaderUI();
+  }
+
+  function openShiftSchedule() {
+    setAdditionalLastTool("shifts");
+    closeShiftEditor();
+    closeShiftStats();
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.remove("hidden");
+    renderShiftSchedule();
+    updateAdditionalHeaderUI();
+  }
+
+  function shiftDateKey(year, month, day) {
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+
+  function calculateShiftHours(start, end, breakHours = 0) {
+    const toMinutes = value => {
+      const [hours, minutes] = normalizeShiftTime(value).split(":").map(Number);
+      return hours * 60 + minutes;
+    };
+    let duration = toMinutes(end) - toMinutes(start);
+    if (duration <= 0) duration += 24 * 60;
+    return Math.max(0, duration / 60 - Math.max(0, Number(breakHours) || 0));
+  }
+
+  function calculateShiftEntryHours(entry) {
+    if (!entry || entry.isDayOff) return 0;
+    return calculateShiftHours(entry.start, entry.end, entry.breakHours);
+  }
+
+  function formatShiftNumber(value, maximumFractionDigits = 2) {
+    return new Intl.NumberFormat("uk-UA", { maximumFractionDigits }).format(Number(value) || 0);
+  }
+
+  function shiftCurrencySymbol(currency = shiftScheduleState.currency) {
+    return { UAH: "₴", USD: "$", EUR: "€", PLN: "zł", CZK: "Kč" }[currency] || "₴";
+  }
+
+  function formatShiftMoney(value, currency = shiftScheduleState.currency) {
+    return `${formatShiftNumber(value)} ${shiftCurrencySymbol(currency)}`;
+  }
+
+  function calculateShiftEntryPay(entry) {
+    if (!entry || entry.isDayOff) return 0;
+    const rate = Math.max(0, Number(entry.rate) || 0);
+    return entry.payMode === "fixed" ? rate : calculateShiftEntryHours(entry) * rate;
+  }
+
+  function formatShiftMoneyTotals(entries) {
+    const totals = new Map();
+    entries.forEach(entry => {
+      if (entry.isDayOff) return;
+      const currency = entry.currency || shiftScheduleState.currency || "UAH";
+      totals.set(currency, (totals.get(currency) || 0) + calculateShiftEntryPay(entry));
+    });
+    return totals.size
+      ? Array.from(totals, ([currency, total]) => formatShiftMoney(total, currency)).join(" · ")
+      : formatShiftMoney(0);
+  }
+
+  function renderShiftSchedule() {
+    renderShiftCalendar();
+    renderShiftSummary();
+  }
+
+  function renderShiftCalendar() {
+    const grid = document.getElementById("shiftCalendarGrid");
+    if (!grid) return;
+    const year = shiftCalendarMonth.getFullYear();
+    const month = shiftCalendarMonth.getMonth();
+    const monthLabel = document.getElementById("shiftMonthLabel");
+    if (monthLabel) monthLabel.textContent = shiftCalendarMonth.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
+    const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const selectedDate = document.getElementById("shiftEditorDate")?.value || "";
+    let html = Array.from({ length: firstWeekday }, () => `<div class="shift-calendar-empty"></div>`).join("");
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const date = shiftDateKey(year, month, day);
+      const entry = shiftScheduleState.entries[date];
+      const hours = calculateShiftEntryHours(entry);
+      const classes = ["shift-calendar-day"];
+      if (entry) classes.push("has-shift");
+      if (date === todayISO()) classes.push("is-today");
+      if (date === selectedDate) classes.push("is-selected");
+      html += `<button type="button" class="${classes.join(" ")}" data-shift-date="${date}"${entry ? ` style="--shift-color:${escapeHtml(entry.color)}"` : ""}>
+        <span class="shift-calendar-day-number">${day}</span>
+        ${entry ? `<span class="shift-calendar-day-type">${escapeHtml(entry.typeName || "Зміна")}</span>${entry.isDayOff ? "" : `<span class="shift-calendar-day-hours">${formatShiftNumber(hours)} год</span>`}` : ""}
+      </button>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function openShiftMonthPicker() {
+    const monthSelect = document.getElementById("shiftMonthPickerMonth");
+    const yearInput = document.getElementById("shiftMonthPickerYear");
+    if (!monthSelect || !yearInput) return;
+    if (!monthSelect.options.length) {
+      monthSelect.innerHTML = Array.from({ length: 12 }, (_, month) => {
+        const label = new Date(2024, month, 1).toLocaleDateString("uk-UA", { month: "long" });
+        return `<option value="${month}">${escapeHtml(label.charAt(0).toUpperCase() + label.slice(1))}</option>`;
+      }).join("");
+    }
+    monthSelect.value = String(shiftCalendarMonth.getMonth());
+    yearInput.value = String(shiftCalendarMonth.getFullYear());
+    document.getElementById("shiftMonthPickerOverlay")?.classList.remove("hidden");
+  }
+
+  function closeShiftMonthPicker() {
+    document.getElementById("shiftMonthPickerOverlay")?.classList.add("hidden");
+  }
+
+  function applyShiftMonthPicker() {
+    const month = Number(document.getElementById("shiftMonthPickerMonth")?.value);
+    const year = Number(document.getElementById("shiftMonthPickerYear")?.value);
+    if (!Number.isInteger(month) || month < 0 || month > 11 || !Number.isInteger(year) || year < 1900 || year > 2200) {
+      toast("Вкажи коректний місяць і рік", true);
+      return;
+    }
+    shiftCalendarMonth = new Date(year, month, 1);
+    closeShiftMonthPicker();
+    closeShiftEditor();
+    renderShiftSchedule();
+  }
+
+  function renderShiftSummary() {
+    const entries = getCurrentMonthShiftEntries();
+    const workingEntries = entries.filter(entry => !entry.isDayOff);
+    document.getElementById("shiftMonthShifts").textContent = String(workingEntries.length);
+    document.getElementById("shiftMonthPay").textContent = formatShiftMoneyTotals(workingEntries);
+  }
+
+  function getCurrentMonthShiftEntries() {
+    const year = shiftCalendarMonth.getFullYear();
+    const month = shiftCalendarMonth.getMonth();
+    const prefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
+    return Object.values(shiftScheduleState.entries)
+      .filter(entry => entry.date.startsWith(prefix))
+      .sort((left, right) => left.date.localeCompare(right.date));
+  }
+
+  function shiftStatsAreOpen() {
+    return !document.getElementById("shiftStatsOverlay")?.classList.contains("hidden");
+  }
+
+  function closeShiftStats() {
+    document.getElementById("shiftStatsOverlay")?.classList.add("hidden");
+  }
+
+  function openShiftStats(kind) {
+    const title = document.getElementById("shiftStatsTitle");
+    const content = document.getElementById("shiftStatsContent");
+    const entries = getCurrentMonthShiftEntries().filter(entry => !entry.isDayOff);
+    if (!title || !content) return;
+    if (kind === "pay") {
+      title.textContent = "Нараховано за місяць";
+      content.innerHTML = entries.length ? entries.map(entry => {
+        const hours = calculateShiftEntryHours(entry);
+        const pay = calculateShiftEntryPay(entry);
+        const dateLabel = new Date(`${entry.date}T12:00:00`).toLocaleDateString("uk-UA", { day: "numeric", month: "long", weekday: "short" });
+        return `<div class="shift-stats-row">
+          <div><strong>${escapeHtml(dateLabel)}</strong><small>${escapeHtml(entry.typeName || "Зміна")} · ${formatShiftNumber(hours)} год</small></div>
+          <div class="shift-stats-value">${escapeHtml(formatShiftMoney(pay, entry.currency))}</div>
+        </div>`;
+      }).join("") : `<div class="small">У цьому місяці ще немає нарахувань.</div>`;
+    } else {
+      title.textContent = "Статистика змін";
+      const groups = new Map();
+      entries.forEach(entry => {
+        const key = entry.typeId || entry.typeName || "shift";
+        const current = groups.get(key) || { name: entry.typeName || "Зміна", count: 0, hours: 0 };
+        current.count += 1;
+        current.hours += calculateShiftEntryHours(entry);
+        groups.set(key, current);
+      });
+      content.innerHTML = groups.size ? Array.from(groups.values()).map(group => `<div class="shift-stats-row">
+        <div><strong>${escapeHtml(group.name)}</strong><small>${group.count} ${group.count === 1 ? "зміна" : "змін"}</small></div>
+        <div class="shift-stats-value">${formatShiftNumber(group.hours)} год</div>
+      </div>`).join("") : `<div class="small">У цьому місяці ще немає робочих змін.</div>`;
+    }
+    document.getElementById("shiftStatsOverlay")?.classList.remove("hidden");
+  }
+
+  function renderShiftTypeOptions(selectedId = "") {
+    const select = document.getElementById("shiftEditorType");
+    if (!select) return;
+    select.innerHTML = shiftScheduleState.types.map(type => `<option value="${escapeHtml(type.id)}">${escapeHtml(type.name)}</option>`).join("");
+    select.value = shiftScheduleState.types.some(type => type.id === selectedId) ? selectedId : (shiftScheduleState.types[0]?.id || "");
+  }
+
+  function openShiftEditor(date) {
+    const entry = shiftScheduleState.entries[date];
+    const type = shiftScheduleState.types.find(item => item.id === entry?.typeId) || shiftScheduleState.types[0];
+    if (!type) return;
+    document.getElementById("shiftEditorContext").value = "entry";
+    document.getElementById("shiftEditorTypeId").value = "";
+    document.getElementById("shiftEditorDate").value = date;
+    document.getElementById("shiftEditorTitle").textContent = new Date(`${date}T12:00:00`).toLocaleDateString("uk-UA", { weekday: "long", day: "numeric", month: "long" });
+    document.getElementById("shiftEditorNameField").classList.add("hidden");
+    document.getElementById("shiftEditorTypeField").classList.remove("hidden");
+    document.getElementById("shiftEditorNoteField").classList.remove("hidden");
+    renderShiftTypeOptions(entry?.typeId || type.id);
+    document.getElementById("shiftEditorStart").value = entry?.start || type.start;
+    document.getElementById("shiftEditorEnd").value = entry?.end || type.end;
+    document.getElementById("shiftEditorBreak").value = String(entry?.breakHours ?? type.breakHours);
+    document.getElementById("shiftEditorPayMode").value = entry?.payMode || type.payMode || "hourly";
+    document.getElementById("shiftEditorRate").value = String(entry?.rate ?? type.rate);
+    document.getElementById("shiftEditorCurrency").value = entry?.currency || type.currency || "UAH";
+    document.getElementById("shiftEditorNote").value = entry?.note || "";
+    document.getElementById("deleteShiftEditorBtn").classList.toggle("hidden", !entry);
+    resetShiftEditorSections();
+    document.getElementById("shiftEditorOverlay").classList.remove("hidden");
+    syncShiftEditorAvailability();
+    updateShiftEditorPreview();
+    renderShiftCalendar();
+  }
+
+  function syncShiftEditorFromType() {
+    const type = shiftScheduleState.types.find(item => item.id === document.getElementById("shiftEditorType")?.value);
+    if (!type) return;
+    document.getElementById("shiftEditorStart").value = type.start;
+    document.getElementById("shiftEditorEnd").value = type.end;
+    document.getElementById("shiftEditorBreak").value = String(type.breakHours);
+    document.getElementById("shiftEditorPayMode").value = type.payMode || "hourly";
+    document.getElementById("shiftEditorRate").value = String(type.rate);
+    document.getElementById("shiftEditorCurrency").value = type.currency || "UAH";
+    syncShiftEditorAvailability();
+    updateShiftEditorPreview();
+  }
+
+  function syncShiftEditorAvailability() {
+    const context = document.getElementById("shiftEditorContext")?.value;
+    const type = shiftScheduleState.types.find(item => item.id === document.getElementById("shiftEditorType")?.value);
+    const editingType = shiftScheduleState.types.find(item => item.id === document.getElementById("shiftEditorTypeId")?.value);
+    const isDayOff = context === "type" ? Boolean(editingType?.isDayOff || document.getElementById("shiftEditorTypeId")?.value === "off") : Boolean(type?.isDayOff);
+    ["shiftEditorStart", "shiftEditorEnd", "shiftEditorBreak", "shiftEditorPayMode", "shiftEditorCurrency", "shiftEditorRate"].forEach(id => {
+      const field = document.getElementById(id);
+      if (field) field.disabled = isDayOff;
+    });
+    updateShiftEditorPaymentUI();
+  }
+
+  function updateShiftEditorPaymentUI() {
+    const fixed = document.getElementById("shiftEditorPayMode")?.value === "fixed";
+    const label = document.getElementById("shiftEditorRateLabel");
+    if (label) label.textContent = fixed ? "Ставка за зміну" : "Оплата за годину";
+    updateShiftEditorPreview();
+  }
+
+  function updateShiftEditorPreview() {
+    const start = document.getElementById("shiftEditorStart")?.value || "08:00";
+    const end = document.getElementById("shiftEditorEnd")?.value || "20:00";
+    const breakHours = Number(document.getElementById("shiftEditorBreak")?.value) || 0;
+    const rate = Number(document.getElementById("shiftEditorRate")?.value) || 0;
+    const payMode = document.getElementById("shiftEditorPayMode")?.value === "fixed" ? "fixed" : "hourly";
+    const currency = document.getElementById("shiftEditorCurrency")?.value || "UAH";
+    const type = shiftScheduleState.types.find(item => item.id === document.getElementById("shiftEditorType")?.value);
+    const editingType = shiftScheduleState.types.find(item => item.id === document.getElementById("shiftEditorTypeId")?.value);
+    const isDayOff = document.getElementById("shiftEditorContext")?.value === "type" ? Boolean(editingType?.isDayOff) : Boolean(type?.isDayOff);
+    if (isDayOff) {
+      document.getElementById("shiftEditorPreview").textContent = "Вихідний · 0 годин";
+      return;
+    }
+    const hours = calculateShiftHours(start, end, breakHours);
+    const pay = payMode === "fixed" ? rate : hours * rate;
+    document.getElementById("shiftEditorPreview").textContent = `${formatShiftNumber(hours)} год · ${formatShiftMoney(pay, currency)}${payMode === "fixed" ? " за зміну" : ""}`;
+  }
+
+  function saveShiftEditor() {
+    if (document.getElementById("shiftEditorContext")?.value === "type") {
+      saveShiftTypeFromEditor();
+      return;
+    }
+    const date = document.getElementById("shiftEditorDate")?.value;
+    const type = shiftScheduleState.types.find(item => item.id === document.getElementById("shiftEditorType")?.value);
+    if (!date || !type) return;
+    const start = normalizeShiftTime(document.getElementById("shiftEditorStart")?.value, type.start);
+    const end = normalizeShiftTime(document.getElementById("shiftEditorEnd")?.value, type.end);
+    shiftScheduleState.entries[date] = {
+      date,
+      typeId: type.id,
+      typeName: type.name,
+      start,
+      end,
+      breakHours: Math.max(0, Number(document.getElementById("shiftEditorBreak")?.value) || 0),
+      payMode: document.getElementById("shiftEditorPayMode")?.value === "fixed" ? "fixed" : "hourly",
+      rate: Math.max(0, Number(document.getElementById("shiftEditorRate")?.value) || 0),
+      currency: document.getElementById("shiftEditorCurrency")?.value || "UAH",
+      color: type.color,
+      note: String(document.getElementById("shiftEditorNote")?.value || "").trim(),
+      isNight: Boolean(type.isNight),
+      isDayOff: Boolean(type.isDayOff)
+    };
+    saveShiftScheduleState();
+    renderShiftSchedule();
+    openShiftEditor(date);
+    toast("Зміну збережено");
+  }
+
+  async function deleteShiftEditorItem() {
+    if (document.getElementById("shiftEditorContext")?.value === "type") {
+      const id = document.getElementById("shiftEditorTypeId")?.value;
+      if (!id) return;
+      if (shiftScheduleState.types.length <= 1) {
+        toast("Потрібно залишити хоча б один тип зміни", true);
+        return;
+      }
+      const type = shiftScheduleState.types.find(item => item.id === id);
+      const confirmed = await showAppDialog({
+        label: "Графік змін",
+        title: "Видалити тип зміни?",
+        message: `«${type?.name || "Зміна"}» буде видалено зі списку. Уже внесені дні календаря залишаться без змін.`,
+        confirmText: "Видалити",
+        cancelText: "Скасувати"
+      });
+      if (!confirmed) return;
+      shiftScheduleState.types = shiftScheduleState.types.filter(item => item.id !== id);
+      saveShiftScheduleState();
+      closeShiftEditor();
+      renderShiftSettings();
+      toast("Тип зміни видалено");
+      return;
+    }
+    const date = document.getElementById("shiftEditorDate")?.value;
+    if (!date || !shiftScheduleState.entries[date]) return;
+    const confirmed = await showAppDialog({
+      label: "Графік змін",
+      title: "Видалити запис за цей день?",
+      message: "Запис зміни буде видалено з календаря.",
+      confirmText: "Видалити",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    delete shiftScheduleState.entries[date];
+    saveShiftScheduleState();
+    document.getElementById("shiftEditorOverlay").classList.add("hidden");
+    document.getElementById("shiftEditorDate").value = "";
+    renderShiftSchedule();
+    toast("Зміну видалено");
+  }
+
+  function closeShiftEditor() {
+    document.getElementById("shiftEditorOverlay")?.classList.add("hidden");
+    const dateInput = document.getElementById("shiftEditorDate");
+    if (dateInput) dateInput.value = "";
+    if (shiftSettingsAreOpen()) document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    renderShiftCalendar();
+  }
+
+  function resetShiftEditorSections() {
+    document.querySelectorAll("#shiftEditorPanel [data-shift-editor-section]").forEach(section => {
+      section.classList.remove("collapsed");
+      const mark = section.querySelector(".shift-editor-section-mark");
+      if (mark) mark.textContent = "−";
+    });
+  }
+
+  function openShiftTypeEditor(id = "") {
+    const existing = shiftScheduleState.types.find(type => type.id === id);
+    const type = existing || normalizeShiftType({
+      id: "",
+      name: "Нова зміна",
+      start: "08:00",
+      end: "17:00",
+      breakHours: 0,
+      payMode: "hourly",
+      rate: 0,
+      currency: shiftScheduleState.currency || "UAH",
+      color: "#8b7ad1",
+      isNight: false,
+      isDayOff: false
+    });
+    document.getElementById("shiftScheduleView")?.classList.remove("hidden");
+    document.getElementById("shiftEditorContext").value = "type";
+    document.getElementById("shiftEditorTypeId").value = existing?.id || "";
+    document.getElementById("shiftEditorDate").value = "";
+    document.getElementById("shiftEditorTitle").textContent = existing ? "Редагування зміни" : "Нова зміна";
+    document.getElementById("shiftEditorNameField").classList.remove("hidden");
+    document.getElementById("shiftEditorTypeField").classList.add("hidden");
+    document.getElementById("shiftEditorNoteField").classList.add("hidden");
+    document.getElementById("shiftEditorName").value = type.name;
+    document.getElementById("shiftEditorStart").value = type.start;
+    document.getElementById("shiftEditorEnd").value = type.end;
+    document.getElementById("shiftEditorBreak").value = String(type.breakHours);
+    document.getElementById("shiftEditorPayMode").value = type.payMode || "hourly";
+    document.getElementById("shiftEditorRate").value = String(type.rate);
+    document.getElementById("shiftEditorCurrency").value = type.currency || "UAH";
+    document.getElementById("shiftEditorNote").value = "";
+    document.getElementById("deleteShiftEditorBtn").classList.toggle("hidden", !existing);
+    resetShiftEditorSections();
+    document.getElementById("shiftEditorOverlay").classList.remove("hidden");
+    syncShiftEditorAvailability();
+    updateShiftEditorPreview();
+  }
+
+  function saveShiftTypeFromEditor() {
+    const existingId = document.getElementById("shiftEditorTypeId")?.value || "";
+    const previous = shiftScheduleState.types.find(type => type.id === existingId);
+    const name = String(document.getElementById("shiftEditorName")?.value || "").trim();
+    if (!name) {
+      toast("Вкажи назву зміни", true);
+      document.getElementById("shiftEditorName")?.focus();
+      return;
+    }
+    const next = normalizeShiftType({
+      ...(previous || {}),
+      id: existingId || `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      start: document.getElementById("shiftEditorStart")?.value,
+      end: document.getElementById("shiftEditorEnd")?.value,
+      breakHours: document.getElementById("shiftEditorBreak")?.value,
+      payMode: document.getElementById("shiftEditorPayMode")?.value,
+      rate: document.getElementById("shiftEditorRate")?.value,
+      currency: document.getElementById("shiftEditorCurrency")?.value,
+      color: previous?.color || "#8b7ad1",
+      isNight: previous?.isNight || false,
+      isDayOff: previous?.isDayOff || false
+    });
+    const index = shiftScheduleState.types.findIndex(type => type.id === existingId);
+    if (index >= 0) shiftScheduleState.types[index] = next;
+    else shiftScheduleState.types.push(next);
+    Object.values(shiftScheduleState.entries).forEach(entry => {
+      if (entry.typeId !== next.id) return;
+      entry.typeName = next.name;
+      entry.color = next.color;
+      entry.isNight = next.isNight;
+      entry.isDayOff = next.isDayOff;
+    });
+    saveShiftScheduleState();
+    closeShiftEditor();
+    renderShiftSettings();
+    toast("Тип зміни збережено");
+  }
+
+  function renderShiftSettings() {
+    const list = document.getElementById("shiftTypeList");
+    if (!list) return;
+    list.innerHTML = shiftScheduleState.types.map(type => {
+      const payment = type.isDayOff
+        ? "Без робочого часу"
+        : `${type.start}–${type.end} · ${type.payMode === "fixed" ? `${formatShiftMoney(type.rate, type.currency)} за зміну` : `${formatShiftMoney(type.rate, type.currency)} / год`}`;
+      return `<button type="button" class="shift-type-list-item" data-edit-shift-type="${escapeHtml(type.id)}" style="--shift-color:${escapeHtml(type.color)}">
+        <span class="shift-type-list-item-dot" aria-hidden="true"></span>
+        <span><strong>${escapeHtml(type.name)}</strong><small>${escapeHtml(payment)}</small></span>
+        <span class="shift-type-list-item-arrow" aria-hidden="true">›</span>
+      </button>`;
+    }).join("");
+  }
+
+  function openShiftSettings() {
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.remove("hidden");
+    renderShiftSettings();
+    updateAdditionalHeaderUI();
+  }
+
+  function addShiftType() {
+    openShiftTypeEditor();
+  }
+
   function render() {
-    if (!workspaceIsLoading()) ensureActiveDay();
-    renderSelect();
-    if (workspaceIsLoading()) {
+    if (workspaceIsAdditional()) {
+      updateWorkspaceUI();
+      renderAdditionalWorkspace();
+    } else if (workspaceIsLoading()) {
+      renderSelect();
       updateWorkspaceUI();
       renderLoadingPlanner();
     } else {
+      ensureActiveDay();
+      renderSelect();
       renderToday();
     }
     renderProducts();
@@ -22274,6 +23696,7 @@
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
+  document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("compactMenuBtn").addEventListener("click", openMenu);
   document.getElementById("desktopBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("workspaceSwitcherBtn").addEventListener("click", event => {
@@ -22819,6 +24242,16 @@
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
 
+    if (shiftStatsAreOpen()) {
+      closeShiftStats();
+      return;
+    }
+
+    if (shiftEditorIsOpen()) {
+      closeShiftEditor();
+      return;
+    }
+
     if (!document.getElementById("qrTransferOverlay").classList.contains("hidden")) {
       closeQrTransfer();
       return;
@@ -22885,6 +24318,62 @@
       if (results) results.classList.add("hidden");
     }
   });
+
+  document.getElementById("previousShiftMonthBtn").addEventListener("click", () => {
+    shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), shiftCalendarMonth.getMonth() - 1, 1);
+    closeShiftEditor();
+    renderShiftSchedule();
+  });
+  document.getElementById("nextShiftMonthBtn").addEventListener("click", () => {
+    shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), shiftCalendarMonth.getMonth() + 1, 1);
+    closeShiftEditor();
+    renderShiftSchedule();
+  });
+  document.getElementById("openShiftMonthPickerBtn").addEventListener("click", openShiftMonthPicker);
+  document.getElementById("applyShiftMonthPickerBtn").addEventListener("click", applyShiftMonthPicker);
+  document.getElementById("closeShiftMonthPickerBtn").addEventListener("click", closeShiftMonthPicker);
+  document.getElementById("shiftMonthPickerOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeShiftMonthPicker();
+  });
+  document.getElementById("shiftCalendarGrid").addEventListener("click", event => {
+    const day = event.target.closest("[data-shift-date]");
+    if (day) openShiftEditor(day.dataset.shiftDate);
+  });
+  document.getElementById("shiftEditorType").addEventListener("change", syncShiftEditorFromType);
+  ["shiftEditorStart", "shiftEditorEnd", "shiftEditorBreak", "shiftEditorRate", "shiftEditorCurrency"].forEach(id => {
+    document.getElementById(id).addEventListener("input", updateShiftEditorPreview);
+  });
+  document.getElementById("shiftEditorPayMode").addEventListener("change", updateShiftEditorPaymentUI);
+  document.getElementById("saveShiftEditorBtn").addEventListener("click", saveShiftEditor);
+  document.getElementById("deleteShiftEditorBtn").addEventListener("click", deleteShiftEditorItem);
+  document.getElementById("closeShiftEditorBtn").addEventListener("click", closeShiftEditor);
+  document.getElementById("shiftEditorPanel").addEventListener("click", event => {
+    const toggle = event.target.closest("[data-toggle-shift-editor-section]");
+    if (!toggle) return;
+    const section = toggle.closest("[data-shift-editor-section]");
+    section?.classList.toggle("collapsed");
+    const mark = toggle.querySelector(".shift-editor-section-mark");
+    if (mark) mark.textContent = section?.classList.contains("collapsed") ? "+" : "−";
+  });
+  document.getElementById("shiftEditorOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeShiftEditor();
+  });
+  document.getElementById("openShiftBreakdownBtn").addEventListener("click", () => openShiftStats("shifts"));
+  document.getElementById("openPayBreakdownBtn").addEventListener("click", () => openShiftStats("pay"));
+  document.getElementById("closeShiftStatsBtn").addEventListener("click", closeShiftStats);
+  document.getElementById("shiftStatsOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeShiftStats();
+  });
+  document.getElementById("addShiftTypeBtn").addEventListener("click", addShiftType);
+  document.getElementById("shiftTypeList").addEventListener("click", event => {
+    const button = event.target.closest("[data-edit-shift-type]");
+    if (button) openShiftTypeEditor(button.dataset.editShiftType);
+  });
+  document.getElementById("backToAdditionalDesktopBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("backToShiftScheduleBtn").addEventListener("click", openShiftSchedule);
+  window.addEventListener("resize", () => {
+    if (workspaceIsAdditional() && getAdditionalLastTool() === "desktop") positionAdditionalDesktopTools();
+  }, { passive: true });
 
   window.addEventListener("app-language-change", () => {
     render();
