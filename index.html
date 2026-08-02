@@ -9303,7 +9303,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=383">
+<link rel="manifest" href="manifest.json?v=384">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9358,7 +9358,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.83</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.84</span></div>
     </div>
   </div>
 
@@ -9847,8 +9847,8 @@
           <div class="shift-weekdays" aria-hidden="true">
             <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Нд</div>
           </div>
-          <div class="shift-week-number-label" id="shiftWeekNumberLabel" hidden></div>
           <div class="shift-calendar-grid" id="shiftCalendarGrid"></div>
+          <div class="shift-week-number-label" id="shiftWeekNumberLabel" hidden></div>
         </div>
 
         <div class="shift-summary-grid">
@@ -10732,7 +10732,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.83</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.84</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10757,6 +10757,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.84</h3>
+          <ul>
+            <li>номер тижня перенесено в самий низ календарної картки — безпосередньо під квадратами з числами.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.83</h3>
           <ul>
@@ -12574,13 +12580,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=383"></script>
+<script src="./assets/decimen-optical-transfer.js?v=384"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.83";
+  const APP_VERSION = "3.84";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -21760,7 +21766,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=383")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=384")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
