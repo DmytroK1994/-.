@@ -10001,16 +10001,20 @@
     .shift-picker-option {
       position: relative;
       z-index: 1;
-      width: calc(100% - 14px);
+      display: grid;
+      width: calc(100% - 20px);
       min-height: 56px;
-      margin: 0 auto;
-      padding: 8px 6px;
+      margin: 0 10px;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      place-items: center;
       border: 1px solid transparent;
       border-radius: 13px;
       background: transparent;
       color: var(--muted);
       box-shadow: none;
       font-size: 15px;
+      text-align: center;
       scroll-snap-align: center;
       opacity: var(--picker-opacity, .5);
       transform: perspective(260px) rotateX(var(--picker-angle, 0deg)) scale(var(--picker-scale, .9));
@@ -10437,7 +10441,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=422">
+<link rel="manifest" href="manifest.json?v=423">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10492,7 +10496,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.22</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.23</span></div>
     </div>
   </div>
 
@@ -12014,7 +12018,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.22</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.23</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12040,6 +12044,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.23</h3>
+          <ul>
+            <li>виділений місяць і рік у барабанах вибору точно відцентровано;</li>
+            <li>відступи виділення зліва та справа зроблено однаковими.</li>
+          </ul>
+
           <h3>Версія 4.22</h3>
           <ul>
             <li>у річному вигляді кожен місяць тепер показано як окремий мінікалендар;</li>
@@ -14111,14 +14121,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=422"></script>
-<script src="./firebase-config.js?v=422"></script>
+<script src="./assets/decimen-optical-transfer.js?v=423"></script>
+<script src="./firebase-config.js?v=423"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.22";
+  const APP_VERSION = "4.23";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23456,7 +23466,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=422")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=423")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
