@@ -7555,19 +7555,21 @@
         display: none;
       }
       body:not(.page-today) .desktop-back-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: auto;
-        min-width: 92px;
-        min-height: 40px;
+        display: grid;
+        width: 46px;
+        min-width: 46px;
+        height: 46px;
+        min-height: 46px;
         margin: 0;
-        padding: 8px 14px;
-        border: 1px solid var(--border-strong);
-        border-radius: 12px;
-        background: var(--surface-strong);
+        padding: 0;
+        place-items: center;
+        border: 0;
+        border-radius: 15px;
+        background: var(--surface-deep);
         color: var(--text);
         box-shadow: none;
+        font-size: 23px;
+        line-height: 1;
       }
       #openMenuBtn,
       #compactMenuBtn,
@@ -9957,7 +9959,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=405">
+<link rel="manifest" href="manifest.json?v=406">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10012,7 +10014,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.05</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.06</span></div>
     </div>
   </div>
 
@@ -10080,7 +10082,7 @@
     <div class="date-line" id="activeDateLabel"></div>
     <div class="compact-header-row">
       <button class="compact-menu-btn" id="compactMenuBtn">Меню</button>
-      <button class="desktop-back-btn" id="desktopBackBtn" type="button"><span aria-hidden="true">←</span>&nbsp; Назад</button>
+      <button class="desktop-back-btn" id="desktopBackBtn" type="button" aria-label="Назад" title="Назад"><span aria-hidden="true">←</span></button>
       <div class="compact-header-content">
         <div class="section-header-title" id="sectionHeaderTitle"></div>
         <div class="compact-header-hints">
@@ -11462,7 +11464,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.05</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.06</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11487,6 +11489,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.06</h3>
+          <ul>
+            <li>комп’ютерну кнопку «Назад» у налаштуваннях уніфіковано з кнопкою додаткових інструментів.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.05</h3>
           <ul>
@@ -13453,13 +13461,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=405"></script>
+<script src="./assets/decimen-optical-transfer.js?v=406"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.05";
+  const APP_VERSION = "4.06";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22746,7 +22754,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=405")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=406")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
