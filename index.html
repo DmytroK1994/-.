@@ -8928,7 +8928,11 @@
       margin: 0;
       padding-right: 38px;
     }
+    .pallet-calculator-clearable-search input {
+      padding-right: 38px !important;
+    }
     .pallet-calculator-format-search input::-webkit-search-cancel-button { display: none; }
+    .pallet-calculator-clearable-search input::-webkit-search-cancel-button { display: none; }
     .pallet-calculator-format-clear {
       position: absolute;
       top: 50%;
@@ -9986,6 +9990,7 @@
     .workspace-start-overlay,
     .changelog-overlay,
     .qr-transfer-overlay,
+    .pallet-calculator-overlay,
     .shift-editor-overlay {
       background: rgba(10, 16, 25, .14) !important;
       backdrop-filter: blur(9px) saturate(1.05) !important;
@@ -10015,7 +10020,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=409">
+<link rel="manifest" href="manifest.json?v=410">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10070,7 +10075,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.09</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.10</span></div>
     </div>
   </div>
 
@@ -10569,9 +10574,10 @@
             </div>
             <div class="pallet-calculator-section-body">
               <div class="pallet-calculator-search">
-                <div class="pallet-calculator-active-search" id="palletCalculatorProductSearchWrap">
+                <div class="pallet-calculator-active-search pallet-calculator-clearable-search" id="palletCalculatorProductSearchWrap">
                   <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Введіть назву" aria-label="Пошук за найменуванням" />
                   <input id="palletCalculatorProductId" type="hidden" />
+                  <button type="button" class="pallet-calculator-format-clear hidden" id="clearPalletCalculatorProductBtn" aria-label="Очистити поле">×</button>
                   <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
                 </div>
                 <div class="pallet-calculator-active-search pallet-calculator-format-search hidden" id="palletCalculatorFormatSearchWrap">
@@ -11529,7 +11535,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.09</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.10</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11554,6 +11560,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.10</h3>
+          <ul>
+            <li>посилено розмиття діалогів, уточнено попередження про типові значення та додано очищення пошуку найменувань.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.09</h3>
           <ul>
@@ -13544,13 +13556,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=409"></script>
+<script src="./assets/decimen-optical-transfer.js?v=410"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.09";
+  const APP_VERSION = "4.10";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22847,7 +22859,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=409")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=410")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24670,6 +24682,22 @@
     document.getElementById("clearPalletCalculatorFormatBtn")?.classList.toggle("hidden", !input?.value);
   }
 
+  function updatePalletCalculatorProductClearButton() {
+    const input = document.getElementById("palletCalculatorProductSearch");
+    document.getElementById("clearPalletCalculatorProductBtn")?.classList.toggle("hidden", !input?.value);
+  }
+
+  function clearPalletCalculatorProduct() {
+    const input = document.getElementById("palletCalculatorProductSearch");
+    if (input) input.value = "";
+    const selected = document.getElementById("palletCalculatorProductId");
+    if (selected) selected.value = "";
+    document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
+    document.getElementById("palletCalculatorResult")?.classList.add("hidden");
+    updatePalletCalculatorProductClearButton();
+    input?.focus();
+  }
+
   function clearPalletCalculatorFormat() {
     const input = document.getElementById("palletCalculatorFormatSearch");
     if (input) input.value = "";
@@ -24808,7 +24836,7 @@
     const confirmed = await showAppDialog({
       label: "Типові значення",
       title: `Зберегти типові значення для «${product.name}»?`,
-      message: "Коробки в піддоні, пачки в коробці та вага пачки автоматично підставлятимуться в цьому калькуляторі.",
+      message: "Коробки в піддоні, пачки в коробці та вага пачки також будуть змінені в загальній базі найменувань. Надалі ці значення автоматично підставлятимуться для цього найменування.",
       confirmText: "Зберегти",
       cancelText: "Скасувати"
     });
@@ -24847,6 +24875,7 @@
     document.getElementById("palletCalculatorProductId").value = product.id;
     document.getElementById("palletCalculatorProductSearch").value = product.name;
     document.getElementById("palletCalculatorSearchResults").classList.add("hidden");
+    updatePalletCalculatorProductClearButton();
     openPalletCalculatorDialog("product", product.id);
   }
 
@@ -24860,6 +24889,7 @@
     if (selectedFormat && !Object.prototype.hasOwnProperty.call(loadPalletCalculatorFormats(), selectedFormat)) clearPalletCalculatorFormat();
     document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
+    updatePalletCalculatorProductClearButton();
     updatePalletCalculatorFormatClearButton();
     setPalletCalculatorSearchMode(document.getElementById("palletCalculatorSearchMode")?.value || "products", false);
   }
@@ -25758,6 +25788,7 @@
     if (option) setPalletCalculatorSearchMode(option.dataset.palletSearchMode);
   });
   document.getElementById("clearPalletCalculatorFormatBtn").addEventListener("click", clearPalletCalculatorFormat);
+  document.getElementById("clearPalletCalculatorProductBtn").addEventListener("click", clearPalletCalculatorProduct);
   document.getElementById("palletCalculatorFormatSearch").addEventListener("focus", event => {
     renderPalletCalculatorFormats(event.target.value);
     updatePalletCalculatorFormatClearButton();
@@ -25788,6 +25819,7 @@
   document.getElementById("palletCalculatorProductSearch").addEventListener("input", event => {
     const selected = state.products.find(product => product.id === document.getElementById("palletCalculatorProductId").value);
     if (!selected || selected.name !== event.target.value) document.getElementById("palletCalculatorProductId").value = "";
+    updatePalletCalculatorProductClearButton();
     const exactMatch = state.products.find(product => normalizePalletCalculatorSearchValue(product.name) === normalizePalletCalculatorSearchValue(event.target.value));
     if (exactMatch) {
       selectPalletCalculatorProduct(exactMatch.id);
