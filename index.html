@@ -8871,6 +8871,7 @@
     }
     .pallet-calculator-format-results { top: calc(100% + 5px); }
     .pallet-calculator-search > label,
+    .pallet-calculator-active-search > label,
     .pallet-calculator-field label {
       display: block;
       margin: 0 0 9px;
@@ -8885,6 +8886,18 @@
       min-width: 0;
       margin: 0;
     }
+    .pallet-calculator-mode-field { display: block; }
+    .pallet-calculator-mode-field select {
+      width: 100%;
+      min-height: 34px !important;
+      height: 34px !important;
+      margin: 7px 0 11px;
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      font-size: 11px;
+    }
+    .pallet-calculator-active-search { position: relative; }
+    .pallet-calculator-active-search.hidden { display: none; }
     .pallet-calculator-field input,
     .pallet-calculator-search input,
     .pallet-calculator-format-search input,
@@ -9723,7 +9736,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=399">
+<link rel="manifest" href="manifest.json?v=400">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9778,7 +9791,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.99</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.00</span></div>
     </div>
   </div>
 
@@ -10258,22 +10271,24 @@
       <section id="palletCalculatorView" class="hidden">
         <div class="pallet-calculator-shell">
           <section class="pallet-calculator-section pallet-calculator-search-section" data-pallet-calculator-section="search">
-            <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="search" aria-expanded="true"><span>Пошук за найменуванням</span><span class="pallet-calculator-section-mark">−</span></button>
+            <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="search" aria-expanded="true"><span>Пошук</span><span class="pallet-calculator-section-mark">−</span></button>
             <div class="pallet-calculator-section-body">
               <div class="pallet-calculator-search">
-                <label for="palletCalculatorProductSearch">Пошук</label>
-                <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Пошук найменування" />
-                <input id="palletCalculatorProductId" type="hidden" />
-                <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
-              </div>
-            </div>
-          </section>
-          <section class="pallet-calculator-section" data-pallet-calculator-section="formats">
-            <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="formats" aria-expanded="true"><span>Пошук за збереженими форматами</span><span class="pallet-calculator-section-mark">−</span></button>
-            <div class="pallet-calculator-section-body pallet-calculator-format-panel">
-              <div class="pallet-calculator-format-search-row">
-                <div class="pallet-calculator-format-search">
-                  <input id="palletCalculatorFormatSearch" type="search" autocomplete="off" maxlength="80" placeholder="Пошук збереженого формату" aria-label="Пошук збереженого формату" />
+                <label class="pallet-calculator-mode-field" for="palletCalculatorSearchMode">Спосіб роботи
+                  <select id="palletCalculatorSearchMode" aria-label="Спосіб пошуку">
+                    <option value="products">За найменуванням</option>
+                    <option value="formats">За збереженими форматами (вручну збережені формати)</option>
+                  </select>
+                </label>
+                <div class="pallet-calculator-active-search" id="palletCalculatorProductSearchWrap">
+                  <label for="palletCalculatorProductSearch">Пошук за найменуванням</label>
+                  <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Введіть назву" />
+                  <input id="palletCalculatorProductId" type="hidden" />
+                  <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
+                </div>
+                <div class="pallet-calculator-active-search pallet-calculator-format-search hidden" id="palletCalculatorFormatSearchWrap">
+                  <label for="palletCalculatorFormatSearch">Пошук за збереженими форматами</label>
+                  <input id="palletCalculatorFormatSearch" type="search" autocomplete="off" maxlength="80" placeholder="Введіть назву формату" aria-label="Пошук збереженого формату" />
                   <input id="palletCalculatorSelectedFormat" type="hidden" />
                   <button type="button" class="pallet-calculator-format-clear hidden" id="clearPalletCalculatorFormatBtn" aria-label="Очистити поле">×</button>
                   <div class="pallet-calculator-results pallet-calculator-format-results hidden" id="palletCalculatorFormatResults"></div>
@@ -11218,7 +11233,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.99</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.00</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11243,6 +11258,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.00</h3>
+          <ul>
+            <li>пошук калькулятора об’єднано в одне поле: компактний список перемикає пошук за найменуваннями або за вручну збереженими форматами.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.99</h3>
           <ul>
@@ -13173,13 +13194,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=399"></script>
+<script src="./assets/decimen-optical-transfer.js?v=400"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.99";
+  const APP_VERSION = "4.00";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22386,7 +22407,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=399")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=400")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24349,6 +24370,21 @@
     document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
     updatePalletCalculatorFormatClearButton();
+    setPalletCalculatorSearchMode(document.getElementById("palletCalculatorSearchMode")?.value || "products", false);
+  }
+
+  function setPalletCalculatorSearchMode(mode, focusField = true) {
+    const normalizedMode = mode === "formats" ? "formats" : "products";
+    const select = document.getElementById("palletCalculatorSearchMode");
+    if (select) select.value = normalizedMode;
+    document.getElementById("palletCalculatorProductSearchWrap")?.classList.toggle("hidden", normalizedMode !== "products");
+    document.getElementById("palletCalculatorFormatSearchWrap")?.classList.toggle("hidden", normalizedMode !== "formats");
+    document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
+    document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
+    if (focusField) {
+      const field = document.getElementById(normalizedMode === "formats" ? "palletCalculatorFormatSearch" : "palletCalculatorProductSearch");
+      window.setTimeout(() => field?.focus(), 0);
+    }
   }
 
   function togglePalletCalculatorSection(sectionName) {
@@ -24360,8 +24396,10 @@
     toggle?.setAttribute("aria-expanded", String(!collapsed));
     const mark = toggle?.querySelector(".pallet-calculator-section-mark");
     if (mark) mark.textContent = collapsed ? "+" : "−";
-    if (sectionName === "search" && collapsed) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
-    if (sectionName === "formats" && collapsed) document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
+    if (sectionName === "search" && collapsed) {
+      document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
+      document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
+    }
   }
 
   function calculatePalletTransition() {
@@ -25169,6 +25207,9 @@
     if (edit) openPalletCalculatorDialog("format-settings", edit.dataset.palletSettingsEdit);
     const remove = event.target.closest("[data-pallet-settings-delete]");
     if (remove) deletePalletCalculatorFormat(remove.dataset.palletSettingsDelete);
+  });
+  document.getElementById("palletCalculatorSearchMode").addEventListener("change", event => {
+    setPalletCalculatorSearchMode(event.target.value);
   });
   document.getElementById("clearPalletCalculatorFormatBtn").addEventListener("click", clearPalletCalculatorFormat);
   document.getElementById("palletCalculatorFormatSearch").addEventListener("focus", event => {
