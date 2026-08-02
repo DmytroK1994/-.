@@ -9315,6 +9315,37 @@
       .pallet-calculator-field label { min-height: 30px; }
       .pallet-calculator-dialog { padding: 10px; border-radius: 16px; }
       .pallet-calculator-dialog-parameters { padding: 9px; }
+      .pallet-calculator-dialog-header {
+        position: relative;
+        display: block;
+        padding-top: 43px;
+        margin-bottom: 15px;
+      }
+      .pallet-calculator-dialog-heading {
+        width: 100%;
+        min-width: 0;
+      }
+      .pallet-calculator-dialog-header .small {
+        margin: 0 0 8px;
+        font-size: 15px;
+        font-weight: 950;
+        line-height: 1.1;
+      }
+      .pallet-calculator-dialog-header h3 {
+        width: 100%;
+        margin: 0;
+        overflow-wrap: normal;
+        word-break: normal;
+        font-size: clamp(15px, 4.3vw, 19px);
+        font-weight: 900;
+        line-height: 1.25;
+        text-wrap: pretty;
+      }
+      .pallet-calculator-dialog-header-actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
       .pallet-calculator-weight-unit {
         flex-basis: 76px !important;
         width: 76px !important;
@@ -9984,7 +10015,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=408">
+<link rel="manifest" href="manifest.json?v=409">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10039,7 +10070,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.08</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.09</span></div>
     </div>
   </div>
 
@@ -10559,7 +10590,7 @@
         <div class="pallet-calculator-overlay hidden" id="palletCalculatorOverlay" role="dialog" aria-modal="true" aria-labelledby="palletCalculatorDialogTitle">
           <section class="pallet-calculator-dialog">
             <div class="pallet-calculator-dialog-header">
-              <div><div class="small" id="palletCalculatorDialogLabel">Розрахунок</div><h3 id="palletCalculatorDialogTitle">Перехідний піддон</h3></div>
+              <div class="pallet-calculator-dialog-heading"><div class="small" id="palletCalculatorDialogLabel">Розрахунок</div><h3 id="palletCalculatorDialogTitle">Перехідний піддон</h3></div>
               <div class="pallet-calculator-dialog-header-actions">
                 <button type="button" class="pallet-calculator-save-defaults hidden" id="savePalletCalculatorProductDefaultsBtn">Зберегти типові значення</button>
                 <button type="button" class="pallet-calculator-format-icon hidden" id="savePalletCalculatorFormatBtn" aria-label="Зберегти формат" title="Зберегти формат">💾</button>
@@ -11498,7 +11529,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.08</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.09</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11523,6 +11554,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.09</h3>
+          <ul>
+            <li>мобільну шапку калькулятора перебудовано для повного й читабельного відображення назви найменування.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.08</h3>
           <ul>
@@ -13507,13 +13544,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=408"></script>
+<script src="./assets/decimen-optical-transfer.js?v=409"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.08";
+  const APP_VERSION = "4.09";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22810,7 +22847,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=408")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=409")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
