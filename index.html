@@ -10052,6 +10052,46 @@
     .shift-stats-row span { display: block; }
     .shift-stats-row small { display: block; margin-top: 3px; color: var(--muted); }
     .shift-stats-value { font-weight: 850; text-align: right; }
+    .shift-details-content { display: grid; gap: 8px; }
+    .shift-details-type {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      font-weight: 850;
+    }
+    .shift-details-type::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--shift-details-color, var(--primary-bg));
+    }
+    .shift-details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .shift-details-item {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+      text-align: center;
+    }
+    .shift-details-item span,
+    .shift-details-item strong { display: block; }
+    .shift-details-item span { color: var(--muted); font-size: 10px; }
+    .shift-details-item strong { margin-top: 4px; overflow-wrap: anywhere; font-size: 13px; }
+    .shift-details-note {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-deep);
+    }
+    .shift-details-note span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; }
+    .shift-details-note p { margin: 0; line-height: 1.45; overflow-wrap: anywhere; white-space: pre-wrap; }
     .shift-analytics-periods {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -10316,7 +10356,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=419">
+<link rel="manifest" href="manifest.json?v=420">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10371,7 +10411,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.19</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.20</span></div>
     </div>
   </div>
 
@@ -11017,6 +11057,17 @@
             <div class="shift-stats-content" id="shiftStatsContent"></div>
             <div class="shift-editor-actions">
               <button type="button" class="secondary" id="closeShiftStatsBtn">Закрити</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="shiftDetailsOverlay" role="dialog" aria-modal="true" aria-labelledby="shiftDetailsTitle">
+          <section class="shift-editor-panel">
+            <h3 id="shiftDetailsTitle">Інформація про зміну</h3>
+            <div class="shift-details-content" id="shiftDetailsContent"></div>
+            <div class="shift-editor-actions">
+              <button type="button" id="editShiftDetailsBtn">Редагувати</button>
+              <button type="button" class="secondary" id="closeShiftDetailsBtn">Закрити</button>
             </div>
           </section>
         </div>
@@ -11870,7 +11921,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.19</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.20</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11896,6 +11947,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.20</h3>
+          <ul>
+            <li>збережений день у «Графіку змін» тепер відкривається в інформаційному режимі з часом, годинами, оплатою та приміткою;</li>
+            <li>редагування збереженої зміни запускається окремою кнопкою;</li>
+            <li>після збереження зміни вікно автоматично закривається.</li>
+          </ul>
+
           <h3>Версія 4.19</h3>
           <ul>
             <li>у «Графіку змін» додано окремий пункт «Статистика роботи»;</li>
@@ -13946,14 +14004,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=419"></script>
-<script src="./firebase-config.js?v=419"></script>
+<script src="./assets/decimen-optical-transfer.js?v=420"></script>
+<script src="./firebase-config.js?v=420"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.19";
+  const APP_VERSION = "4.20";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23289,7 +23347,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=419")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=420")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25556,6 +25614,7 @@
     try { localStorage.setItem(SHIFT_CALENDAR_VIEW_KEY, view); } catch (error) {}
     closeShiftEditor();
     closeShiftStats();
+    closeShiftDetails();
     renderShiftSchedule();
   }
 
@@ -25745,6 +25804,44 @@
 
   function closeShiftStats() {
     document.getElementById("shiftStatsOverlay")?.classList.add("hidden");
+  }
+
+  function openShiftDetails(date) {
+    const entry = shiftScheduleState.entries[date];
+    const overlay = document.getElementById("shiftDetailsOverlay");
+    const title = document.getElementById("shiftDetailsTitle");
+    const content = document.getElementById("shiftDetailsContent");
+    if (!entry || !overlay || !title || !content) return;
+    const dateLabel = new Date(`${date}T12:00:00`).toLocaleDateString("uk-UA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const hours = calculateShiftEntryHours(entry);
+    const pay = calculateShiftEntryPay(entry);
+    const breakLabel = entry.isDayOff ? "—" : `${formatShiftNumber(entry.breakHours || 0)} год`;
+    title.textContent = dateLabel;
+    content.innerHTML = `
+      <div class="shift-details-type" style="--shift-details-color:${escapeHtml(entry.color || "#8b7ad1")}">${escapeHtml(entry.typeName || (entry.isDayOff ? "Вихідний" : "Зміна"))}</div>
+      <div class="shift-details-grid">
+        <div class="shift-details-item"><span>Робочий час</span><strong>${entry.isDayOff ? "Вихідний" : `${escapeHtml(entry.start || "—")} — ${escapeHtml(entry.end || "—")}`}</strong></div>
+        <div class="shift-details-item"><span>Відпрацьовано</span><strong>${formatShiftNumber(hours)} год</strong></div>
+        <div class="shift-details-item"><span>Перерва</span><strong>${escapeHtml(breakLabel)}</strong></div>
+        <div class="shift-details-item"><span>Нараховано</span><strong>${escapeHtml(formatShiftMoney(pay, entry.currency))}</strong></div>
+      </div>
+      <div class="shift-details-note"><span>Примітка</span><p>${entry.note ? escapeHtml(entry.note) : "Немає примітки"}</p></div>`;
+    overlay.dataset.shiftDate = date;
+    overlay.classList.remove("hidden");
+  }
+
+  function closeShiftDetails() {
+    const overlay = document.getElementById("shiftDetailsOverlay");
+    if (!overlay) return;
+    overlay.classList.add("hidden");
+    delete overlay.dataset.shiftDate;
+  }
+
+  function editShiftFromDetails() {
+    const date = document.getElementById("shiftDetailsOverlay")?.dataset.shiftDate;
+    if (!date || !shiftScheduleState.entries[date]) return;
+    closeShiftDetails();
+    openShiftEditor(date);
   }
 
   function getShiftAnalyticsGroups(period = shiftAnalyticsPeriod) {
@@ -25994,7 +26091,7 @@
     };
     saveShiftScheduleState();
     renderShiftSchedule();
-    openShiftEditor(date);
+    closeShiftEditor();
     toast("Зміну збережено");
   }
 
@@ -27037,6 +27134,7 @@
       shiftCalendarMonth = new Date(shiftCalendarMonth.getFullYear(), shiftCalendarMonth.getMonth() + direction, 1);
     }
     closeShiftEditor();
+    closeShiftDetails();
     renderShiftSchedule();
   }
   document.getElementById("previousShiftMonthBtn").addEventListener("click", () => navigateShiftCalendar(-1));
@@ -27067,7 +27165,11 @@
       return;
     }
     const day = event.target.closest("[data-shift-date]");
-    if (day) openShiftEditor(day.dataset.shiftDate);
+    if (day) {
+      const date = day.dataset.shiftDate;
+      if (shiftScheduleState.entries[date]) openShiftDetails(date);
+      else openShiftEditor(date);
+    }
   });
   document.getElementById("shiftEditorType").addEventListener("change", syncShiftEditorFromType);
   ["shiftEditorStart", "shiftEditorEnd", "shiftEditorBreak", "shiftEditorRate", "shiftEditorCurrency"].forEach(id => {
@@ -27100,6 +27202,11 @@
   document.getElementById("closeShiftStatsBtn").addEventListener("click", closeShiftStats);
   document.getElementById("shiftStatsOverlay").addEventListener("click", event => {
     if (event.target === event.currentTarget) closeShiftStats();
+  });
+  document.getElementById("editShiftDetailsBtn").addEventListener("click", editShiftFromDetails);
+  document.getElementById("closeShiftDetailsBtn").addEventListener("click", closeShiftDetails);
+  document.getElementById("shiftDetailsOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closeShiftDetails();
   });
   document.getElementById("addShiftTypeBtn").addEventListener("click", addShiftType);
   document.getElementById("shiftTypeList").addEventListener("click", event => {
