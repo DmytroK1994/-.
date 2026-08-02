@@ -2054,17 +2054,24 @@
       display: none;
     }
     .drawer-close-btn {
-      width: auto;
-      min-height: 38px;
-      padding: 8px 12px;
+      width: 30px;
+      min-width: 30px;
+      height: 30px;
+      min-height: 30px;
+      padding: 0;
       margin: 0;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: var(--surface);
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
       color: var(--text);
       box-shadow: none;
-      font-size: 13px;
+      font-size: 21px;
+      font-weight: 500;
+      line-height: 1;
+      opacity: .56;
     }
+    .drawer-close-btn:hover,
+    .drawer-close-btn:focus-visible { background: var(--surface-deep); opacity: 1; }
     html.mobile-device .drawer-close-btn {
       display: none;
     }
@@ -10398,10 +10405,10 @@
       .drawer .drawer-close-btn {
         grid-column: 3;
         display: grid !important;
-        width: 40px;
-        min-width: 40px;
-        height: 40px;
-        min-height: 40px;
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        min-height: 32px;
         margin: 0;
         padding: 0;
         place-items: center;
@@ -10410,9 +10417,10 @@
         background: transparent;
         color: var(--text);
         box-shadow: none;
-        font-size: 27px;
+        font-size: 22px;
         font-weight: 500;
         line-height: 1;
+        opacity: .56;
       }
       #shiftScheduleView {
         display: grid;
@@ -10496,7 +10504,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=427">
+<link rel="manifest" href="manifest.json?v=428">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10551,7 +10559,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.27</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.28</span></div>
     </div>
   </div>
 
@@ -12070,7 +12078,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.27</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.28</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12096,6 +12104,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.28</h3>
+          <ul>
+            <li>у правому верхньому куті меню додано компактний ненав’язливий хрестик;</li>
+            <li>хрестик закриває лише меню, не змінюючи відкритий розділ застосунку.</li>
+          </ul>
+
           <h3>Версія 4.27</h3>
           <ul>
             <li>шапку «Графіка змін» зроблено нижчою та компактнішою;</li>
@@ -14197,14 +14211,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=427"></script>
-<script src="./firebase-config.js?v=427"></script>
+<script src="./assets/decimen-optical-transfer.js?v=428"></script>
+<script src="./firebase-config.js?v=428"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.27";
+  const APP_VERSION = "4.28";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23542,7 +23556,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=427")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=428")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -26818,7 +26832,7 @@
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
   });
-  document.getElementById("closeMenuBtn").addEventListener("click", dismissMenuToHome);
+  document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
   document.getElementById("drawerBg").addEventListener("click", dismissMenuToHome);
   document.getElementById("bottomBackBtn").addEventListener("click", navigateBottomBack);
   document.getElementById("bottomHomeBtn").addEventListener("click", () => showPage("today", { fromBack: true }));
