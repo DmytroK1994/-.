@@ -8813,7 +8813,7 @@
     }
     .pallet-calculator-format-search-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 38px 38px;
+      grid-template-columns: minmax(0, 1fr);
       gap: 7px;
       align-items: center;
     }
@@ -8873,7 +8873,7 @@
     .pallet-calculator-search > label,
     .pallet-calculator-field label {
       display: block;
-      margin: 0 0 5px;
+      margin: 0 0 9px;
       color: var(--muted);
       font-size: 11px;
       font-weight: 800;
@@ -8884,6 +8884,15 @@
       width: 100%;
       min-width: 0;
       margin: 0;
+    }
+    .pallet-calculator-field input,
+    .pallet-calculator-search input,
+    .pallet-calculator-format-search input,
+    .pallet-calculator-format-name input {
+      min-height: 36px !important;
+      height: 36px !important;
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
     }
     .pallet-calculator-results {
       position: absolute;
@@ -8924,7 +8933,8 @@
     .pallet-calculator-field.full { grid-column: 1 / -1; }
     .pallet-calculator-field-heading {
       display: flex;
-      min-height: 28px;
+      min-height: 24px;
+      margin-bottom: 9px;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
@@ -8934,6 +8944,11 @@
       flex: 0 0 96px !important;
       width: 96px !important;
       max-width: 96px !important;
+      min-height: 22px !important;
+      height: 22px !important;
+      padding-top: 1px !important;
+      padding-bottom: 1px !important;
+      font-size: 10px !important;
     }
     .pallet-calculator-plan { margin-top: 2px; }
     .pallet-calculator-submit { width: 100%; margin: 13px 0 0; }
@@ -8961,6 +8976,7 @@
     }
     .pallet-calculator-summary-card strong { display: block; font-size: clamp(23px, 7vw, 34px); line-height: 1; }
     .pallet-calculator-summary-card span { display: block; margin-top: 6px; color: var(--muted); font-size: 10px; line-height: 1.25; }
+    .pallet-calculator-summary-card.full { grid-column: 1 / -1; }
     .pallet-calculator-flow { display: grid; gap: 6px; margin-top: 12px; }
     .pallet-calculator-step {
       display: grid;
@@ -8987,12 +9003,132 @@
     }
     .pallet-calculator-step strong { display: block; margin-bottom: 2px; }
     .pallet-calculator-back { width: 100%; margin: 0; }
+    .pallet-calculator-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 440;
+      display: grid;
+      padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+      place-items: center;
+      overflow: auto;
+      background: rgba(10, 16, 25, .14);
+      backdrop-filter: blur(9px) saturate(1.05);
+      -webkit-backdrop-filter: blur(9px) saturate(1.05);
+    }
+    .pallet-calculator-overlay.hidden { display: none; }
+    .pallet-calculator-dialog {
+      width: min(100%, 760px);
+      max-height: calc(100dvh - 20px);
+      overflow: auto;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: var(--surface);
+      box-shadow: 0 22px 60px var(--popover-shadow);
+    }
+    .pallet-calculator-dialog-header {
+      display: flex;
+      min-width: 0;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+    .pallet-calculator-dialog-header h3 {
+      margin: 2px 0 0;
+      overflow-wrap: anywhere;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+    .pallet-calculator-dialog-header-actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 4px;
+    }
+    .pallet-calculator-save-defaults {
+      width: auto !important;
+      min-width: 0 !important;
+      min-height: 34px !important;
+      margin: 0 !important;
+      padding: 6px 9px !important;
+      font-size: 10px !important;
+      line-height: 1.1;
+    }
+    .pallet-calculator-dialog-parameters {
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface);
+    }
+    .pallet-calculator-format-name {
+      display: block;
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .pallet-calculator-format-name input { width: 100%; margin-top: 9px; }
+    .pallet-calculator-settings-panel {
+      display: grid;
+      width: 100%;
+      gap: 10px;
+    }
+    .pallet-calculator-settings-list { display: grid; gap: 8px; }
+    .pallet-calculator-settings-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 40px;
+      gap: 7px;
+      align-items: center;
+      padding: 7px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+    .pallet-calculator-settings-row > button:first-child {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 8px 10px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      text-align: left;
+    }
+    .pallet-calculator-settings-delete {
+      display: grid;
+      width: 40px !important;
+      min-width: 40px !important;
+      height: 40px;
+      min-height: 40px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      place-items: center;
+      border: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    .pallet-calculator-settings-empty {
+      padding: 18px 10px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
     @media (max-width: 520px) {
       .pallet-calculator-card,
       .pallet-calculator-result { border-radius: 16px; }
       .pallet-calculator-card { padding: 11px; }
       .pallet-calculator-fields { gap: 8px; }
-      .pallet-calculator-field label { min-height: 26px; }
+      .pallet-calculator-field label { min-height: 30px; }
+      .pallet-calculator-dialog { padding: 10px; border-radius: 16px; }
+      .pallet-calculator-dialog-parameters { padding: 9px; }
+      .pallet-calculator-weight-unit {
+        flex-basis: 76px !important;
+        width: 76px !important;
+        max-width: 76px !important;
+      }
     }
     .shift-tool-header-actions,
     .shift-month-navigation,
@@ -9587,7 +9723,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=398">
+<link rel="manifest" href="manifest.json?v=399">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9642,7 +9778,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.98</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.99</span></div>
     </div>
   </div>
 
@@ -10121,51 +10257,64 @@
 
       <section id="palletCalculatorView" class="hidden">
         <div class="pallet-calculator-shell">
-          <div class="pallet-calculator-card">
-            <section class="pallet-calculator-section pallet-calculator-search-section" data-pallet-calculator-section="search">
-              <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="search" aria-expanded="true"><span>Пошук за найменуванням</span><span class="pallet-calculator-section-mark">−</span></button>
-              <div class="pallet-calculator-section-body">
-                <div class="pallet-calculator-search">
-                  <label for="palletCalculatorProductSearch">Пошук</label>
-                  <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Пошук найменування" />
-                  <input id="palletCalculatorProductId" type="hidden" />
-                  <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
-                </div>
+          <section class="pallet-calculator-section pallet-calculator-search-section" data-pallet-calculator-section="search">
+            <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="search" aria-expanded="true"><span>Пошук за найменуванням</span><span class="pallet-calculator-section-mark">−</span></button>
+            <div class="pallet-calculator-section-body">
+              <div class="pallet-calculator-search">
+                <label for="palletCalculatorProductSearch">Пошук</label>
+                <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Пошук найменування" />
+                <input id="palletCalculatorProductId" type="hidden" />
+                <div class="pallet-calculator-results hidden" id="palletCalculatorSearchResults"></div>
               </div>
-            </section>
-            <section class="pallet-calculator-section" data-pallet-calculator-section="formats">
-              <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="formats" aria-expanded="true"><span>Збережені формати</span><span class="pallet-calculator-section-mark">−</span></button>
-              <div class="pallet-calculator-section-body pallet-calculator-format-panel">
-                <div class="pallet-calculator-format-search-row">
-                  <div class="pallet-calculator-format-search">
-                    <input id="palletCalculatorFormatSearch" type="search" autocomplete="off" maxlength="80" placeholder="Пошук або назва нового формату" aria-label="Пошук збереженого формату" />
-                    <input id="palletCalculatorSelectedFormat" type="hidden" />
-                    <button type="button" class="pallet-calculator-format-clear hidden" id="clearPalletCalculatorFormatBtn" aria-label="Очистити поле">×</button>
-                    <div class="pallet-calculator-results pallet-calculator-format-results hidden" id="palletCalculatorFormatResults"></div>
-                  </div>
-                  <button type="button" class="pallet-calculator-format-icon" id="savePalletCalculatorFormatBtn" aria-label="Зберегти формат" title="Зберегти формат">💾</button>
-                  <button type="button" class="pallet-calculator-format-icon delete" id="deletePalletCalculatorFormatBtn" aria-label="Видалити формат" title="Видалити формат"><span class="product-trash-icon" aria-hidden="true"></span></button>
-                </div>
-              </div>
-            </section>
-            <section class="pallet-calculator-section" data-pallet-calculator-section="parameters">
-              <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="parameters" aria-expanded="true"><span>Параметри розрахунку</span><span class="pallet-calculator-section-mark">−</span></button>
-              <div class="pallet-calculator-section-body">
-                <div class="pallet-calculator-fields">
-                  <div class="pallet-calculator-field"><label for="palletCalculatorBoxesPerPallet">Коробок у піддоні</label><input id="palletCalculatorBoxesPerPallet" type="number" inputmode="numeric" min="1" /></div>
-                  <div class="pallet-calculator-field"><label for="palletCalculatorPacksPerBox">Пачок у коробці</label><input id="palletCalculatorPacksPerBox" type="number" inputmode="numeric" min="1" /></div>
-                  <div class="pallet-calculator-field"><div class="pallet-calculator-field-heading"><label for="palletCalculatorPackWeight">Вага однієї пачки</label><select id="palletCalculatorPackWeightUnit" class="entry-section-unit-select pallet-calculator-weight-unit" aria-label="Одиниця ваги пачки"><option value="g">Грами</option><option value="kg">Кілограми</option></select></div><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" min="0" step="0.001" /></div>
-                  <div class="pallet-calculator-field"><label for="palletCalculatorTransitionBoxes">Коробок уже в перехідному піддоні</label><input id="palletCalculatorTransitionBoxes" type="number" inputmode="numeric" min="0" value="0" /></div>
-                  <div class="pallet-calculator-field full"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" min="0" step="0.01" /></div>
-                </div>
-              </div>
-            </section>
-            <div class="pallet-calculator-actions">
-              <button type="button" id="calculatePalletTransitionBtn">Розрахувати</button>
             </div>
-          </div>
-          <div class="pallet-calculator-result hidden" id="palletCalculatorResult" aria-live="polite"></div>
+          </section>
+          <section class="pallet-calculator-section" data-pallet-calculator-section="formats">
+            <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="formats" aria-expanded="true"><span>Пошук за збереженими форматами</span><span class="pallet-calculator-section-mark">−</span></button>
+            <div class="pallet-calculator-section-body pallet-calculator-format-panel">
+              <div class="pallet-calculator-format-search-row">
+                <div class="pallet-calculator-format-search">
+                  <input id="palletCalculatorFormatSearch" type="search" autocomplete="off" maxlength="80" placeholder="Пошук збереженого формату" aria-label="Пошук збереженого формату" />
+                  <input id="palletCalculatorSelectedFormat" type="hidden" />
+                  <button type="button" class="pallet-calculator-format-clear hidden" id="clearPalletCalculatorFormatBtn" aria-label="Очистити поле">×</button>
+                  <div class="pallet-calculator-results pallet-calculator-format-results hidden" id="palletCalculatorFormatResults"></div>
+                </div>
+              </div>
+            </div>
+          </section>
           <button type="button" class="secondary pallet-calculator-back" id="backFromPalletCalculatorBtn">Назад</button>
+        </div>
+
+        <div class="pallet-calculator-overlay hidden" id="palletCalculatorOverlay" role="dialog" aria-modal="true" aria-labelledby="palletCalculatorDialogTitle">
+          <section class="pallet-calculator-dialog">
+            <div class="pallet-calculator-dialog-header">
+              <div><div class="small" id="palletCalculatorDialogLabel">Розрахунок</div><h3 id="palletCalculatorDialogTitle">Перехідний піддон</h3></div>
+              <div class="pallet-calculator-dialog-header-actions">
+                <button type="button" class="pallet-calculator-save-defaults hidden" id="savePalletCalculatorProductDefaultsBtn">Зберегти типові значення</button>
+                <button type="button" class="pallet-calculator-format-icon hidden" id="savePalletCalculatorFormatBtn" aria-label="Зберегти формат" title="Зберегти формат">💾</button>
+                <button type="button" class="dialog-icon-close" id="closePalletCalculatorDialogBtn" aria-label="Закрити">×</button>
+              </div>
+            </div>
+            <label class="pallet-calculator-format-name hidden" id="palletCalculatorFormatNameField" for="palletCalculatorEditorFormatName">Назва формату<input id="palletCalculatorEditorFormatName" autocomplete="off" maxlength="80" placeholder="Наприклад: 216 г · 16 × 84" /></label>
+            <div class="pallet-calculator-dialog-parameters">
+              <div class="pallet-calculator-fields">
+                <div class="pallet-calculator-field"><label for="palletCalculatorBoxesPerPallet">Коробок у піддоні</label><input id="palletCalculatorBoxesPerPallet" type="number" inputmode="numeric" min="1" /></div>
+                <div class="pallet-calculator-field"><label for="palletCalculatorPacksPerBox">Пачок у коробці</label><input id="palletCalculatorPacksPerBox" type="number" inputmode="numeric" min="1" /></div>
+                <div class="pallet-calculator-field"><div class="pallet-calculator-field-heading"><label for="palletCalculatorPackWeight">Вага однієї пачки</label><select id="palletCalculatorPackWeightUnit" class="entry-section-unit-select pallet-calculator-weight-unit" aria-label="Одиниця ваги пачки"><option value="g">Грами</option><option value="kg">Кілограми</option></select></div><input id="palletCalculatorPackWeight" type="number" inputmode="decimal" min="0" step="0.001" /></div>
+                <div class="pallet-calculator-field" id="palletCalculatorTransitionField"><label for="palletCalculatorTransitionBoxes">Коробок уже в перехідному піддоні</label><input id="palletCalculatorTransitionBoxes" type="number" inputmode="numeric" min="0" value="0" /></div>
+                <div class="pallet-calculator-field full" id="palletCalculatorPlanField"><label for="palletCalculatorPlanKg">План, кг</label><input id="palletCalculatorPlanKg" type="number" inputmode="decimal" min="0" step="0.01" /></div>
+              </div>
+            </div>
+            <div class="pallet-calculator-actions" id="palletCalculatorCalculationActions"><button type="button" id="calculatePalletTransitionBtn">Розрахувати</button></div>
+            <div class="pallet-calculator-result hidden" id="palletCalculatorResult" aria-live="polite"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="palletCalculatorSettingsView" class="hidden">
+        <div class="pallet-calculator-settings-panel">
+          <div class="pallet-calculator-settings-list" id="palletCalculatorSettingsList"></div>
+          <button type="button" id="addPalletCalculatorFormatBtn">+ Додати формат</button>
+          <button type="button" class="secondary pallet-calculator-back" id="backToPalletCalculatorBtn">Назад</button>
         </div>
       </section>
 
@@ -11069,7 +11218,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.98</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.99</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11094,6 +11243,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.99</h3>
+          <ul>
+            <li>калькулятор перехідного піддона перебудовано: два окремі пошуки відкривають компактне вікно розрахунку, формати керуються через шестерню, а типові параметри можна зберігати в найменування.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.98</h3>
           <ul>
@@ -13018,13 +13173,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=398"></script>
+<script src="./assets/decimen-optical-transfer.js?v=399"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.98";
+  const APP_VERSION = "3.99";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14534,6 +14689,7 @@
   const orderWarehouseGroupOpenState = new Map();
   let workspaceMode = getWorkspaceModePreference();
   let shiftScheduleState = loadShiftScheduleState();
+  let palletCalculatorDialogContext = { type: "", id: "" };
   let shiftCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 12);
   let shiftCalendarView = (() => {
     try {
@@ -15874,6 +16030,8 @@
       product.defaultDirectUnit = normalizeMeasurementUnit(product.defaultDirectUnit || product.defaultUnit);
       product.defaultBoxesPerPallet = Math.max(0, Number(product.defaultBoxesPerPallet) || 0);
       product.defaultPacksPerBox = Math.max(0, Number(product.defaultPacksPerBox) || 0);
+      product.defaultPackWeight = Math.max(0, Number(product.defaultPackWeight) || 0);
+      product.defaultPackWeightUnit = product.defaultPackWeightUnit === "kg" ? "kg" : "g";
     });
     normalized.days.forEach(day => {
       const inventoryWarehouse = normalized.warehouses.find(warehouse => warehouse.id === day.warehouseId);
@@ -22228,7 +22386,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=398")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=399")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -23821,6 +23979,7 @@
     document.getElementById("shiftScheduleView")?.classList.toggle("hidden", lastTool !== "shifts");
     document.getElementById("palletCalculatorView")?.classList.toggle("hidden", lastTool !== "palletCalculator");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     if (lastTool === "desktop") initializeAdditionalDesktop();
     else if (lastTool === "shifts") renderShiftSchedule();
     else preparePalletCalculator();
@@ -23835,8 +23994,16 @@
     return workspaceIsAdditional() && !document.getElementById("shiftEditorOverlay")?.classList.contains("hidden");
   }
 
+  function palletCalculatorSettingsAreOpen() {
+    return workspaceIsAdditional() && !document.getElementById("palletCalculatorSettingsView")?.classList.contains("hidden");
+  }
+
+  function palletCalculatorDialogIsOpen() {
+    return workspaceIsAdditional() && !document.getElementById("palletCalculatorOverlay")?.classList.contains("hidden");
+  }
+
   function hasAdditionalBackDestination() {
-    return workspaceIsAdditional() && (getAdditionalLastTool() !== "desktop" || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen());
+    return workspaceIsAdditional() && (getAdditionalLastTool() !== "desktop" || shiftSettingsAreOpen() || shiftEditorIsOpen() || shiftStatsAreOpen() || palletCalculatorSettingsAreOpen() || palletCalculatorDialogIsOpen());
   }
 
   function updateAdditionalHeaderUI() {
@@ -23850,7 +24017,9 @@
       ? "Графік змін"
       : (activeTool === "palletCalculator" ? "Перехідний піддон" : "Додатково");
     document.body.classList.toggle("additional-tool-open", toolOpen);
-    document.body.classList.toggle("additional-tool-settings-active", activeTool === "shifts" && !shiftSettingsAreOpen());
+    const settingsAvailable = (activeTool === "shifts" && !shiftSettingsAreOpen())
+      || (activeTool === "palletCalculator" && !palletCalculatorSettingsAreOpen() && !palletCalculatorDialogIsOpen());
+    document.body.classList.toggle("additional-tool-settings-active", settingsAvailable);
     const switcherLabel = document.getElementById("workspaceSwitcherLabel");
     if (switcherLabel) switcherLabel.textContent = label;
     const todayMenuButton = document.querySelector("#drawer .menu-btn[data-page='today']");
@@ -23864,6 +24033,7 @@
   function openCurrentAdditionalToolSettings() {
     if (!workspaceIsAdditional()) return;
     if (getAdditionalLastTool() === "shifts") openShiftSettings();
+    if (getAdditionalLastTool() === "palletCalculator") openPalletCalculatorSettings();
   }
 
   function navigateAdditionalBack() {
@@ -23878,6 +24048,14 @@
     }
     if (shiftSettingsAreOpen()) {
       openShiftSchedule();
+      return true;
+    }
+    if (palletCalculatorDialogIsOpen()) {
+      closePalletCalculatorDialog();
+      return true;
+    }
+    if (palletCalculatorSettingsAreOpen()) {
+      openPalletCalculator();
       return true;
     }
     if (getAdditionalLastTool() === "shifts") {
@@ -23898,6 +24076,8 @@
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    closePalletCalculatorDialog();
     document.getElementById("additionalDesktopView")?.classList.remove("hidden");
     initializeAdditionalDesktop();
     updateAdditionalHeaderUI();
@@ -23910,6 +24090,8 @@
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    closePalletCalculatorDialog();
     document.getElementById("shiftScheduleView")?.classList.remove("hidden");
     renderShiftSchedule();
     updateAdditionalHeaderUI();
@@ -23922,8 +24104,21 @@
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.remove("hidden");
     preparePalletCalculator();
+    updateAdditionalHeaderUI();
+  }
+
+  function openPalletCalculatorSettings() {
+    setAdditionalLastTool("palletCalculator");
+    closePalletCalculatorDialog();
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.remove("hidden");
+    renderPalletCalculatorSettings();
     updateAdditionalHeaderUI();
   }
 
@@ -23934,6 +24129,15 @@
     } catch (error) {
       return {};
     }
+  }
+
+  function renderPalletCalculatorSettings() {
+    const list = document.getElementById("palletCalculatorSettingsList");
+    if (!list) return;
+    const names = Object.keys(loadPalletCalculatorFormats()).sort((a, b) => a.localeCompare(b, "uk", { sensitivity: "base", numeric: true }));
+    list.innerHTML = names.length
+      ? names.map(name => `<div class="pallet-calculator-settings-row"><button type="button" data-pallet-settings-edit="${escapeHtml(name)}">${escapeHtml(name)}</button><button type="button" class="pallet-calculator-settings-delete" data-pallet-settings-delete="${escapeHtml(name)}" aria-label="Видалити формат ${escapeHtml(name)}"><span class="product-trash-icon" aria-hidden="true"></span></button></div>`).join("")
+      : `<div class="pallet-calculator-settings-empty">Збережених форматів поки немає</div>`;
   }
 
   function renderPalletCalculatorFormats(query = "") {
@@ -23965,14 +24169,14 @@
   }
 
   function savePalletCalculatorFormat() {
-    const name = document.getElementById("palletCalculatorFormatSearch").value.trim();
+    const name = document.getElementById("palletCalculatorEditorFormatName").value.trim();
     const boxesPerPallet = parseInt(document.getElementById("palletCalculatorBoxesPerPallet").value, 10);
     const packsPerBox = parseInt(document.getElementById("palletCalculatorPacksPerBox").value, 10);
     const packWeightGrams = Number(document.getElementById("palletCalculatorPackWeight").value);
     const packWeightUnit = document.getElementById("palletCalculatorPackWeightUnit").value === "kg" ? "kg" : "g";
     if (!name) {
       toast("Введіть назву формату", true);
-      document.getElementById("palletCalculatorFormatSearch")?.focus();
+      document.getElementById("palletCalculatorEditorFormatName")?.focus();
       return;
     }
     if (!(boxesPerPallet > 0) || !(packsPerBox > 0) || !(packWeightGrams > 0)) {
@@ -23982,9 +24186,12 @@
     const formats = loadPalletCalculatorFormats();
     const existingName = Object.keys(formats).find(item => item.toLocaleLowerCase("uk") === name.toLocaleLowerCase("uk"));
     const savedName = existingName || name;
+    const previousName = palletCalculatorDialogContext.type === "format-settings" ? palletCalculatorDialogContext.id : "";
+    if (previousName && previousName !== savedName) delete formats[previousName];
     formats[savedName] = { boxesPerPallet, packsPerBox, packWeightGrams, packWeightUnit };
     try { localStorage.setItem(PALLET_CALCULATOR_FORMATS_KEY, JSON.stringify(formats)); } catch (error) {}
-    selectPalletCalculatorFormat(savedName);
+    closePalletCalculatorDialog();
+    renderPalletCalculatorSettings();
     toast(`Формат «${savedName}» збережено`);
   }
 
@@ -24004,14 +24211,16 @@
     document.getElementById("palletCalculatorSelectedFormat").value = name;
     document.getElementById("palletCalculatorFormatResults").classList.add("hidden");
     updatePalletCalculatorFormatClearButton();
-    loadPalletCalculatorFormat(name);
+    openPalletCalculatorDialog("format", name);
   }
 
-  async function deletePalletCalculatorFormat() {
+  async function deletePalletCalculatorFormat(requestedName = "") {
     const formats = loadPalletCalculatorFormats();
     const selectedName = document.getElementById("palletCalculatorSelectedFormat").value;
     const typedName = document.getElementById("palletCalculatorFormatSearch").value.trim();
-    const name = Object.prototype.hasOwnProperty.call(formats, selectedName)
+    const name = Object.prototype.hasOwnProperty.call(formats, requestedName)
+      ? requestedName
+      : Object.prototype.hasOwnProperty.call(formats, selectedName)
       ? selectedName
       : Object.keys(formats).find(item => item.toLocaleLowerCase("uk") === typedName.toLocaleLowerCase("uk"));
     if (!name) {
@@ -24028,8 +24237,73 @@
     if (!confirmed) return;
     delete formats[name];
     try { localStorage.setItem(PALLET_CALCULATOR_FORMATS_KEY, JSON.stringify(formats)); } catch (error) {}
-    clearPalletCalculatorFormat();
+    if (selectedName === name || typedName === name) clearPalletCalculatorFormat();
+    renderPalletCalculatorSettings();
     toast("Формат видалено");
+  }
+
+  function openPalletCalculatorDialog(type, id = "") {
+    const product = type === "product" ? state.products.find(item => item.id === id) : null;
+    const format = type.startsWith("format") && id ? loadPalletCalculatorFormats()[id] : null;
+    if (type === "product" && !product) return;
+    if (type === "format" && !format) return;
+    palletCalculatorDialogContext = { type, id };
+    const title = document.getElementById("palletCalculatorDialogTitle");
+    const label = document.getElementById("palletCalculatorDialogLabel");
+    const nameField = document.getElementById("palletCalculatorFormatNameField");
+    const nameInput = document.getElementById("palletCalculatorEditorFormatName");
+    const saveDefaults = document.getElementById("savePalletCalculatorProductDefaultsBtn");
+    const saveFormat = document.getElementById("savePalletCalculatorFormatBtn");
+    const settingsMode = type === "format-settings";
+    label.textContent = type === "product" ? "Найменування" : (settingsMode ? "Налаштування формату" : "Збережений формат");
+    title.textContent = product?.name || id || "Новий формат";
+    nameField.classList.toggle("hidden", !settingsMode);
+    saveDefaults.classList.toggle("hidden", type !== "product");
+    saveFormat.classList.toggle("hidden", !settingsMode);
+    document.getElementById("palletCalculatorTransitionField").classList.toggle("hidden", settingsMode);
+    document.getElementById("palletCalculatorPlanField").classList.toggle("hidden", settingsMode);
+    document.getElementById("palletCalculatorCalculationActions").classList.toggle("hidden", settingsMode);
+    nameInput.value = settingsMode ? id : "";
+    document.getElementById("palletCalculatorBoxesPerPallet").value = product?.defaultBoxesPerPallet || format?.boxesPerPallet || "";
+    document.getElementById("palletCalculatorPacksPerBox").value = product?.defaultPacksPerBox || format?.packsPerBox || "";
+    document.getElementById("palletCalculatorPackWeight").value = product?.defaultPackWeight || format?.packWeightGrams || "";
+    document.getElementById("palletCalculatorPackWeightUnit").value = (product?.defaultPackWeightUnit || format?.packWeightUnit) === "kg" ? "kg" : "g";
+    document.getElementById("palletCalculatorTransitionBoxes").value = "0";
+    document.getElementById("palletCalculatorPlanKg").value = "";
+    document.getElementById("palletCalculatorResult").classList.add("hidden");
+    document.getElementById("palletCalculatorOverlay").classList.remove("hidden");
+    if (settingsMode && !id) window.setTimeout(() => nameInput.focus(), 50);
+    updateAdditionalHeaderUI();
+  }
+
+  function closePalletCalculatorDialog() {
+    document.getElementById("palletCalculatorOverlay")?.classList.add("hidden");
+    document.getElementById("palletCalculatorResult")?.classList.add("hidden");
+    palletCalculatorDialogContext = { type: "", id: "" };
+    updateAdditionalHeaderUI();
+  }
+
+  async function savePalletCalculatorProductDefaults() {
+    const product = state.products.find(item => item.id === palletCalculatorDialogContext.id);
+    const boxesPerPallet = Math.max(0, Number(document.getElementById("palletCalculatorBoxesPerPallet").value) || 0);
+    const packsPerBox = Math.max(0, Number(document.getElementById("palletCalculatorPacksPerBox").value) || 0);
+    const packWeight = Math.max(0, Number(document.getElementById("palletCalculatorPackWeight").value) || 0);
+    const packWeightUnit = document.getElementById("palletCalculatorPackWeightUnit").value === "kg" ? "kg" : "g";
+    if (!product || boxesPerPallet <= 0 || packsPerBox <= 0 || packWeight <= 0) {
+      toast("Заповніть коробки, пачки та вагу", true);
+      return;
+    }
+    const confirmed = await showAppDialog({
+      label: "Типові значення",
+      title: `Зберегти типові значення для «${product.name}»?`,
+      message: "Коробки в піддоні, пачки в коробці та вага пачки автоматично підставлятимуться в цьому калькуляторі.",
+      confirmText: "Зберегти",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    Object.assign(product, { defaultBoxesPerPallet: boxesPerPallet, defaultPacksPerBox: packsPerBox, defaultPackWeight: packWeight, defaultPackWeightUnit: packWeightUnit });
+    save();
+    toast("Типові значення збережено в найменуванні");
   }
 
   function normalizePalletCalculatorSearchValue(value) {
@@ -24060,10 +24334,8 @@
     if (!product) return;
     document.getElementById("palletCalculatorProductId").value = product.id;
     document.getElementById("palletCalculatorProductSearch").value = product.name;
-    document.getElementById("palletCalculatorBoxesPerPallet").value = product.defaultBoxesPerPallet || "";
-    document.getElementById("palletCalculatorPacksPerBox").value = product.defaultPacksPerBox || "";
     document.getElementById("palletCalculatorSearchResults").classList.add("hidden");
-    document.getElementById("palletCalculatorResult").classList.add("hidden");
+    openPalletCalculatorDialog("product", product.id);
   }
 
   function preparePalletCalculator() {
@@ -24093,8 +24365,10 @@
   }
 
   function calculatePalletTransition() {
-    const productId = document.getElementById("palletCalculatorProductId").value;
-    const product = state.products.find(item => item.id === productId);
+    const product = palletCalculatorDialogContext.type === "product"
+      ? state.products.find(item => item.id === palletCalculatorDialogContext.id)
+      : null;
+    const sourceName = product?.name || palletCalculatorDialogContext.id || "Розрахунок";
     const planKg = Number(document.getElementById("palletCalculatorPlanKg").value);
     const boxesPerPallet = parseInt(document.getElementById("palletCalculatorBoxesPerPallet").value, 10);
     const packsPerBox = parseInt(document.getElementById("palletCalculatorPacksPerBox").value, 10);
@@ -24120,10 +24394,11 @@
     const leftoverBoxes = Math.round(totalBoxesAdjusted % boxesPerPallet);
 
     result.innerHTML = `
-      ${product ? `<div class="pallet-calculator-result-product">${escapeHtml(product.name)}</div>` : ""}
+      <div class="pallet-calculator-result-product">${escapeHtml(sourceName)}</div>
       <div class="pallet-calculator-summary">
         <div class="pallet-calculator-summary-card"><strong>${fullPallets}</strong><span>повних піддонів</span></div>
         <div class="pallet-calculator-summary-card"><strong>${leftoverBoxes}</strong><span>коробок у перехідному піддоні</span></div>
+        <div class="pallet-calculator-summary-card full"><strong>${formatPlainNumber(planKg)}</strong><span>план, кг</span></div>
       </div>
       <div class="pallet-calculator-flow" aria-label="Послідовність розрахунку">
         <div class="pallet-calculator-step"><span class="pallet-calculator-step-number">1</span><span><strong>Переводимо вагу пачки в кілограми.</strong> Одна пачка важить ${packWeightValue} ${packWeightUnit === "kg" ? "кг" : "г"}, тобто ${packWeightKg.toFixed(5)} кг. Це потрібно, бо план заданий у кілограмах.</span></div>
@@ -24881,8 +25156,20 @@
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("backToPalletCalculatorBtn").addEventListener("click", openPalletCalculator);
+  document.getElementById("addPalletCalculatorFormatBtn").addEventListener("click", () => openPalletCalculatorDialog("format-settings"));
+  document.getElementById("closePalletCalculatorDialogBtn").addEventListener("click", closePalletCalculatorDialog);
+  document.getElementById("palletCalculatorOverlay").addEventListener("click", event => {
+    if (event.target === event.currentTarget) closePalletCalculatorDialog();
+  });
+  document.getElementById("savePalletCalculatorProductDefaultsBtn").addEventListener("click", savePalletCalculatorProductDefaults);
   document.getElementById("savePalletCalculatorFormatBtn").addEventListener("click", savePalletCalculatorFormat);
-  document.getElementById("deletePalletCalculatorFormatBtn").addEventListener("click", deletePalletCalculatorFormat);
+  document.getElementById("palletCalculatorSettingsList").addEventListener("click", event => {
+    const edit = event.target.closest("[data-pallet-settings-edit]");
+    if (edit) openPalletCalculatorDialog("format-settings", edit.dataset.palletSettingsEdit);
+    const remove = event.target.closest("[data-pallet-settings-delete]");
+    if (remove) deletePalletCalculatorFormat(remove.dataset.palletSettingsDelete);
+  });
   document.getElementById("clearPalletCalculatorFormatBtn").addEventListener("click", clearPalletCalculatorFormat);
   document.getElementById("palletCalculatorFormatSearch").addEventListener("focus", event => {
     renderPalletCalculatorFormats(event.target.value);
@@ -24949,6 +25236,7 @@
   document.addEventListener("click", event => {
     if (!event.target.closest(".workspace-switcher")) closeWorkspaceDropdown();
     if (!event.target.closest(".pallet-calculator-search")) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
+    if (!event.target.closest(".pallet-calculator-format-search")) document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
     if (!event.target.closest(".order-warehouse-dropdown")) {
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
