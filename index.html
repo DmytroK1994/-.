@@ -10037,6 +10037,7 @@
       overflow: auto;
       box-shadow: 0 22px 60px var(--popover-shadow);
     }
+    #shiftStatsOverlay .shift-editor-panel { width: min(100%, 620px); }
     .shift-stats-content { display: grid; gap: 7px; }
     .shift-stats-row {
       display: grid;
@@ -10118,6 +10119,19 @@
       box-shadow: 0 3px 10px color-mix(in srgb, var(--popover-shadow) 28%, transparent);
     }
     .shift-analytics-caption { color: var(--muted); font-size: 11px; text-align: center; }
+    .shift-analytics-filter {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .shift-analytics-filter label { margin: 0; color: var(--muted); font-size: 10px; }
+    .shift-analytics-filter input { min-height: 38px; margin-top: 5px; padding: 7px 8px; font-size: 12px; }
+    .shift-analytics-filter-actions { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .shift-analytics-filter-actions button { width: 100%; min-height: 36px; margin: 0; padding: 6px 8px; font-size: 11px; }
     .shift-analytics-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
     .shift-analytics-kpi {
       min-width: 0;
@@ -10138,6 +10152,14 @@
       background: var(--surface-deep);
     }
     .shift-analytics-chart h4 { margin: 0 0 9px; font-size: 13px; }
+    .shift-analytics-chart-year {
+      margin: 10px 0 5px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .shift-analytics-chart-year:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
     .shift-analytics-currency-title { margin: 10px 0 6px; color: var(--muted); font-size: 10px; font-weight: 800; }
     .shift-analytics-chart-row {
       display: grid;
@@ -10159,6 +10181,28 @@
       transition: width .28s ease;
     }
     .shift-analytics-chart-track.pay i { background: #35a66f; }
+    .shift-analytics-details { display: grid; gap: 8px; }
+    .shift-analytics-details > h4 { margin: 4px 0 0; font-size: 14px; }
+    .shift-analytics-year-section {
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-deep);
+    }
+    .shift-analytics-year-section > h5 { margin: 0 0 7px; font-size: 15px; }
+    .shift-analytics-entry-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+    }
+    .shift-analytics-entry-row:first-of-type { border-top: 0; }
+    .shift-analytics-entry-row strong,
+    .shift-analytics-entry-row span,
+    .shift-analytics-entry-row small { display: block; }
+    .shift-analytics-entry-row small { margin-top: 3px; color: var(--muted); line-height: 1.35; }
+    .shift-analytics-entry-value { font-size: 11px; font-weight: 850; text-align: right; white-space: nowrap; }
     @media (max-width: 760px) {
       .additional-shell { padding: 9px; }
       .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -10356,7 +10400,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=420">
+<link rel="manifest" href="manifest.json?v=421">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10411,7 +10455,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.20</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.21</span></div>
     </div>
   </div>
 
@@ -11921,7 +11965,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.20</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.21</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11947,6 +11991,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.21</h3>
+          <ul>
+            <li>«Статистика роботи» стала розгорнутим звітом із вибором довільного періоду;</li>
+            <li>графіки годин і заробітку доступні за днями, тижнями, місяцями та роками;</li>
+            <li>детальний список змін розділено за роками, щоб записи різних років не змішувалися.</li>
+          </ul>
+
           <h3>Версія 4.20</h3>
           <ul>
             <li>збережений день у «Графіку змін» тепер відкривається в інформаційному режимі з часом, годинами, оплатою та приміткою;</li>
@@ -14004,14 +14055,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=420"></script>
-<script src="./firebase-config.js?v=420"></script>
+<script src="./assets/decimen-optical-transfer.js?v=421"></script>
+<script src="./firebase-config.js?v=421"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.20";
+  const APP_VERSION = "4.21";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -15536,6 +15587,8 @@
     }
   })();
   let shiftAnalyticsPeriod = "month";
+  let shiftAnalyticsDateFrom = "";
+  let shiftAnalyticsDateTo = "";
   let additionalDesktopInitialized = false;
   let currentPage = "today";
   let pageNavigationHistory = [];
@@ -23347,7 +23400,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=420")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=421")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25844,58 +25897,73 @@
     openShiftEditor(date);
   }
 
-  function getShiftAnalyticsGroups(period = shiftAnalyticsPeriod) {
+  function getShiftAnalyticsISOWeek(date) {
+    const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const weekday = target.getUTCDay() || 7;
+    target.setUTCDate(target.getUTCDate() + 4 - weekday);
+    return { year: target.getUTCFullYear(), week: getISOWeekNumber(date) };
+  }
+
+  function getShiftAnalyticsEntries(period = shiftAnalyticsPeriod) {
     const year = shiftCalendarMonth.getFullYear();
     const month = shiftCalendarMonth.getMonth();
-    const allEntries = Object.values(shiftScheduleState.entries)
+    return Object.values(shiftScheduleState.entries)
       .filter(entry => entry && !entry.isDayOff && /^\d{4}-\d{2}-\d{2}$/.test(entry.date || ""))
+      .filter(entry => !shiftAnalyticsDateFrom || entry.date >= shiftAnalyticsDateFrom)
+      .filter(entry => !shiftAnalyticsDateTo || entry.date <= shiftAnalyticsDateTo)
+      .filter(entry => {
+        if (shiftAnalyticsDateFrom || shiftAnalyticsDateTo || period === "year") return true;
+        if (period === "day") return entry.date.startsWith(`${year}-${String(month + 1).padStart(2, "0")}-`);
+        return entry.date.startsWith(`${year}-`);
+      })
       .sort((left, right) => left.date.localeCompare(right.date));
-    const makeGroup = (key, label) => ({ key, label, entries: [], hours: 0, payByCurrency: new Map() });
-    let groups = [];
-    if (period === "day") {
-      const prefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
-      const days = new Map();
-      allEntries.filter(entry => entry.date.startsWith(prefix)).forEach(entry => {
-        const date = new Date(`${entry.date}T12:00:00`);
-        days.set(entry.date, makeGroup(entry.date, date.toLocaleDateString("uk-UA", { day: "numeric", month: "short" })));
+  }
+
+  function getShiftAnalyticsGroups(period = shiftAnalyticsPeriod) {
+    const selectedYear = shiftCalendarMonth.getFullYear();
+    const entries = getShiftAnalyticsEntries(period);
+    const makeGroup = (key, label, year) => ({ key, label, year: String(year), entries: [], hours: 0, payByCurrency: new Map() });
+    const groups = new Map();
+    if (period === "month" && !shiftAnalyticsDateFrom && !shiftAnalyticsDateTo) {
+      Array.from({ length: 12 }, (_, monthIndex) => {
+        const key = `${selectedYear}-${String(monthIndex + 1).padStart(2, "0")}`;
+        groups.set(key, makeGroup(key, new Date(selectedYear, monthIndex, 1).toLocaleDateString("uk-UA", { month: "short" }), selectedYear));
       });
-      groups = Array.from(days.values());
-    } else if (period === "week") {
-      const weeks = new Map();
-      allEntries.filter(entry => entry.date.startsWith(`${year}-`)).forEach(entry => {
-        const week = getISOWeekNumber(new Date(`${entry.date}T12:00:00`));
-        const key = `${year}-W${String(week).padStart(2, "0")}`;
-        if (!weeks.has(key)) weeks.set(key, makeGroup(key, `${week}-й тиж.`));
-      });
-      groups = Array.from(weeks.values());
-    } else if (period === "year") {
-      const years = new Set(allEntries.map(entry => entry.date.slice(0, 4)));
-      years.add(String(year));
-      groups = Array.from(years).sort().map(value => makeGroup(value, value));
-    } else {
-      groups = Array.from({ length: 12 }, (_, monthIndex) => makeGroup(
-        `${year}-${String(monthIndex + 1).padStart(2, "0")}`,
-        new Date(year, monthIndex, 1).toLocaleDateString("uk-UA", { month: "short" })
-      ));
     }
-    const groupMap = new Map(groups.map(group => [group.key, group]));
-    allEntries.forEach(entry => {
+    entries.forEach(entry => {
       const date = new Date(`${entry.date}T12:00:00`);
+      const calendarYear = entry.date.slice(0, 4);
       let key = entry.date;
-      if (period === "week") key = `${date.getFullYear()}-W${String(getISOWeekNumber(date)).padStart(2, "0")}`;
-      if (period === "month") key = entry.date.slice(0, 7);
-      if (period === "year") key = entry.date.slice(0, 4);
-      const group = groupMap.get(key);
-      if (!group) return;
+      let label = date.toLocaleDateString("uk-UA", { day: "numeric", month: "short" });
+      let groupYear = calendarYear;
+      if (period === "week") {
+        const iso = getShiftAnalyticsISOWeek(date);
+        key = `${iso.year}-W${String(iso.week).padStart(2, "0")}`;
+        label = `${iso.week}-й тиж.`;
+        groupYear = String(iso.year);
+      } else if (period === "month") {
+        key = entry.date.slice(0, 7);
+        label = date.toLocaleDateString("uk-UA", { month: "short" });
+      } else if (period === "year") {
+        key = calendarYear;
+        label = calendarYear;
+      }
+      if (!groups.has(key)) groups.set(key, makeGroup(key, label, groupYear));
+      const group = groups.get(key);
       const currency = entry.currency || shiftScheduleState.currency || "UAH";
       group.entries.push(entry);
       group.hours += calculateShiftEntryHours(entry);
       group.payByCurrency.set(currency, (group.payByCurrency.get(currency) || 0) + calculateShiftEntryPay(entry));
     });
-    return groups;
+    return Array.from(groups.values()).sort((left, right) => left.key.localeCompare(right.key));
   }
 
   function shiftAnalyticsPeriodCaption(period) {
+    if (shiftAnalyticsDateFrom || shiftAnalyticsDateTo) {
+      const from = shiftAnalyticsDateFrom ? niceDate(shiftAnalyticsDateFrom) : "початку";
+      const to = shiftAnalyticsDateTo ? niceDate(shiftAnalyticsDateTo) : "сьогодні";
+      return `${from} — ${to}`;
+    }
     const year = shiftCalendarMonth.getFullYear();
     if (period === "day") return shiftCalendarMonth.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
     if (period === "week") return `тижні ${year} року`;
@@ -25906,10 +25974,14 @@
   function renderShiftAnalyticsRows(groups, valueGetter, valueFormatter, kind = "hours") {
     const values = groups.map(group => Math.max(0, Number(valueGetter(group)) || 0));
     const maximum = Math.max(...values, 0);
+    const showYearHeadings = shiftAnalyticsPeriod !== "year" && new Set(groups.map(group => group.year)).size > 1;
+    let previousYear = "";
     return groups.map((group, index) => {
       const value = values[index];
       const width = maximum > 0 ? Math.max(value > 0 ? 3 : 0, (value / maximum) * 100) : 0;
-      return `<div class="shift-analytics-chart-row">
+      const yearHeading = showYearHeadings && group.year !== previousYear ? `<div class="shift-analytics-chart-year">${escapeHtml(group.year)} рік</div>` : "";
+      previousYear = group.year;
+      return `${yearHeading}<div class="shift-analytics-chart-row">
         <span class="shift-analytics-chart-label" title="${escapeHtml(group.label)}">${escapeHtml(group.label)}</span>
         <span class="shift-analytics-chart-track ${kind === "pay" ? "pay" : ""}"><i style="--bar-width:${width.toFixed(2)}%"></i></span>
         <span class="shift-analytics-chart-value">${escapeHtml(valueFormatter(value))}</span>
@@ -25917,11 +25989,33 @@
     }).join("");
   }
 
+  function renderShiftAnalyticsDetails(entries) {
+    if (!entries.length) return `<div class="small">За обраний період ще немає збережених змін.</div>`;
+    const years = new Map();
+    entries.slice().sort((left, right) => right.date.localeCompare(left.date)).forEach(entry => {
+      const year = entry.date.slice(0, 4);
+      if (!years.has(year)) years.set(year, []);
+      years.get(year).push(entry);
+    });
+    return Array.from(years, ([year, yearEntries]) => `<section class="shift-analytics-year-section">
+      <h5>${escapeHtml(year)} рік</h5>
+      ${yearEntries.map(entry => {
+        const dateLabel = new Date(`${entry.date}T12:00:00`).toLocaleDateString("uk-UA", { day: "numeric", month: "long", weekday: "short" });
+        const hours = calculateShiftEntryHours(entry);
+        const note = entry.note ? ` · ${escapeHtml(entry.note)}` : "";
+        return `<div class="shift-analytics-entry-row">
+          <div><strong>${escapeHtml(dateLabel)}</strong><small>${escapeHtml(entry.typeName || "Зміна")} · ${escapeHtml(entry.start || "—")}–${escapeHtml(entry.end || "—")} · ${formatShiftNumber(hours)} год${note}</small></div>
+          <div class="shift-analytics-entry-value">${escapeHtml(formatShiftMoney(calculateShiftEntryPay(entry), entry.currency))}</div>
+        </div>`;
+      }).join("")}
+    </section>`).join("");
+  }
+
   function renderWorkAnalytics() {
     const content = document.getElementById("shiftStatsContent");
     if (!content) return;
     const groups = getShiftAnalyticsGroups();
-    const entries = groups.flatMap(group => group.entries);
+    const entries = getShiftAnalyticsEntries();
     const totalHours = groups.reduce((sum, group) => sum + group.hours, 0);
     const currencies = new Set();
     groups.forEach(group => group.payByCurrency.forEach((value, currency) => currencies.add(currency)));
@@ -25933,13 +26027,22 @@
       <div class="shift-analytics-periods" role="group" aria-label="Період статистики">
         ${[["day", "Дні"], ["week", "Тижні"], ["month", "Місяці"], ["year", "Роки"]].map(([value, label]) => `<button type="button" class="${shiftAnalyticsPeriod === value ? "active" : ""}" data-shift-analytics-period="${value}" aria-pressed="${shiftAnalyticsPeriod === value}">${label}</button>`).join("")}
       </div>
+      <div class="shift-analytics-filter">
+        <label>Від<input type="date" id="shiftAnalyticsFrom" value="${escapeHtml(shiftAnalyticsDateFrom)}"></label>
+        <label>До<input type="date" id="shiftAnalyticsTo" value="${escapeHtml(shiftAnalyticsDateTo)}"></label>
+        <div class="shift-analytics-filter-actions">
+          <button type="button" data-apply-shift-analytics-filter>Показати період</button>
+          <button type="button" class="secondary" data-clear-shift-analytics-filter>Скинути</button>
+        </div>
+      </div>
       <div class="shift-analytics-caption">${escapeHtml(shiftAnalyticsPeriodCaption(shiftAnalyticsPeriod))}</div>
       <div class="shift-analytics-kpis">
         <div class="shift-analytics-kpi"><strong>${formatShiftNumber(totalHours)} год</strong><span>відпрацьовано</span></div>
         <div class="shift-analytics-kpi"><strong>${escapeHtml(formatShiftMoneyTotals(entries))}</strong><span>зароблено</span></div>
       </div>
       <section class="shift-analytics-chart"><h4>Відпрацьовані години</h4>${groups.some(group => group.hours > 0) ? renderShiftAnalyticsRows(groups, group => group.hours, value => `${formatShiftNumber(value)} год`) : `<div class="small">Ще немає відпрацьованих годин.</div>`}</section>
-      <section class="shift-analytics-chart"><h4>Заробіток</h4>${payCharts}</section>`;
+      <section class="shift-analytics-chart"><h4>Заробіток</h4>${payCharts}</section>
+      <section class="shift-analytics-details"><h4>Детально за роками</h4>${renderShiftAnalyticsDetails(entries)}</section>`;
   }
 
   function openShiftStats(kind) {
@@ -27194,10 +27297,29 @@
   document.getElementById("openPayBreakdownBtn").addEventListener("click", () => openShiftStats("pay"));
   document.getElementById("openWorkAnalyticsBtn").addEventListener("click", () => openShiftStats("analytics"));
   document.getElementById("shiftStatsContent").addEventListener("click", event => {
-    const button = event.target.closest("[data-shift-analytics-period]");
-    if (!button) return;
-    shiftAnalyticsPeriod = button.dataset.shiftAnalyticsPeriod;
-    renderWorkAnalytics();
+    const periodButton = event.target.closest("[data-shift-analytics-period]");
+    if (periodButton) {
+      shiftAnalyticsPeriod = periodButton.dataset.shiftAnalyticsPeriod;
+      renderWorkAnalytics();
+      return;
+    }
+    if (event.target.closest("[data-apply-shift-analytics-filter]")) {
+      const from = document.getElementById("shiftAnalyticsFrom")?.value || "";
+      const to = document.getElementById("shiftAnalyticsTo")?.value || "";
+      if (from && to && from > to) {
+        toast("Дата «від» не може бути пізнішою за дату «до»", true);
+        return;
+      }
+      shiftAnalyticsDateFrom = from;
+      shiftAnalyticsDateTo = to;
+      renderWorkAnalytics();
+      return;
+    }
+    if (event.target.closest("[data-clear-shift-analytics-filter]")) {
+      shiftAnalyticsDateFrom = "";
+      shiftAnalyticsDateTo = "";
+      renderWorkAnalytics();
+    }
   });
   document.getElementById("closeShiftStatsBtn").addEventListener("click", closeShiftStats);
   document.getElementById("shiftStatsOverlay").addEventListener("click", event => {
