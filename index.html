@@ -9217,18 +9217,29 @@
       .shift-editor-fields select,
       .shift-editor-fields textarea { min-width: 0; width: 100%; min-height: 38px; margin-top: 2px; padding-block: 5px; font-size: 13px; }
       .shift-editor-time-grid { gap: 5px; }
-      .shift-editor-time-grid > label { min-width: 0; overflow: hidden; }
+      .shift-editor-time-grid > label {
+        min-width: 0;
+        padding-inline: 1px;
+        overflow: visible;
+      }
       .shift-editor-time-grid input[type="time"] {
+        position: relative;
         display: block;
         min-width: 0 !important;
-        max-width: 100% !important;
-        width: 100% !important;
+        max-width: calc(100% - 2px) !important;
+        width: calc(100% - 2px) !important;
+        margin-inline: auto !important;
+        padding-inline: 5px !important;
         box-sizing: border-box;
-        overflow: hidden;
+        overflow: visible;
+        border-radius: 12px !important;
         font-size: 12px !important;
+        text-align: center;
       }
       .shift-editor-time-grid input[type="time"]::-webkit-date-and-time-value {
         min-width: 0;
+        width: 100%;
+        padding: 0;
         text-align: center;
       }
       .shift-editor-section { border-radius: 11px; }
@@ -9264,7 +9275,7 @@
     body.modal-scroll-locked,
     body.modal-scroll-locked::before,
     html.modal-scroll-locked::before {
-      background: color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%) !important;
+      background: var(--modal-safe-background, color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%)) !important;
     }
   </style>
 
@@ -9278,7 +9289,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=380">
+<link rel="manifest" href="manifest.json?v=381">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9333,7 +9344,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.80</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.81</span></div>
     </div>
   </div>
 
@@ -10706,7 +10717,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.80</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.81</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10731,6 +10742,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.81</h3>
+          <ul>
+            <li>поля початку й завершення роботи отримали однакові заокруглені краї та центроване значення часу;</li>
+            <li>системні верхня й нижня зони PWA тепер підлаштовуються під затемнення відкритого діалогу без контрастних смуг.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.80</h3>
           <ul>
@@ -12527,13 +12545,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=380"></script>
+<script src="./assets/decimen-optical-transfer.js?v=381"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.80";
+  const APP_VERSION = "3.81";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13952,10 +13970,15 @@
 
     if (hasOpenModal && !isLocked) {
       modalScrollPosition = window.scrollY || window.pageYOffset || 0;
+      const rootStyles = getComputedStyle(document.documentElement);
+      const surfaceColor = normalizeThemeColor(rootStyles.getPropertyValue("--surface"), "#ffffff");
+      const modalSafeColor = normalizeThemeColor("rgba(10, 16, 25, .14)", surfaceColor);
       document.documentElement.style.setProperty("--modal-scroll-offset", `${modalScrollPosition}px`);
+      document.documentElement.style.setProperty("--modal-safe-background", modalSafeColor);
       document.body.style.top = `-${modalScrollPosition}px`;
       document.body.classList.add("modal-scroll-locked");
       document.documentElement.classList.add("modal-scroll-locked");
+      syncSystemThemeColor(modalSafeColor);
       return;
     }
 
@@ -13963,8 +13986,10 @@
       document.body.classList.remove("modal-scroll-locked");
       document.documentElement.classList.remove("modal-scroll-locked");
       document.documentElement.style.removeProperty("--modal-scroll-offset");
+      document.documentElement.style.removeProperty("--modal-safe-background");
       document.body.style.removeProperty("top");
       window.scrollTo(0, modalScrollPosition);
+      scheduleSystemAreaSync();
     }
   }
 
@@ -21706,7 +21731,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=380")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=381")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
