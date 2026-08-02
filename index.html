@@ -9081,27 +9081,17 @@
       box-shadow: 0 0 34px 18px color-mix(in srgb, var(--surface-deep) 62%, transparent);
     }
     .shift-picker-wheel::after {
-      content: "";
-      position: sticky;
-      z-index: 0;
-      display: block;
-      bottom: 58px;
-      height: 56px;
-      margin-top: -56px;
-      border-top: 1px solid color-mix(in srgb, var(--primary-bg) 38%, var(--border-strong));
-      border-bottom: 1px solid color-mix(in srgb, var(--primary-bg) 38%, var(--border-strong));
-      background: color-mix(in srgb, var(--primary-bg) 5%, transparent);
-      pointer-events: none;
+      content: none;
     }
     .shift-picker-option {
       position: relative;
       z-index: 1;
-      width: 100%;
+      width: calc(100% - 14px);
       min-height: 56px;
-      margin: 0;
+      margin: 0 auto;
       padding: 8px 6px;
-      border: 0;
-      border-radius: 0;
+      border: 1px solid transparent;
+      border-radius: 13px;
       background: transparent;
       color: var(--muted);
       box-shadow: none;
@@ -9110,13 +9100,16 @@
       opacity: var(--picker-opacity, .5);
       transform: perspective(260px) rotateX(var(--picker-angle, 0deg)) scale(var(--picker-scale, .9));
       transform-origin: center;
-      transition: transform .13s ease, opacity .13s ease, color .13s ease, font-size .13s ease;
+      transition: transform .13s ease, opacity .13s ease, color .13s ease, font-size .13s ease, background .13s ease, border-color .13s ease, box-shadow .13s ease;
       will-change: transform, opacity;
     }
     .shift-picker-option.selected {
+      border-color: color-mix(in srgb, var(--primary-bg) 42%, var(--border-strong));
+      background: color-mix(in srgb, var(--primary-bg) 13%, var(--surface));
       color: var(--text);
       font-size: 18px;
       font-weight: 900;
+      box-shadow: 0 5px 14px color-mix(in srgb, var(--popover-shadow) 30%, transparent);
       opacity: 1;
       transform: perspective(260px) rotateX(0deg) scale(1);
     }
@@ -9275,7 +9268,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=378">
+<link rel="manifest" href="manifest.json?v=379">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9330,7 +9323,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">3.78</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">3.79</span></div>
     </div>
   </div>
 
@@ -10703,7 +10696,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.78</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">3.79</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -10728,6 +10721,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 3.79</h3>
+          <ul>
+            <li>прибрано горизонтальні лінії вибору з барабанів місяця та року;</li>
+            <li>обраний місяць або рік тепер виділяється окремою заокругленою прямокутною плашкою.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 3.78</h3>
           <ul>
@@ -12511,13 +12511,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=378"></script>
+<script src="./assets/decimen-optical-transfer.js?v=379"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "3.78";
+  const APP_VERSION = "3.79";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -21690,7 +21690,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=378")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=379")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
