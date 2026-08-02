@@ -8886,15 +8886,75 @@
       min-width: 0;
       margin: 0;
     }
-    .pallet-calculator-mode-field { display: block; }
-    .pallet-calculator-mode-field select {
+    .pallet-calculator-search-mode-picker {
+      position: relative;
+      z-index: 18;
+    }
+    .pallet-calculator-search-mode-button {
+      display: flex;
       width: 100%;
-      min-height: 34px !important;
-      height: 34px !important;
-      margin: 7px 0 11px;
-      padding-top: 4px !important;
-      padding-bottom: 4px !important;
-      font-size: 11px;
+      min-height: 42px;
+      margin: 0;
+      padding: 8px 10px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: left;
+    }
+    .pallet-calculator-search-mode-arrow {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+      transition: transform .16s ease;
+    }
+    .pallet-calculator-search-mode-button[aria-expanded="true"] .pallet-calculator-search-mode-arrow { transform: rotate(180deg); }
+    .pallet-calculator-search-mode-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 8px;
+      left: 8px;
+      z-index: 25;
+      display: grid;
+      gap: 3px;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface);
+      box-shadow: 0 16px 34px var(--popover-shadow);
+    }
+    .pallet-calculator-search-mode-menu.hidden { display: none; }
+    .pallet-calculator-search-mode-caption {
+      padding: 6px 8px 4px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .pallet-calculator-search-mode-menu button {
+      width: 100%;
+      min-height: 38px;
+      margin: 0;
+      padding: 7px 9px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      font-size: 12px;
+      text-align: left;
+    }
+    .pallet-calculator-search-mode-menu button.active { background: var(--surface-deep); font-weight: 850; }
+    .pallet-calculator-search-mode-menu small { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .pallet-calculator-section-body {
+      padding-top: 1px;
     }
     .pallet-calculator-active-search { position: relative; }
     .pallet-calculator-active-search.hidden { display: none; }
@@ -9736,7 +9796,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=401">
+<link rel="manifest" href="manifest.json?v=402">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -9791,7 +9851,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.01</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.02</span></div>
     </div>
   </div>
 
@@ -10271,15 +10331,17 @@
       <section id="palletCalculatorView" class="hidden">
         <div class="pallet-calculator-shell">
           <section class="pallet-calculator-section pallet-calculator-search-section" data-pallet-calculator-section="search">
-            <button type="button" class="pallet-calculator-section-toggle" data-toggle-pallet-calculator-section="search" aria-expanded="true"><span>Пошук</span><span class="pallet-calculator-section-mark">−</span></button>
+            <div class="pallet-calculator-search-mode-picker">
+              <input id="palletCalculatorSearchMode" type="hidden" value="products" />
+              <button type="button" class="pallet-calculator-search-mode-button" id="palletCalculatorSearchModeBtn" aria-expanded="false" aria-controls="palletCalculatorSearchModeMenu"><span id="palletCalculatorSearchModeLabel">Пошук за найменуванням</span><span class="pallet-calculator-search-mode-arrow" aria-hidden="true">⌄</span></button>
+              <div class="pallet-calculator-search-mode-menu hidden" id="palletCalculatorSearchModeMenu">
+                <div class="pallet-calculator-search-mode-caption">Оберіть спосіб пошуку</div>
+                <button type="button" data-pallet-search-mode="products">За найменуванням</button>
+                <button type="button" data-pallet-search-mode="formats">За збереженими форматами <small>(вручну збережені формати)</small></button>
+              </div>
+            </div>
             <div class="pallet-calculator-section-body">
               <div class="pallet-calculator-search">
-                <label class="pallet-calculator-mode-field" for="palletCalculatorSearchMode">Спосіб роботи
-                  <select id="palletCalculatorSearchMode" aria-label="Спосіб пошуку">
-                    <option value="products">За найменуванням</option>
-                    <option value="formats">За збереженими форматами (вручну збережені формати)</option>
-                  </select>
-                </label>
                 <div class="pallet-calculator-active-search" id="palletCalculatorProductSearchWrap">
                   <label for="palletCalculatorProductSearch">Пошук за найменуванням</label>
                   <input id="palletCalculatorProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Введіть назву" />
@@ -11233,7 +11295,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.01</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.02</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11258,6 +11320,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.02</h3>
+          <ul>
+            <li>активний спосіб пошуку тепер показується в заголовку; маленька стрілка праворуч відкриває список вибору без окремого поля та кнопки згортання.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.01</h3>
           <ul>
@@ -13200,13 +13268,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=401"></script>
+<script src="./assets/decimen-optical-transfer.js?v=402"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.01";
+  const APP_VERSION = "4.02";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -22413,7 +22481,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=401")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=402")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -24383,14 +24451,32 @@
     const normalizedMode = mode === "formats" ? "formats" : "products";
     const select = document.getElementById("palletCalculatorSearchMode");
     if (select) select.value = normalizedMode;
+    const modeLabel = document.getElementById("palletCalculatorSearchModeLabel");
+    if (modeLabel) modeLabel.textContent = normalizedMode === "formats" ? "Пошук за збереженими форматами" : "Пошук за найменуванням";
+    document.querySelectorAll("[data-pallet-search-mode]").forEach(button => button.classList.toggle("active", button.dataset.palletSearchMode === normalizedMode));
     document.getElementById("palletCalculatorProductSearchWrap")?.classList.toggle("hidden", normalizedMode !== "products");
     document.getElementById("palletCalculatorFormatSearchWrap")?.classList.toggle("hidden", normalizedMode !== "formats");
     document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
+    closePalletCalculatorSearchModeMenu();
     if (focusField) {
       const field = document.getElementById(normalizedMode === "formats" ? "palletCalculatorFormatSearch" : "palletCalculatorProductSearch");
       window.setTimeout(() => field?.focus(), 0);
     }
+  }
+
+  function closePalletCalculatorSearchModeMenu() {
+    document.getElementById("palletCalculatorSearchModeMenu")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSearchModeBtn")?.setAttribute("aria-expanded", "false");
+  }
+
+  function togglePalletCalculatorSearchModeMenu() {
+    const menu = document.getElementById("palletCalculatorSearchModeMenu");
+    const button = document.getElementById("palletCalculatorSearchModeBtn");
+    if (!menu || !button) return;
+    const open = menu.classList.contains("hidden");
+    menu.classList.toggle("hidden", !open);
+    button.setAttribute("aria-expanded", String(open));
   }
 
   function togglePalletCalculatorSection(sectionName) {
@@ -25215,8 +25301,10 @@
     const remove = event.target.closest("[data-pallet-settings-delete]");
     if (remove) deletePalletCalculatorFormat(remove.dataset.palletSettingsDelete);
   });
-  document.getElementById("palletCalculatorSearchMode").addEventListener("change", event => {
-    setPalletCalculatorSearchMode(event.target.value);
+  document.getElementById("palletCalculatorSearchModeBtn").addEventListener("click", togglePalletCalculatorSearchModeMenu);
+  document.getElementById("palletCalculatorSearchModeMenu").addEventListener("click", event => {
+    const option = event.target.closest("[data-pallet-search-mode]");
+    if (option) setPalletCalculatorSearchMode(option.dataset.palletSearchMode);
   });
   document.getElementById("clearPalletCalculatorFormatBtn").addEventListener("click", clearPalletCalculatorFormat);
   document.getElementById("palletCalculatorFormatSearch").addEventListener("focus", event => {
@@ -25283,6 +25371,7 @@
   });
   document.addEventListener("click", event => {
     if (!event.target.closest(".workspace-switcher")) closeWorkspaceDropdown();
+    if (!event.target.closest(".pallet-calculator-search-mode-picker")) closePalletCalculatorSearchModeMenu();
     if (!event.target.closest(".pallet-calculator-search")) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     if (!event.target.closest(".pallet-calculator-format-search")) document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
     if (!event.target.closest(".order-warehouse-dropdown")) {
