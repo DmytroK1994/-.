@@ -482,6 +482,7 @@
     #pageToday,
     #pageHistory,
     #pageManagement,
+    #pageAccount,
     #pageProducts,
     #pageThemes,
     #pageBackup,
@@ -2463,6 +2464,76 @@
     }
     .management-gesture-pad {
       display: none;
+    }
+    #pageAccount {
+      width: min(100%, 760px);
+      margin-inline: auto;
+    }
+    .account-settings-card {
+      display: grid;
+      gap: 16px;
+    }
+    .account-settings-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .account-settings-heading h2,
+    .account-settings-heading p {
+      margin: 0;
+    }
+    .account-settings-heading p {
+      margin-top: 3px;
+    }
+    .account-avatar {
+      display: grid;
+      flex: 0 0 46px;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      background: var(--surface-strong);
+      color: var(--primary);
+      font-size: 18px;
+      box-shadow: 3px 3px 0 var(--border);
+    }
+    .account-status-panel {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-deep);
+    }
+    .account-status-row {
+      display: flex;
+      min-height: 45px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 9px 12px;
+    }
+    .account-status-row + .account-status-row {
+      border-top: 1px solid var(--border);
+    }
+    .account-status-row strong {
+      text-align: right;
+    }
+    .account-profile {
+      display: grid;
+      gap: 2px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-strong);
+    }
+    .account-settings-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .account-local-note {
+      margin: 0;
+      line-height: 1.45;
     }
     html.menu-style-game .management-options {
       justify-items: start;
@@ -10101,7 +10172,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=414">
+<link rel="manifest" href="manifest.json?v=415">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10156,7 +10227,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.14</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.15</span></div>
     </div>
   </div>
 
@@ -10944,6 +11015,7 @@
         <button class="management-option nav-choice" id="openProductsBtn">Найменування</button>
         <button class="management-option nav-choice" id="openThemeSettingsBtn">Теми</button>
         <button class="management-option nav-choice" id="openBackupSettingsBtn">Резервна копія</button>
+        <button class="management-option nav-choice" id="openAccountSettingsBtn">Акаунт</button>
         <button class="management-option nav-choice" id="openTrashSettingsBtn">Кошик</button>
         <button class="management-option nav-choice" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
@@ -10952,6 +11024,44 @@
         <span class="gesture-pad-selection" id="managementGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
         <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
       </div>
+    </div>
+  </div>
+
+  <div id="pageAccount" class="hidden">
+    <div class="card account-settings-card">
+      <div class="account-settings-heading">
+        <div class="account-avatar" aria-hidden="true">●</div>
+        <div>
+          <h2>Акаунт</h2>
+          <p class="small">Підключення хмарної синхронізації та резервних копій.</p>
+        </div>
+      </div>
+
+      <div class="account-status-panel">
+        <div class="account-status-row">
+          <span>Режим роботи</span>
+          <strong id="accountModeLabel">Локальний</strong>
+        </div>
+        <div class="account-status-row">
+          <span>Синхронізація</span>
+          <strong id="accountSyncLabel">Не підключено</strong>
+        </div>
+        <div class="account-status-row">
+          <span>Інтернет</span>
+          <strong id="accountNetworkLabel">Перевірка…</strong>
+        </div>
+      </div>
+
+      <div class="account-profile hidden" id="accountProfile">
+        <strong id="accountProfileName"></strong>
+        <span class="small" id="accountProfileEmail"></span>
+      </div>
+
+      <div class="account-settings-actions">
+        <button type="button" id="connectAccountGoogleBtn">Увійти через Google</button>
+        <button type="button" class="secondary hidden" id="disconnectAccountBtn">Вийти з акаунта</button>
+      </div>
+      <p class="small account-local-note" id="accountLocalNote">Зараз усі дані безпечно залишаються на цьому пристрої. Після підключення акаунта локальна робота не зникне: без інтернету зміни зберігатимуться тут і синхронізуватимуться пізніше.</p>
     </div>
   </div>
 
@@ -11616,7 +11726,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.14</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.15</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11642,6 +11752,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.15</h3>
+          <ul>
+            <li>у налаштування додано окремий пункт «Акаунт» зі станом локальної роботи, інтернету та майбутньої хмарної синхронізації;</li>
+            <li>підготовлено безпечне місце для конфігурації Firebase без вимкнення локального режиму.</li>
+          </ul>
+
           <h3>Версія 4.14</h3>
           <ul>
             <li>підказки жестів у «Додатково» перетворено на активні кнопки по краях, а назву розділу закріплено по центру.</li>
@@ -13661,13 +13777,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=414"></script>
+<script src="./assets/decimen-optical-transfer.js?v=415"></script>
+<script src="./firebase-config.js?v=415"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.14";
+  const APP_VERSION = "4.15";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -13975,6 +14092,7 @@
     products: "management",
     themes: "management",
     backup: "management",
+    account: "management",
     trash: "management",
     otherSettings: "management",
     install: "about"
@@ -13990,6 +14108,7 @@
     products: "Найменування",
     themes: "Теми оформлення",
     backup: "Резервна копія",
+    account: "Акаунт",
     trash: "Кошик",
     otherSettings: "Інші налаштування",
     about: "Про додаток",
@@ -16007,6 +16126,34 @@
 
   function saveOnly() {
     persistState();
+  }
+
+  function hasFirebaseConfiguration() {
+    const config = window.OBLIK_FIREBASE_CONFIG;
+    return Boolean(config && ["apiKey", "authDomain", "projectId", "appId"].every(key => String(config[key] || "").trim()));
+  }
+
+  function updateAccountPage() {
+    const configured = hasFirebaseConfiguration();
+    const networkLabel = document.getElementById("accountNetworkLabel");
+    const syncLabel = document.getElementById("accountSyncLabel");
+    const connectButton = document.getElementById("connectAccountGoogleBtn");
+    if (networkLabel) networkLabel.textContent = navigator.onLine ? "Є з’єднання" : "Немає з’єднання";
+    if (syncLabel) syncLabel.textContent = configured ? "Готово до входу" : "Не підключено";
+    if (connectButton) connectButton.textContent = configured ? "Увійти через Google" : "Налаштувати підключення";
+  }
+
+  function openAccountConnectionInfo() {
+    const configured = hasFirebaseConfiguration();
+    return showAppDialog({
+      label: "Акаунт",
+      title: configured ? "Підключення Firebase готове" : "Потрібен Firebase-проєкт",
+      message: configured
+        ? "Конфігурацію знайдено. Наступним кроком можна ввімкнути вхід через Google, правила доступу та безпечну синхронізацію з перевіркою конфліктів."
+        : "Екран акаунта вже додано, але для справжнього входу потрібні параметри вашого Firebase-проєкту: apiKey, authDomain, projectId і appId. До їх додавання застосунок продовжує повністю працювати локально.",
+      confirmText: "Зрозуміло",
+      cancelText: "Закрити"
+    });
   }
 
   function currentTrashKey() {
@@ -19823,6 +19970,7 @@
     document.getElementById("pageProducts").classList.add("hidden");
     document.getElementById("pageThemes").classList.add("hidden");
     document.getElementById("pageBackup").classList.add("hidden");
+    document.getElementById("pageAccount").classList.add("hidden");
     document.getElementById("pageTrash").classList.add("hidden");
     document.getElementById("pageOtherSettings").classList.add("hidden");
     document.getElementById("pageAbout").classList.add("hidden");
@@ -19862,6 +20010,10 @@
     }
     if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
     if (page === "backup") fitBackupSection();
+    if (page === "account") {
+      document.getElementById("pageAccount").classList.remove("hidden");
+      updateAccountPage();
+    }
     if (page === "trash") document.getElementById("pageTrash").classList.remove("hidden");
     if (page === "otherSettings") {
       document.getElementById("pageOtherSettings").classList.remove("hidden");
@@ -19875,7 +20027,7 @@
       document.getElementById("pageInstall").classList.remove("hidden");
       updateInstallUI();
     }
-    const activeMenuPage = ["products", "themes", "backup", "trash", "otherSettings"].includes(page)
+    const activeMenuPage = ["products", "themes", "backup", "account", "trash", "otherSettings"].includes(page)
       ? "management"
       : (page === "install"
           ? "about"
@@ -22968,7 +23120,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=414")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=415")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -26507,8 +26659,13 @@
   document.getElementById("openProductsBtn").addEventListener("click", () => showPage("products"));
   document.getElementById("openThemeSettingsBtn").addEventListener("click", () => showPage("themes"));
   document.getElementById("openBackupSettingsBtn").addEventListener("click", () => showPage("backup"));
+  document.getElementById("openAccountSettingsBtn").addEventListener("click", () => showPage("account"));
   document.getElementById("openTrashSettingsBtn").addEventListener("click", () => showPage("trash"));
   document.getElementById("openOtherSettingsBtn").addEventListener("click", () => showPage("otherSettings"));
+  document.getElementById("connectAccountGoogleBtn").addEventListener("click", openAccountConnectionInfo);
+  document.getElementById("disconnectAccountBtn").addEventListener("click", () => toast("Акаунт ще не підключено", true));
+  window.addEventListener("online", updateAccountPage);
+  window.addEventListener("offline", updateAccountPage);
   document.getElementById("toggleDemoModeBtn").addEventListener("click", toggleDemoMode);
   document.getElementById("openInstallFromAboutBtn").addEventListener("click", () => showPage("install"));
   document.getElementById("installAppBtn").addEventListener("click", installApp);
