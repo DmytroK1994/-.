@@ -8851,15 +8851,21 @@
     body.workspace-additional .date-line { display: none; }
     body.workspace-additional.additional-shift-tool-active .date-line {
       display: block;
-      margin-top: 0;
+      position: absolute;
+      left: 50%;
+      bottom: 2px;
+      width: max-content;
+      max-width: calc(100% - 96px);
+      margin: 0;
       font-size: 10px;
       font-weight: 800;
       line-height: 1;
-      transform: none;
+      transform: translateX(-50%);
+      pointer-events: none;
     }
     body.page-today.workspace-additional.additional-shift-tool-active .app-header {
-      padding-top: calc(env(safe-area-inset-top) + 2px);
-      padding-bottom: 2px;
+      padding-top: calc(env(safe-area-inset-top) + 1px);
+      padding-bottom: 1px;
     }
     body.page-today.workspace-additional.additional-shift-tool-active .topbar { margin-bottom: 0; }
     @media screen and (min-width: 760px) and (hover: hover) and (pointer: fine) {
@@ -8902,6 +8908,22 @@
     body.page-today.workspace-additional.additional-tool-open .topbar-left-actions,
     body.page-today.workspace-additional.additional-tool-open .topbar-right-actions {
       width: 46px;
+    }
+    body.page-today.workspace-additional.additional-shift-tool-active.additional-tool-open .topbar {
+      grid-template-columns: 40px minmax(0, 1fr) 40px;
+      min-height: 40px;
+    }
+    body.page-today.workspace-additional.additional-shift-tool-active.additional-tool-open .topbar-left-actions,
+    body.page-today.workspace-additional.additional-shift-tool-active.additional-tool-open .topbar-right-actions {
+      width: 40px;
+      height: 40px;
+    }
+    body.page-today.workspace-additional.additional-shift-tool-active #openMenuBtn {
+      width: 40px;
+      min-width: 40px;
+      height: 40px;
+      min-height: 40px;
+      border-radius: 13px;
     }
     .additional-shell {
       width: min(100%, 1180px);
@@ -10504,7 +10526,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=428">
+<link rel="manifest" href="manifest.json?v=429">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10559,7 +10581,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.28</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.29</span></div>
     </div>
   </div>
 
@@ -12078,7 +12100,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.28</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.29</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12104,6 +12126,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.29</h3>
+          <ul>
+            <li>фактичну мобільну висоту шапки «Графіка змін» зменшено за рахунок компактнішого розташування дати;</li>
+            <li>кнопку меню вирівняно за розміром із кнопкою налаштувань — 40 × 40 пікселів.</li>
+          </ul>
+
           <h3>Версія 4.28</h3>
           <ul>
             <li>у правому верхньому куті меню додано компактний ненав’язливий хрестик;</li>
@@ -14211,14 +14239,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=428"></script>
-<script src="./firebase-config.js?v=428"></script>
+<script src="./assets/decimen-optical-transfer.js?v=429"></script>
+<script src="./firebase-config.js?v=429"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.28";
+  const APP_VERSION = "4.29";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23556,7 +23584,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=428")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=429")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
