@@ -2987,6 +2987,25 @@
       line-height: 1.05;
       transform: translateY(1px);
     }
+    body.page-today.workspace-additional .compact-header-row {
+      min-height: 14px;
+      margin-top: 1px;
+    }
+    body.page-today.workspace-additional .compact-header-hints {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      min-height: 14px;
+    }
+    body.page-today.workspace-additional .menu-open-swipe-hint,
+    body.page-today.workspace-additional .page-back-swipe-hint {
+      margin: 0;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+      transform: none;
+    }
     .compact-header-row {
       display: block;
       position: relative;
@@ -10043,7 +10062,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=411">
+<link rel="manifest" href="manifest.json?v=412">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10098,7 +10117,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.11</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.12</span></div>
     </div>
   </div>
 
@@ -10170,8 +10189,8 @@
       <div class="compact-header-content">
         <div class="section-header-title" id="sectionHeaderTitle"></div>
         <div class="compact-header-hints">
-          <div class="menu-open-swipe-hint">Свайпни вправо, щоб відкрити меню</div>
-          <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">Свайпни вліво від правого краю, щоб повернутися назад</div>
+          <div class="menu-open-swipe-hint">→ Меню</div>
+          <div class="page-back-swipe-hint hidden" id="pageBackSwipeHint">← Назад</div>
         </div>
       </div>
       <div class="compact-header-spacer" aria-hidden="true"></div>
@@ -11558,7 +11577,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.11</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.12</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -11583,6 +11602,12 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.12</h3>
+          <ul>
+            <li>у шапці додаткових інструментів додано компактні підказки жестів «→ Меню» та «← Назад».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.11</h3>
           <ul>
@@ -13585,13 +13610,13 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=411"></script>
+<script src="./assets/decimen-optical-transfer.js?v=412"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.11";
+  const APP_VERSION = "4.12";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18656,9 +18681,13 @@
     const swipeMode = isMobileDevice && getResolvedBackNavigationMode() === "swipe";
     const showBottomNav = currentPage !== "today" && !swipeMode;
     if (bottomNav) bottomNav.classList.toggle("hidden", !showBottomNav);
-    const showSwipeBackHint = hasParent && swipeMode && currentPage !== "today";
+    const showAdditionalSwipeBackHint = isMobileDevice
+      && currentPage === "today"
+      && workspaceIsAdditional()
+      && hasAdditionalBackDestination();
+    const showSwipeBackHint = (hasParent && swipeMode && currentPage !== "today") || showAdditionalSwipeBackHint;
     if (swipeHint) swipeHint.classList.toggle("hidden", !showSwipeBackHint);
-    document.body.classList.toggle("subpage-swipe-back", showSwipeBackHint);
+    document.body.classList.toggle("subpage-swipe-back", showSwipeBackHint && currentPage !== "today");
     document.body.classList.toggle("bottom-nav-visible", showBottomNav);
     updateAppBottomObstructionMetric();
   }
@@ -22888,7 +22917,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=411")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=412")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
