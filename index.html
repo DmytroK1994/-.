@@ -8844,11 +8844,32 @@
     body.workspace-additional .date-line { display: none; }
     body.workspace-additional.additional-shift-tool-active .date-line {
       display: block;
-      margin-top: 2px;
-      font-size: 11px;
+      margin-top: 0;
+      font-size: 10px;
       font-weight: 800;
-      line-height: 1.15;
+      line-height: 1;
       transform: none;
+    }
+    body.page-today.workspace-additional.additional-shift-tool-active .app-header {
+      padding-top: calc(env(safe-area-inset-top) + 2px);
+      padding-bottom: 2px;
+    }
+    body.page-today.workspace-additional.additional-shift-tool-active .topbar { margin-bottom: 0; }
+    @media screen and (min-width: 760px) and (hover: hover) and (pointer: fine) {
+      body.page-today.workspace-additional.additional-shift-tool-active { --desktop-header-height: 62px; }
+      body.page-today.workspace-additional.additional-shift-tool-active .app-header {
+        min-height: var(--desktop-header-height);
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+      body.page-today.workspace-additional.additional-shift-tool-active .date-line {
+        position: absolute;
+        left: 50%;
+        bottom: 3px;
+        width: auto;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
     }
     #additionalToolSettingsBtn { display: none; }
     body.workspace-additional.additional-tool-settings-active #additionalToolSettingsBtn {
@@ -10475,7 +10496,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=425">
+<link rel="manifest" href="manifest.json?v=427">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10530,7 +10551,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.25</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.27</span></div>
     </div>
   </div>
 
@@ -11341,7 +11362,6 @@
         <button class="management-option nav-choice" id="openProductsBtn">Найменування</button>
         <button class="management-option nav-choice" id="openThemeSettingsBtn">Теми</button>
         <button class="management-option nav-choice" id="openBackupSettingsBtn">Резервна копія</button>
-        <button class="management-option nav-choice" id="openAccountSettingsBtn">Акаунт</button>
         <button class="management-option nav-choice" id="openTrashSettingsBtn">Кошик</button>
         <button class="management-option nav-choice" id="openOtherSettingsBtn">Інші налаштування</button>
       </div>
@@ -11737,10 +11757,8 @@
 
   <div id="pageOtherSettings" class="hidden">
     <div class="other-settings-category-view" id="otherSettingsCategoryView">
-      <div class="management-heading">
-        <p class="small">Обери категорію, яку потрібно налаштувати.</p>
-      </div>
       <div class="management-options other-settings-category-list">
+        <button type="button" class="management-option nav-choice" id="openAccountSettingsBtn">Акаунт</button>
         <button type="button" class="management-option nav-choice" data-other-settings-category="navigation">Навігація</button>
         <button type="button" class="management-option nav-choice" data-other-settings-category="menu">Меню та керування</button>
         <button type="button" class="management-option nav-choice" data-other-settings-category="buttons">Кнопки навігації</button>
@@ -12052,7 +12070,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.25</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.27</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12078,6 +12096,18 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.27</h3>
+          <ul>
+            <li>шапку «Графіка змін» зроблено нижчою та компактнішою;</li>
+            <li>розміри кнопок у шапці залишено без змін.</li>
+          </ul>
+
+          <h3>Версія 4.26</h3>
+          <ul>
+            <li>пункт «Акаунт» перенесено з головного списку до «Інших налаштувань» і розміщено над «Навігацією»;</li>
+            <li>зайву підказку про вибір категорії в «Інших налаштуваннях» прибрано.</li>
+          </ul>
+
           <h3>Версія 4.25</h3>
           <ul>
             <li>поля вибору періоду у «Статистиці роботи» зменшено та захищено від накладання на мобільних екранах;</li>
@@ -14167,14 +14197,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=425"></script>
-<script src="./firebase-config.js?v=425"></script>
+<script src="./assets/decimen-optical-transfer.js?v=427"></script>
+<script src="./firebase-config.js?v=427"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.25";
+  const APP_VERSION = "4.27";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -18606,7 +18636,7 @@
 
   function getOtherSettingsGestureItems() {
     return Array.from(document.querySelectorAll(
-      "#otherSettingsCategoryView [data-other-settings-category]"
+      "#otherSettingsCategoryView .other-settings-category-list .management-option"
     ));
   }
 
@@ -23512,7 +23542,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=425")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=427")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
