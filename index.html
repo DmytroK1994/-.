@@ -10537,7 +10537,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=432">
+<link rel="manifest" href="manifest.json?v=433">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10592,7 +10592,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.32</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.33</span></div>
     </div>
   </div>
 
@@ -11165,6 +11165,7 @@
         <div class="shift-summary-grid">
           <button type="button" class="shift-summary-card" id="openShiftBreakdownBtn"><strong id="shiftMonthShifts">0</strong><span>зміни</span></button>
           <button type="button" class="shift-summary-card" id="openVacationBreakdownBtn"><strong id="shiftMonthVacations">0</strong><span>відпустка</span></button>
+          <button type="button" class="shift-summary-card" id="openSickLeaveBreakdownBtn"><strong id="shiftMonthSickLeave">0</strong><span>лікарняні</span></button>
           <button type="button" class="shift-summary-card" id="openPayBreakdownBtn"><strong id="shiftMonthPay">0 ₴</strong><span>нараховано</span></button>
           <button type="button" class="shift-summary-card shift-summary-card-full" id="openWorkAnalyticsBtn"><strong>Статистика роботи</strong><span>години та заробіток за періодами</span></button>
         </div>
@@ -11187,6 +11188,7 @@
                 <select id="shiftEditorKind">
                   <option value="work">Робоча зміна</option>
                   <option value="vacation">Відпустка / оплачуваний неробочий день</option>
+                  <option value="sickleave">Тимчасово непрацездатний/на</option>
                   <option value="off">Вихідний без оплати</option>
                 </select>
               </label>
@@ -12119,7 +12121,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.32</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.33</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12145,6 +12147,14 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.33</h3>
+          <ul>
+            <li>додано стандартний тип дня «Тимчасово непрацездатний/на» з окремим підрахунком лікарняних;</li>
+            <li>лікарняний не входить до кількості робочих змін і відпрацьованих годин, але його денна ставка враховується в нарахуваннях;</li>
+            <li>раніше створені типи з назвою «лікарняний» або «тимчасово непрацездатний/на» розпізнаються автоматично;</li>
+            <li>загальні зміни типу поширюються на розставлені дні, не перезаписуючи індивідуальні ручні значення.</li>
+          </ul>
+
           <h3>Версія 4.32</h3>
           <ul>
             <li>додано окрему категорію дня «Відпустка», яка не входить до кількості робочих змін і відпрацьованих годин;</li>
@@ -14279,14 +14289,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=432"></script>
-<script src="./firebase-config.js?v=432"></script>
+<script src="./assets/decimen-optical-transfer.js?v=433"></script>
+<script src="./firebase-config.js?v=433"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.32";
+  const APP_VERSION = "4.33";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23624,7 +23634,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=432")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=433")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25020,13 +25030,14 @@
 
   function makeDefaultShiftScheduleState() {
     return {
-      version: 3,
+      version: 4,
       currency: "UAH",
       types: [
         { id: "day", name: "Денна зміна", start: "08:00", end: "20:00", breakHours: 0, payMode: "hourly", rate: 0, currency: "UAH", color: "#e8ad35", isNight: false, isDayOff: false, dayKind: "work" },
         { id: "night", name: "Нічна зміна", start: "20:00", end: "08:00", breakHours: 0, payMode: "hourly", rate: 0, currency: "UAH", color: "#6676d9", isNight: true, isDayOff: false, dayKind: "work" },
         { id: "training", name: "Стажування", start: "08:00", end: "17:00", breakHours: 0, payMode: "hourly", rate: 0, currency: "UAH", color: "#55aa82", isNight: false, isDayOff: false, dayKind: "work" },
         { id: "vacation", name: "Відпустка", start: "00:00", end: "00:00", breakHours: 0, payMode: "fixed", rate: 0, currency: "UAH", color: "#4aa6a6", isNight: false, isDayOff: false, dayKind: "vacation" },
+        { id: "sickleave", name: "Тимчасово непрацездатний/на", start: "00:00", end: "00:00", breakHours: 0, payMode: "fixed", rate: 0, currency: "UAH", color: "#d87979", isNight: false, isDayOff: false, dayKind: "sickleave" },
         { id: "off", name: "Вихідний", start: "00:00", end: "00:00", breakHours: 0, payMode: "fixed", rate: 0, currency: "UAH", color: "#9aa3ad", isNight: false, isDayOff: true, dayKind: "off" }
       ],
       entries: {}
@@ -25038,9 +25049,9 @@
   }
 
   function inferShiftDayKind(value, name = "", isDayOff = false) {
-    if (["work", "vacation", "off"].includes(value)) return value;
-    if (isDayOff) return "off";
-    if (/відпуст/i.test(String(name || ""))) return "vacation";
+    if (isDayOff || value === "off") return "off";
+    if (value === "vacation" || /відпуст/i.test(String(name || ""))) return "vacation";
+    if (value === "sickleave" || /лікарнян|непрацездат/i.test(String(name || ""))) return "sickleave";
     return "work";
   }
 
@@ -25075,8 +25086,11 @@
       if (!types.some(type => type.dayKind === "vacation")) {
         types.push(normalizeShiftType(fallback.types.find(type => type.id === "vacation"), 3));
       }
+      if (!types.some(type => type.dayKind === "sickleave")) {
+        types.push(normalizeShiftType(fallback.types.find(type => type.id === "sickleave"), 4));
+      }
       if (!types.some(type => type.id === "off" || type.dayKind === "off")) {
-        types.push(normalizeShiftType(fallback.types.find(type => type.id === "off"), 4));
+        types.push(normalizeShiftType(fallback.types.find(type => type.id === "off"), 5));
       }
       const entries = {};
       Object.entries(parsed.entries || {}).forEach(([date, entry]) => {
@@ -25108,8 +25122,8 @@
         });
         entries[date] = normalizedEntry;
       });
-      if ((Number(parsed.version) || 0) < 3) {
-        types.filter(type => type.dayKind === "vacation").forEach(type => {
+      if ((Number(parsed.version) || 0) < 4) {
+        types.filter(type => ["vacation", "sickleave"].includes(type.dayKind)).forEach(type => {
           const relatedEntries = Object.values(entries).filter(entry => entry.typeId === type.id);
           ["start", "end", "breakHours", "payMode", "rate", "currency"].forEach(field => {
             const candidates = relatedEntries.filter(entry => {
@@ -25132,7 +25146,7 @@
         });
       }
       const currency = ["UAH", "USD", "EUR", "PLN", "CZK"].includes(parsed.currency) ? parsed.currency : "UAH";
-      return { version: 3, currency, types, entries };
+      return { version: 4, currency, types, entries };
     } catch (error) {
       return fallback;
     }
@@ -25866,16 +25880,20 @@
   }
 
   function calculateShiftEntryHours(entry) {
-    if (!entry || entry.isDayOff || entry.dayKind === "vacation") return 0;
+    if (!entry || entry.isDayOff || ["vacation", "sickleave"].includes(entry.dayKind)) return 0;
     return calculateShiftHours(entry.start, entry.end, entry.breakHours);
   }
 
   function isWorkingShiftEntry(entry) {
-    return Boolean(entry) && !entry.isDayOff && entry.dayKind !== "vacation";
+    return Boolean(entry) && !entry.isDayOff && !["vacation", "sickleave"].includes(entry.dayKind);
   }
 
   function isVacationShiftEntry(entry) {
     return Boolean(entry) && !entry.isDayOff && entry.dayKind === "vacation";
+  }
+
+  function isSickLeaveShiftEntry(entry) {
+    return Boolean(entry) && !entry.isDayOff && entry.dayKind === "sickleave";
   }
 
   function formatShiftNumber(value, maximumFractionDigits = 2) {
@@ -25893,7 +25911,7 @@
   function calculateShiftEntryPay(entry) {
     if (!entry || entry.isDayOff) return 0;
     const rate = Math.max(0, Number(entry.rate) || 0);
-    if (entry.dayKind === "vacation") return rate;
+    if (["vacation", "sickleave"].includes(entry.dayKind)) return rate;
     return entry.payMode === "fixed" ? rate : calculateShiftEntryHours(entry) * rate;
   }
 
@@ -26048,9 +26066,10 @@
         const monthEntries = Object.values(shiftScheduleState.entries).filter(entry => entry.date.startsWith(prefix));
         const count = monthEntries.filter(isWorkingShiftEntry).length;
         const vacationCount = monthEntries.filter(isVacationShiftEntry).length;
+        const sickLeaveCount = monthEntries.filter(isSickLeaveShiftEntry).length;
         const label = new Date(year, monthIndex, 1).toLocaleDateString("uk-UA", { month: "long" });
         return `<button type="button" class="shift-year-month" data-shift-year-month="${monthIndex}" aria-label="Переглянути ${escapeHtml(label)} ${year}">
-          <strong>${escapeHtml(label)}</strong>${renderShiftMiniMonth(year, monthIndex)}<span class="shift-mini-count">${count ? `${count} змін` : "Немає змін"}${vacationCount ? ` · ${vacationCount} відп.` : ""}</span>
+          <strong>${escapeHtml(label)}</strong>${renderShiftMiniMonth(year, monthIndex)}<span class="shift-mini-count">${count ? `${count} змін` : "Немає змін"}${vacationCount ? ` · ${vacationCount} відп.` : ""}${sickLeaveCount ? ` · ${sickLeaveCount} лік.` : ""}</span>
         </button>`;
       }).join("");
       return;
@@ -26169,9 +26188,11 @@
     const entries = getCurrentMonthShiftEntries();
     const workingEntries = entries.filter(isWorkingShiftEntry);
     const vacationEntries = entries.filter(isVacationShiftEntry);
+    const sickLeaveEntries = entries.filter(isSickLeaveShiftEntry);
     const paidEntries = entries.filter(entry => !entry.isDayOff);
     document.getElementById("shiftMonthShifts").textContent = String(workingEntries.length);
     document.getElementById("shiftMonthVacations").textContent = String(vacationEntries.length);
+    document.getElementById("shiftMonthSickLeave").textContent = String(sickLeaveEntries.length);
     document.getElementById("shiftMonthPay").textContent = formatShiftMoneyTotals(paidEntries);
   }
 
@@ -26213,13 +26234,13 @@
     const dateLabel = new Date(`${date}T12:00:00`).toLocaleDateString("uk-UA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     const hours = calculateShiftEntryHours(entry);
     const pay = calculateShiftEntryPay(entry);
-    const nonWorkingDay = entry.isDayOff || entry.dayKind === "vacation";
+    const nonWorkingDay = entry.isDayOff || ["vacation", "sickleave"].includes(entry.dayKind);
     const breakLabel = nonWorkingDay ? "—" : `${formatShiftNumber(entry.breakHours || 0)} год`;
     title.textContent = dateLabel;
     content.innerHTML = `
       <div class="shift-details-type" style="--shift-details-color:${escapeHtml(entry.color || "#8b7ad1")}">${escapeHtml(entry.typeName || (entry.isDayOff ? "Вихідний" : "Зміна"))}</div>
       <div class="shift-details-grid">
-        <div class="shift-details-item"><span>Робочий час</span><strong>${entry.isDayOff ? "Вихідний" : entry.dayKind === "vacation" ? "Не робочий день" : `${escapeHtml(entry.start || "—")} — ${escapeHtml(entry.end || "—")}`}</strong></div>
+        <div class="shift-details-item"><span>Робочий час</span><strong>${entry.isDayOff ? "Вихідний" : nonWorkingDay ? "Неробочий день" : `${escapeHtml(entry.start || "—")} — ${escapeHtml(entry.end || "—")}`}</strong></div>
         <div class="shift-details-item"><span>Відпрацьовано</span><strong>${formatShiftNumber(hours)} год</strong></div>
         <div class="shift-details-item"><span>Перерва</span><strong>${escapeHtml(breakLabel)}</strong></div>
         <div class="shift-details-item"><span>Нараховано</span><strong>${escapeHtml(formatShiftMoney(pay, entry.currency))}</strong></div>
@@ -26397,6 +26418,7 @@
     const paidEntries = getCurrentMonthShiftEntries().filter(entry => !entry.isDayOff);
     const entries = kind === "vacation"
       ? paidEntries.filter(isVacationShiftEntry)
+      : kind === "sickleave" ? paidEntries.filter(isSickLeaveShiftEntry)
       : kind === "shifts" ? paidEntries.filter(isWorkingShiftEntry) : paidEntries;
     if (!title || !content) return;
     if (kind === "analytics") {
@@ -26422,6 +26444,15 @@
           <div class="shift-stats-value">${escapeHtml(formatShiftMoney(calculateShiftEntryPay(entry), entry.currency))}</div>
         </div>`;
       }).join("") : `<div class="small">У цьому періоді немає днів відпустки.</div>`;
+    } else if (kind === "sickleave") {
+      title.textContent = "Дні тимчасової непрацездатності";
+      content.innerHTML = entries.length ? entries.map(entry => {
+        const dateLabel = new Date(`${entry.date}T12:00:00`).toLocaleDateString("uk-UA", { day: "numeric", month: "long", weekday: "short" });
+        return `<div class="shift-stats-row">
+          <div><strong>${escapeHtml(dateLabel)}</strong><small>${escapeHtml(entry.typeName || "Тимчасово непрацездатний/на")}${entry.note ? ` · ${escapeHtml(entry.note)}` : ""}</small></div>
+          <div class="shift-stats-value">${escapeHtml(formatShiftMoney(calculateShiftEntryPay(entry), entry.currency))}</div>
+        </div>`;
+      }).join("") : `<div class="small">У цьому періоді немає лікарняних.</div>`;
     } else {
       title.textContent = "Статистика змін";
       const groups = new Map();
@@ -26505,7 +26536,7 @@
     });
     const payModeField = document.getElementById("shiftEditorPayMode");
     if (payModeField) {
-      if (dayKind === "vacation") payModeField.value = "fixed";
+      if (["vacation", "sickleave"].includes(dayKind)) payModeField.value = "fixed";
       payModeField.disabled = dayKind !== "work";
     }
     updateShiftEditorPaymentUI();
@@ -26520,7 +26551,7 @@
     const dayKind = context === "type"
       ? inferShiftDayKind(document.getElementById("shiftEditorKind")?.value, document.getElementById("shiftEditorName")?.value, editingType?.isDayOff)
       : inferShiftDayKind(type?.dayKind, type?.name, type?.isDayOff);
-    if (label) label.textContent = dayKind === "vacation" ? "Ставка за день" : fixed ? "Ставка за зміну" : "Оплата за годину";
+    if (label) label.textContent = ["vacation", "sickleave"].includes(dayKind) ? "Ставка за день" : fixed ? "Ставка за зміну" : "Оплата за годину";
     updateShiftEditorPreview();
   }
 
@@ -26555,10 +26586,11 @@
       document.getElementById("shiftEditorPreview").textContent = "Вихідний · 0 годин";
       return;
     }
-    const hours = dayKind === "vacation" ? 0 : calculateShiftHours(start, end, breakHours);
+    const hours = ["vacation", "sickleave"].includes(dayKind) ? 0 : calculateShiftHours(start, end, breakHours);
     const pay = payMode === "fixed" ? rate : hours * rate;
     document.getElementById("shiftEditorPreview").textContent = dayKind === "vacation"
       ? `Відпустка · ${formatShiftMoney(pay, currency)} за день`
+      : dayKind === "sickleave" ? `Тимчасово непрацездатний/на · ${formatShiftMoney(pay, currency)} за день`
       : `${formatShiftNumber(hours)} год · ${formatShiftMoney(pay, currency)}${payMode === "fixed" ? " за зміну" : ""}`;
   }
 
@@ -26750,6 +26782,8 @@
         ? "Вихідний без оплати"
         : type.dayKind === "vacation"
           ? `${formatShiftMoney(type.rate, type.currency)} за день відпустки`
+          : type.dayKind === "sickleave"
+            ? `${formatShiftMoney(type.rate, type.currency)} за день лікарняного`
           : `${type.start}–${type.end} · ${type.payMode === "fixed" ? `${formatShiftMoney(type.rate, type.currency)} за зміну` : `${formatShiftMoney(type.rate, type.currency)} / год`}`;
       return `<button type="button" class="shift-type-list-item" data-edit-shift-type="${escapeHtml(type.id)}" style="--shift-color:${escapeHtml(type.color)}">
         <span class="shift-type-list-item-dot" aria-hidden="true"></span>
@@ -27713,6 +27747,7 @@
   });
   document.getElementById("openShiftBreakdownBtn").addEventListener("click", () => openShiftStats("shifts"));
   document.getElementById("openVacationBreakdownBtn").addEventListener("click", () => openShiftStats("vacation"));
+  document.getElementById("openSickLeaveBreakdownBtn").addEventListener("click", () => openShiftStats("sickleave"));
   document.getElementById("openPayBreakdownBtn").addEventListener("click", () => openShiftStats("pay"));
   document.getElementById("openWorkAnalyticsBtn").addEventListener("click", () => openShiftStats("analytics"));
   document.getElementById("shiftStatsContent").addEventListener("click", event => {
