@@ -54,9 +54,11 @@
       top: 0;
       right: 0;
       left: 0;
-      z-index: 99;
+      z-index: 101;
       height: env(safe-area-inset-top);
       background: var(--app-header-safe-background, var(--surface));
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       pointer-events: none;
     }
     :root,
@@ -9025,6 +9027,42 @@
       font-weight: 700;
       box-shadow: 0 8px 18px rgba(35,128,111,.28);
     }
+    .additional-tool-icon.shipment-tool-icon {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(145deg, #f29b55, #c6533e);
+      box-shadow: 0 8px 18px rgba(198,83,62,.28);
+    }
+    .shipment-truck-glyph {
+      position: relative;
+      width: 33px;
+      height: 22px;
+      border: 3px solid currentColor;
+      border-radius: 3px 3px 5px 5px;
+    }
+    .shipment-truck-glyph::before {
+      content: "";
+      position: absolute;
+      right: -3px;
+      bottom: -3px;
+      width: 11px;
+      height: 14px;
+      border: 3px solid currentColor;
+      border-left: 0;
+      border-radius: 0 4px 3px 0;
+      background: color-mix(in srgb, #c6533e 72%, #fff 28%);
+    }
+    .shipment-truck-glyph::after {
+      content: "";
+      position: absolute;
+      right: 2px;
+      bottom: -8px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: -22px 0 0 currentColor;
+    }
     .pallet-stack-glyph {
       position: relative;
       display: grid;
@@ -9075,6 +9113,7 @@
     .additional-settings-toggle input { width: 22px; height: 22px; margin: 0; }
     body.additional-hide-tool-back #backFromPalletCalculatorBtn,
     body.additional-hide-tool-back #backToPalletCalculatorBtn,
+    body.additional-hide-tool-back #backFromShipmentCardBtn,
     body.additional-hide-tool-back #backToAdditionalDesktopBtn { display: none !important; }
     .additional-tool-name {
       display: flex;
@@ -9102,6 +9141,171 @@
       gap: 12px;
       width: 100%;
       margin: 0 auto;
+    }
+    .shipment-card-shell {
+      display: grid;
+      width: min(100%, 760px);
+      margin-inline: auto;
+      gap: 12px;
+    }
+    .shipment-card-panel,
+    .shipment-card-preview {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: 0 14px 34px color-mix(in srgb, var(--popover-shadow) 38%, transparent);
+    }
+    .shipment-card-search {
+      position: sticky;
+      top: calc(var(--app-header-bottom, 82px) - 2px);
+      z-index: 14;
+      margin-bottom: 12px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface);
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--popover-shadow) 28%, transparent);
+    }
+    .shipment-card-search label,
+    .shipment-card-meta label,
+    .shipment-card-item-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+    }
+    .shipment-card-search-wrap { position: relative; }
+    .shipment-card-search-wrap input { margin: 0; padding-right: 38px; }
+    .shipment-card-search-results {
+      position: absolute;
+      top: calc(100% + 5px);
+      right: 0;
+      left: 0;
+      z-index: 22;
+      max-height: min(320px, 48dvh);
+      overflow: auto;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface-strong);
+      box-shadow: 0 14px 32px var(--popover-shadow);
+    }
+    .shipment-card-search-results button {
+      display: block;
+      width: 100%;
+      min-height: 38px;
+      margin: 0;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      font-size: 12px;
+      text-align: left;
+    }
+    .shipment-card-search-results button:hover,
+    .shipment-card-search-results button:focus-visible { background: var(--field-hover); }
+    .shipment-card-empty {
+      padding: 18px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+    .shipment-card-items { display: grid; gap: 9px; }
+    .shipment-card-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 100px 100px 34px;
+      gap: 8px;
+      align-items: end;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface-strong);
+    }
+    .shipment-card-item-name {
+      min-width: 0;
+      align-self: center;
+    }
+    .shipment-card-item-name strong {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 12px;
+      line-height: 1.25;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+    .shipment-card-item-name small { display: block; margin-top: 5px; color: var(--muted); font-size: 9px; }
+    .shipment-card-item input[type="number"] { min-height: 38px; margin: 0; padding: 7px 8px; }
+    .shipment-card-remove {
+      width: 34px !important;
+      min-width: 34px !important;
+      height: 38px;
+      min-height: 38px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--soft-danger-bg) !important;
+      box-shadow: none !important;
+      font-size: 22px;
+    }
+    .shipment-card-loose {
+      grid-column: 2 / -1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .shipment-card-loose input { width: 20px; height: 20px; margin: 0; }
+    .shipment-card-meta {
+      display: grid;
+      grid-template-columns: minmax(120px, .65fr) minmax(0, 1.35fr);
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .shipment-card-meta input { margin: 0; }
+    .shipment-card-capacity {
+      margin: 10px 0 0;
+      padding: 9px 11px;
+      border-radius: 12px;
+      background: var(--surface-deep);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      text-align: center;
+    }
+    .shipment-card-capacity.over { color: var(--soft-danger-bg); }
+    .shipment-card-actions { display: grid; gap: 8px; margin-top: 12px; }
+    .shipment-card-actions button { width: 100%; margin: 0; }
+    .shipment-card-preview { display: grid; gap: 10px; }
+    .shipment-card-preview img {
+      display: block;
+      width: min(100%, 620px);
+      aspect-ratio: 1;
+      margin-inline: auto;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: #fff;
+      object-fit: contain;
+    }
+    .shipment-card-preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .shipment-card-preview-actions button { width: 100%; margin: 0; }
+    @media (min-width: 901px) {
+      .shipment-card-search { top: calc(var(--desktop-header-height) - 2px); }
+    }
+    @media (max-width: 600px) {
+      .shipment-card-panel { padding: 10px; }
+      .shipment-card-item { grid-template-columns: minmax(0, 1fr) 72px 72px 30px; gap: 6px; padding: 9px 8px; }
+      .shipment-card-remove { width: 30px !important; min-width: 30px !important; }
+      .shipment-card-loose { grid-column: 1 / -1; }
+      .shipment-card-meta { grid-template-columns: 86px minmax(0, 1fr); }
+      .shipment-card-preview-actions { grid-template-columns: 1fr; }
     }
     .pallet-calculator-card,
     .pallet-calculator-result {
@@ -10516,8 +10720,7 @@
     body.workspace-additional { overscroll-behavior-y: none; }
     html.modal-scroll-locked,
     body.modal-scroll-locked,
-    body.modal-scroll-locked::before,
-    html.modal-scroll-locked::before {
+    body.modal-scroll-locked::before {
       background: var(--modal-safe-background, color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%)) !important;
     }
     [role="dialog"][aria-modal="true"]:not(.hidden) {
@@ -10537,7 +10740,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=433">
+<link rel="manifest" href="manifest.json?v=435">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10592,7 +10795,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.33</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.35</span></div>
     </div>
   </div>
 
@@ -11065,6 +11268,10 @@
             <span class="additional-tool-icon pallet-tool-icon" aria-hidden="true"><span class="pallet-stack-glyph"><i></i><i></i><i></i></span></span>
             <span class="additional-tool-name">Перехідний піддон</span>
           </button>
+          <button type="button" class="additional-tool-tile" id="openShipmentCardTool" data-additional-tool="shipmentCard">
+            <span class="additional-tool-icon shipment-tool-icon" aria-hidden="true"><span class="shipment-truck-glyph"></span></span>
+            <span class="additional-tool-name">Відвантаження</span>
+          </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
         </div>
       </section>
@@ -11139,6 +11346,40 @@
           <div class="pallet-calculator-settings-list" id="palletCalculatorSettingsList"></div>
           <button type="button" id="addPalletCalculatorFormatBtn">+ Додати формат</button>
           <button type="button" class="secondary pallet-calculator-back" id="backToPalletCalculatorBtn">Назад</button>
+        </div>
+      </section>
+
+      <section id="shipmentCardView" class="hidden">
+        <div class="shipment-card-shell">
+          <section class="shipment-card-panel">
+            <div class="shipment-card-search">
+              <label for="shipmentCardProductSearch">Пошук позиції</label>
+              <div class="shipment-card-search-wrap">
+                <input id="shipmentCardProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Почни вводити назву" />
+                <button type="button" class="pallet-calculator-format-clear hidden" id="clearShipmentCardSearchBtn" aria-label="Очистити пошук">×</button>
+                <div class="shipment-card-search-results hidden" id="shipmentCardSearchResults"></div>
+              </div>
+            </div>
+            <div class="shipment-card-items" id="shipmentCardItems"></div>
+            <div class="shipment-card-empty" id="shipmentCardEmpty">Додай продукцію через пошук позиції</div>
+            <div class="shipment-card-meta">
+              <label>Рампа<input id="shipmentCardRamp" type="text" maxlength="20" placeholder="Наприклад: 7" /></label>
+              <label>Водій<input id="shipmentCardDriver" type="text" maxlength="80" placeholder="Прізвище І. П." /></label>
+            </div>
+            <div class="shipment-card-capacity" id="shipmentCardCapacity">Зайнято місць: 0 із 33</div>
+            <div class="shipment-card-actions">
+              <button type="button" id="createShipmentCardBtn">Створити картку</button>
+              <button type="button" class="secondary" id="clearShipmentCardBtn">Очистити</button>
+            </div>
+          </section>
+          <section class="shipment-card-preview hidden" id="shipmentCardPreview">
+            <img id="shipmentCardPreviewImage" alt="Сформована картка відвантаження" />
+            <div class="shipment-card-preview-actions">
+              <button type="button" id="saveShipmentCardImageBtn">Зберегти PNG</button>
+              <button type="button" class="secondary" id="closeShipmentCardPreviewBtn">Закрити перегляд</button>
+            </div>
+          </section>
+          <button type="button" class="secondary pallet-calculator-back" id="backFromShipmentCardBtn">Назад</button>
         </div>
       </section>
 
@@ -12121,7 +12362,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.33</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.35</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12147,6 +12388,21 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.35</h3>
+          <ul>
+            <li>у «Додатково» додано інструмент «Відвантаження» з пошуком позицій із загальної бази найменувань;</li>
+            <li>для кожної позиції можна вказати повні піддони, додаткові коробки та позначити коробки без окремого піддона;</li>
+            <li>показується використання місткості фури — до 33 європіддонних місць;</li>
+            <li>формується квадратна картка PNG із рампою, водієм і адаптивним списком продукції, включно з десятьма та більшою кількістю позицій.</li>
+          </ul>
+
+          <h3>Версія 4.34</h3>
+          <ul>
+            <li>верхню системну область iPhone з годинником, мережею та батареєю знову підлаштовано під суцільний колір поточної шапки;</li>
+            <li>розмиття та напівпрозорий ефект прибрано лише із системної safe area, без зміни вигляду самої шапки;</li>
+            <li>відкриття діалогових вікон більше не підміняє колір верхньої системної області.</li>
+          </ul>
+
           <h3>Версія 4.33</h3>
           <ul>
             <li>додано стандартний тип дня «Тимчасово непрацездатний/на» з окремим підрахунком лікарняних;</li>
@@ -14289,14 +14545,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=433"></script>
-<script src="./firebase-config.js?v=433"></script>
+<script src="./assets/decimen-optical-transfer.js?v=435"></script>
+<script src="./firebase-config.js?v=435"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.33";
+  const APP_VERSION = "4.35";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14358,6 +14614,7 @@
   const ADDITIONAL_DESKTOP_LAYOUT_KEY = "warehouseJournalAdditionalDesktopLayoutV1";
   const ADDITIONAL_SHOW_BACK_BUTTON_KEY = "warehouseJournalAdditionalShowBackButton";
   const PALLET_CALCULATOR_FORMATS_KEY = "warehouseJournalPalletCalculatorFormatsV1";
+  const SHIPMENT_CARD_DRAFT_KEY = "warehouseJournalShipmentCardDraftV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -14415,6 +14672,7 @@
     ADDITIONAL_DESKTOP_LAYOUT_KEY,
     ADDITIONAL_SHOW_BACK_BUTTON_KEY,
     PALLET_CALCULATOR_FORMATS_KEY,
+    SHIPMENT_CARD_DRAFT_KEY,
     SHIFT_SCHEDULE_KEY,
     SHIFT_CALENDAR_VIEW_KEY,
     TRASH_RETENTION_KEY,
@@ -15729,7 +15987,7 @@
       document.body.style.top = `-${modalScrollPosition}px`;
       document.body.classList.add("modal-scroll-locked");
       document.documentElement.classList.add("modal-scroll-locked");
-      syncSystemThemeColor(modalSafeColor);
+      syncSystemAreaToCurrentSurface();
       return;
     }
 
@@ -15769,6 +16027,8 @@
 
   let demoModeActive = getDemoModePreference();
   let state = demoModeActive ? loadDemoState() : loadState();
+  let shipmentCardDraft = loadShipmentCardDraft();
+  let shipmentCardImageUrl = "";
   let initialWorkspaceChoiceNeeded = !demoModeActive && shouldPromptInitialWorkspaceChoice();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
@@ -23634,7 +23894,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=433")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=435")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25159,22 +25419,22 @@
   function getAdditionalLastTool() {
     try {
       const saved = localStorage.getItem(ADDITIONAL_LAST_TOOL_KEY);
-      return ["shifts", "palletCalculator"].includes(saved) ? saved : "desktop";
+      return ["shifts", "palletCalculator", "shipmentCard"].includes(saved) ? saved : "desktop";
     } catch (error) {
       return "desktop";
     }
   }
 
   function setAdditionalLastTool(tool) {
-    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator"].includes(tool) ? tool : "desktop"); } catch (error) {}
+    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator", "shipmentCard"].includes(tool) ? tool : "desktop"); } catch (error) {}
   }
 
   function loadAdditionalDesktopLayout() {
     try {
       const parsed = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
-      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 } };
+      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 } };
     } catch (error) {
-      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 } };
+      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 } };
     }
   }
 
@@ -25268,6 +25528,7 @@
         }
         if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
         if (tile.dataset.additionalTool === "palletCalculator") openPalletCalculator();
+        if (tile.dataset.additionalTool === "shipmentCard") openShipmentCard();
       });
     });
   }
@@ -25278,12 +25539,14 @@
     document.getElementById("additionalDesktopView")?.classList.toggle("hidden", lastTool !== "desktop");
     document.getElementById("shiftScheduleView")?.classList.toggle("hidden", lastTool !== "shifts");
     document.getElementById("palletCalculatorView")?.classList.toggle("hidden", lastTool !== "palletCalculator");
+    document.getElementById("shipmentCardView")?.classList.toggle("hidden", lastTool !== "shipmentCard");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     if (lastTool === "desktop") initializeAdditionalDesktop();
     else if (lastTool === "shifts") renderShiftSchedule();
-    else preparePalletCalculator();
+    else if (lastTool === "palletCalculator") preparePalletCalculator();
+    else prepareShipmentCard();
     updateAdditionalHeaderUI();
   }
 
@@ -25324,7 +25587,7 @@
       ? "Налаштування"
       : (activeTool === "shifts"
         ? "Графік змін"
-        : (activeTool === "palletCalculator" ? "Перехідний піддон" : "Додатково"));
+        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : "Додатково"));
     document.body.classList.toggle("additional-tool-open", toolOpen);
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
     document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
@@ -25390,6 +25653,10 @@
       openAdditionalDesktop();
       return true;
     }
+    if (getAdditionalLastTool() === "shipmentCard") {
+      openAdditionalDesktop();
+      return true;
+    }
     return false;
   }
 
@@ -25399,6 +25666,7 @@
     closeShiftStats();
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
@@ -25414,6 +25682,7 @@
     closeShiftStats();
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
@@ -25432,6 +25701,7 @@
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.remove("hidden");
     preparePalletCalculator();
     updateAdditionalHeaderUI();
@@ -25445,8 +25715,25 @@
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.remove("hidden");
     renderPalletCalculatorSettings();
+    updateAdditionalHeaderUI();
+  }
+
+  function openShipmentCard() {
+    setAdditionalLastTool("shipmentCard");
+    closeShiftEditor();
+    closeShiftStats();
+    closePalletCalculatorDialog();
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.remove("hidden");
+    prepareShipmentCard();
     updateAdditionalHeaderUI();
   }
 
@@ -25474,9 +25761,318 @@
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.remove("hidden");
     applyAdditionalBackButtonPreference();
     updateAdditionalHeaderUI();
+  }
+
+  function loadShipmentCardDraft() {
+    const fallback = { ramp: "", driver: "", items: [] };
+    try {
+      const parsed = JSON.parse(localStorage.getItem(SHIPMENT_CARD_DRAFT_KEY) || "null");
+      if (!parsed || typeof parsed !== "object") return fallback;
+      const items = Array.isArray(parsed.items) ? parsed.items.map((item, index) => ({
+        id: String(item?.id || `shipment-${Date.now()}-${index}`),
+        productId: String(item?.productId || ""),
+        name: String(item?.name || "").trim().slice(0, 300),
+        pallets: Math.max(0, Math.trunc(Number(item?.pallets) || 0)),
+        boxes: Math.max(0, Math.trunc(Number(item?.boxes) || 0)),
+        looseBoxes: Boolean(item?.looseBoxes)
+      })).filter(item => item.name) : [];
+      return {
+        ramp: String(parsed.ramp || "").slice(0, 20),
+        driver: String(parsed.driver || "").slice(0, 80),
+        items
+      };
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function saveShipmentCardDraft() {
+    try { localStorage.setItem(SHIPMENT_CARD_DRAFT_KEY, JSON.stringify(shipmentCardDraft)); } catch (error) {}
+  }
+
+  function shipmentCardOccupiedPlaces() {
+    return shipmentCardDraft.items.reduce((total, item) => {
+      const fullPallets = Math.max(0, Math.trunc(Number(item.pallets) || 0));
+      const boxesPlace = Number(item.boxes) > 0 && !item.looseBoxes ? 1 : 0;
+      return total + fullPallets + boxesPlace;
+    }, 0);
+  }
+
+  function updateShipmentCardSearchClearButton() {
+    const input = document.getElementById("shipmentCardProductSearch");
+    document.getElementById("clearShipmentCardSearchBtn")?.classList.toggle("hidden", !input?.value);
+  }
+
+  function renderShipmentCardSearchResults(query = "") {
+    const results = document.getElementById("shipmentCardSearchResults");
+    if (!results) return;
+    const normalizedQuery = normalizePalletCalculatorSearchValue(query);
+    const matches = sortedProducts()
+      .filter(product => !normalizedQuery || normalizePalletCalculatorSearchValue(product.name).includes(normalizedQuery))
+      .slice(0, 40);
+    results.innerHTML = matches.length
+      ? matches.map(product => `<button type="button" data-shipment-product="${escapeHtml(product.id)}">${escapeHtml(product.name)}</button>`).join("")
+      : `<div class="shipment-card-empty">Позицію не знайдено</div>`;
+    results.classList.remove("hidden");
+  }
+
+  function clearShipmentCardSearch() {
+    const input = document.getElementById("shipmentCardProductSearch");
+    if (input) input.value = "";
+    document.getElementById("shipmentCardSearchResults")?.classList.add("hidden");
+    updateShipmentCardSearchClearButton();
+    input?.focus();
+  }
+
+  function addShipmentCardProduct(productId) {
+    const product = state.products.find(item => item.id === productId);
+    if (!product) return;
+    const existing = shipmentCardDraft.items.find(item => item.productId === product.id);
+    if (existing) {
+      toast("Ця позиція вже додана", true);
+    } else {
+      shipmentCardDraft.items.push({
+        id: `shipment-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        productId: product.id,
+        name: product.name,
+        pallets: 0,
+        boxes: 0,
+        looseBoxes: false
+      });
+      shipmentCardImageUrl = "";
+      document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+      saveShipmentCardDraft();
+      renderShipmentCardItems();
+    }
+    clearShipmentCardSearch();
+  }
+
+  function renderShipmentCardItems() {
+    const list = document.getElementById("shipmentCardItems");
+    const empty = document.getElementById("shipmentCardEmpty");
+    if (!list || !empty) return;
+    list.innerHTML = shipmentCardDraft.items.map((item, index) => `
+      <div class="shipment-card-item" data-shipment-item="${escapeHtml(item.id)}">
+        <div class="shipment-card-item-name"><strong>${escapeHtml(item.name)}</strong><small>Позиція ${index + 1}</small></div>
+        <div class="shipment-card-item-field"><label>Піддонів</label><input type="number" min="0" step="1" inputmode="numeric" value="${item.pallets || ""}" data-shipment-field="pallets" aria-label="Кількість піддонів" /></div>
+        <div class="shipment-card-item-field"><label>Коробок</label><input type="number" min="0" step="1" inputmode="numeric" value="${item.boxes || ""}" data-shipment-field="boxes" aria-label="Кількість коробок" /></div>
+        <button type="button" class="shipment-card-remove" data-remove-shipment-item="${escapeHtml(item.id)}" aria-label="Видалити позицію">×</button>
+        <label class="shipment-card-loose"><input type="checkbox" data-shipment-field="looseBoxes" ${item.looseBoxes ? "checked" : ""} ${item.boxes > 0 ? "" : "disabled"} />Коробки без піддона — не займають окреме піддонне місце</label>
+      </div>`).join("");
+    empty.classList.toggle("hidden", shipmentCardDraft.items.length > 0);
+    const places = shipmentCardOccupiedPlaces();
+    const capacity = document.getElementById("shipmentCardCapacity");
+    if (capacity) {
+      capacity.textContent = `Зайнято місць: ${places} із 33${places > 33 ? ` · перевищено на ${places - 33}` : ""}`;
+      capacity.classList.toggle("over", places > 33);
+    }
+  }
+
+  function prepareShipmentCard() {
+    shipmentCardDraft.items.forEach(item => {
+      const currentProduct = state.products.find(product => product.id === item.productId);
+      if (currentProduct) item.name = currentProduct.name;
+    });
+    const ramp = document.getElementById("shipmentCardRamp");
+    const driver = document.getElementById("shipmentCardDriver");
+    if (ramp) ramp.value = shipmentCardDraft.ramp;
+    if (driver) driver.value = shipmentCardDraft.driver;
+    document.getElementById("shipmentCardSearchResults")?.classList.add("hidden");
+    updateShipmentCardSearchClearButton();
+    renderShipmentCardItems();
+  }
+
+  function updateShipmentCardItem(itemId, field, value) {
+    const item = shipmentCardDraft.items.find(entry => entry.id === itemId);
+    if (!item) return;
+    if (field === "looseBoxes") item.looseBoxes = Boolean(value);
+    else item[field] = Math.max(0, Math.trunc(Number(value) || 0));
+    if (!item.boxes) item.looseBoxes = false;
+    shipmentCardImageUrl = "";
+    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    saveShipmentCardDraft();
+    renderShipmentCardItems();
+  }
+
+  function removeShipmentCardItem(itemId) {
+    shipmentCardDraft.items = shipmentCardDraft.items.filter(item => item.id !== itemId);
+    shipmentCardImageUrl = "";
+    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    saveShipmentCardDraft();
+    renderShipmentCardItems();
+  }
+
+  async function clearShipmentCard() {
+    if (!shipmentCardDraft.items.length && !shipmentCardDraft.ramp && !shipmentCardDraft.driver) return;
+    const confirmed = await showAppDialog({
+      label: "Відвантаження",
+      title: "Очистити картку?",
+      message: "Усі вибрані позиції, рампа та водій будуть прибрані.",
+      confirmText: "Очистити",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    shipmentCardDraft = { ramp: "", driver: "", items: [] };
+    shipmentCardImageUrl = "";
+    saveShipmentCardDraft();
+    prepareShipmentCard();
+    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    toast("Картку очищено");
+  }
+
+  function shipmentCardWord(value, forms) {
+    const number = Math.abs(Math.trunc(Number(value) || 0));
+    const lastTwo = number % 100;
+    const last = number % 10;
+    if (lastTwo >= 11 && lastTwo <= 14) return forms[2];
+    if (last === 1) return forms[0];
+    if (last >= 2 && last <= 4) return forms[1];
+    return forms[2];
+  }
+
+  function roundedCanvasRect(context, x, y, width, height, radius) {
+    const r = Math.max(0, Math.min(radius, width / 2, height / 2));
+    context.beginPath();
+    context.moveTo(x + r, y);
+    context.lineTo(x + width - r, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + r);
+    context.lineTo(x + width, y + height - r);
+    context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    context.lineTo(x + r, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - r);
+    context.lineTo(x, y + r);
+    context.quadraticCurveTo(x, y, x + r, y);
+    context.closePath();
+  }
+
+  function wrapShipmentCanvasText(context, text, maxWidth, maxLines) {
+    const words = String(text || "").split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = "";
+    words.forEach(word => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (!line || context.measureText(candidate).width <= maxWidth) line = candidate;
+      else { lines.push(line); line = word; }
+    });
+    if (line) lines.push(line);
+    if (lines.length > maxLines) {
+      const clipped = lines.slice(0, maxLines);
+      let last = clipped[maxLines - 1];
+      while (last.length > 1 && context.measureText(`${last}…`).width > maxWidth) last = last.slice(0, -1);
+      clipped[maxLines - 1] = `${last}…`;
+      return clipped;
+    }
+    return lines;
+  }
+
+  function createShipmentCardImage() {
+    const validItems = shipmentCardDraft.items.filter(item => item.pallets > 0 || item.boxes > 0);
+    if (!validItems.length) {
+      toast("Додай хоча б одну позицію з піддонами або коробками", true);
+      return;
+    }
+    shipmentCardDraft.ramp = String(document.getElementById("shipmentCardRamp")?.value || "").trim();
+    shipmentCardDraft.driver = String(document.getElementById("shipmentCardDriver")?.value || "").trim();
+    saveShipmentCardDraft();
+
+    const size = 1600;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#f7f4ee";
+    context.fillRect(0, 0, size, size);
+    context.fillStyle = "#172033";
+    context.fillRect(0, 0, size, 190);
+    context.fillStyle = "#ffffff";
+    context.font = "900 70px system-ui, -apple-system, sans-serif";
+    context.textAlign = "left";
+    context.textBaseline = "middle";
+    context.fillText("ВІДВАНТАЖЕННЯ", 80, 88);
+    context.font = "600 28px system-ui, -apple-system, sans-serif";
+    context.textAlign = "right";
+    context.fillText(new Date().toLocaleDateString("uk-UA"), 1520, 88);
+
+    const columns = validItems.length <= 5 ? 1 : validItems.length <= 10 ? 2 : 3;
+    const rows = Math.ceil(validItems.length / columns);
+    const gap = 22;
+    const startX = 70;
+    const startY = 220;
+    const contentWidth = 1460;
+    const contentHeight = 1080;
+    const cardWidth = (contentWidth - gap * (columns - 1)) / columns;
+    const cardHeight = (contentHeight - gap * (rows - 1)) / rows;
+    validItems.forEach((item, index) => {
+      const column = index % columns;
+      const row = Math.floor(index / columns);
+      const x = startX + column * (cardWidth + gap);
+      const y = startY + row * (cardHeight + gap);
+      roundedCanvasRect(context, x, y, cardWidth, cardHeight, 24);
+      context.fillStyle = "#ffffff";
+      context.fill();
+      context.strokeStyle = "#c8ced8";
+      context.lineWidth = 3;
+      context.stroke();
+
+      const nameFont = columns === 1
+        ? Math.max(31, Math.min(50, cardHeight * .23))
+        : columns === 2
+          ? Math.max(27, Math.min(38, cardHeight * .21))
+          : Math.max(23, Math.min(30, cardHeight * .19));
+      context.fillStyle = "#172033";
+      context.font = `850 ${nameFont}px system-ui, -apple-system, sans-serif`;
+      context.textAlign = "left";
+      context.textBaseline = "top";
+      const maxNameLines = Math.max(1, Math.min(3, Math.floor((cardHeight - 82) / (nameFont * 1.14))));
+      const lines = wrapShipmentCanvasText(context, item.name, cardWidth - 54, maxNameLines);
+      lines.forEach((line, lineIndex) => context.fillText(line, x + 27, y + 24 + lineIndex * nameFont * 1.12));
+
+      const details = [];
+      if (item.pallets > 0) details.push(`${item.pallets} ${shipmentCardWord(item.pallets, ["піддон", "піддони", "піддонів"])}`);
+      if (item.boxes > 0) details.push(`${item.boxes} ${shipmentCardWord(item.boxes, ["коробка", "коробки", "коробок"])}${item.looseBoxes ? " · без піддона" : " · окремий піддон"}`);
+      context.fillStyle = "#c6533e";
+      context.font = `800 ${columns === 1 ? 36 : columns === 2 ? 29 : 22}px system-ui, -apple-system, sans-serif`;
+      context.textBaseline = "bottom";
+      context.fillText(details.join("  +  "), x + 27, y + cardHeight - 24, cardWidth - 54);
+    });
+
+    roundedCanvasRect(context, 70, 1330, 1460, 190, 28);
+    context.fillStyle = "#172033";
+    context.fill();
+    context.fillStyle = "#ffffff";
+    context.textBaseline = "middle";
+    context.textAlign = "left";
+    context.font = "800 34px system-ui, -apple-system, sans-serif";
+    context.fillText(`РАМПА: ${shipmentCardDraft.ramp || "—"}`, 105, 1385);
+    context.font = "700 31px system-ui, -apple-system, sans-serif";
+    const driverText = `ВОДІЙ: ${shipmentCardDraft.driver || "—"}`;
+    const driverLines = wrapShipmentCanvasText(context, driverText, 900, 2);
+    driverLines.forEach((line, index) => context.fillText(line, 105, 1445 + index * 36));
+    context.textAlign = "right";
+    context.font = "700 27px system-ui, -apple-system, sans-serif";
+    context.fillText(`${validItems.length} поз. · ${shipmentCardOccupiedPlaces()} / 33 місць`, 1495, 1385);
+
+    shipmentCardImageUrl = canvas.toDataURL("image/png");
+    const preview = document.getElementById("shipmentCardPreview");
+    const image = document.getElementById("shipmentCardPreviewImage");
+    if (image) image.src = shipmentCardImageUrl;
+    preview?.classList.remove("hidden");
+    preview?.scrollIntoView({ behavior: "smooth", block: "start" });
+    toast("Картку створено");
+  }
+
+  function saveShipmentCardImage() {
+    if (!shipmentCardImageUrl) createShipmentCardImage();
+    if (!shipmentCardImageUrl) return;
+    const link = document.createElement("a");
+    const ramp = shipmentCardDraft.ramp.replace(/[^a-zа-яіїєґ0-9-]+/gi, "-").replace(/^-+|-+$/g, "");
+    link.download = `vidvantazhennia${ramp ? `-rampa-${ramp}` : ""}-${todayISO()}.png`;
+    link.href = shipmentCardImageUrl;
+    link.click();
   }
 
   function loadPalletCalculatorFormats() {
@@ -26960,6 +27556,7 @@
   document.getElementById("backFromAdditionalSettingsBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("additionalShowBackButton").addEventListener("change", event => setAdditionalBackButtonVisibility(event.target.checked));
   document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("backFromShipmentCardBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("backToPalletCalculatorBtn").addEventListener("click", openPalletCalculator);
   document.getElementById("addPalletCalculatorFormatBtn").addEventListener("click", () => openPalletCalculatorDialog("format-settings"));
   document.getElementById("closePalletCalculatorDialogBtn").addEventListener("click", closePalletCalculatorDialog);
@@ -27037,6 +27634,48 @@
     const option = event.target.closest("[data-pallet-calculator-product]");
     if (option) selectPalletCalculatorProduct(option.dataset.palletCalculatorProduct);
   });
+  document.getElementById("shipmentCardProductSearch").addEventListener("focus", event => {
+    renderShipmentCardSearchResults(event.target.value);
+    updateShipmentCardSearchClearButton();
+  });
+  document.getElementById("shipmentCardProductSearch").addEventListener("input", event => {
+    updateShipmentCardSearchClearButton();
+    renderShipmentCardSearchResults(event.target.value);
+  });
+  document.getElementById("shipmentCardProductSearch").addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    const first = document.querySelector("#shipmentCardSearchResults [data-shipment-product]");
+    if (!first || document.getElementById("shipmentCardSearchResults")?.classList.contains("hidden")) return;
+    event.preventDefault();
+    addShipmentCardProduct(first.dataset.shipmentProduct);
+  });
+  document.getElementById("shipmentCardSearchResults").addEventListener("click", event => {
+    const option = event.target.closest("[data-shipment-product]");
+    if (option) addShipmentCardProduct(option.dataset.shipmentProduct);
+  });
+  document.getElementById("clearShipmentCardSearchBtn").addEventListener("click", clearShipmentCardSearch);
+  document.getElementById("shipmentCardItems").addEventListener("change", event => {
+    const row = event.target.closest("[data-shipment-item]");
+    const field = event.target.dataset.shipmentField;
+    if (!row || !field) return;
+    updateShipmentCardItem(row.dataset.shipmentItem, field, field === "looseBoxes" ? event.target.checked : event.target.value);
+  });
+  document.getElementById("shipmentCardItems").addEventListener("click", event => {
+    const remove = event.target.closest("[data-remove-shipment-item]");
+    if (remove) removeShipmentCardItem(remove.dataset.removeShipmentItem);
+  });
+  ["shipmentCardRamp", "shipmentCardDriver"].forEach(id => {
+    document.getElementById(id).addEventListener("input", event => {
+      shipmentCardDraft[id === "shipmentCardRamp" ? "ramp" : "driver"] = event.target.value;
+      shipmentCardImageUrl = "";
+      document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+      saveShipmentCardDraft();
+    });
+  });
+  document.getElementById("createShipmentCardBtn").addEventListener("click", createShipmentCardImage);
+  document.getElementById("saveShipmentCardImageBtn").addEventListener("click", saveShipmentCardImage);
+  document.getElementById("closeShipmentCardPreviewBtn").addEventListener("click", () => document.getElementById("shipmentCardPreview")?.classList.add("hidden"));
+  document.getElementById("clearShipmentCardBtn").addEventListener("click", clearShipmentCard);
   document.querySelectorAll("[data-toggle-pallet-calculator-section]").forEach(button => {
     button.addEventListener("click", () => togglePalletCalculatorSection(button.dataset.togglePalletCalculatorSection));
   });
@@ -27057,6 +27696,7 @@
     if (!event.target.closest(".pallet-calculator-search-mode-picker")) closePalletCalculatorSearchModeMenu();
     if (!event.target.closest(".pallet-calculator-search")) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     if (!event.target.closest(".pallet-calculator-format-search")) document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
+    if (!event.target.closest(".shipment-card-search")) document.getElementById("shipmentCardSearchResults")?.classList.add("hidden");
     if (!event.target.closest(".order-warehouse-dropdown")) {
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
