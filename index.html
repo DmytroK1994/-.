@@ -10809,7 +10809,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=438">
+<link rel="manifest" href="manifest.json?v=439">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10864,7 +10864,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.38</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.39</span></div>
     </div>
   </div>
 
@@ -12430,7 +12430,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.38</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.39</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12456,6 +12456,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.39</h3>
+          <ul>
+            <li>позиції на квадратному зображенні тепер виводяться одним вертикальним списком на всю ширину;</li>
+            <li>збільшено дату, ПІБ водія та помаранчеві значення кількості вантажу;</li>
+            <li>унизу додано загальну кількість пластикових і дерев’яних піддонів та зайнятих місць із 33.</li>
+          </ul>
+
           <h3>Версія 4.38</h3>
           <ul>
             <li>у кожній машині можна перемикатися між пошуком позиції в базі та ручним введенням назви;</li>
@@ -14634,14 +14641,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=438"></script>
-<script src="./firebase-config.js?v=438"></script>
+<script src="./assets/decimen-optical-transfer.js?v=439"></script>
+<script src="./firebase-config.js?v=439"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.38";
+  const APP_VERSION = "4.39";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23985,7 +23992,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=438")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=439")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -26182,6 +26189,22 @@
     return lines;
   }
 
+  function fitShipmentCanvasLine(context, text, maxWidth) {
+    let fitted = String(text || "");
+    if (context.measureText(fitted).width <= maxWidth) return fitted;
+    while (fitted.length > 1 && context.measureText(`${fitted}…`).width > maxWidth) fitted = fitted.slice(0, -1);
+    return `${fitted.trim()}…`;
+  }
+
+  function shipmentPalletTotalText(value, material) {
+    const adjective = value % 10 === 1 && value % 100 !== 11
+      ? (material === "plastic" ? "пластиковий" : "дерев’яний")
+      : value % 10 >= 2 && value % 10 <= 4 && !(value % 100 >= 12 && value % 100 <= 14)
+        ? (material === "plastic" ? "пластикові" : "дерев’яні")
+        : (material === "plastic" ? "пластикових" : "дерев’яних");
+    return `${value} ${adjective} ${shipmentCardWord(value, ["піддон", "піддони", "піддонів"])}`;
+  }
+
   function createShipmentCardImage(cardId) {
     const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
     if (!card) return;
@@ -26200,60 +26223,67 @@
     context.fillStyle = "#f7f4ee";
     context.fillRect(0, 0, size, size);
     context.fillStyle = "#172033";
-    context.fillRect(0, 0, size, 210);
+    context.fillRect(0, 0, size, 225);
     context.fillStyle = "#ffffff";
     context.font = "900 68px system-ui, -apple-system, sans-serif";
     context.textAlign = "left";
     context.textBaseline = "middle";
-    context.fillText(`РАМПА ${String(card.ramp || "—").toUpperCase()}`, 80, 62);
-    context.font = "800 42px system-ui, -apple-system, sans-serif";
-    const driverHeader = wrapShipmentCanvasText(context, `ВОДІЙ: ${card.driver || "—"}`, 1070, 1)[0] || "ВОДІЙ: —";
-    context.fillText(driverHeader, 80, 148);
-    context.font = "750 40px system-ui, -apple-system, sans-serif";
+    context.fillText(`РАМПА ${String(card.ramp || "—").toUpperCase()}`, 80, 65);
+    context.font = "850 50px system-ui, -apple-system, sans-serif";
+    const driverHeader = wrapShipmentCanvasText(context, `ВОДІЙ: ${card.driver || "—"}`, 1060, 1)[0] || "ВОДІЙ: —";
+    context.fillText(driverHeader, 80, 160);
+    context.font = "800 48px system-ui, -apple-system, sans-serif";
     context.textAlign = "right";
-    context.fillText(new Date().toLocaleDateString("uk-UA"), 1520, 104);
+    context.fillText(new Date().toLocaleDateString("uk-UA"), 1520, 112);
 
-    const columns = validItems.length <= 5 ? 1 : validItems.length <= 10 ? 2 : 3;
-    const rows = Math.ceil(validItems.length / columns);
-    const gap = 22;
     const startX = 70;
-    const startY = 235;
+    const startY = 245;
     const contentWidth = 1460;
-    const contentHeight = 1295;
-    const cardWidth = (contentWidth - gap * (columns - 1)) / columns;
-    const cardHeight = (contentHeight - gap * (rows - 1)) / rows;
+    const footerY = 1405;
+    const contentHeight = footerY - startY;
+    const rowHeight = contentHeight / validItems.length;
     validItems.forEach((item, index) => {
-      const column = index % columns;
-      const row = Math.floor(index / columns);
-      const x = startX + column * (cardWidth + gap);
-      const y = startY + row * (cardHeight + gap);
-      roundedCanvasRect(context, x, y, cardWidth, cardHeight, 24);
-      context.fillStyle = "#ffffff";
-      context.fill();
+      const y = startY + index * rowHeight;
+      if (index % 2 === 0) {
+        context.fillStyle = "rgba(255,255,255,.62)";
+        context.fillRect(startX, y, contentWidth, rowHeight);
+      }
       context.strokeStyle = "#c8ced8";
-      context.lineWidth = 3;
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(startX, y + rowHeight);
+      context.lineTo(startX + contentWidth, y + rowHeight);
       context.stroke();
 
-      const nameFont = columns === 1
-        ? Math.max(36, Math.min(55, cardHeight * .25))
-        : columns === 2
-          ? Math.max(31, Math.min(44, cardHeight * .23))
-          : Math.max(27, Math.min(34, cardHeight * .21));
+      const nameFont = Math.max(25, Math.min(48, rowHeight * .39));
+      const detailsFont = Math.max(29, Math.min(56, rowHeight * .47));
+      const details = shipmentItemSummary(item);
+      context.font = `900 ${detailsFont}px system-ui, -apple-system, sans-serif`;
+      const detailsWidth = Math.min(760, context.measureText(details).width);
+
       context.fillStyle = "#172033";
       context.font = `850 ${nameFont}px system-ui, -apple-system, sans-serif`;
       context.textAlign = "left";
-      context.textBaseline = "top";
-      const maxNameLines = Math.max(1, Math.min(3, Math.floor((cardHeight - 108) / (nameFont * 1.14))));
-      const lines = wrapShipmentCanvasText(context, item.name, cardWidth - 54, maxNameLines);
-      lines.forEach((line, lineIndex) => context.fillText(line, x + 27, y + 24 + lineIndex * nameFont * 1.12));
+      context.textBaseline = "middle";
+      const nameWidth = Math.max(320, contentWidth - detailsWidth - 80);
+      context.fillText(fitShipmentCanvasLine(context, item.name, nameWidth), startX + 18, y + rowHeight / 2);
 
-      const details = shipmentItemSummary(item);
       context.fillStyle = "#c6533e";
-      context.font = `900 ${columns === 1 ? 55 : columns === 2 ? 42 : 30}px system-ui, -apple-system, sans-serif`;
-      context.textBaseline = "bottom";
-      const detailLines = wrapShipmentCanvasText(context, details, cardWidth - 54, 2);
-      detailLines.slice().reverse().forEach((line, lineIndex) => context.fillText(line, x + 27, y + cardHeight - 24 - lineIndex * (columns === 1 ? 62 : columns === 2 ? 49 : 36)));
+      context.font = `900 ${detailsFont}px system-ui, -apple-system, sans-serif`;
+      context.textAlign = "right";
+      context.fillText(fitShipmentCanvasLine(context, details, 740), startX + contentWidth - 18, y + rowHeight / 2);
     });
+
+    const plasticPallets = validItems.reduce((sum, item) => sum + ((item.loadUnit || "pallet") === "pallet" && item.palletType !== "wood" ? item.pallets : 0), 0);
+    const woodenPallets = validItems.reduce((sum, item) => sum + ((item.loadUnit || "pallet") === "pallet" && item.palletType === "wood" ? item.pallets : 0), 0);
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillStyle = "#c6533e";
+    context.font = "900 38px system-ui, -apple-system, sans-serif";
+    context.fillText(`${shipmentPalletTotalText(plasticPallets, "plastic")} · ${shipmentPalletTotalText(woodenPallets, "wood")}`, size / 2, 1465);
+    context.fillStyle = "#172033";
+    context.font = "900 43px system-ui, -apple-system, sans-serif";
+    context.fillText(`Усього зайнято місць: ${shipmentCardOccupiedPlaces(card)} із 33`, size / 2, 1535);
 
     shipmentCardImageUrl = canvas.toDataURL("image/png");
     shipmentCardImageCardId = card.id;
