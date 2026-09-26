@@ -9144,18 +9144,55 @@
     }
     .shipment-card-shell {
       display: grid;
-      width: min(100%, 760px);
+      width: min(100%, 820px);
       margin-inline: auto;
       gap: 12px;
     }
     .shipment-card-panel,
-    .shipment-card-preview {
+    .shipment-card-preview,
+    .shipment-load-card {
       padding: 13px;
       border: 1px solid var(--border);
       border-radius: 20px;
       background: var(--surface);
       box-shadow: 0 14px 34px color-mix(in srgb, var(--popover-shadow) 38%, transparent);
     }
+    .shipment-card-toolbar { display: grid; gap: 8px; }
+    .shipment-card-toolbar button { width: 100%; margin: 0; }
+    .shipment-load-list { display: grid; gap: 10px; }
+    .shipment-load-card { padding: 0; overflow: hidden; }
+    .shipment-load-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 58px;
+      margin: 0;
+      padding: 10px 13px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      box-shadow: none;
+      text-align: left;
+    }
+    .shipment-load-heading strong { display: block; font-size: 14px; line-height: 1.2; }
+    .shipment-load-heading small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .shipment-load-chevron { color: var(--muted); font-size: 20px; transition: transform .18s ease; }
+    .shipment-load-card:not(.collapsed) .shipment-load-chevron { transform: rotate(180deg); }
+    .shipment-load-body { display: grid; gap: 11px; padding: 0 13px 13px; border-top: 1px solid var(--border); }
+    .shipment-load-card.collapsed .shipment-load-body { display: none; }
+    .shipment-load-meta { display: grid; grid-template-columns: minmax(100px, .65fr) minmax(0, 1.35fr); gap: 9px; padding-top: 11px; }
+    .shipment-load-meta label,
+    .shipment-item-dialog-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+    }
+    .shipment-load-meta input { margin: 0; }
     .shipment-card-search {
       position: sticky;
       top: calc(var(--app-header-bottom, 82px) - 2px);
@@ -9168,7 +9205,6 @@
       box-shadow: 0 8px 18px color-mix(in srgb, var(--popover-shadow) 28%, transparent);
     }
     .shipment-card-search label,
-    .shipment-card-meta label,
     .shipment-card-item-field label {
       display: block;
       margin-bottom: 5px;
@@ -9214,16 +9250,17 @@
       font-size: 12px;
       text-align: center;
     }
-    .shipment-card-items { display: grid; gap: 9px; }
+    .shipment-card-items { display: grid; gap: 7px; }
     .shipment-card-item {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 100px 100px 34px;
+      grid-template-columns: minmax(0, 1fr) 34px;
       gap: 8px;
-      align-items: end;
+      align-items: center;
       padding: 10px;
       border: 1px solid var(--border);
       border-radius: 15px;
       background: var(--surface-strong);
+      cursor: pointer;
     }
     .shipment-card-item-name {
       min-width: 0;
@@ -9237,8 +9274,7 @@
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 3;
     }
-    .shipment-card-item-name small { display: block; margin-top: 5px; color: var(--muted); font-size: 9px; }
-    .shipment-card-item input[type="number"] { min-height: 38px; margin: 0; padding: 7px 8px; }
+    .shipment-card-item-name small { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 1.3; }
     .shipment-card-remove {
       width: 34px !important;
       min-width: 34px !important;
@@ -9252,24 +9288,7 @@
       box-shadow: none !important;
       font-size: 22px;
     }
-    .shipment-card-loose {
-      grid-column: 2 / -1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 28px;
-      color: var(--text);
-      font-size: 11px;
-      font-weight: 750;
-    }
-    .shipment-card-loose input { width: 20px; height: 20px; margin: 0; }
-    .shipment-card-meta {
-      display: grid;
-      grid-template-columns: minmax(120px, .65fr) minmax(0, 1.35fr);
-      gap: 9px;
-      margin-top: 12px;
-    }
-    .shipment-card-meta input { margin: 0; }
+    .shipment-add-position { width: 100%; margin: 0; }
     .shipment-card-capacity {
       margin: 10px 0 0;
       padding: 9px 11px;
@@ -9283,6 +9302,7 @@
     .shipment-card-capacity.over { color: var(--soft-danger-bg); }
     .shipment-card-actions { display: grid; gap: 8px; margin-top: 12px; }
     .shipment-card-actions button { width: 100%; margin: 0; }
+    .shipment-card-actions.compact { grid-template-columns: 1fr 1fr; margin-top: 0; }
     .shipment-card-preview { display: grid; gap: 10px; }
     .shipment-card-preview img {
       display: block;
@@ -9296,16 +9316,26 @@
     }
     .shipment-card-preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .shipment-card-preview-actions button { width: 100%; margin: 0; }
+    #shipmentItemOverlay .shipment-item-dialog-card { width: min(92vw, 520px); }
+    .shipment-item-dialog-title { margin: 0; padding-right: 38px; font-size: 16px; line-height: 1.3; }
+    .shipment-item-dialog-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
+    .shipment-item-dialog-field input,
+    .shipment-item-dialog-field select { margin: 0; }
+    .shipment-item-dialog-field.full { grid-column: 1 / -1; }
+    .shipment-item-dialog-loose { display: flex; align-items: center; gap: 8px; min-height: 38px; font-size: 11px; font-weight: 750; }
+    .shipment-item-dialog-loose input { width: 20px; height: 20px; margin: 0; }
+    .shipment-item-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+    .shipment-item-dialog-actions button { width: 100%; margin: 0; }
     @media (min-width: 901px) {
       .shipment-card-search { top: calc(var(--desktop-header-height) - 2px); }
     }
     @media (max-width: 600px) {
       .shipment-card-panel { padding: 10px; }
-      .shipment-card-item { grid-template-columns: minmax(0, 1fr) 72px 72px 30px; gap: 6px; padding: 9px 8px; }
+      .shipment-card-item { grid-template-columns: minmax(0, 1fr) 30px; gap: 6px; padding: 9px 8px; }
       .shipment-card-remove { width: 30px !important; min-width: 30px !important; }
-      .shipment-card-loose { grid-column: 1 / -1; }
-      .shipment-card-meta { grid-template-columns: 86px minmax(0, 1fr); }
+      .shipment-load-meta { grid-template-columns: 86px minmax(0, 1fr); }
       .shipment-card-preview-actions { grid-template-columns: 1fr; }
+      .shipment-card-actions.compact { grid-template-columns: 1fr; }
     }
     .pallet-calculator-card,
     .pallet-calculator-result {
@@ -10740,7 +10770,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=435">
+<link rel="manifest" href="manifest.json?v=436">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10795,7 +10825,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.35</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.36</span></div>
     </div>
   </div>
 
@@ -11351,35 +11381,34 @@
 
       <section id="shipmentCardView" class="hidden">
         <div class="shipment-card-shell">
-          <section class="shipment-card-panel">
-            <div class="shipment-card-search">
-              <label for="shipmentCardProductSearch">Пошук позиції</label>
-              <div class="shipment-card-search-wrap">
-                <input id="shipmentCardProductSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Почни вводити назву" />
-                <button type="button" class="pallet-calculator-format-clear hidden" id="clearShipmentCardSearchBtn" aria-label="Очистити пошук">×</button>
-                <div class="shipment-card-search-results hidden" id="shipmentCardSearchResults"></div>
-              </div>
-            </div>
-            <div class="shipment-card-items" id="shipmentCardItems"></div>
-            <div class="shipment-card-empty" id="shipmentCardEmpty">Додай продукцію через пошук позиції</div>
-            <div class="shipment-card-meta">
-              <label>Рампа<input id="shipmentCardRamp" type="text" maxlength="20" placeholder="Наприклад: 7" /></label>
-              <label>Водій<input id="shipmentCardDriver" type="text" maxlength="80" placeholder="Прізвище І. П." /></label>
-            </div>
-            <div class="shipment-card-capacity" id="shipmentCardCapacity">Зайнято місць: 0 із 33</div>
-            <div class="shipment-card-actions">
-              <button type="button" id="createShipmentCardBtn">Створити картку</button>
-              <button type="button" class="secondary" id="clearShipmentCardBtn">Очистити</button>
-            </div>
+          <section class="shipment-card-panel shipment-card-toolbar">
+            <button type="button" id="createShipmentLoadBtn">+ Нова машина</button>
           </section>
+          <div class="shipment-load-list" id="shipmentCardLoads"></div>
+          <div class="shipment-card-empty" id="shipmentLoadsEmpty">Карток відвантаження поки немає</div>
           <section class="shipment-card-preview hidden" id="shipmentCardPreview">
             <img id="shipmentCardPreviewImage" alt="Сформована картка відвантаження" />
             <div class="shipment-card-preview-actions">
-              <button type="button" id="saveShipmentCardImageBtn">Зберегти PNG</button>
+              <button type="button" id="shareShipmentCardImageBtn">Поділитися</button>
               <button type="button" class="secondary" id="closeShipmentCardPreviewBtn">Закрити перегляд</button>
             </div>
           </section>
           <button type="button" class="secondary pallet-calculator-back" id="backFromShipmentCardBtn">Назад</button>
+        </div>
+        <div class="shift-editor-overlay hidden" id="shipmentItemOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentItemDialogTitle">
+          <aside class="shift-editor-panel shipment-item-dialog-card">
+            <h3 class="shipment-item-dialog-title" id="shipmentItemDialogTitle">Позиція</h3>
+            <div class="shipment-item-dialog-fields">
+              <div class="shipment-item-dialog-field"><label for="shipmentItemPallets">Піддонів</label><input id="shipmentItemPallets" type="number" min="0" step="1" inputmode="numeric" /></div>
+              <div class="shipment-item-dialog-field"><label for="shipmentItemBoxes">Коробок</label><input id="shipmentItemBoxes" type="number" min="0" step="1" inputmode="numeric" /></div>
+              <div class="shipment-item-dialog-field full"><label for="shipmentItemPalletType">Тип піддона</label><select id="shipmentItemPalletType"><option value="plastic">Пластик</option><option value="wood">Дерево</option></select></div>
+              <label class="shipment-item-dialog-loose full"><input id="shipmentItemLooseBoxes" type="checkbox" />Коробки без піддона</label>
+            </div>
+            <div class="shipment-item-dialog-actions">
+              <button type="button" id="saveShipmentItemBtn">Додати</button>
+              <button type="button" class="secondary" id="closeShipmentItemBtn">Закрити</button>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -12362,7 +12391,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.35</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.36</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12388,6 +12417,14 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.36</h3>
+          <ul>
+            <li>«Відвантаження» перебудовано на окремі згортані картки машин — у кожній може бути багато різних позицій;</li>
+            <li>дані позиції вводяться в окремому вікні з вибором пластикового або дерев’яного піддона та коробок без піддона;</li>
+            <li>рампу й водія перенесено у верх квадратного зображення, а нижню синю панель і підсумковий лічильник прибрано;</li>
+            <li>замість завантаження PNG додано системне «Поділитися» для надсилання у Viber, інші застосунки або збереження зображення.</li>
+          </ul>
+
           <h3>Версія 4.35</h3>
           <ul>
             <li>у «Додатково» додано інструмент «Відвантаження» з пошуком позицій із загальної бази найменувань;</li>
@@ -14545,14 +14582,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=435"></script>
-<script src="./firebase-config.js?v=435"></script>
+<script src="./assets/decimen-optical-transfer.js?v=436"></script>
+<script src="./firebase-config.js?v=436"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.35";
+  const APP_VERSION = "4.36";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16029,6 +16066,8 @@
   let state = demoModeActive ? loadDemoState() : loadState();
   let shipmentCardDraft = loadShipmentCardDraft();
   let shipmentCardImageUrl = "";
+  let shipmentCardImageCardId = "";
+  let shipmentItemEditContext = null;
   let initialWorkspaceChoiceNeeded = !demoModeActive && shouldPromptInitialWorkspaceChoice();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
@@ -23894,7 +23933,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=435")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=436")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25768,23 +25807,39 @@
   }
 
   function loadShipmentCardDraft() {
-    const fallback = { ramp: "", driver: "", items: [] };
+    const fallback = { cards: [] };
     try {
       const parsed = JSON.parse(localStorage.getItem(SHIPMENT_CARD_DRAFT_KEY) || "null");
       if (!parsed || typeof parsed !== "object") return fallback;
-      const items = Array.isArray(parsed.items) ? parsed.items.map((item, index) => ({
-        id: String(item?.id || `shipment-${Date.now()}-${index}`),
+      const normalizeItems = items => Array.isArray(items) ? items.map((item, index) => ({
+        id: String(item?.id || `shipment-item-${Date.now()}-${index}`),
         productId: String(item?.productId || ""),
         name: String(item?.name || "").trim().slice(0, 300),
         pallets: Math.max(0, Math.trunc(Number(item?.pallets) || 0)),
         boxes: Math.max(0, Math.trunc(Number(item?.boxes) || 0)),
-        looseBoxes: Boolean(item?.looseBoxes)
+        looseBoxes: Boolean(item?.looseBoxes),
+        palletType: item?.palletType === "wood" ? "wood" : "plastic"
       })).filter(item => item.name) : [];
-      return {
+      if (Array.isArray(parsed.cards)) {
+        return { cards: parsed.cards.map((card, index) => ({
+          id: String(card?.id || `shipment-card-${Date.now()}-${index}`),
+          ramp: String(card?.ramp || "").slice(0, 20),
+          driver: String(card?.driver || "").slice(0, 80),
+          createdAt: String(card?.createdAt || new Date().toISOString()),
+          collapsed: Boolean(card?.collapsed),
+          items: normalizeItems(card?.items)
+        })) };
+      }
+      const migratedItems = normalizeItems(parsed.items);
+      if (!migratedItems.length && !parsed.ramp && !parsed.driver) return fallback;
+      return { cards: [{
+        id: `shipment-card-${Date.now()}`,
         ramp: String(parsed.ramp || "").slice(0, 20),
         driver: String(parsed.driver || "").slice(0, 80),
-        items
-      };
+        createdAt: new Date().toISOString(),
+        collapsed: false,
+        items: migratedItems
+      }] };
     } catch (error) {
       return fallback;
     }
@@ -25794,134 +25849,198 @@
     try { localStorage.setItem(SHIPMENT_CARD_DRAFT_KEY, JSON.stringify(shipmentCardDraft)); } catch (error) {}
   }
 
-  function shipmentCardOccupiedPlaces() {
-    return shipmentCardDraft.items.reduce((total, item) => {
+  function shipmentCardOccupiedPlaces(card) {
+    return (card?.items || []).reduce((total, item) => {
       const fullPallets = Math.max(0, Math.trunc(Number(item.pallets) || 0));
       const boxesPlace = Number(item.boxes) > 0 && !item.looseBoxes ? 1 : 0;
       return total + fullPallets + boxesPlace;
     }, 0);
   }
 
-  function updateShipmentCardSearchClearButton() {
-    const input = document.getElementById("shipmentCardProductSearch");
-    document.getElementById("clearShipmentCardSearchBtn")?.classList.toggle("hidden", !input?.value);
+  function shipmentLoadTitle(card) {
+    const ramp = String(card?.ramp || "").trim();
+    const driver = String(card?.driver || "").trim();
+    if (ramp && driver) return `Рампа ${ramp} · ${driver}`;
+    if (ramp) return `Рампа ${ramp}`;
+    if (driver) return driver;
+    return "Нова машина";
   }
 
-  function renderShipmentCardSearchResults(query = "") {
-    const results = document.getElementById("shipmentCardSearchResults");
+  function renderShipmentCardSearchResults(cardId, query = "") {
+    const cardElement = document.querySelector(`[data-shipment-load="${CSS.escape(cardId)}"]`);
+    const results = cardElement?.querySelector("[data-shipment-search-results]");
     if (!results) return;
     const normalizedQuery = normalizePalletCalculatorSearchValue(query);
     const matches = sortedProducts()
       .filter(product => !normalizedQuery || normalizePalletCalculatorSearchValue(product.name).includes(normalizedQuery))
       .slice(0, 40);
     results.innerHTML = matches.length
-      ? matches.map(product => `<button type="button" data-shipment-product="${escapeHtml(product.id)}">${escapeHtml(product.name)}</button>`).join("")
+      ? matches.map(product => `<button type="button" data-shipment-product="${escapeHtml(product.id)}" data-shipment-card-id="${escapeHtml(cardId)}">${escapeHtml(product.name)}</button>`).join("")
       : `<div class="shipment-card-empty">Позицію не знайдено</div>`;
     results.classList.remove("hidden");
   }
 
-  function clearShipmentCardSearch() {
-    const input = document.getElementById("shipmentCardProductSearch");
-    if (input) input.value = "";
-    document.getElementById("shipmentCardSearchResults")?.classList.add("hidden");
-    updateShipmentCardSearchClearButton();
-    input?.focus();
+  function createShipmentLoad() {
+    shipmentCardDraft.cards.forEach(card => { card.collapsed = true; });
+    const card = {
+      id: `shipment-card-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      ramp: "",
+      driver: "",
+      createdAt: new Date().toISOString(),
+      collapsed: false,
+      items: []
+    };
+    shipmentCardDraft.cards.unshift(card);
+    saveShipmentCardDraft();
+    renderShipmentCards();
+    requestAnimationFrame(() => document.querySelector(`[data-shipment-load="${CSS.escape(card.id)}"] input[data-shipment-card-field="ramp"]`)?.focus());
   }
 
-  function addShipmentCardProduct(productId) {
+  function openShipmentItemDialog(cardId, productId = "", itemId = "") {
+    const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
+    if (!card) return;
     const product = state.products.find(item => item.id === productId);
-    if (!product) return;
-    const existing = shipmentCardDraft.items.find(item => item.productId === product.id);
-    if (existing) {
-      toast("Ця позиція вже додана", true);
-    } else {
-      shipmentCardDraft.items.push({
-        id: `shipment-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        productId: product.id,
-        name: product.name,
-        pallets: 0,
-        boxes: 0,
-        looseBoxes: false
-      });
-      shipmentCardImageUrl = "";
-      document.getElementById("shipmentCardPreview")?.classList.add("hidden");
-      saveShipmentCardDraft();
-      renderShipmentCardItems();
-    }
-    clearShipmentCardSearch();
+    const existing = itemId
+      ? card.items.find(item => item.id === itemId)
+      : card.items.find(item => item.productId === productId);
+    const name = existing?.name || product?.name;
+    if (!name) return;
+    shipmentItemEditContext = { cardId, itemId: existing?.id || "", productId: existing?.productId || productId, name };
+    document.getElementById("shipmentItemDialogTitle").textContent = name;
+    document.getElementById("shipmentItemPallets").value = existing?.pallets || "";
+    document.getElementById("shipmentItemBoxes").value = existing?.boxes || "";
+    document.getElementById("shipmentItemPalletType").value = existing?.palletType === "wood" ? "wood" : "plastic";
+    document.getElementById("shipmentItemLooseBoxes").checked = Boolean(existing?.looseBoxes);
+    document.getElementById("saveShipmentItemBtn").textContent = existing ? "Зберегти" : "Додати";
+    document.getElementById("shipmentItemOverlay")?.classList.remove("hidden");
+    card.collapsed = false;
+    saveShipmentCardDraft();
+    document.querySelectorAll("[data-shipment-search-results]").forEach(element => element.classList.add("hidden"));
+    requestAnimationFrame(() => document.getElementById("shipmentItemPallets")?.focus());
   }
 
-  function renderShipmentCardItems() {
-    const list = document.getElementById("shipmentCardItems");
-    const empty = document.getElementById("shipmentCardEmpty");
-    if (!list || !empty) return;
-    list.innerHTML = shipmentCardDraft.items.map((item, index) => `
-      <div class="shipment-card-item" data-shipment-item="${escapeHtml(item.id)}">
-        <div class="shipment-card-item-name"><strong>${escapeHtml(item.name)}</strong><small>Позиція ${index + 1}</small></div>
-        <div class="shipment-card-item-field"><label>Піддонів</label><input type="number" min="0" step="1" inputmode="numeric" value="${item.pallets || ""}" data-shipment-field="pallets" aria-label="Кількість піддонів" /></div>
-        <div class="shipment-card-item-field"><label>Коробок</label><input type="number" min="0" step="1" inputmode="numeric" value="${item.boxes || ""}" data-shipment-field="boxes" aria-label="Кількість коробок" /></div>
-        <button type="button" class="shipment-card-remove" data-remove-shipment-item="${escapeHtml(item.id)}" aria-label="Видалити позицію">×</button>
-        <label class="shipment-card-loose"><input type="checkbox" data-shipment-field="looseBoxes" ${item.looseBoxes ? "checked" : ""} ${item.boxes > 0 ? "" : "disabled"} />Коробки без піддона — не займають окреме піддонне місце</label>
-      </div>`).join("");
-    empty.classList.toggle("hidden", shipmentCardDraft.items.length > 0);
-    const places = shipmentCardOccupiedPlaces();
-    const capacity = document.getElementById("shipmentCardCapacity");
-    if (capacity) {
-      capacity.textContent = `Зайнято місць: ${places} із 33${places > 33 ? ` · перевищено на ${places - 33}` : ""}`;
-      capacity.classList.toggle("over", places > 33);
+  function closeShipmentItemDialog() {
+    shipmentItemEditContext = null;
+    document.getElementById("shipmentItemOverlay")?.classList.add("hidden");
+  }
+
+  function saveShipmentItem() {
+    if (!shipmentItemEditContext) return;
+    const card = shipmentCardDraft.cards.find(entry => entry.id === shipmentItemEditContext.cardId);
+    if (!card) return;
+    const item = shipmentItemEditContext.itemId
+      ? card.items.find(entry => entry.id === shipmentItemEditContext.itemId)
+      : null;
+    const values = {
+      productId: shipmentItemEditContext.productId,
+      name: shipmentItemEditContext.name,
+      pallets: Math.max(0, Math.trunc(Number(document.getElementById("shipmentItemPallets")?.value) || 0)),
+      boxes: Math.max(0, Math.trunc(Number(document.getElementById("shipmentItemBoxes")?.value) || 0)),
+      palletType: document.getElementById("shipmentItemPalletType")?.value === "wood" ? "wood" : "plastic",
+      looseBoxes: Boolean(document.getElementById("shipmentItemLooseBoxes")?.checked)
+    };
+    if (!values.pallets && !values.boxes) {
+      toast("Вкажи кількість піддонів або коробок", true);
+      return;
     }
+    if (!values.boxes) values.looseBoxes = false;
+    if (item) Object.assign(item, values);
+    else card.items.push({ id: `shipment-item-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, ...values });
+    shipmentCardImageUrl = "";
+    shipmentCardImageCardId = "";
+    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    saveShipmentCardDraft();
+    closeShipmentItemDialog();
+    renderShipmentCards();
+  }
+
+  function shipmentItemSummary(item) {
+    const details = [];
+    if (item.pallets > 0) details.push(`${item.pallets} ${shipmentCardWord(item.pallets, ["піддон", "піддони", "піддонів"])}`);
+    if (item.boxes > 0) details.push(`${item.boxes} ${shipmentCardWord(item.boxes, ["коробка", "коробки", "коробок"])}${item.looseBoxes ? " без піддона" : ""}`);
+    return `${details.join(" + ")} (${item.palletType === "wood" ? "дерево" : "пластик"})`;
+  }
+
+  function renderShipmentCards() {
+    const list = document.getElementById("shipmentCardLoads");
+    const empty = document.getElementById("shipmentLoadsEmpty");
+    if (!list || !empty) return;
+    list.innerHTML = shipmentCardDraft.cards.map(card => {
+      const places = shipmentCardOccupiedPlaces(card);
+      const itemRows = card.items.map(item => `
+        <div class="shipment-card-item" data-edit-shipment-item="${escapeHtml(item.id)}" data-shipment-card-id="${escapeHtml(card.id)}" tabindex="0" role="button">
+          <div class="shipment-card-item-name"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(shipmentItemSummary(item))}</small></div>
+          <button type="button" class="shipment-card-remove" data-remove-shipment-item="${escapeHtml(item.id)}" data-shipment-card-id="${escapeHtml(card.id)}" aria-label="Видалити позицію">×</button>
+        </div>`).join("");
+      return `<article class="shipment-load-card${card.collapsed ? " collapsed" : ""}" data-shipment-load="${escapeHtml(card.id)}">
+        <button type="button" class="shipment-load-heading" data-toggle-shipment-card="${escapeHtml(card.id)}">
+          <span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items.length} ${shipmentCardWord(card.items.length, ["позиція", "позиції", "позицій"])} · ${places} із 33 місць</small></span><span class="shipment-load-chevron">⌃</span>
+        </button>
+        <div class="shipment-load-body">
+          <div class="shipment-load-meta">
+            <label>Рампа<input type="text" maxlength="20" value="${escapeHtml(card.ramp)}" data-shipment-card-field="ramp" /></label>
+            <label>Водій<input type="text" maxlength="80" value="${escapeHtml(card.driver)}" data-shipment-card-field="driver" /></label>
+          </div>
+          <div class="shipment-card-search">
+            <label>Додати позицію</label>
+            <div class="shipment-card-search-wrap">
+              <input type="search" autocomplete="off" spellcheck="false" placeholder="Пошук позиції" data-shipment-product-search />
+              <div class="shipment-card-search-results hidden" data-shipment-search-results></div>
+            </div>
+          </div>
+          <div class="shipment-card-items">${itemRows}</div>
+          ${card.items.length ? "" : `<div class="shipment-card-empty">У цій машині ще немає позицій</div>`}
+          <div class="shipment-card-capacity${places > 33 ? " over" : ""}">Зайнято місць: ${places} із 33${places > 33 ? ` · перевищено на ${places - 33}` : ""}</div>
+          <div class="shipment-card-actions compact">
+            <button type="button" data-create-shipment-image="${escapeHtml(card.id)}">Створити зображення</button>
+            <button type="button" class="secondary" data-delete-shipment-card="${escapeHtml(card.id)}">Видалити картку</button>
+          </div>
+        </div>
+      </article>`;
+    }).join("");
+    empty.classList.toggle("hidden", shipmentCardDraft.cards.length > 0);
   }
 
   function prepareShipmentCard() {
-    shipmentCardDraft.items.forEach(item => {
+    shipmentCardDraft.cards.forEach(card => card.items.forEach(item => {
       const currentProduct = state.products.find(product => product.id === item.productId);
       if (currentProduct) item.name = currentProduct.name;
-    });
-    const ramp = document.getElementById("shipmentCardRamp");
-    const driver = document.getElementById("shipmentCardDriver");
-    if (ramp) ramp.value = shipmentCardDraft.ramp;
-    if (driver) driver.value = shipmentCardDraft.driver;
-    document.getElementById("shipmentCardSearchResults")?.classList.add("hidden");
-    updateShipmentCardSearchClearButton();
-    renderShipmentCardItems();
+    }));
+    saveShipmentCardDraft();
+    renderShipmentCards();
   }
 
-  function updateShipmentCardItem(itemId, field, value) {
-    const item = shipmentCardDraft.items.find(entry => entry.id === itemId);
-    if (!item) return;
-    if (field === "looseBoxes") item.looseBoxes = Boolean(value);
-    else item[field] = Math.max(0, Math.trunc(Number(value) || 0));
-    if (!item.boxes) item.looseBoxes = false;
+  async function removeShipmentCardItem(cardId, itemId) {
+    const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
+    if (!card) return;
+    card.items = card.items.filter(item => item.id !== itemId);
     shipmentCardImageUrl = "";
+    shipmentCardImageCardId = "";
     document.getElementById("shipmentCardPreview")?.classList.add("hidden");
     saveShipmentCardDraft();
-    renderShipmentCardItems();
+    renderShipmentCards();
   }
 
-  function removeShipmentCardItem(itemId) {
-    shipmentCardDraft.items = shipmentCardDraft.items.filter(item => item.id !== itemId);
-    shipmentCardImageUrl = "";
-    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
-    saveShipmentCardDraft();
-    renderShipmentCardItems();
-  }
-
-  async function clearShipmentCard() {
-    if (!shipmentCardDraft.items.length && !shipmentCardDraft.ramp && !shipmentCardDraft.driver) return;
+  async function deleteShipmentCard(cardId) {
+    const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
+    if (!card) return;
     const confirmed = await showAppDialog({
       label: "Відвантаження",
-      title: "Очистити картку?",
-      message: "Усі вибрані позиції, рампа та водій будуть прибрані.",
-      confirmText: "Очистити",
+      title: "Видалити картку машини?",
+      message: `${shipmentLoadTitle(card)} та всі її позиції будуть видалені.`,
+      confirmText: "Видалити",
       cancelText: "Скасувати"
     });
     if (!confirmed) return;
-    shipmentCardDraft = { ramp: "", driver: "", items: [] };
-    shipmentCardImageUrl = "";
+    shipmentCardDraft.cards = shipmentCardDraft.cards.filter(entry => entry.id !== cardId);
+    if (shipmentCardImageCardId === cardId) {
+      shipmentCardImageUrl = "";
+      shipmentCardImageCardId = "";
+      document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    }
     saveShipmentCardDraft();
-    prepareShipmentCard();
-    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
-    toast("Картку очищено");
+    renderShipmentCards();
+    toast("Картку видалено");
   }
 
   function shipmentCardWord(value, forms) {
@@ -25969,14 +26088,14 @@
     return lines;
   }
 
-  function createShipmentCardImage() {
-    const validItems = shipmentCardDraft.items.filter(item => item.pallets > 0 || item.boxes > 0);
+  function createShipmentCardImage(cardId) {
+    const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
+    if (!card) return;
+    const validItems = card.items.filter(item => item.pallets > 0 || item.boxes > 0);
     if (!validItems.length) {
       toast("Додай хоча б одну позицію з піддонами або коробками", true);
       return;
     }
-    shipmentCardDraft.ramp = String(document.getElementById("shipmentCardRamp")?.value || "").trim();
-    shipmentCardDraft.driver = String(document.getElementById("shipmentCardDriver")?.value || "").trim();
     saveShipmentCardDraft();
 
     const size = 1600;
@@ -25989,10 +26108,13 @@
     context.fillStyle = "#172033";
     context.fillRect(0, 0, size, 190);
     context.fillStyle = "#ffffff";
-    context.font = "900 70px system-ui, -apple-system, sans-serif";
+    context.font = "900 58px system-ui, -apple-system, sans-serif";
     context.textAlign = "left";
     context.textBaseline = "middle";
-    context.fillText("ВІДВАНТАЖЕННЯ", 80, 88);
+    context.fillText(`РАМПА ${String(card.ramp || "—").toUpperCase()}`, 80, 65);
+    context.font = "700 29px system-ui, -apple-system, sans-serif";
+    const driverHeader = wrapShipmentCanvasText(context, `ВОДІЙ: ${card.driver || "—"}`, 1040, 1)[0] || "ВОДІЙ: —";
+    context.fillText(driverHeader, 80, 132);
     context.font = "600 28px system-ui, -apple-system, sans-serif";
     context.textAlign = "right";
     context.fillText(new Date().toLocaleDateString("uk-UA"), 1520, 88);
@@ -26003,7 +26125,7 @@
     const startX = 70;
     const startY = 220;
     const contentWidth = 1460;
-    const contentHeight = 1080;
+    const contentHeight = 1300;
     const cardWidth = (contentWidth - gap * (columns - 1)) / columns;
     const cardHeight = (contentHeight - gap * (rows - 1)) / rows;
     validItems.forEach((item, index) => {
@@ -26031,32 +26153,16 @@
       const lines = wrapShipmentCanvasText(context, item.name, cardWidth - 54, maxNameLines);
       lines.forEach((line, lineIndex) => context.fillText(line, x + 27, y + 24 + lineIndex * nameFont * 1.12));
 
-      const details = [];
-      if (item.pallets > 0) details.push(`${item.pallets} ${shipmentCardWord(item.pallets, ["піддон", "піддони", "піддонів"])}`);
-      if (item.boxes > 0) details.push(`${item.boxes} ${shipmentCardWord(item.boxes, ["коробка", "коробки", "коробок"])}${item.looseBoxes ? " · без піддона" : " · окремий піддон"}`);
+      const details = shipmentItemSummary(item);
       context.fillStyle = "#c6533e";
       context.font = `800 ${columns === 1 ? 36 : columns === 2 ? 29 : 22}px system-ui, -apple-system, sans-serif`;
       context.textBaseline = "bottom";
-      context.fillText(details.join("  +  "), x + 27, y + cardHeight - 24, cardWidth - 54);
+      const detailLines = wrapShipmentCanvasText(context, details, cardWidth - 54, 2);
+      detailLines.slice().reverse().forEach((line, lineIndex) => context.fillText(line, x + 27, y + cardHeight - 24 - lineIndex * (columns === 1 ? 42 : columns === 2 ? 35 : 27)));
     });
 
-    roundedCanvasRect(context, 70, 1330, 1460, 190, 28);
-    context.fillStyle = "#172033";
-    context.fill();
-    context.fillStyle = "#ffffff";
-    context.textBaseline = "middle";
-    context.textAlign = "left";
-    context.font = "800 34px system-ui, -apple-system, sans-serif";
-    context.fillText(`РАМПА: ${shipmentCardDraft.ramp || "—"}`, 105, 1385);
-    context.font = "700 31px system-ui, -apple-system, sans-serif";
-    const driverText = `ВОДІЙ: ${shipmentCardDraft.driver || "—"}`;
-    const driverLines = wrapShipmentCanvasText(context, driverText, 900, 2);
-    driverLines.forEach((line, index) => context.fillText(line, 105, 1445 + index * 36));
-    context.textAlign = "right";
-    context.font = "700 27px system-ui, -apple-system, sans-serif";
-    context.fillText(`${validItems.length} поз. · ${shipmentCardOccupiedPlaces()} / 33 місць`, 1495, 1385);
-
     shipmentCardImageUrl = canvas.toDataURL("image/png");
+    shipmentCardImageCardId = card.id;
     const preview = document.getElementById("shipmentCardPreview");
     const image = document.getElementById("shipmentCardPreviewImage");
     if (image) image.src = shipmentCardImageUrl;
@@ -26065,14 +26171,32 @@
     toast("Картку створено");
   }
 
-  function saveShipmentCardImage() {
-    if (!shipmentCardImageUrl) createShipmentCardImage();
+  async function shareShipmentCardImage() {
     if (!shipmentCardImageUrl) return;
+    const card = shipmentCardDraft.cards.find(entry => entry.id === shipmentCardImageCardId);
+    if (!card) return;
+    const ramp = card.ramp.replace(/[^a-zа-яіїєґ0-9-]+/gi, "-").replace(/^-+|-+$/g, "");
+    const fileName = `vidvantazhennia${ramp ? `-rampa-${ramp}` : ""}-${todayISO()}.png`;
+    try {
+      const [header, encoded] = shipmentCardImageUrl.split(",");
+      const mimeType = header.match(/data:([^;]+)/)?.[1] || "image/png";
+      const binary = atob(encoded || "");
+      const bytes = new Uint8Array(binary.length);
+      for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+      const blob = new Blob([bytes], { type: mimeType });
+      const file = new File([blob], fileName, { type: "image/png" });
+      if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+        await navigator.share({ files: [file], title: shipmentLoadTitle(card), text: shipmentLoadTitle(card) });
+        return;
+      }
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
     const link = document.createElement("a");
-    const ramp = shipmentCardDraft.ramp.replace(/[^a-zа-яіїєґ0-9-]+/gi, "-").replace(/^-+|-+$/g, "");
-    link.download = `vidvantazhennia${ramp ? `-rampa-${ramp}` : ""}-${todayISO()}.png`;
+    link.download = fileName;
     link.href = shipmentCardImageUrl;
     link.click();
+    toast("Меню поширення недоступне — зображення збережено як файл");
   }
 
   function loadPalletCalculatorFormats() {
@@ -27634,48 +27758,78 @@
     const option = event.target.closest("[data-pallet-calculator-product]");
     if (option) selectPalletCalculatorProduct(option.dataset.palletCalculatorProduct);
   });
-  document.getElementById("shipmentCardProductSearch").addEventListener("focus", event => {
-    renderShipmentCardSearchResults(event.target.value);
-    updateShipmentCardSearchClearButton();
+  document.getElementById("createShipmentLoadBtn").addEventListener("click", createShipmentLoad);
+  document.getElementById("shipmentCardLoads").addEventListener("focusin", event => {
+    const input = event.target.closest("[data-shipment-product-search]");
+    const card = input?.closest("[data-shipment-load]");
+    if (input && card) renderShipmentCardSearchResults(card.dataset.shipmentLoad, input.value);
   });
-  document.getElementById("shipmentCardProductSearch").addEventListener("input", event => {
-    updateShipmentCardSearchClearButton();
-    renderShipmentCardSearchResults(event.target.value);
+  document.getElementById("shipmentCardLoads").addEventListener("input", event => {
+    const cardElement = event.target.closest("[data-shipment-load]");
+    if (!cardElement) return;
+    if (event.target.matches("[data-shipment-product-search]")) {
+      renderShipmentCardSearchResults(cardElement.dataset.shipmentLoad, event.target.value);
+      return;
+    }
+    const field = event.target.dataset.shipmentCardField;
+    if (!field) return;
+    const card = shipmentCardDraft.cards.find(entry => entry.id === cardElement.dataset.shipmentLoad);
+    if (!card) return;
+    card[field] = event.target.value;
+    shipmentCardImageUrl = "";
+    shipmentCardImageCardId = "";
+    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    saveShipmentCardDraft();
+    const heading = cardElement.querySelector(".shipment-load-heading strong");
+    if (heading) heading.textContent = shipmentLoadTitle(card);
   });
-  document.getElementById("shipmentCardProductSearch").addEventListener("keydown", event => {
-    if (event.key !== "Enter") return;
-    const first = document.querySelector("#shipmentCardSearchResults [data-shipment-product]");
-    if (!first || document.getElementById("shipmentCardSearchResults")?.classList.contains("hidden")) return;
-    event.preventDefault();
-    addShipmentCardProduct(first.dataset.shipmentProduct);
+  document.getElementById("shipmentCardLoads").addEventListener("keydown", event => {
+    if (event.target.matches("[data-shipment-product-search]") && event.key === "Enter") {
+      const cardElement = event.target.closest("[data-shipment-load]");
+      const first = cardElement?.querySelector("[data-shipment-search-results] [data-shipment-product]");
+      if (first) {
+        event.preventDefault();
+        openShipmentItemDialog(first.dataset.shipmentCardId, first.dataset.shipmentProduct);
+      }
+      return;
+    }
+    const row = event.target.closest("[data-edit-shipment-item]");
+    if (row && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      openShipmentItemDialog(row.dataset.shipmentCardId, "", row.dataset.editShipmentItem);
+    }
   });
-  document.getElementById("shipmentCardSearchResults").addEventListener("click", event => {
+  document.getElementById("shipmentCardLoads").addEventListener("click", event => {
     const option = event.target.closest("[data-shipment-product]");
-    if (option) addShipmentCardProduct(option.dataset.shipmentProduct);
-  });
-  document.getElementById("clearShipmentCardSearchBtn").addEventListener("click", clearShipmentCardSearch);
-  document.getElementById("shipmentCardItems").addEventListener("change", event => {
-    const row = event.target.closest("[data-shipment-item]");
-    const field = event.target.dataset.shipmentField;
-    if (!row || !field) return;
-    updateShipmentCardItem(row.dataset.shipmentItem, field, field === "looseBoxes" ? event.target.checked : event.target.value);
-  });
-  document.getElementById("shipmentCardItems").addEventListener("click", event => {
+    if (option) return openShipmentItemDialog(option.dataset.shipmentCardId, option.dataset.shipmentProduct);
     const remove = event.target.closest("[data-remove-shipment-item]");
-    if (remove) removeShipmentCardItem(remove.dataset.removeShipmentItem);
-  });
-  ["shipmentCardRamp", "shipmentCardDriver"].forEach(id => {
-    document.getElementById(id).addEventListener("input", event => {
-      shipmentCardDraft[id === "shipmentCardRamp" ? "ramp" : "driver"] = event.target.value;
-      shipmentCardImageUrl = "";
-      document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    if (remove) {
+      event.stopPropagation();
+      return removeShipmentCardItem(remove.dataset.shipmentCardId, remove.dataset.removeShipmentItem);
+    }
+    const edit = event.target.closest("[data-edit-shipment-item]");
+    if (edit) return openShipmentItemDialog(edit.dataset.shipmentCardId, "", edit.dataset.editShipmentItem);
+    const toggle = event.target.closest("[data-toggle-shipment-card]");
+    if (toggle) {
+      const card = shipmentCardDraft.cards.find(entry => entry.id === toggle.dataset.toggleShipmentCard);
+      if (!card) return;
+      card.collapsed = !card.collapsed;
       saveShipmentCardDraft();
-    });
+      renderShipmentCards();
+      return;
+    }
+    const createImage = event.target.closest("[data-create-shipment-image]");
+    if (createImage) return createShipmentCardImage(createImage.dataset.createShipmentImage);
+    const deleteCard = event.target.closest("[data-delete-shipment-card]");
+    if (deleteCard) deleteShipmentCard(deleteCard.dataset.deleteShipmentCard);
   });
-  document.getElementById("createShipmentCardBtn").addEventListener("click", createShipmentCardImage);
-  document.getElementById("saveShipmentCardImageBtn").addEventListener("click", saveShipmentCardImage);
+  document.getElementById("saveShipmentItemBtn").addEventListener("click", saveShipmentItem);
+  document.getElementById("closeShipmentItemBtn").addEventListener("click", closeShipmentItemDialog);
+  document.getElementById("shipmentItemOverlay").addEventListener("click", event => {
+    if (event.target.id === "shipmentItemOverlay") closeShipmentItemDialog();
+  });
+  document.getElementById("shareShipmentCardImageBtn").addEventListener("click", shareShipmentCardImage);
   document.getElementById("closeShipmentCardPreviewBtn").addEventListener("click", () => document.getElementById("shipmentCardPreview")?.classList.add("hidden"));
-  document.getElementById("clearShipmentCardBtn").addEventListener("click", clearShipmentCard);
   document.querySelectorAll("[data-toggle-pallet-calculator-section]").forEach(button => {
     button.addEventListener("click", () => togglePalletCalculatorSection(button.dataset.togglePalletCalculatorSection));
   });
@@ -27696,7 +27850,7 @@
     if (!event.target.closest(".pallet-calculator-search-mode-picker")) closePalletCalculatorSearchModeMenu();
     if (!event.target.closest(".pallet-calculator-search")) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     if (!event.target.closest(".pallet-calculator-format-search")) document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
-    if (!event.target.closest(".shipment-card-search")) document.getElementById("shipmentCardSearchResults")?.classList.add("hidden");
+    if (!event.target.closest(".shipment-card-search")) document.querySelectorAll("[data-shipment-search-results]").forEach(element => element.classList.add("hidden"));
     if (!event.target.closest(".order-warehouse-dropdown")) {
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
