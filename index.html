@@ -61,6 +61,22 @@
       -webkit-backdrop-filter: none;
       pointer-events: none;
     }
+    #systemStatusBarBackground {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 2001;
+      height: env(safe-area-inset-top);
+      opacity: 1 !important;
+      background-color: var(--app-header-safe-background, var(--surface)) !important;
+      background-image: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      mix-blend-mode: normal !important;
+      pointer-events: none;
+    }
     :root,
     :root[data-theme="dark"] {
       color-scheme: dark;
@@ -10823,7 +10839,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=443">
+<link rel="manifest" href="manifest.json?v=444">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10848,6 +10864,7 @@
 
 </head>
 <body class="splash-active page-today">
+  <div id="systemStatusBarBackground" aria-hidden="true"></div>
   <div class="app-splash" id="appSplash" aria-label="Запуск застосунку Облік">
     <div class="splash-content">
       <div class="splash-stage" id="splashStage">
@@ -10878,7 +10895,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.43</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.44</span></div>
     </div>
   </div>
 
@@ -12437,7 +12454,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.43</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.44</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12463,6 +12480,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.44</h3>
+          <ul>
+            <li>системна зона iPhone з годинником, мережею та батареєю отримала окремий суцільний фоновий шар;</li>
+            <li>прибрано прозорість, розмиття та скляний ефект у верхній safe area;</li>
+            <li>колір системної зони автоматично синхронізується з кольором шапки поточної теми.</li>
+          </ul>
+
           <h3>Версія 4.43</h3>
           <ul>
             <li>рядки позицій у квадратному зображенні більше не розтягуються на всю вільну висоту;</li>
@@ -14674,14 +14698,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=443"></script>
-<script src="./firebase-config.js?v=443"></script>
+<script src="./assets/decimen-optical-transfer.js?v=444"></script>
+<script src="./firebase-config.js?v=444"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.43";
+  const APP_VERSION = "4.44";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -15142,6 +15166,8 @@
     document.documentElement.style.backgroundColor = normalized;
     if (document.body) document.body.style.backgroundColor = normalized;
     document.documentElement.style.setProperty("--app-header-safe-background", normalized);
+    const statusBarBackground = document.getElementById("systemStatusBarBackground");
+    if (statusBarBackground) statusBarBackground.style.backgroundColor = normalized;
   }
 
   function syncSystemAreaToCurrentSurface() {
@@ -24027,7 +24053,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=443")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=444")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
