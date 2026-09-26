@@ -9212,8 +9212,32 @@
       font-size: 10px;
       font-weight: 850;
     }
+    .shipment-card-entry-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 8px;
+      padding: 3px;
+      border-radius: 11px;
+      background: var(--surface-deep);
+    }
+    .shipment-card-entry-mode button {
+      min-height: 30px;
+      margin: 0;
+      padding: 5px 8px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 10px;
+    }
+    .shipment-card-entry-mode button.active { background: var(--surface-strong); color: var(--text); box-shadow: 0 2px 8px color-mix(in srgb, var(--popover-shadow) 22%, transparent); }
     .shipment-card-search-wrap { position: relative; }
     .shipment-card-search-wrap input { margin: 0; padding-right: 38px; }
+    .shipment-card-manual-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+    .shipment-card-manual-row input { min-width: 0; margin: 0; }
+    .shipment-card-manual-row button { min-width: 82px; margin: 0; }
     .shipment-card-search-results {
       position: absolute;
       top: calc(100% + 5px);
@@ -10785,7 +10809,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=437">
+<link rel="manifest" href="manifest.json?v=438">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10840,7 +10864,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.37</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.38</span></div>
     </div>
   </div>
 
@@ -12406,7 +12430,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.37</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.38</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12432,6 +12456,12 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.38</h3>
+          <ul>
+            <li>у кожній машині можна перемикатися між пошуком позиції в базі та ручним введенням назви;</li>
+            <li>у ручному режимі пошук приховується, а користувач може вказати власну скорочену назву продукції.</li>
+          </ul>
+
           <h3>Версія 4.37</h3>
           <ul>
             <li>для позиції відвантаження додано вибір способу обліку: піддони, вантажні місця або штуки;</li>
@@ -14604,14 +14634,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=437"></script>
-<script src="./firebase-config.js?v=437"></script>
+<script src="./assets/decimen-optical-transfer.js?v=438"></script>
+<script src="./firebase-config.js?v=438"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.37";
+  const APP_VERSION = "4.38";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -23955,7 +23985,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=437")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=438")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25851,6 +25881,7 @@
           driver: String(card?.driver || "").slice(0, 80),
           createdAt: String(card?.createdAt || new Date().toISOString()),
           collapsed: Boolean(card?.collapsed),
+          entryMode: card?.entryMode === "manual" ? "manual" : "search",
           items: normalizeItems(card?.items)
         })) };
       }
@@ -25862,6 +25893,7 @@
         driver: String(parsed.driver || "").slice(0, 80),
         createdAt: new Date().toISOString(),
         collapsed: false,
+        entryMode: "search",
         items: migratedItems
       }] };
     } catch (error) {
@@ -25912,6 +25944,7 @@
       driver: "",
       createdAt: new Date().toISOString(),
       collapsed: false,
+      entryMode: "search",
       items: []
     };
     shipmentCardDraft.cards.unshift(card);
@@ -25920,14 +25953,16 @@
     requestAnimationFrame(() => document.querySelector(`[data-shipment-load="${CSS.escape(card.id)}"] input[data-shipment-card-field="ramp"]`)?.focus());
   }
 
-  function openShipmentItemDialog(cardId, productId = "", itemId = "") {
+  function openShipmentItemDialog(cardId, productId = "", itemId = "", customName = "") {
     const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
     if (!card) return;
     const product = state.products.find(item => item.id === productId);
     const existing = itemId
       ? card.items.find(item => item.id === itemId)
-      : card.items.find(item => item.productId === productId);
-    const name = existing?.name || product?.name;
+      : productId
+        ? card.items.find(item => item.productId === productId)
+        : null;
+    const name = existing?.name || product?.name || String(customName || "").trim().slice(0, 300);
     if (!name) return;
     shipmentItemEditContext = { cardId, itemId: existing?.id || "", productId: existing?.productId || productId, name };
     document.getElementById("shipmentItemDialogTitle").textContent = name;
@@ -25943,6 +25978,17 @@
     saveShipmentCardDraft();
     document.querySelectorAll("[data-shipment-search-results]").forEach(element => element.classList.add("hidden"));
     requestAnimationFrame(() => document.getElementById("shipmentItemPallets")?.focus());
+  }
+
+  function openManualShipmentPosition(cardElement) {
+    const input = cardElement?.querySelector("[data-shipment-manual-name]");
+    const name = String(input?.value || "").trim();
+    if (!name) {
+      toast("Введи назву позиції", true);
+      input?.focus();
+      return;
+    }
+    openShipmentItemDialog(cardElement.dataset.shipmentLoad, "", "", name);
   }
 
   function closeShipmentItemDialog() {
@@ -26021,11 +26067,20 @@
             <label>Водій<input type="text" maxlength="80" value="${escapeHtml(card.driver)}" data-shipment-card-field="driver" /></label>
           </div>
           <div class="shipment-card-search">
-            <label>Додати позицію</label>
-            <div class="shipment-card-search-wrap">
-              <input type="search" autocomplete="off" spellcheck="false" placeholder="Пошук позиції" data-shipment-product-search />
-              <div class="shipment-card-search-results hidden" data-shipment-search-results></div>
+            <div class="shipment-card-entry-mode" aria-label="Спосіб додавання позиції">
+              <button type="button" class="${card.entryMode !== "manual" ? "active" : ""}" data-shipment-entry-mode="search">З бази</button>
+              <button type="button" class="${card.entryMode === "manual" ? "active" : ""}" data-shipment-entry-mode="manual">Вручну</button>
             </div>
+            ${card.entryMode === "manual" ? `
+              <label>Назва позиції</label>
+              <div class="shipment-card-manual-row"><input type="text" maxlength="300" autocomplete="off" placeholder="Введи свою назву" data-shipment-manual-name /><button type="button" data-add-manual-shipment-position>Додати</button></div>
+            ` : `
+              <label>Пошук позиції</label>
+              <div class="shipment-card-search-wrap">
+                <input type="search" autocomplete="off" spellcheck="false" placeholder="Почни вводити назву" data-shipment-product-search />
+                <div class="shipment-card-search-results hidden" data-shipment-search-results></div>
+              </div>
+            `}
           </div>
           <div class="shipment-card-items">${itemRows}</div>
           ${card.items.length ? "" : `<div class="shipment-card-empty">У цій машині ще немає позицій</div>`}
@@ -27832,6 +27887,11 @@
       }
       return;
     }
+    if (event.target.matches("[data-shipment-manual-name]") && event.key === "Enter") {
+      event.preventDefault();
+      openManualShipmentPosition(event.target.closest("[data-shipment-load]"));
+      return;
+    }
     const row = event.target.closest("[data-edit-shipment-item]");
     if (row && (event.key === "Enter" || event.key === " ")) {
       event.preventDefault();
@@ -27841,6 +27901,19 @@
   document.getElementById("shipmentCardLoads").addEventListener("click", event => {
     const option = event.target.closest("[data-shipment-product]");
     if (option) return openShipmentItemDialog(option.dataset.shipmentCardId, option.dataset.shipmentProduct);
+    const entryMode = event.target.closest("[data-shipment-entry-mode]");
+    if (entryMode) {
+      const cardElement = entryMode.closest("[data-shipment-load]");
+      const card = shipmentCardDraft.cards.find(entry => entry.id === cardElement?.dataset.shipmentLoad);
+      if (!card || card.entryMode === entryMode.dataset.shipmentEntryMode) return;
+      card.entryMode = entryMode.dataset.shipmentEntryMode === "manual" ? "manual" : "search";
+      saveShipmentCardDraft();
+      renderShipmentCards();
+      requestAnimationFrame(() => document.querySelector(`[data-shipment-load="${CSS.escape(card.id)}"] ${card.entryMode === "manual" ? "[data-shipment-manual-name]" : "[data-shipment-product-search]"}`)?.focus());
+      return;
+    }
+    const manualAdd = event.target.closest("[data-add-manual-shipment-position]");
+    if (manualAdd) return openManualShipmentPosition(manualAdd.closest("[data-shipment-load]"));
     const remove = event.target.closest("[data-remove-shipment-item]");
     if (remove) {
       event.stopPropagation();
