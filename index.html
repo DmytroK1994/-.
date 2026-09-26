@@ -10823,7 +10823,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=442">
+<link rel="manifest" href="manifest.json?v=443">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10878,7 +10878,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.42</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.43</span></div>
     </div>
   </div>
 
@@ -12437,7 +12437,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.42</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.43</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12463,6 +12463,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.43</h3>
+          <ul>
+            <li>рядки позицій у квадратному зображенні більше не розтягуються на всю вільну висоту;</li>
+            <li>компактний список починається одразу під шапкою та послідовно заповнюється зверху вниз;</li>
+            <li>при великій кількості позицій рядки автоматично стискаються, щоб список залишався в межах квадрата.</li>
+          </ul>
+
           <h3>Версія 4.42</h3>
           <ul>
             <li>ручні назви позицій автоматично зберігаються та з’являються у підказках під час наступного введення;</li>
@@ -14667,14 +14674,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=442"></script>
-<script src="./firebase-config.js?v=442"></script>
+<script src="./assets/decimen-optical-transfer.js?v=443"></script>
+<script src="./firebase-config.js?v=443"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.42";
+  const APP_VERSION = "4.43";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -24020,7 +24027,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=442")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=443")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -26349,7 +26356,7 @@
     const contentWidth = 1460;
     const footerY = 1405;
     const contentHeight = footerY - startY;
-    const rowHeight = contentHeight / validItems.length;
+    const rowHeight = Math.min(112, contentHeight / validItems.length);
     validItems.forEach((item, index) => {
       const y = startY + index * rowHeight;
       if (index % 2 === 0) {
