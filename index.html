@@ -9238,6 +9238,20 @@
     .shipment-card-manual-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
     .shipment-card-manual-row input { min-width: 0; margin: 0; }
     .shipment-card-manual-row button { min-width: 82px; margin: 0; }
+    .shipment-card-manual-wrap { position: relative; }
+    .shipment-manual-result { display: grid; grid-template-columns: minmax(0, 1fr) 34px; align-items: center; gap: 4px; }
+    .shipment-card-search-results .shipment-manual-result-name { width: 100%; text-align: left; }
+    .shipment-card-search-results .shipment-manual-result-delete {
+      width: 34px;
+      min-width: 34px;
+      height: 34px;
+      min-height: 34px;
+      margin: 0;
+      padding: 7px;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
     .shipment-card-search-results {
       position: absolute;
       top: calc(100% + 5px);
@@ -10809,7 +10823,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=439">
+<link rel="manifest" href="manifest.json?v=442">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10864,7 +10878,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.39</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.42</span></div>
     </div>
   </div>
 
@@ -11425,13 +11439,6 @@
           </section>
           <div class="shipment-load-list" id="shipmentCardLoads"></div>
           <div class="shipment-card-empty" id="shipmentLoadsEmpty">Карток відвантаження поки немає</div>
-          <section class="shipment-card-preview hidden" id="shipmentCardPreview">
-            <img id="shipmentCardPreviewImage" alt="Сформована картка відвантаження" />
-            <div class="shipment-card-preview-actions">
-              <button type="button" id="shareShipmentCardImageBtn">Поділитися</button>
-              <button type="button" class="secondary" id="closeShipmentCardPreviewBtn">Закрити перегляд</button>
-            </div>
-          </section>
           <button type="button" class="secondary pallet-calculator-back" id="backFromShipmentCardBtn">Назад</button>
         </div>
         <div class="shift-editor-overlay hidden" id="shipmentItemOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentItemDialogTitle">
@@ -12430,7 +12437,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.39</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.42</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12456,6 +12463,25 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.42</h3>
+          <ul>
+            <li>ручні назви позицій автоматично зберігаються та з’являються у підказках під час наступного введення;</li>
+            <li>біля кожної збереженої ручної назви додано кошик із обов’язковим підтвердженням видалення;</li>
+            <li>видалення назви з підказок не прибирає вже додані позиції з карток машин.</li>
+          </ul>
+
+          <h3>Версія 4.41</h3>
+          <ul>
+            <li>видалення окремої позиції з картки відвантаження тепер потребує підтвердження;</li>
+            <li>у повідомленні показується назва позиції та картка машини, з якої її буде видалено.</li>
+          </ul>
+
+          <h3>Версія 4.40</h3>
+          <ul>
+            <li>згенероване зображення тепер відкривається всередині тієї картки машини, з якої його створено;</li>
+            <li>під час згортання машини перегляд зображення ховається разом зі списком її позицій.</li>
+          </ul>
+
           <h3>Версія 4.39</h3>
           <ul>
             <li>позиції на квадратному зображенні тепер виводяться одним вертикальним списком на всю ширину;</li>
@@ -14641,14 +14667,14 @@
 
 <script src="./assets/qrcode-generator.js?v=368"></script>
 <script src="./assets/jsQR.js?v=368"></script>
-<script src="./assets/decimen-optical-transfer.js?v=439"></script>
-<script src="./firebase-config.js?v=439"></script>
+<script src="./assets/decimen-optical-transfer.js?v=442"></script>
+<script src="./firebase-config.js?v=442"></script>
 <script>
 (function () {
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.39";
+  const APP_VERSION = "4.42";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14711,6 +14737,7 @@
   const ADDITIONAL_SHOW_BACK_BUTTON_KEY = "warehouseJournalAdditionalShowBackButton";
   const PALLET_CALCULATOR_FORMATS_KEY = "warehouseJournalPalletCalculatorFormatsV1";
   const SHIPMENT_CARD_DRAFT_KEY = "warehouseJournalShipmentCardDraftV1";
+  const SHIPMENT_MANUAL_NAMES_KEY = "warehouseJournalShipmentManualNamesV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -14769,6 +14796,7 @@
     ADDITIONAL_SHOW_BACK_BUTTON_KEY,
     PALLET_CALCULATOR_FORMATS_KEY,
     SHIPMENT_CARD_DRAFT_KEY,
+    SHIPMENT_MANUAL_NAMES_KEY,
     SHIFT_SCHEDULE_KEY,
     SHIFT_CALENDAR_VIEW_KEY,
     TRASH_RETENTION_KEY,
@@ -23992,7 +24020,7 @@
 
   function loadSecretGameScripts() {
     if (!secretGameScriptsPromise) {
-      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=439")
+      secretGameScriptsPromise = loadSecretGameScript("forkliftGame2DRuntime", "./assets/ForkliftGame2D.js?v=442")
         .then(() => {
           if (!window.ForkliftGame?.launch) throw new Error("Ігровий модуль не ініціалізовано");
         })
@@ -25912,6 +25940,65 @@
     try { localStorage.setItem(SHIPMENT_CARD_DRAFT_KEY, JSON.stringify(shipmentCardDraft)); } catch (error) {}
   }
 
+  function loadShipmentManualNames() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(SHIPMENT_MANUAL_NAMES_KEY) || "[]");
+      if (!Array.isArray(parsed)) return [];
+      const seen = new Set();
+      return parsed.map(value => String(value || "").trim().slice(0, 300)).filter(value => {
+        const normalized = normalizePalletCalculatorSearchValue(value);
+        if (!normalized || seen.has(normalized)) return false;
+        seen.add(normalized);
+        return true;
+      }).slice(0, 300);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveShipmentManualNames(names) {
+    try { localStorage.setItem(SHIPMENT_MANUAL_NAMES_KEY, JSON.stringify(names.slice(0, 300))); } catch (error) {}
+  }
+
+  function rememberShipmentManualName(name) {
+    const cleanName = String(name || "").trim().slice(0, 300);
+    if (!cleanName) return;
+    const normalized = normalizePalletCalculatorSearchValue(cleanName);
+    const names = loadShipmentManualNames().filter(value => normalizePalletCalculatorSearchValue(value) !== normalized);
+    names.unshift(cleanName);
+    saveShipmentManualNames(names);
+  }
+
+  function renderShipmentManualNameResults(cardId, query = "") {
+    const cardElement = document.querySelector(`[data-shipment-load="${CSS.escape(cardId)}"]`);
+    const results = cardElement?.querySelector("[data-shipment-manual-results]");
+    if (!results) return;
+    const normalizedQuery = normalizePalletCalculatorSearchValue(query);
+    const matches = loadShipmentManualNames()
+      .filter(name => !normalizedQuery || normalizePalletCalculatorSearchValue(name).includes(normalizedQuery))
+      .slice(0, 40);
+    results.innerHTML = matches.length
+      ? matches.map(name => `<div class="shipment-manual-result"><button type="button" class="shipment-manual-result-name" data-use-shipment-manual-name="${escapeHtml(name)}">${escapeHtml(name)}</button><button type="button" class="shipment-manual-result-delete" data-delete-shipment-manual-name="${escapeHtml(name)}" aria-label="Видалити назву ${escapeHtml(name)}"><span class="product-trash-icon" aria-hidden="true"></span></button></div>`).join("")
+      : `<div class="shipment-card-empty">Збережених назв не знайдено</div>`;
+    results.classList.remove("hidden");
+  }
+
+  async function deleteShipmentManualName(cardId, name) {
+    const confirmed = await showAppDialog({
+      label: "Ручні назви",
+      title: "Видалити збережену назву?",
+      message: `«${name}» зникне зі списку підказок. Уже додані позиції залишаться у картках машин.`,
+      confirmText: "Видалити",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    const normalized = normalizePalletCalculatorSearchValue(name);
+    saveShipmentManualNames(loadShipmentManualNames().filter(value => normalizePalletCalculatorSearchValue(value) !== normalized));
+    const input = document.querySelector(`[data-shipment-load="${CSS.escape(cardId)}"] [data-shipment-manual-name]`);
+    renderShipmentManualNameResults(cardId, input?.value || "");
+    toast("Збережену назву видалено");
+  }
+
   function shipmentCardOccupiedPlaces(card) {
     return (card?.items || []).reduce((total, item) => {
       const mainPlaces = item.loadUnit === "piece" ? 0 : Math.max(0, Math.trunc(Number(item.pallets) || 0));
@@ -25983,7 +26070,7 @@
     document.getElementById("shipmentItemOverlay")?.classList.remove("hidden");
     card.collapsed = false;
     saveShipmentCardDraft();
-    document.querySelectorAll("[data-shipment-search-results]").forEach(element => element.classList.add("hidden"));
+    document.querySelectorAll("[data-shipment-search-results], [data-shipment-manual-results]").forEach(element => element.classList.add("hidden"));
     requestAnimationFrame(() => document.getElementById("shipmentItemPallets")?.focus());
   }
 
@@ -26031,9 +26118,9 @@
     if (!values.boxes) values.looseBoxes = false;
     if (item) Object.assign(item, values);
     else card.items.push({ id: `shipment-item-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, ...values });
+    if (!values.productId) rememberShipmentManualName(values.name);
     shipmentCardImageUrl = "";
     shipmentCardImageCardId = "";
-    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
     saveShipmentCardDraft();
     closeShipmentItemDialog();
     renderShipmentCards();
@@ -26059,6 +26146,7 @@
     if (!list || !empty) return;
     list.innerHTML = shipmentCardDraft.cards.map(card => {
       const places = shipmentCardOccupiedPlaces(card);
+      const hasPreview = shipmentCardImageUrl && shipmentCardImageCardId === card.id;
       const itemRows = card.items.map(item => `
         <div class="shipment-card-item" data-edit-shipment-item="${escapeHtml(item.id)}" data-shipment-card-id="${escapeHtml(card.id)}" tabindex="0" role="button">
           <div class="shipment-card-item-name"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(shipmentItemSummary(item))}</small></div>
@@ -26080,7 +26168,10 @@
             </div>
             ${card.entryMode === "manual" ? `
               <label>Назва позиції</label>
-              <div class="shipment-card-manual-row"><input type="text" maxlength="300" autocomplete="off" placeholder="Введи свою назву" data-shipment-manual-name /><button type="button" data-add-manual-shipment-position>Додати</button></div>
+              <div class="shipment-card-manual-wrap">
+                <div class="shipment-card-manual-row"><input type="text" maxlength="300" autocomplete="off" placeholder="Введи або обери назву" data-shipment-manual-name /><button type="button" data-add-manual-shipment-position>Додати</button></div>
+                <div class="shipment-card-search-results hidden" data-shipment-manual-results></div>
+              </div>
             ` : `
               <label>Пошук позиції</label>
               <div class="shipment-card-search-wrap">
@@ -26096,9 +26187,18 @@
             <button type="button" data-create-shipment-image="${escapeHtml(card.id)}">Створити зображення</button>
             <button type="button" class="secondary" data-delete-shipment-card="${escapeHtml(card.id)}">Видалити картку</button>
           </div>
+          ${hasPreview ? `<section class="shipment-card-preview" data-shipment-card-preview="${escapeHtml(card.id)}">
+            <img data-shipment-card-preview-image alt="Сформована картка ${escapeHtml(shipmentLoadTitle(card))}" />
+            <div class="shipment-card-preview-actions">
+              <button type="button" data-share-shipment-image>Поділитися</button>
+              <button type="button" class="secondary" data-close-shipment-preview>Закрити перегляд</button>
+            </div>
+          </section>` : ""}
         </div>
       </article>`;
     }).join("");
+    const previewImage = list.querySelector("[data-shipment-card-preview-image]");
+    if (previewImage && shipmentCardImageUrl) previewImage.src = shipmentCardImageUrl;
     empty.classList.toggle("hidden", shipmentCardDraft.cards.length > 0);
   }
 
@@ -26114,10 +26214,19 @@
   async function removeShipmentCardItem(cardId, itemId) {
     const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
     if (!card) return;
+    const item = card.items.find(entry => entry.id === itemId);
+    if (!item) return;
+    const confirmed = await showAppDialog({
+      label: "Відвантаження",
+      title: "Видалити позицію?",
+      message: `«${item.name}» буде видалено з картки ${shipmentLoadTitle(card)}.`,
+      confirmText: "Видалити",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
     card.items = card.items.filter(item => item.id !== itemId);
     shipmentCardImageUrl = "";
     shipmentCardImageCardId = "";
-    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
     saveShipmentCardDraft();
     renderShipmentCards();
   }
@@ -26137,7 +26246,6 @@
     if (shipmentCardImageCardId === cardId) {
       shipmentCardImageUrl = "";
       shipmentCardImageCardId = "";
-      document.getElementById("shipmentCardPreview")?.classList.add("hidden");
     }
     saveShipmentCardDraft();
     renderShipmentCards();
@@ -26287,11 +26395,10 @@
 
     shipmentCardImageUrl = canvas.toDataURL("image/png");
     shipmentCardImageCardId = card.id;
-    const preview = document.getElementById("shipmentCardPreview");
-    const image = document.getElementById("shipmentCardPreviewImage");
-    if (image) image.src = shipmentCardImageUrl;
-    preview?.classList.remove("hidden");
-    preview?.scrollIntoView({ behavior: "smooth", block: "start" });
+    card.collapsed = false;
+    saveShipmentCardDraft();
+    renderShipmentCards();
+    document.querySelector(`[data-shipment-card-preview="${CSS.escape(card.id)}"]`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     toast("Картку створено");
   }
 
@@ -27887,12 +27994,19 @@
     const input = event.target.closest("[data-shipment-product-search]");
     const card = input?.closest("[data-shipment-load]");
     if (input && card) renderShipmentCardSearchResults(card.dataset.shipmentLoad, input.value);
+    const manualInput = event.target.closest("[data-shipment-manual-name]");
+    const manualCard = manualInput?.closest("[data-shipment-load]");
+    if (manualInput && manualCard) renderShipmentManualNameResults(manualCard.dataset.shipmentLoad, manualInput.value);
   });
   document.getElementById("shipmentCardLoads").addEventListener("input", event => {
     const cardElement = event.target.closest("[data-shipment-load]");
     if (!cardElement) return;
     if (event.target.matches("[data-shipment-product-search]")) {
       renderShipmentCardSearchResults(cardElement.dataset.shipmentLoad, event.target.value);
+      return;
+    }
+    if (event.target.matches("[data-shipment-manual-name]")) {
+      renderShipmentManualNameResults(cardElement.dataset.shipmentLoad, event.target.value);
       return;
     }
     const field = event.target.dataset.shipmentCardField;
@@ -27902,7 +28016,7 @@
     card[field] = event.target.value;
     shipmentCardImageUrl = "";
     shipmentCardImageCardId = "";
-    document.getElementById("shipmentCardPreview")?.classList.add("hidden");
+    cardElement.querySelector("[data-shipment-card-preview]")?.remove();
     saveShipmentCardDraft();
     const heading = cardElement.querySelector(".shipment-load-heading strong");
     if (heading) heading.textContent = shipmentLoadTitle(card);
@@ -27931,6 +28045,17 @@
   document.getElementById("shipmentCardLoads").addEventListener("click", event => {
     const option = event.target.closest("[data-shipment-product]");
     if (option) return openShipmentItemDialog(option.dataset.shipmentCardId, option.dataset.shipmentProduct);
+    const savedManualName = event.target.closest("[data-use-shipment-manual-name]");
+    if (savedManualName) {
+      const cardElement = savedManualName.closest("[data-shipment-load]");
+      return openShipmentItemDialog(cardElement.dataset.shipmentLoad, "", "", savedManualName.dataset.useShipmentManualName);
+    }
+    const deleteManualName = event.target.closest("[data-delete-shipment-manual-name]");
+    if (deleteManualName) {
+      event.stopPropagation();
+      const cardElement = deleteManualName.closest("[data-shipment-load]");
+      return deleteShipmentManualName(cardElement.dataset.shipmentLoad, deleteManualName.dataset.deleteShipmentManualName);
+    }
     const entryMode = event.target.closest("[data-shipment-entry-mode]");
     if (entryMode) {
       const cardElement = entryMode.closest("[data-shipment-load]");
@@ -27962,6 +28087,13 @@
     }
     const createImage = event.target.closest("[data-create-shipment-image]");
     if (createImage) return createShipmentCardImage(createImage.dataset.createShipmentImage);
+    if (event.target.closest("[data-share-shipment-image]")) return shareShipmentCardImage();
+    if (event.target.closest("[data-close-shipment-preview]")) {
+      shipmentCardImageUrl = "";
+      shipmentCardImageCardId = "";
+      renderShipmentCards();
+      return;
+    }
     const deleteCard = event.target.closest("[data-delete-shipment-card]");
     if (deleteCard) deleteShipmentCard(deleteCard.dataset.deleteShipmentCard);
   });
@@ -27971,8 +28103,6 @@
   document.getElementById("shipmentItemOverlay").addEventListener("click", event => {
     if (event.target.id === "shipmentItemOverlay") closeShipmentItemDialog();
   });
-  document.getElementById("shareShipmentCardImageBtn").addEventListener("click", shareShipmentCardImage);
-  document.getElementById("closeShipmentCardPreviewBtn").addEventListener("click", () => document.getElementById("shipmentCardPreview")?.classList.add("hidden"));
   document.querySelectorAll("[data-toggle-pallet-calculator-section]").forEach(button => {
     button.addEventListener("click", () => togglePalletCalculatorSection(button.dataset.togglePalletCalculatorSection));
   });
@@ -27993,7 +28123,7 @@
     if (!event.target.closest(".pallet-calculator-search-mode-picker")) closePalletCalculatorSearchModeMenu();
     if (!event.target.closest(".pallet-calculator-search")) document.getElementById("palletCalculatorSearchResults")?.classList.add("hidden");
     if (!event.target.closest(".pallet-calculator-format-search")) document.getElementById("palletCalculatorFormatResults")?.classList.add("hidden");
-    if (!event.target.closest(".shipment-card-search")) document.querySelectorAll("[data-shipment-search-results]").forEach(element => element.classList.add("hidden"));
+    if (!event.target.closest(".shipment-card-search")) document.querySelectorAll("[data-shipment-search-results], [data-shipment-manual-results]").forEach(element => element.classList.add("hidden"));
     if (!event.target.closest(".order-warehouse-dropdown")) {
       document.getElementById("orderWarehouseDropdown")?.removeAttribute("open");
     }
