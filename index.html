@@ -446,22 +446,9 @@
       display: none;
     }
     body::after {
-      content: "";
-      position: fixed;
-      z-index: 10000;
-      top: 0;
-      right: 0;
-      left: 0;
-      height: env(safe-area-inset-top);
-      background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface)));
-      background-image: none;
-      opacity: 1;
-      filter: none;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      pointer-events: none;
+      content: none;
+      display: none;
     }
-    body.additional-battery-fleet-active::after { background: #f5f9fb; }
     body.page-today {
       --current-app-header-color: var(--app-header-background, var(--surface));
     }
@@ -9165,6 +9152,8 @@
       padding-bottom: 0;
       padding-left: 0;
       overflow: hidden;
+      background: #f5f9fb;
+      background-image: none;
     }
     body.additional-battery-fleet-active .app-header,
     body.additional-battery-fleet-active .app-bottom-nav { display: none !important; }
@@ -11080,7 +11069,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=466">
+<link rel="manifest" href="manifest.json?v=467">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11135,7 +11124,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.66</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.67</span></div>
     </div>
   </div>
 
@@ -11612,7 +11601,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=466" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=467" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12731,7 +12720,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.66</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.67</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12756,6 +12745,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.67</h3>
+          <ul>
+            <li>прибрано окремий шар системної області iPhone, який ділив верхню шапку на смуги;</li>
+            <li>системна область тепер отримує суцільний колір безпосередньо від поточної шапки;</li>
+            <li>у вбудованому Battery Fleet колір верхньої області синхронізовано з його власною шапкою.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.66</h3>
           <ul>
@@ -15146,7 +15143,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.66";
+  const APP_VERSION = "4.67";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -15617,6 +15614,10 @@
   }
 
   function syncSystemAreaToCurrentSurface() {
+    if (document.body.classList.contains("additional-battery-fleet-active")) {
+      syncSystemThemeColor("#f5f9fb");
+      return;
+    }
     const drawerOpen = document.body.classList.contains("drawer-open")
       && document.getElementById("drawer")?.classList.contains("open");
     const surface = drawerOpen
@@ -26229,6 +26230,7 @@
     }
     document.title = `${label} — Облік`;
     updatePageBackButton();
+    scheduleSystemAreaSync();
   }
 
   function openCurrentAdditionalToolSettings() {
