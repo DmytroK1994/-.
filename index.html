@@ -9052,7 +9052,7 @@
     .battery-fleet-embed-shell {
       display: block;
       width: 100%;
-      height: calc(100dvh - var(--app-header-bottom, 82px));
+      height: 100dvh;
       min-height: 0;
     }
     .battery-fleet-embed-frame-wrap {
@@ -9072,6 +9072,29 @@
       border: 0;
       background: #eef3f4;
     }
+    .battery-fleet-home {
+      position: fixed;
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 262;
+      display: grid;
+      width: 48px !important;
+      min-width: 48px !important;
+      height: 48px !important;
+      min-height: 48px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.68) !important;
+      border-radius: 50% !important;
+      background: rgba(12,34,58,.86) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 24px rgba(4,18,38,.3) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .battery-fleet-home svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .battery-fleet-home:active { transform: scale(.94); }
     .shipment-truck-glyph {
       position: relative;
       width: 33px;
@@ -9157,11 +9180,15 @@
     body.additional-hide-tool-back #backToShiftScheduleBtn,
     body.additional-hide-tool-back #additionalDesktopHeaderBackBtn { display: none !important; }
     body.page-today.additional-battery-fleet-active {
+      min-width: 0;
       padding-right: 0;
+      padding-top: 0;
       padding-bottom: 0;
       padding-left: 0;
       overflow: hidden;
     }
+    body.additional-battery-fleet-active .app-header,
+    body.additional-battery-fleet-active .app-bottom-nav { display: none !important; }
     body.additional-battery-fleet-active .additional-shell,
     body.additional-battery-fleet-active #pageAdditional,
     body.additional-battery-fleet-active #bmsBatteryView {
@@ -9169,6 +9196,14 @@
       max-width: none;
       margin: 0;
       padding: 0;
+    }
+    body.additional-battery-fleet-active #bmsBatteryView {
+      position: fixed;
+      z-index: 250;
+      inset: 0;
+      height: 100dvh;
+      overflow: hidden;
+      background: #eef3f4;
     }
     .additional-tool-name {
       display: flex;
@@ -11072,7 +11107,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=461">
+<link rel="manifest" href="manifest.json?v=462">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11127,7 +11162,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.61</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.62</span></div>
     </div>
   </div>
 
@@ -11605,7 +11640,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=461" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=462" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -11625,6 +11660,9 @@
             ></iframe>
           </div>
         </div>
+        <button type="button" class="battery-fleet-home" id="bmsBatteryHomeBtn" aria-label="Повернутися в Додатково" title="Додатково">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2"></path><path d="M5.5 10.2V21h13V10.2"></path><path d="M9.5 21v-6.5h5V21"></path></svg>
+        </button>
       </section>
 
       <section id="additionalSettingsView" class="hidden">
@@ -12733,7 +12771,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.61</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.62</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12758,6 +12796,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.62</h3>
+          <ul>
+            <li>Battery Fleet тепер відкривається на весь екран без шапки та навігації «Обліку»;</li>
+            <li>праворуч унизу додано компактну кнопку з домиком для повернення до «Додатково».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.61</h3>
           <ul>
@@ -15111,7 +15156,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.61";
+  const APP_VERSION = "4.62";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
@@ -28882,6 +28927,7 @@
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
   document.getElementById("additionalDesktopHeaderBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
+  document.getElementById("bmsBatteryHomeBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("backFromAdditionalSettingsBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("additionalShowBackButton").addEventListener("change", event => setAdditionalBackButtonVisibility(event.target.checked));
   document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
