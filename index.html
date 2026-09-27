@@ -451,12 +451,12 @@
     }
     #iosTopEdgeGuard {
       position: fixed;
-      z-index: 9999;
+      z-index: 99;
       top: 0;
       right: 0;
       left: 0;
       display: block;
-      height: calc(env(safe-area-inset-top) + 28px);
+      height: calc(env(safe-area-inset-top) + 18px);
       background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface)));
       background-image: none;
       opacity: 1;
@@ -494,6 +494,8 @@
       margin: 0 0 12px;
     }
     #pageToday,
+    #pageLoadingPlanner,
+    #pageAdditional,
     #pageHistory,
     #pageManagement,
     #pageAccount,
@@ -504,6 +506,8 @@
     #pageOtherSettings,
     #pageInstall,
     #pageAbout {
+      position: relative;
+      z-index: 1;
       width: min(100%, 720px);
       margin-inline: auto;
     }
@@ -525,7 +529,7 @@
     }
     body.page-today .app-header {
       overflow: hidden;
-      padding: calc(env(safe-area-inset-top) + 29px) max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 14px) max(10px, env(safe-area-inset-right)) 2px max(10px, env(safe-area-inset-left));
       border-bottom-color: transparent;
       border-radius: 0 0 30px 30px;
       box-shadow: 0 14px 32px var(--header-shadow);
@@ -538,7 +542,7 @@
     }
     body:not(.page-today) .app-header {
       overflow: hidden;
-      padding: calc(env(safe-area-inset-top) + 7px) max(12px, env(safe-area-inset-right)) 7px max(12px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 14px) max(12px, env(safe-area-inset-right)) 1px max(12px, env(safe-area-inset-left));
       background: var(--current-app-header-color, var(--surface));
       border: 0;
       border-bottom: 1px solid var(--border);
@@ -1907,29 +1911,53 @@
     }
     .background-effect-preview[data-effect="none"] .background-effect-preview-motion { display: none; }
     .background-effect-preview[data-effect="grid"] .background-effect-preview-motion,
-    .background-effect-preview[data-effect="board"] .background-effect-preview-motion,
-    .background-effect-preview[data-effect="circuits"] .background-effect-preview-motion,
-    .background-effect-mini[data-effect="grid"],
-    .background-effect-mini[data-effect="board"],
-    .background-effect-mini[data-effect="circuits"] {
+    .background-effect-mini[data-effect="grid"] {
       background-color: var(--bg);
       background-image:
         linear-gradient(color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px),
         linear-gradient(90deg, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px);
       background-size: 28px 28px;
-      animation: effectGridMove 5s linear infinite;
+      animation: effectGridMove 10s linear infinite;
     }
-    .background-effect-preview[data-effect="circuits"] .background-effect-preview-motion::after,
+    .background-effect-preview[data-effect="board"] .background-effect-preview-motion,
+    .background-effect-mini[data-effect="board"] {
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(90deg, transparent 0 16%, color-mix(in srgb, var(--primary-bg) 55%, transparent) 16% 18%, transparent 18% 66%, color-mix(in srgb, var(--primary-bg) 38%, transparent) 66% 68%, transparent 68%),
+        linear-gradient(transparent 0 28%, color-mix(in srgb, var(--primary-bg) 48%, transparent) 28% 30%, transparent 30% 72%, color-mix(in srgb, var(--border) 45%, transparent) 72% 74%, transparent 74%);
+      background-size: 76px 54px;
+      animation: effectBoardSignal 7s ease-in-out infinite alternate;
+    }
     .background-effect-preview[data-effect="board"] .background-effect-preview-motion::after,
-    .background-effect-mini[data-effect="circuits"]::after,
     .background-effect-mini[data-effect="board"]::after {
       content: "";
       position: absolute;
-      inset: 18% 8%;
-      border: 2px solid color-mix(in srgb, var(--primary-bg) 72%, transparent);
-      border-left-color: transparent;
-      border-radius: 8px;
-      animation: effectCircuitPulse 2.4s ease-in-out infinite;
+      width: 8px;
+      height: 8px;
+      left: 18%;
+      top: 28%;
+      border-radius: 2px;
+      background: var(--primary-bg);
+      box-shadow: 42px 24px 0 color-mix(in srgb, var(--primary-bg) 65%, transparent), 104px -8px 0 color-mix(in srgb, var(--primary-bg) 48%, transparent);
+      animation: effectBoardNode 3.8s ease-in-out infinite;
+    }
+    .background-effect-preview[data-effect="circuits"] .background-effect-preview-motion,
+    .background-effect-mini[data-effect="circuits"] {
+      background:
+        radial-gradient(ellipse at 14% 72%, transparent 0 25%, color-mix(in srgb, var(--primary-bg) 48%, transparent) 26% 27%, transparent 28%),
+        radial-gradient(ellipse at 82% 22%, transparent 0 31%, color-mix(in srgb, var(--primary-bg) 38%, transparent) 32% 33%, transparent 34%),
+        var(--bg);
+    }
+    .background-effect-preview[data-effect="circuits"] .background-effect-preview-motion::after,
+    .background-effect-mini[data-effect="circuits"]::after {
+      content: "";
+      position: absolute;
+      inset: 17% 7% 24%;
+      border: 2px solid color-mix(in srgb, var(--primary-bg) 68%, transparent);
+      border-right-color: transparent;
+      border-bottom-color: color-mix(in srgb, var(--selection-bg) 52%, transparent);
+      border-radius: 52% 28% 60% 34%;
+      animation: effectCircuitPulse 5.8s ease-in-out infinite;
     }
     .background-effect-preview[data-effect="radar"] .background-effect-preview-motion,
     .background-effect-mini[data-effect="radar"] {
@@ -1975,6 +2003,8 @@
     .background-effect-mini[data-effect="orbits"]::after { inset: 28% 12%; animation-direction: reverse; }
     @keyframes effectGridMove { to { background-position: 28px 28px; } }
     @keyframes effectCircuitPulse { 50% { opacity: .35; transform: scale(.96); } }
+    @keyframes effectBoardSignal { to { background-position: 38px 0, 0 27px; } }
+    @keyframes effectBoardNode { 50% { opacity: .36; filter: drop-shadow(0 0 7px var(--primary-bg)); } }
     @keyframes effectRotate { to { transform: rotate(360deg); } }
     @keyframes effectWave { to { transform: translateY(12px) scaleY(1.25); } }
     @keyframes effectParticles { to { background-position: 82px 73px; } }
@@ -3190,7 +3220,7 @@
       transform: translateY(-3px);
     }
     body.page-today.demo-mode .app-header {
-      padding: calc(env(safe-area-inset-top) + 2px) max(10px, env(safe-area-inset-right)) 2px max(10px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 14px) max(10px, env(safe-area-inset-right)) 1px max(10px, env(safe-area-inset-left));
     }
     body.page-today.demo-mode .topbar {
       margin-bottom: 0;
@@ -9037,7 +9067,7 @@
       pointer-events: none;
     }
     body.page-today.workspace-additional.additional-shift-tool-active .app-header {
-      padding-top: calc(env(safe-area-inset-top) + 29px);
+      padding-top: calc(env(safe-area-inset-top) + 14px);
       padding-bottom: 1px;
     }
     body.page-today.workspace-additional.additional-shift-tool-active .topbar { margin-bottom: 0; }
@@ -9375,11 +9405,11 @@
     body.additional-battery-fleet-active #bmsBatteryView {
       position: fixed;
       z-index: 250;
-      top: calc(env(safe-area-inset-top) + 26px);
+      top: env(safe-area-inset-top);
       right: 0;
       bottom: 0;
       left: 0;
-      height: calc(100dvh - env(safe-area-inset-top) - 26px);
+      height: calc(100dvh - env(safe-area-inset-top));
       overflow: hidden;
       background: #eef3f4;
     }
@@ -11333,7 +11363,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.73</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.74</span></div>
     </div>
   </div>
 
@@ -12955,7 +12985,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.73</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.74</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12980,6 +13010,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.74</h3>
+          <ul>
+            <li>захисну область iPhone перенесено під шапку: вона більше не закриває назву та кнопки внутрішніх сторінок;</li>
+            <li>компактну шапку повернено без штучного збільшення висоти, а вбудований Battery Fleet піднято безпосередньо під системний статус-бар;</li>
+            <li>фонову анімацію відокремлено від кнопок і робочих карток;</li>
+            <li>«Сітка», «Плата» та «Схеми» отримали різні, повільні й плавні анімації.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.73</h3>
           <ul>
@@ -15425,7 +15464,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.73";
+  const APP_VERSION = "4.74";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -16725,29 +16764,97 @@
       context.lineCap = "round";
       context.lineJoin = "round";
       const step = Math.max(38, Math.min(62, width / 7));
-      if (effect === "grid" || effect === "board" || effect === "circuits") {
+      if (effect === "grid") {
         context.strokeStyle = border;
-        context.globalAlpha = effect === "grid" ? .38 : .25;
+        context.globalAlpha = .3;
         context.lineWidth = 1;
-        const drift = reduceMotion ? 0 : (time * 5) % step;
+        const drift = reduceMotion ? 0 : (time * 2.2) % step;
         for (let x = -step + drift; x < width + step; x += step) {
           context.beginPath(); context.moveTo(x, 0); context.lineTo(x, height); context.stroke();
         }
         for (let y = -step + drift; y < height + step; y += step) {
           context.beginPath(); context.moveTo(0, y); context.lineTo(width, y); context.stroke();
         }
-        if (effect !== "grid") {
-          context.strokeStyle = primary;
-          context.fillStyle = secondary;
-          context.globalAlpha = .42;
-          backgroundEffectNodes.slice(0, 18).forEach((node, index) => {
-            const x = Math.round(node.x / step) * step;
-            const y = Math.round(node.y / step) * step;
-            const length = step * (1.2 + index % 3);
-            context.beginPath(); context.moveTo(x, y); context.lineTo(Math.min(width, x + length), y); context.stroke();
-            context.beginPath(); context.arc(x, y, 2.5, 0, Math.PI * 2); context.fill();
-          });
-        }
+        const signal = reduceMotion ? width * .45 : (time * 34) % (width + step * 3) - step * 3;
+        context.strokeStyle = primary;
+        context.shadowColor = primary;
+        context.shadowBlur = 9;
+        context.globalAlpha = .62;
+        context.lineWidth = 2;
+        [2, 5, 8].forEach((row, index) => {
+          const y = (row * step) % Math.max(step, height);
+          const x = (signal + index * width * .31) % (width + step * 3) - step;
+          context.beginPath(); context.moveTo(x, y); context.lineTo(x + step * 1.7, y); context.stroke();
+        });
+        context.shadowBlur = 0;
+      } else if (effect === "board") {
+        const traces = [
+          [[-.05,.16],[.18,.16],[.18,.31],[.48,.31],[.48,.2],[.78,.2],[.78,.38],[1.05,.38]],
+          [[-.08,.57],[.13,.57],[.13,.45],[.36,.45],[.36,.7],[.64,.7],[.64,.55],[1.06,.55]],
+          [[.05,.88],[.28,.88],[.28,.76],[.53,.76],[.53,.9],[.82,.9],[.82,.72],[1.04,.72]],
+          [[.09,-.04],[.09,.22],[.31,.22],[.31,.56],[.52,.56],[.52,.4],[.92,.4],[.92,1.04]]
+        ];
+        const drawTrace = points => {
+          context.beginPath();
+          points.forEach(([px, py], index) => index ? context.lineTo(px * width, py * height) : context.moveTo(px * width, py * height));
+          context.stroke();
+        };
+        context.strokeStyle = primary;
+        context.lineWidth = 1.4;
+        context.globalAlpha = .31;
+        traces.forEach(drawTrace);
+        context.fillStyle = secondary;
+        context.globalAlpha = .5;
+        traces.forEach(points => points.slice(1, -1).forEach(([px, py]) => context.fillRect(px * width - 2, py * height - 2, 4, 4)));
+        const progress = reduceMotion ? .44 : (time % 6.4) / 6.4;
+        context.strokeStyle = primary;
+        context.shadowColor = primary;
+        context.shadowBlur = 12;
+        context.lineWidth = 3;
+        context.globalAlpha = .68;
+        traces.forEach((points, traceIndex) => {
+          const segments = points.length - 1;
+          const position = ((progress + traceIndex * .21) % 1) * segments;
+          const index = Math.min(segments - 1, Math.floor(position));
+          const local = position - index;
+          const [ax, ay] = points[index];
+          const [bx, by] = points[index + 1];
+          const x = (ax + (bx - ax) * local) * width;
+          const y = (ay + (by - ay) * local) * height;
+          context.beginPath(); context.arc(x, y, 3.2, 0, Math.PI * 2); context.stroke();
+        });
+        context.shadowBlur = 0;
+      } else if (effect === "circuits") {
+        const curves = [
+          [-.12,.18,.16,.03,.27,.42,.55,.28],
+          [.05,.66,.28,.39,.54,.87,1.08,.5],
+          [-.08,.9,.19,.61,.49,.58,.8,.82],
+          [.3,-.08,.42,.2,.72,.04,1.08,.3],
+          [.58,1.07,.49,.79,.82,.61,1.1,.74]
+        ];
+        context.strokeStyle = primary;
+        context.lineWidth = 1.35;
+        context.globalAlpha = .29;
+        curves.forEach(([x0,y0,c1x,c1y,c2x,c2y,x1,y1]) => {
+          context.beginPath();
+          context.moveTo(x0 * width, y0 * height);
+          context.bezierCurveTo(c1x * width, c1y * height, c2x * width, c2y * height, x1 * width, y1 * height);
+          context.stroke();
+        });
+        const progress = reduceMotion ? .5 : (time % 7.2) / 7.2;
+        context.fillStyle = secondary;
+        context.shadowColor = primary;
+        context.shadowBlur = 14;
+        context.globalAlpha = .74;
+        curves.forEach((curve, index) => {
+          const t = (progress + index * .19) % 1;
+          const [x0,y0,c1x,c1y,c2x,c2y,x1,y1] = curve;
+          const mt = 1 - t;
+          const x = (mt*mt*mt*x0 + 3*mt*mt*t*c1x + 3*mt*t*t*c2x + t*t*t*x1) * width;
+          const y = (mt*mt*mt*y0 + 3*mt*mt*t*c1y + 3*mt*t*t*c2y + t*t*t*y1) * height;
+          context.beginPath(); context.arc(x, y, 3.1, 0, Math.PI * 2); context.fill();
+        });
+        context.shadowBlur = 0;
       } else if (effect === "radar") {
         const radius = Math.min(width, height) * .42;
         const cx = width * .5, cy = height * .48;
