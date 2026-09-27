@@ -6,7 +6,7 @@
   <meta name="theme-color" id="themeColorMeta" content="#f9fbfc" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Облік" />
   <title>Облік</title>
   <script>
@@ -442,21 +442,8 @@
       padding-top: calc(env(safe-area-inset-top) + 122px);
     }
     body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      right: 0;
-      left: 0;
-      z-index: 99;
-      height: env(safe-area-inset-top);
-      opacity: 1;
-      background-color: var(--app-header-safe-background, var(--current-app-header-color));
-      background-image: none;
-      filter: none;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      mix-blend-mode: normal;
-      pointer-events: none;
+      content: none;
+      display: none;
     }
     body.page-today {
       --current-app-header-color: var(--app-header-background, var(--surface));
@@ -11087,9 +11074,6 @@
     body.modal-scroll-locked {
       background: var(--modal-safe-background, color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%)) !important;
     }
-    body.modal-scroll-locked::before {
-      background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface))) !important;
-    }
     [role="dialog"][aria-modal="true"]:not(.hidden) {
       align-items: center !important;
       justify-content: center !important;
@@ -11107,7 +11091,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=462">
+<link rel="manifest" href="manifest.json?v=463">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11162,7 +11146,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.62</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.63</span></div>
     </div>
   </div>
 
@@ -11640,7 +11624,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=462" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=463" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12771,7 +12755,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.62</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.63</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12796,6 +12780,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.63</h3>
+          <ul>
+            <li>усунуто першопричину напівпрозорої смуги в iOS: системний режим `black-translucent` замінено на непрозорий;</li>
+            <li>прибрано дубльований шар safe-area, тому системна зона та шапка тепер малюються одним суцільним фоном.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.62</h3>
           <ul>
@@ -15156,7 +15147,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.62";
+  const APP_VERSION = "4.63";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
