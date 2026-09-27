@@ -456,7 +456,7 @@
       right: 0;
       left: 0;
       display: block;
-      height: calc(env(safe-area-inset-top) + 20px);
+      height: calc(env(safe-area-inset-top) + 28px);
       background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface)));
       background-image: none;
       opacity: 1;
@@ -471,7 +471,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      opacity: .42;
+      opacity: .72;
       pointer-events: none;
     }
     body.additional-battery-fleet-active #appBackgroundEffectsCanvas,
@@ -517,7 +517,7 @@
       border: 0;
       border-bottom: 1px solid var(--border);
       border-radius: 0;
-      padding: calc(env(safe-area-inset-top) + 26px) max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 34px) max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
       margin-bottom: 0;
       box-shadow: 0 12px 30px var(--header-shadow);
       backdrop-filter: none;
@@ -525,7 +525,7 @@
     }
     body.page-today .app-header {
       overflow: hidden;
-      padding: calc(env(safe-area-inset-top) + 21px) max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 29px) max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
       border-bottom-color: transparent;
       border-radius: 0 0 30px 30px;
       box-shadow: 0 14px 32px var(--header-shadow);
@@ -1868,6 +1868,7 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
+      opacity: .96;
     }
     .background-effect-preview-motion i {
       position: absolute;
@@ -1886,7 +1887,7 @@
     .background-effect-preview-ui span {
       border: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
       border-radius: 13px;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      background: color-mix(in srgb, var(--surface) 78%, transparent);
       box-shadow: 0 8px 22px color-mix(in srgb, var(--card-shadow) 45%, transparent);
     }
     .background-effect-preview-ui .preview-header-line {
@@ -1913,8 +1914,8 @@
     .background-effect-mini[data-effect="circuits"] {
       background-color: var(--bg);
       background-image:
-        linear-gradient(color-mix(in srgb, var(--border) 38%, transparent) 1px, transparent 1px),
-        linear-gradient(90deg, color-mix(in srgb, var(--border) 38%, transparent) 1px, transparent 1px);
+        linear-gradient(color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px);
       background-size: 28px 28px;
       animation: effectGridMove 5s linear infinite;
     }
@@ -1925,32 +1926,32 @@
       content: "";
       position: absolute;
       inset: 18% 8%;
-      border: 2px solid color-mix(in srgb, var(--primary-bg) 50%, transparent);
+      border: 2px solid color-mix(in srgb, var(--primary-bg) 72%, transparent);
       border-left-color: transparent;
       border-radius: 8px;
       animation: effectCircuitPulse 2.4s ease-in-out infinite;
     }
     .background-effect-preview[data-effect="radar"] .background-effect-preview-motion,
     .background-effect-mini[data-effect="radar"] {
-      background: repeating-radial-gradient(circle, transparent 0 18px, color-mix(in srgb, var(--primary-bg) 22%, transparent) 19px 20px), var(--bg);
+      background: repeating-radial-gradient(circle, transparent 0 18px, color-mix(in srgb, var(--primary-bg) 38%, transparent) 19px 20px), var(--bg);
     }
     .background-effect-preview[data-effect="radar"] .background-effect-preview-motion::after,
     .background-effect-mini[data-effect="radar"]::after {
       content: ""; position: absolute; inset: -35%;
-      background: conic-gradient(from 0deg, transparent 0 78%, color-mix(in srgb, var(--primary-bg) 45%, transparent));
+      background: conic-gradient(from 0deg, transparent 0 78%, color-mix(in srgb, var(--primary-bg) 68%, transparent));
       animation: effectRotate 3.4s linear infinite;
     }
     .background-effect-preview[data-effect="waves"] .background-effect-preview-motion i,
     .background-effect-preview[data-effect="aurora"] .background-effect-preview-motion i {
       left: -15%; width: 130%; height: 36px; border-radius: 50%;
-      border-top: 3px solid color-mix(in srgb, var(--primary-bg) 45%, transparent);
+      border-top: 3px solid color-mix(in srgb, var(--primary-bg) 68%, transparent);
       animation: effectWave 3.2s ease-in-out infinite alternate;
     }
     .background-effect-preview[data-effect="waves"] i:nth-child(1), .background-effect-preview[data-effect="aurora"] i:nth-child(1) { top: 28%; }
     .background-effect-preview[data-effect="waves"] i:nth-child(2), .background-effect-preview[data-effect="aurora"] i:nth-child(2) { top: 49%; animation-delay: -.8s; }
     .background-effect-preview[data-effect="waves"] i:nth-child(3), .background-effect-preview[data-effect="aurora"] i:nth-child(3) { top: 70%; animation-delay: -1.6s; }
     .background-effect-preview[data-effect="aurora"] .background-effect-preview-motion i { height: 70px; border-width: 14px; filter: blur(10px); opacity: .42; }
-    .background-effect-mini[data-effect="waves"], .background-effect-mini[data-effect="aurora"] { background: radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--primary-bg) 38%, transparent), transparent 55%), var(--bg); animation: effectWave 2.6s ease-in-out infinite alternate; }
+    .background-effect-mini[data-effect="waves"], .background-effect-mini[data-effect="aurora"] { background: radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--primary-bg) 62%, transparent), transparent 62%), var(--bg); animation: effectWave 2.6s ease-in-out infinite alternate; }
     .background-effect-preview[data-effect="particles"] .background-effect-preview-motion,
     .background-effect-preview[data-effect="constellation"] .background-effect-preview-motion,
     .background-effect-mini[data-effect="particles"], .background-effect-mini[data-effect="constellation"] {
@@ -1960,7 +1961,7 @@
     }
     .background-effect-preview[data-effect="rain"] .background-effect-preview-motion,
     .background-effect-mini[data-effect="rain"] {
-      background-image: repeating-linear-gradient(118deg, transparent 0 17px, color-mix(in srgb, var(--primary-bg) 28%, transparent) 18px 19px, transparent 20px 38px);
+      background-image: repeating-linear-gradient(118deg, transparent 0 17px, color-mix(in srgb, var(--primary-bg) 48%, transparent) 18px 19px, transparent 20px 38px);
       background-size: 70px 70px;
       animation: effectRain 2.5s linear infinite;
     }
@@ -1968,7 +1969,7 @@
     .background-effect-preview[data-effect="orbits"] .background-effect-preview-motion::after,
     .background-effect-mini[data-effect="orbits"]::before,
     .background-effect-mini[data-effect="orbits"]::after {
-      content: ""; position: absolute; inset: 16% 24%; border: 1px solid color-mix(in srgb, var(--primary-bg) 38%, transparent); border-radius: 50%; animation: effectRotate 4.5s linear infinite;
+      content: ""; position: absolute; inset: 16% 24%; border: 1px solid color-mix(in srgb, var(--primary-bg) 62%, transparent); border-radius: 50%; animation: effectRotate 4.5s linear infinite;
     }
     .background-effect-preview[data-effect="orbits"] .background-effect-preview-motion::after,
     .background-effect-mini[data-effect="orbits"]::after { inset: 28% 12%; animation-direction: reverse; }
@@ -9036,7 +9037,7 @@
       pointer-events: none;
     }
     body.page-today.workspace-additional.additional-shift-tool-active .app-header {
-      padding-top: calc(env(safe-area-inset-top) + 1px);
+      padding-top: calc(env(safe-area-inset-top) + 29px);
       padding-bottom: 1px;
     }
     body.page-today.workspace-additional.additional-shift-tool-active .topbar { margin-bottom: 0; }
@@ -9374,11 +9375,11 @@
     body.additional-battery-fleet-active #bmsBatteryView {
       position: fixed;
       z-index: 250;
-      top: calc(env(safe-area-inset-top) + 18px);
+      top: calc(env(safe-area-inset-top) + 26px);
       right: 0;
       bottom: 0;
       left: 0;
-      height: calc(100dvh - env(safe-area-inset-top) - 18px);
+      height: calc(100dvh - env(safe-area-inset-top) - 26px);
       overflow: hidden;
       background: #eef3f4;
     }
@@ -11275,7 +11276,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=472">
+<link rel="manifest" href="manifest.json?v=473">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11332,7 +11333,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.72</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.73</span></div>
     </div>
   </div>
 
@@ -11809,7 +11810,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=472" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=473" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12954,7 +12955,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.72</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.73</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12979,6 +12980,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.73</h3>
+          <ul>
+            <li>верхню захисну область iPhone розширено до повного перекриття залишку scroll-edge смуги, включно з компактною шапкою графіка змін;</li>
+            <li>підсилено контраст усіх фонових анімацій, особливо на світлих темах на кшталт «Ранкова хмара»;</li>
+            <li>мініатюри й живий попередній перегляд анімацій зроблено виразнішими.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.72</h3>
           <ul>
@@ -15416,7 +15425,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.72";
+  const APP_VERSION = "4.73";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -16718,7 +16727,7 @@
       const step = Math.max(38, Math.min(62, width / 7));
       if (effect === "grid" || effect === "board" || effect === "circuits") {
         context.strokeStyle = border;
-        context.globalAlpha = effect === "grid" ? .25 : .16;
+        context.globalAlpha = effect === "grid" ? .38 : .25;
         context.lineWidth = 1;
         const drift = reduceMotion ? 0 : (time * 5) % step;
         for (let x = -step + drift; x < width + step; x += step) {
@@ -16730,7 +16739,7 @@
         if (effect !== "grid") {
           context.strokeStyle = primary;
           context.fillStyle = secondary;
-          context.globalAlpha = .24;
+          context.globalAlpha = .42;
           backgroundEffectNodes.slice(0, 18).forEach((node, index) => {
             const x = Math.round(node.x / step) * step;
             const y = Math.round(node.y / step) * step;
@@ -16742,16 +16751,16 @@
       } else if (effect === "radar") {
         const radius = Math.min(width, height) * .42;
         const cx = width * .5, cy = height * .48;
-        context.strokeStyle = primary; context.lineWidth = 1; context.globalAlpha = .22;
+        context.strokeStyle = primary; context.lineWidth = 1.25; context.globalAlpha = .34;
         [1, .75, .5, .25].forEach(scale => { context.beginPath(); context.arc(cx, cy, radius * scale, 0, Math.PI * 2); context.stroke(); });
         const angle = reduceMotion ? -.7 : time * .45;
-        context.globalAlpha = .38; context.beginPath(); context.moveTo(cx, cy); context.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius); context.stroke();
+        context.globalAlpha = .58; context.beginPath(); context.moveTo(cx, cy); context.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius); context.stroke();
       } else if (effect === "waves" || effect === "aurora") {
         [0, 1, 2, 3].forEach(index => {
           context.beginPath();
           context.strokeStyle = index % 2 ? secondary : primary;
           context.lineWidth = effect === "aurora" ? 10 + index * 5 : 1.5;
-          context.globalAlpha = effect === "aurora" ? .055 : .2;
+          context.globalAlpha = effect === "aurora" ? .11 : .32;
           for (let x = -20; x <= width + 20; x += 12) {
             const y = height * (.22 + index * .19) + Math.sin(x / 75 + index + (reduceMotion ? 0 : time * (.22 + index * .04))) * (20 + index * 6);
             if (x === -20) context.moveTo(x, y); else context.lineTo(x, y);
@@ -16759,18 +16768,18 @@
           context.stroke();
         });
       } else if (effect === "rain") {
-        context.strokeStyle = primary; context.globalAlpha = .22; context.lineWidth = 1.2;
+        context.strokeStyle = primary; context.globalAlpha = .38; context.lineWidth = 1.45;
         backgroundEffectNodes.forEach(node => {
           const y = reduceMotion ? node.y : (node.y + time * (28 + node.size * 10)) % (height + 40) - 20;
           context.beginPath(); context.moveTo(node.x, y); context.lineTo(node.x - 8, y + 22); context.stroke();
         });
       } else if (effect === "orbits") {
-        context.strokeStyle = border; context.globalAlpha = .22; context.lineWidth = 1;
+        context.strokeStyle = border; context.globalAlpha = .34; context.lineWidth = 1.15;
         const cx = width / 2, cy = height / 2;
         [70, 130, 195, 265].forEach((radius, index) => {
           context.beginPath(); context.ellipse(cx, cy, Math.min(radius, width * .42), radius * .55, index * .27, 0, Math.PI * 2); context.stroke();
           const angle = index + (reduceMotion ? 0 : time * (.18 + index * .05));
-          context.fillStyle = index % 2 ? secondary : primary; context.globalAlpha = .48;
+          context.fillStyle = index % 2 ? secondary : primary; context.globalAlpha = .64;
           context.beginPath(); context.arc(cx + Math.cos(angle) * Math.min(radius, width * .42), cy + Math.sin(angle) * radius * .55, 3, 0, Math.PI * 2); context.fill();
         });
       } else {
@@ -16781,7 +16790,7 @@
           }
         });
         if (effect === "constellation") {
-          context.strokeStyle = primary; context.globalAlpha = .1; context.lineWidth = 1;
+          context.strokeStyle = primary; context.globalAlpha = .18; context.lineWidth = 1.1;
           backgroundEffectNodes.forEach((node, index) => backgroundEffectNodes.slice(index + 1, index + 7).forEach(other => {
             const distance = Math.hypot(node.x - other.x, node.y - other.y);
             if (distance < 105) { context.beginPath(); context.moveTo(node.x, node.y); context.lineTo(other.x, other.y); context.stroke(); }
@@ -16789,7 +16798,7 @@
         }
         backgroundEffectNodes.forEach((node, index) => {
           context.fillStyle = index % 4 ? primary : secondary;
-          context.globalAlpha = .18 + .12 * Math.sin(time + node.phase);
+          context.globalAlpha = .3 + .16 * Math.sin(time + node.phase);
           context.beginPath(); context.arc(node.x, node.y, node.size, 0, Math.PI * 2); context.fill();
         });
       }
