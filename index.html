@@ -449,6 +449,22 @@
       content: none;
       display: none;
     }
+    #iosTopEdgeGuard {
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      right: 0;
+      left: 0;
+      display: block;
+      height: max(env(safe-area-inset-top), 2px);
+      background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface)));
+      background-image: none;
+      opacity: 1;
+      filter: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      pointer-events: none;
+    }
     body.page-today {
       --current-app-header-color: var(--app-header-background, var(--surface));
     }
@@ -11069,7 +11085,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=468">
+<link rel="manifest" href="manifest.json?v=469">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11094,6 +11110,7 @@
 
 </head>
 <body class="splash-active page-today">
+  <div id="iosTopEdgeGuard" class="no-print" aria-hidden="true"></div>
   <div class="app-splash" id="appSplash" aria-label="Запуск застосунку Облік">
     <div class="splash-content">
       <div class="splash-stage" id="splashStage">
@@ -11124,7 +11141,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.68</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.69</span></div>
     </div>
   </div>
 
@@ -11601,7 +11618,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=468" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=469" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12720,7 +12737,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.68</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.69</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12745,6 +12762,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.69</h3>
+          <ul>
+            <li>додано реальний фіксований верхній край, який вимикає системну розмиту scroll-edge смугу iOS 26;</li>
+            <li>елемент розташований позаду тексту, не перехоплює натискання та синхронізується з кольором поточної шапки;</li>
+            <li>виправлення діє також у вбудованому Battery Fleet, де головна шапка «Обліку» прихована.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.68</h3>
           <ul>
@@ -15151,7 +15176,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.68";
+  const APP_VERSION = "4.69";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
