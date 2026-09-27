@@ -9172,12 +9172,26 @@
     .shipment-history-window-header { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; align-items: center; min-height: 48px; padding: 5px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 8px 20px var(--header-shadow); }
     .shipment-history-window-header strong { grid-column: 2; text-align: center; }
     .shipment-history-window-header button { grid-column: 3; width: 38px; min-width: 38px; height: 38px; min-height: 38px; margin: 0; padding: 0; border: 0; background: transparent; color: var(--text); box-shadow: none; font-size: 23px; }
+    .shipment-history-search input { width: 100%; margin: 0; }
+    .shipment-history-month { overflow: hidden; border: 1px solid var(--border); border-radius: 17px; background: var(--surface-deep); }
+    .shipment-history-month-toggle,
+    .shipment-history-date-toggle { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; margin: 0; border: 0; background: transparent; color: var(--text); box-shadow: none; text-align: left; }
+    .shipment-history-month-toggle { min-height: 48px; padding: 9px 12px; font-size: 14px; font-weight: 900; }
+    .shipment-history-month-toggle small { color: var(--muted); font-size: 10px; }
+    .shipment-history-month-body { display: none; gap: 8px; padding: 0 7px 7px; }
+    .shipment-history-month.open .shipment-history-month-body { display: grid; }
+    .shipment-history-month-chevron,
+    .shipment-history-date-chevron { font-size: 18px; transition: transform .18s ease; }
+    .shipment-history-month.open .shipment-history-month-chevron,
+    .shipment-history-day.open > .shipment-history-day-header .shipment-history-date-chevron { transform: rotate(180deg); }
     .shipment-history-day { padding: 11px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
-    .shipment-history-day-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+    .shipment-history-day-header { display: grid; gap: 7px; }
+    .shipment-history-date-toggle { min-height: 40px; padding: 6px 4px; }
     .shipment-history-day-title { min-width: 0; font-size: 13px; font-weight: 900; }
     .shipment-history-day-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
     .shipment-history-day-actions button { width: auto; min-height: 34px; margin: 0; padding: 6px 9px; font-size: 10px; }
-    .shipment-history-day-list { display: grid; gap: 6px; margin-top: 9px; }
+    .shipment-history-day-list { display: none; gap: 6px; margin-top: 9px; }
+    .shipment-history-day.open .shipment-history-day-list { display: grid; }
     .shipment-history-row { overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-deep); }
     .shipment-history-row-heading-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 42px; align-items: center; gap: 4px; padding-right: 5px; }
     .shipment-history-row-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; min-height: 50px; margin: 0; padding: 9px 11px; border: 0; border-radius: 0; background: transparent; color: var(--text); box-shadow: none; text-align: left; }
@@ -9192,7 +9206,8 @@
     .shipment-history-position { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px; padding: 9px; border-radius: 11px; background: var(--surface-strong); text-align: center; }
     .shipment-history-position-edit { width: auto !important; min-width: 38px !important; min-height: 34px !important; margin: 0 !important; padding: 5px 8px !important; font-size: 10px !important; }
     .shipment-history-card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .shipment-history-card-actions button { width: 100%; margin: 0; }
+    .shipment-history-card-actions { justify-items: center; }
+    .shipment-history-card-actions button { width: auto; min-height: 32px; margin: 0; padding: 5px 9px; font-size: 10px; }
     .shipment-history-position strong { display: block; font-size: 12px; line-height: 1.3; }
     .shipment-history-position small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
     #shipmentItemOverlay,
@@ -16451,6 +16466,9 @@
   let shipmentDetailCardId = "";
   let shipmentHistoryExpandedCards = new Set();
   let shipmentHistoryExpandedDays = new Set();
+  let shipmentHistoryExpandedMonths = new Set([todayISO().slice(0, 7)]);
+  let shipmentHistoryExpandedDates = new Set();
+  let shipmentHistorySearchQuery = "";
   let shipmentItemEditContext = null;
   let shipmentMetaEditCardId = "";
   let shipmentMetaEditHistoryDayId = "";
@@ -26322,32 +26340,80 @@
     return true;
   }
 
-  function renderShipmentHistory() {
+  function shipmentHistoryMonthLabel(monthKey) {
+    const [year, month] = String(monthKey || "").split("-").map(Number);
+    if (!year || !month) return monthKey;
+    const label = new Intl.DateTimeFormat("uk-UA", { month: "long", year: "numeric" }).format(new Date(year, month - 1, 1));
+    return label.charAt(0).toLocaleUpperCase("uk-UA") + label.slice(1);
+  }
+
+  function shipmentHistoryDayMatches(day, query) {
+    const normalized = String(query || "").trim().toLocaleLowerCase("uk-UA");
+    if (!normalized) return true;
+    const [year = "", month = "", date = ""] = String(day.date || "").split("-");
+    const formatted = `${date}.${month}.${year}`;
+    const digits = normalized.replace(/\D/g, "");
+    const dateDigits = `${date}${month}${year}`;
+    const text = `${formatted} ${day.date || ""} ${niceDate(day.date)} ${(day.cards || []).map(card => `${card.ramp || ""} ${card.driver || ""}`).join(" ")}`.toLocaleLowerCase("uk-UA");
+    return text.includes(normalized) || Boolean(digits && dateDigits.includes(digits));
+  }
+
+  function renderShipmentHistory({ focusSearch = false } = {}) {
     const container = document.getElementById("shipmentHistoryList");
     if (!container) return;
-    const history = loadShipmentHistory();
-    const daysMarkup = history.length ? history.map(day => {
-      const cards = Array.isArray(day.cards) ? day.cards : [];
-      const allOpen = shipmentHistoryExpandedDays.has(day.id);
-      const rows = cards.map(card => {
-        const cardKey = `${day.id}:${card.id}`;
-        const open = allOpen || shipmentHistoryExpandedCards.has(cardKey);
-        const hasPreview = shipmentCardImageUrl && shipmentCardImageHistoryDayId === day.id && shipmentCardImageCardId === card.id;
-        const positions = (card.items || []).map(item => `<div class="shipment-history-position"><span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(shipmentItemSummary(item))}</small></span><button type="button" class="secondary shipment-history-position-edit" data-edit-history-shipment-item="${escapeHtml(item.id)}" data-history-day-id="${escapeHtml(day.id)}" data-history-card-id="${escapeHtml(card.id)}">Редагувати</button></div>`).join("");
-        return `<article class="shipment-history-row${open ? " open" : ""}">
-          <div class="shipment-history-row-heading-wrap"><button type="button" class="shipment-history-row-heading" data-toggle-history-shipment-card="${escapeHtml(cardKey)}"><span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items?.length || 0} ${shipmentCardWord(card.items?.length || 0, ["позиція", "позиції", "позицій"])} · ${shipmentCardOccupiedPlaces(card)} із ${card.capacity || 33} місць</small></span><span class="shipment-history-row-chevron">⌄</span></button><button type="button" class="shipment-history-image-btn" data-create-history-shipment-image="${escapeHtml(card.id)}" data-history-day-id="${escapeHtml(day.id)}" aria-label="Створити зображення"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9" r="1.5"></circle><path d="m5 18 5-5 3 3 2-2 4 4"></path></svg></button></div>
-          <div class="shipment-history-row-body">${positions || '<div class="shipment-card-empty">У машині немає позицій</div>'}<div class="shipment-history-card-actions"><button type="button" class="secondary" data-edit-history-shipment-meta="${escapeHtml(card.id)}" data-history-day-id="${escapeHtml(day.id)}">Редагувати машину</button><button type="button" data-restore-history-shipment-card="${escapeHtml(card.id)}" data-history-day-id="${escapeHtml(day.id)}">Додати в поточні</button></div></div>
-          ${hasPreview ? `<section class="shipment-card-preview" data-shipment-card-preview="${escapeHtml(card.id)}"><div class="shipment-preview-notice" role="status">Картку створено</div><img data-shipment-history-preview-image alt="Сформована картка ${escapeHtml(shipmentLoadTitle(card))}" /><div class="shipment-card-preview-actions"><button type="button" data-share-history-shipment-image>Поділитися</button><button type="button" class="secondary" data-close-history-shipment-preview>Закрити перегляд</button></div></section>` : ""}
-        </article>`;
+    const query = shipmentHistorySearchQuery.trim();
+    const history = loadShipmentHistory().filter(day => shipmentHistoryDayMatches(day, query));
+    const grouped = new Map();
+    history.forEach(day => {
+      const monthKey = String(day.date || "").slice(0, 7) || "Без дати";
+      if (!grouped.has(monthKey)) grouped.set(monthKey, []);
+      grouped.get(monthKey).push(day);
+    });
+    const monthsMarkup = grouped.size ? [...grouped.entries()].map(([monthKey, days]) => {
+      const monthOpen = Boolean(query) || shipmentHistoryExpandedMonths.has(monthKey);
+      const monthCards = days.reduce((total, day) => total + (day.cards?.length || 0), 0);
+      const dayMarkup = days.map(day => {
+        const cards = Array.isArray(day.cards) ? day.cards : [];
+        const dateOpen = Boolean(query) || shipmentHistoryExpandedDates.has(day.id);
+        const allOpen = shipmentHistoryExpandedDays.has(day.id);
+        const rows = cards.map(card => {
+          const cardKey = `${day.id}:${card.id}`;
+          const open = allOpen || shipmentHistoryExpandedCards.has(cardKey);
+          const hasPreview = shipmentCardImageUrl && shipmentCardImageHistoryDayId === day.id && shipmentCardImageCardId === card.id;
+          const positions = (card.items || []).map(item => `<div class="shipment-history-position"><span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(shipmentItemSummary(item))}</small></span><button type="button" class="secondary shipment-history-position-edit" data-edit-history-shipment-item="${escapeHtml(item.id)}" data-history-day-id="${escapeHtml(day.id)}" data-history-card-id="${escapeHtml(card.id)}">Редагувати</button></div>`).join("");
+          return `<article class="shipment-history-row${open ? " open" : ""}">
+            <div class="shipment-history-row-heading-wrap"><button type="button" class="shipment-history-row-heading" data-toggle-history-shipment-card="${escapeHtml(cardKey)}"><span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items?.length || 0} ${shipmentCardWord(card.items?.length || 0, ["позиція", "позиції", "позицій"])} · ${shipmentCardOccupiedPlaces(card)} із ${card.capacity || 33} місць</small></span><span class="shipment-history-row-chevron">⌄</span></button><button type="button" class="shipment-history-image-btn" data-create-history-shipment-image="${escapeHtml(card.id)}" data-history-day-id="${escapeHtml(day.id)}" aria-label="Створити зображення"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9" r="1.5"></circle><path d="m5 18 5-5 3 3 2-2 4 4"></path></svg></button></div>
+            <div class="shipment-history-row-body">${positions || '<div class="shipment-card-empty">У машині немає позицій</div>'}<div class="shipment-history-card-actions"><button type="button" class="secondary" data-edit-history-shipment-meta="${escapeHtml(card.id)}" data-history-day-id="${escapeHtml(day.id)}">Редагувати машину</button><button type="button" data-restore-history-shipment-card="${escapeHtml(card.id)}" data-history-day-id="${escapeHtml(day.id)}">Додати в поточні</button></div></div>
+            ${hasPreview ? `<section class="shipment-card-preview" data-shipment-card-preview="${escapeHtml(card.id)}"><div class="shipment-preview-notice" role="status">Картку створено</div><img data-shipment-history-preview-image alt="Сформована картка ${escapeHtml(shipmentLoadTitle(card))}" /><div class="shipment-card-preview-actions"><button type="button" data-share-history-shipment-image>Поділитися</button><button type="button" class="secondary" data-close-history-shipment-preview>Закрити перегляд</button></div></section>` : ""}
+          </article>`;
+        }).join("");
+        return `<section class="shipment-history-day${dateOpen ? " open" : ""}">
+          <div class="shipment-history-day-header"><button type="button" class="shipment-history-date-toggle" data-toggle-history-shipment-date="${escapeHtml(day.id)}"><span class="shipment-history-day-title">${escapeHtml(niceDate(day.date))} · ${cards.length} ${shipmentCardWord(cards.length, ["машина", "машини", "машин"])}</span><span class="shipment-history-date-chevron">⌄</span></button>${dateOpen ? `<div class="shipment-history-day-actions"><button type="button" class="secondary" data-open-all-history-shipment-cards="${escapeHtml(day.id)}">${allOpen ? "Згорнути всі" : "Відкрити всі"}</button><button type="button" data-restore-shipment-day="${escapeHtml(day.id)}">Відновити й редагувати</button></div>` : ""}</div>
+          <div class="shipment-history-day-list">${rows || '<div class="shipment-card-empty">Немає машин</div>'}</div>
+        </section>`;
       }).join("");
-      return `<section class="shipment-history-day">
-        <div class="shipment-history-day-header"><div class="shipment-history-day-title">${escapeHtml(niceDate(day.date))} · ${cards.length} ${shipmentCardWord(cards.length, ["машина", "машини", "машин"])}</div><div class="shipment-history-day-actions"><button type="button" class="secondary" data-open-all-history-shipment-cards="${escapeHtml(day.id)}">${allOpen ? "Згорнути всі" : "Відкрити всі"}</button><button type="button" data-restore-shipment-day="${escapeHtml(day.id)}">Відновити й редагувати</button></div></div>
-        <div class="shipment-history-day-list">${rows || '<div class="shipment-card-empty">Немає машин</div>'}</div>
-      </section>`;
-    }).join("") : '<div class="shipment-card-empty">Історія відвантажень поки порожня</div>';
-    container.innerHTML = `<div class="shipment-history-window"><div class="shipment-history-window-header"><strong>Історія відвантажень</strong><button type="button" id="closeShipmentHistoryBtn" aria-label="Закрити історію">×</button></div>${daysMarkup}</div>`;
+      return `<section class="shipment-history-month${monthOpen ? " open" : ""}"><button type="button" class="shipment-history-month-toggle" data-toggle-history-shipment-month="${escapeHtml(monthKey)}"><span>${escapeHtml(shipmentHistoryMonthLabel(monthKey))}<small> · ${monthCards} ${shipmentCardWord(monthCards, ["машина", "машини", "машин"])}</small></span><span class="shipment-history-month-chevron">⌄</span></button><div class="shipment-history-month-body">${dayMarkup}</div></section>`;
+    }).join("") : `<div class="shipment-card-empty">${query ? "За цією датою нічого не знайдено" : "Історія відвантажень поки порожня"}</div>`;
+    container.innerHTML = `<div class="shipment-history-window"><div class="shipment-history-window-header"><strong>Історія відвантажень</strong><button type="button" id="closeShipmentHistoryBtn" aria-label="Закрити історію">×</button></div><label class="shipment-history-search"><input type="search" value="${escapeHtml(shipmentHistorySearchQuery)}" placeholder="Пошук за датою, наприклад 27.08.2026" data-shipment-history-search /></label>${monthsMarkup}</div>`;
     const previewImage = container.querySelector("[data-shipment-history-preview-image]");
     if (previewImage && shipmentCardImageUrl) previewImage.src = shipmentCardImageUrl;
+    if (focusSearch) requestAnimationFrame(() => {
+      const input = container.querySelector("[data-shipment-history-search]");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    });
+  }
+
+  function toggleShipmentHistoryMonth(monthKey) {
+    if (shipmentHistoryExpandedMonths.has(monthKey)) shipmentHistoryExpandedMonths.delete(monthKey);
+    else shipmentHistoryExpandedMonths.add(monthKey);
+    renderShipmentHistory();
+  }
+
+  function toggleShipmentHistoryDate(dayId) {
+    if (shipmentHistoryExpandedDates.has(dayId)) shipmentHistoryExpandedDates.delete(dayId);
+    else shipmentHistoryExpandedDates.add(dayId);
+    renderShipmentHistory();
   }
 
   function toggleShipmentHistoryCard(cardKey) {
@@ -28755,12 +28821,21 @@
     if (editMeta) return openShipmentMetaDialog(editMeta.dataset.editHistoryShipmentMeta, editMeta.dataset.historyDayId);
     const restoreCard = event.target.closest("[data-restore-history-shipment-card]");
     if (restoreCard) return restoreShipmentHistoryCard(restoreCard.dataset.historyDayId, restoreCard.dataset.restoreHistoryShipmentCard);
+    const toggleMonth = event.target.closest("[data-toggle-history-shipment-month]");
+    if (toggleMonth) return toggleShipmentHistoryMonth(toggleMonth.dataset.toggleHistoryShipmentMonth);
+    const toggleDate = event.target.closest("[data-toggle-history-shipment-date]");
+    if (toggleDate) return toggleShipmentHistoryDate(toggleDate.dataset.toggleHistoryShipmentDate);
     const toggleCard = event.target.closest("[data-toggle-history-shipment-card]");
     if (toggleCard) return toggleShipmentHistoryCard(toggleCard.dataset.toggleHistoryShipmentCard);
     const toggleAll = event.target.closest("[data-open-all-history-shipment-cards]");
     if (toggleAll) return toggleAllShipmentHistoryCards(toggleAll.dataset.openAllHistoryShipmentCards);
     const restoreDay = event.target.closest("[data-restore-shipment-day]");
     if (restoreDay) return restoreShipmentHistoryDay(restoreDay.dataset.restoreShipmentDay);
+  });
+  document.getElementById("shipmentHistoryList").addEventListener("input", event => {
+    if (!event.target.matches("[data-shipment-history-search]")) return;
+    shipmentHistorySearchQuery = event.target.value;
+    renderShipmentHistory({ focusSearch: true });
   });
   document.getElementById("shipmentCardLoads").addEventListener("focusin", event => {
     const input = event.target.closest("[data-shipment-product-search]");
