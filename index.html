@@ -9155,11 +9155,22 @@
     .shipment-card-toolbar button { width: 100%; margin: 0; }
     .shipment-history-list { display: grid; gap: 9px; }
     .shipment-history-day { padding: 11px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
-    .shipment-history-day summary { cursor: pointer; font-size: 13px; font-weight: 850; }
+    .shipment-history-day-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+    .shipment-history-day-title { min-width: 0; font-size: 13px; font-weight: 900; }
+    .shipment-history-day-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+    .shipment-history-day-actions button { width: auto; min-height: 34px; margin: 0; padding: 6px 9px; font-size: 10px; }
     .shipment-history-day-list { display: grid; gap: 6px; margin-top: 9px; }
-    .shipment-history-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px; border-radius: 11px; background: var(--surface-deep); }
-    .shipment-history-row strong { display: block; font-size: 12px; }
-    .shipment-history-row small { color: var(--muted); font-size: 10px; }
+    .shipment-history-row { overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-deep); }
+    .shipment-history-row-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; min-height: 50px; margin: 0; padding: 9px 11px; border: 0; border-radius: 0; background: transparent; color: var(--text); box-shadow: none; text-align: left; }
+    .shipment-history-row-heading strong { display: block; font-size: 12px; }
+    .shipment-history-row-heading small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .shipment-history-row-chevron { font-size: 18px; transition: transform .18s ease; }
+    .shipment-history-row.open .shipment-history-row-chevron { transform: rotate(180deg); }
+    .shipment-history-row-body { display: none; gap: 6px; padding: 8px; border-top: 1px solid var(--border); }
+    .shipment-history-row.open .shipment-history-row-body { display: grid; }
+    .shipment-history-position { padding: 9px; border-radius: 11px; background: var(--surface-strong); text-align: center; }
+    .shipment-history-position strong { display: block; font-size: 12px; line-height: 1.3; }
+    .shipment-history-position small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
     .shipment-load-list { display: grid; gap: 10px; }
     .shipment-load-card { padding: 0; overflow: hidden; }
     .shipment-load-heading-row {
@@ -9490,6 +9501,9 @@
       .shipment-card-remove { width: 30px !important; min-width: 30px !important; }
       .shipment-card-preview-actions { grid-template-columns: 1fr; }
       .shipment-card-actions.compact { grid-template-columns: 1fr; }
+      .shipment-history-day-header { grid-template-columns: 1fr; }
+      .shipment-history-day-actions { justify-content: stretch; }
+      .shipment-history-day-actions button { flex: 1; }
     }
     .pallet-calculator-card,
     .pallet-calculator-result {
@@ -10924,7 +10938,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=449">
+<link rel="manifest" href="manifest.json?v=450">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10979,7 +10993,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.49</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.50</span></div>
     </div>
   </div>
 
@@ -12559,7 +12573,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.49</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.50</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12585,6 +12599,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.50</h3>
+          <ul>
+            <li>історія відвантажень тепер показує кожну машину окремою карткою з повним списком позицій;</li>
+            <li>додано команди відкриття всіх машин за день та відновлення дня для повторного використання і редагування;</li>
+            <li>під час відновлення копія дня залишається в історії, а поточний незавершений список попередньо архівується.</li>
+          </ul>
+
           <h3>Версія 4.49</h3>
           <ul>
             <li>картки машин більше не розгортаються в загальному списку — їхній вміст відкривається в окремому вікні;</li>
@@ -14845,7 +14866,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.49";
+  const APP_VERSION = "4.50";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16330,6 +16351,8 @@
   let shipmentCardImageUrl = "";
   let shipmentCardImageCardId = "";
   let shipmentDetailCardId = "";
+  let shipmentHistoryExpandedCards = new Set();
+  let shipmentHistoryExpandedDays = new Set();
   let shipmentItemEditContext = null;
   let shipmentMetaEditCardId = "";
   let shipmentPalletTypeEditId = "";
@@ -26147,7 +26170,12 @@
   function loadShipmentHistory() {
     try {
       const parsed = JSON.parse(localStorage.getItem(SHIPMENT_HISTORY_KEY) || "[]");
-      return Array.isArray(parsed) ? parsed : [];
+      return Array.isArray(parsed) ? parsed.map((day, index) => ({
+        ...day,
+        id: String(day?.id || `shipment-day-legacy-${index}`),
+        date: String(day?.date || todayISO()),
+        cards: Array.isArray(day?.cards) ? day.cards : []
+      })) : [];
     } catch (error) { return []; }
   }
 
@@ -26196,9 +26224,66 @@
     const history = loadShipmentHistory();
     container.innerHTML = history.length ? history.map(day => {
       const cards = Array.isArray(day.cards) ? day.cards : [];
-      const rows = cards.map(card => `<div class="shipment-history-row"><span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items?.length || 0} ${shipmentCardWord(card.items?.length || 0, ["позиція", "позиції", "позицій"])} · ${shipmentCardOccupiedPlaces(card)} із ${card.capacity || 33} місць</small></span></div>`).join("");
-      return `<details class="shipment-history-day"><summary>${escapeHtml(niceDate(day.date))} · ${cards.length} ${shipmentCardWord(cards.length, ["машина", "машини", "машин"])}</summary><div class="shipment-history-day-list">${rows || '<div class="shipment-card-empty">Немає машин</div>'}</div></details>`;
+      const allOpen = shipmentHistoryExpandedDays.has(day.id);
+      const rows = cards.map(card => {
+        const cardKey = `${day.id}:${card.id}`;
+        const open = allOpen || shipmentHistoryExpandedCards.has(cardKey);
+        const positions = (card.items || []).map(item => `<div class="shipment-history-position"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(shipmentItemSummary(item))}</small></div>`).join("");
+        return `<article class="shipment-history-row${open ? " open" : ""}">
+          <button type="button" class="shipment-history-row-heading" data-toggle-history-shipment-card="${escapeHtml(cardKey)}"><span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items?.length || 0} ${shipmentCardWord(card.items?.length || 0, ["позиція", "позиції", "позицій"])} · ${shipmentCardOccupiedPlaces(card)} із ${card.capacity || 33} місць</small></span><span class="shipment-history-row-chevron">⌄</span></button>
+          <div class="shipment-history-row-body">${positions || '<div class="shipment-card-empty">У машині немає позицій</div>'}</div>
+        </article>`;
+      }).join("");
+      return `<section class="shipment-history-day">
+        <div class="shipment-history-day-header"><div class="shipment-history-day-title">${escapeHtml(niceDate(day.date))} · ${cards.length} ${shipmentCardWord(cards.length, ["машина", "машини", "машин"])}</div><div class="shipment-history-day-actions"><button type="button" class="secondary" data-open-all-history-shipment-cards="${escapeHtml(day.id)}">${allOpen ? "Згорнути всі" : "Відкрити всі"}</button><button type="button" data-restore-shipment-day="${escapeHtml(day.id)}">Відновити й редагувати</button></div></div>
+        <div class="shipment-history-day-list">${rows || '<div class="shipment-card-empty">Немає машин</div>'}</div>
+      </section>`;
     }).join("") : '<div class="shipment-card-empty">Історія відвантажень поки порожня</div>';
+  }
+
+  function toggleShipmentHistoryCard(cardKey) {
+    if (shipmentHistoryExpandedCards.has(cardKey)) shipmentHistoryExpandedCards.delete(cardKey);
+    else shipmentHistoryExpandedCards.add(cardKey);
+    renderShipmentHistory();
+  }
+
+  function toggleAllShipmentHistoryCards(dayId) {
+    if (shipmentHistoryExpandedDays.has(dayId)) shipmentHistoryExpandedDays.delete(dayId);
+    else shipmentHistoryExpandedDays.add(dayId);
+    renderShipmentHistory();
+  }
+
+  async function restoreShipmentHistoryDay(dayId) {
+    const day = loadShipmentHistory().find(entry => entry.id === dayId);
+    if (!day) return;
+    const currentMessage = shipmentCardDraft.cards.length
+      ? "Поточні машини спочатку буде перенесено в історію. Потім вибраний день стане робочим списком."
+      : "Усі машини та позиції вибраного дня буде скопійовано в поточний робочий список. Копія в історії залишиться.";
+    const confirmed = await showAppDialog({
+      label: "Історія відвантажень",
+      title: "Відновити день для редагування?",
+      message: currentMessage,
+      confirmText: "Відновити",
+      cancelText: "Скасувати"
+    });
+    if (!confirmed) return;
+    if (shipmentCardDraft.cards.length) archiveCurrentShipmentDay();
+    const stamp = Date.now();
+    const restoredCards = JSON.parse(JSON.stringify(Array.isArray(day.cards) ? day.cards : [])).map((card, cardIndex) => ({
+      ...card,
+      id: `shipment-card-restored-${stamp}-${cardIndex}`,
+      createdAt: new Date().toISOString(),
+      collapsed: false,
+      items: (card.items || []).map((item, itemIndex) => ({ ...item, id: `shipment-item-restored-${stamp}-${cardIndex}-${itemIndex}` }))
+    }));
+    shipmentCardDraft = { activeDate: todayISO(), restoredFrom: day.date, cards: restoredCards };
+    shipmentDetailCardId = "";
+    shipmentCardImageUrl = "";
+    shipmentCardImageCardId = "";
+    saveShipmentCardDraft();
+    document.getElementById("shipmentHistoryList")?.classList.add("hidden");
+    renderShipmentCards();
+    toast("День відновлено. Усі машини знову доступні для редагування");
   }
 
   function loadShipmentManualNames() {
@@ -28413,6 +28498,14 @@
     const history = document.getElementById("shipmentHistoryList");
     history?.classList.toggle("hidden");
     renderShipmentHistory();
+  });
+  document.getElementById("shipmentHistoryList").addEventListener("click", event => {
+    const toggleCard = event.target.closest("[data-toggle-history-shipment-card]");
+    if (toggleCard) return toggleShipmentHistoryCard(toggleCard.dataset.toggleHistoryShipmentCard);
+    const toggleAll = event.target.closest("[data-open-all-history-shipment-cards]");
+    if (toggleAll) return toggleAllShipmentHistoryCards(toggleAll.dataset.openAllHistoryShipmentCards);
+    const restoreDay = event.target.closest("[data-restore-shipment-day]");
+    if (restoreDay) return restoreShipmentHistoryDay(restoreDay.dataset.restoreShipmentDay);
   });
   document.getElementById("shipmentCardLoads").addEventListener("focusin", event => {
     const input = event.target.closest("[data-shipment-product-search]");
