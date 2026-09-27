@@ -11294,6 +11294,177 @@
       justify-content: center !important;
       place-items: center !important;
     }
+
+    /* Компактна навігація без великої білої шапки на робочих екранах. */
+    body.page-today .app-header {
+      padding: calc(env(safe-area-inset-top) + 4px) 10px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      pointer-events: none;
+    }
+    body.page-today .topbar {
+      min-height: 29px;
+      margin: 0;
+      grid-template-columns: 1fr;
+    }
+    body.page-today .topbar-left-actions,
+    body.page-today .topbar-right-actions,
+    body.page-today .workspace-switcher-arrow,
+    body.page-today .compact-header-row,
+    body.page-today .date-line { display: none !important; }
+    body.page-today .workspace-switcher { pointer-events: none; }
+    body.page-today .workspace-switcher-button {
+      min-height: 29px;
+      padding: 3px 11px;
+      border: 0;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      box-shadow: 0 4px 14px color-mix(in srgb, var(--header-shadow) 45%, transparent);
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    .additional-desktop-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 7px;
+      align-items: center;
+      margin: 0 0 9px;
+    }
+    .additional-desktop-tabs {
+      display: flex;
+      min-width: 0;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .additional-desktop-tabs::-webkit-scrollbar { display: none; }
+    .additional-desktop-tab,
+    .additional-desktop-toolbar-button {
+      min-height: 34px;
+      margin: 0;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: none;
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .additional-desktop-tab.active {
+      border-color: var(--selection-border);
+      background: var(--selection-bg);
+      color: var(--selection-text);
+    }
+    .additional-desktop-toolbar-button { width: 34px; padding: 0; font-size: 19px; }
+    .additional-tool-icon.inventory-tool-icon { background: linear-gradient(145deg, #4f8fdf, #2657a6); }
+    .additional-tool-icon.orders-tool-icon { background: linear-gradient(145deg, #b984ef, #6941a8); }
+    .additional-tool-icon.production-tool-icon { background: linear-gradient(145deg, #efb35c, #bf672b); }
+    .additional-tool-icon .tool-letter { font-size: 16px; font-weight: 950; letter-spacing: -.04em; }
+
+    .universal-fab {
+      position: fixed;
+      z-index: 360;
+      right: max(15px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      width: 58px;
+      height: 58px;
+      pointer-events: none;
+    }
+    html[data-control-hand="left"] .universal-fab {
+      right: auto;
+      left: max(15px, env(safe-area-inset-left));
+    }
+    .universal-fab-main,
+    .universal-fab-action {
+      position: absolute;
+      display: grid;
+      margin: 0;
+      padding: 0;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--primary-bg) 46%, var(--border));
+      border-radius: 50%;
+      background: var(--primary-dark-bg);
+      color: var(--primary-dark-text);
+      box-shadow: 0 10px 26px color-mix(in srgb, var(--popover-shadow) 72%, transparent);
+      pointer-events: auto;
+    }
+    .universal-fab-main {
+      z-index: 2;
+      inset: 0;
+      width: 58px;
+      height: 58px;
+      font-size: 25px;
+      transition: transform .2s ease;
+    }
+    .universal-fab.open .universal-fab-main { transform: rotate(45deg); }
+    .universal-fab-actions { position: absolute; inset: 0; pointer-events: none; }
+    .universal-fab-action {
+      width: 44px;
+      height: 44px;
+      opacity: 0;
+      transform: translate(7px, 7px) scale(.55);
+      transition: transform .22s cubic-bezier(.2,.8,.2,1), opacity .16s ease;
+      font-size: 18px;
+    }
+    .universal-fab.open .universal-fab-action { opacity: 1; pointer-events: auto; }
+    .universal-fab.open .universal-fab-action:nth-child(1) { transform: translate(-2px, -67px) scale(1); }
+    .universal-fab.open .universal-fab-action:nth-child(2) { transform: translate(-52px, -50px) scale(1); }
+    .universal-fab.open .universal-fab-action:nth-child(3) { transform: translate(-67px, 0) scale(1); }
+    .universal-fab.open .universal-fab-action:nth-child(4) { transform: translate(-48px, 43px) scale(1); }
+    html[data-control-hand="left"] .universal-fab.open .universal-fab-action:nth-child(2) { transform: translate(52px, -50px) scale(1); }
+    html[data-control-hand="left"] .universal-fab.open .universal-fab-action:nth-child(3) { transform: translate(67px, 0) scale(1); }
+    html[data-control-hand="left"] .universal-fab.open .universal-fab-action:nth-child(4) { transform: translate(48px, 43px) scale(1); }
+    .universal-fab-action.hidden { display: none; }
+    .universal-fab-label {
+      position: absolute;
+      right: 51px;
+      padding: 5px 8px;
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 5px 15px var(--card-shadow);
+      font-size: 10px;
+      font-weight: 850;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    html[data-control-hand="left"] .universal-fab-label { right: auto; left: 51px; }
+    .additional-tool-home { display: none !important; }
+    .control-hand-settings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+    }
+    .control-hand-settings strong { grid-column: 1 / -1; font-size: 13px; }
+    .control-hand-choice { margin: 0; min-height: 40px; box-shadow: none; }
+    .control-hand-choice.active { border-color: var(--selection-border); background: var(--selection-bg); color: var(--selection-text); }
+
+    .desktop-manager-overlay {
+      position: fixed;
+      z-index: 520;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(10,16,25,.16);
+      backdrop-filter: blur(9px);
+      -webkit-backdrop-filter: blur(9px);
+    }
+    .desktop-manager-dialog { width: min(100%, 390px); padding: 16px; border-radius: 20px; background: var(--surface); box-shadow: 0 22px 60px var(--popover-shadow); }
+    .desktop-manager-dialog h2 { margin-bottom: 12px; }
+    .desktop-manager-dialog input { width: 100%; }
+    .desktop-manager-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .desktop-manager-actions button { margin: 0; }
   </style>
 
 <script>
@@ -11363,7 +11534,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.74</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.75</span></div>
     </div>
   </div>
 
@@ -11379,7 +11550,7 @@
       </div>
       <p class="menu-swipe-hint">Свайпни вліво або вправо, щоб закрити меню</p>
       <div class="menu-wheel" id="menuWheel">
-        <button class="menu-btn nav-choice active" data-page="today">Інвентаризація</button>
+        <button class="menu-btn nav-choice active" data-page="today">Інструменти</button>
         <button class="menu-btn nav-choice" data-page="history">Історія</button>
         <button class="menu-btn nav-choice" data-page="management">Налаштування</button>
         <button class="menu-btn nav-choice" data-page="about">Про додаток</button>
@@ -11417,7 +11588,7 @@
             <span class="workspace-option-mark"></span>
           </button>
           <button type="button" class="workspace-option" data-workspace="additional">
-            <span class="workspace-option-name">Додатково</span>
+            <span class="workspace-option-name">Інструменти</span>
             <span class="workspace-option-mark"></span>
           </button>
         </div>
@@ -11455,6 +11626,16 @@
       <span class="bottom-nav-label">Меню</span>
     </button>
   </nav>
+
+  <div class="universal-fab no-print" id="universalFab">
+    <div class="universal-fab-actions" id="universalFabActions">
+      <button type="button" class="universal-fab-action" id="universalHomeAction" aria-label="Інструменти"><span aria-hidden="true">⌂</span><span class="universal-fab-label">Інструменти</span></button>
+      <button type="button" class="universal-fab-action" id="universalNewAction" aria-label="Створити"><span aria-hidden="true">＋</span><span class="universal-fab-label">Створити</span></button>
+      <button type="button" class="universal-fab-action" id="universalMenuAction" aria-label="Меню"><span aria-hidden="true">☰</span><span class="universal-fab-label">Меню</span></button>
+      <button type="button" class="universal-fab-action" id="universalSettingsAction" aria-label="Налаштування інструмента"><span aria-hidden="true">⚙</span><span class="universal-fab-label">Налаштування</span></button>
+    </div>
+    <button type="button" class="universal-fab-main" id="universalFabBtn" aria-label="Відкрити швидкі дії" aria-expanded="false"><span aria-hidden="true">＋</span></button>
+  </div>
 
   <section class="theme-designer-toolbar no-print hidden" id="themeDesignerToolbar" data-theme-designer-ui>
     <div class="theme-designer-heading">
@@ -11823,10 +12004,27 @@
       <section id="additionalDesktopView">
         <div class="additional-heading">
           <div>
-            <p class="small">Окремі інструменти застосунку</p>
+            <p class="small">Інструменти застосунку</p>
           </div>
         </div>
+        <div class="additional-desktop-toolbar">
+          <div class="additional-desktop-tabs" id="additionalDesktopTabs" aria-label="Робочі столи"></div>
+          <button type="button" class="additional-desktop-toolbar-button" id="editAdditionalDesktopBtn" aria-label="Перейменувати робочий стіл" title="Перейменувати">✎</button>
+          <button type="button" class="additional-desktop-toolbar-button" id="addAdditionalDesktopBtn" aria-label="Додати робочий стіл" title="Додати робочий стіл">＋</button>
+        </div>
         <div class="additional-desktop" id="additionalDesktop" aria-label="Робочий стіл додаткових інструментів">
+          <button type="button" class="additional-tool-tile" data-additional-tool="inventory">
+            <span class="additional-tool-icon inventory-tool-icon" aria-hidden="true"><span class="tool-letter">ІНВ</span></span>
+            <span class="additional-tool-name">Інвентаризація</span>
+          </button>
+          <button type="button" class="additional-tool-tile" data-additional-tool="orders">
+            <span class="additional-tool-icon orders-tool-icon" aria-hidden="true"><span class="tool-letter">ЗАМ</span></span>
+            <span class="additional-tool-name">Замовлення</span>
+          </button>
+          <button type="button" class="additional-tool-tile" data-additional-tool="production">
+            <span class="additional-tool-icon production-tool-icon" aria-hidden="true"><span class="tool-letter">ГП</span></span>
+            <span class="additional-tool-name" id="productionToolName">Здача ГП</span>
+          </button>
           <button type="button" class="additional-tool-tile" id="openShiftScheduleTool" data-additional-tool="shifts">
             <span class="additional-tool-icon shift-tool-icon" aria-hidden="true">31</span>
             <span class="additional-tool-name">Графік змін</span>
@@ -12120,10 +12318,23 @@
           </div>
         </div>
       </section>
-      <button type="button" class="additional-tool-home" id="additionalToolHomeBtn" aria-label="Повернутися в Додатково" title="Додатково">
+      <button type="button" class="additional-tool-home" id="additionalToolHomeBtn" aria-label="Повернутися до інструментів" title="Інструменти">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2"></path><path d="M5.5 10.2V21h13V10.2"></path><path d="M9.5 21v-6.5h5V21"></path></svg>
       </button>
     </div>
+  </div>
+
+  <div class="desktop-manager-overlay hidden" id="desktopManagerOverlay" role="dialog" aria-modal="true" aria-labelledby="desktopManagerTitle">
+    <section class="desktop-manager-dialog">
+      <h2 id="desktopManagerTitle">Робочий стіл</h2>
+      <label for="desktopManagerName">Назва робочого столу</label>
+      <input id="desktopManagerName" maxlength="32" autocomplete="off" placeholder="Наприклад: Склад" />
+      <div class="desktop-manager-actions">
+        <button type="button" id="saveDesktopManagerBtn">Зберегти</button>
+        <button type="button" class="secondary" id="closeDesktopManagerBtn">Закрити</button>
+        <button type="button" class="danger hidden" id="deleteDesktopManagerBtn">Видалити</button>
+      </div>
+    </section>
   </div>
 
   <div class="page-back-swipe-indicator" id="pageBackSwipeIndicator" aria-hidden="true"><span>←</span></div>
@@ -12471,6 +12682,11 @@
       <div class="management-options personalization-options">
         <button type="button" class="management-option nav-choice" id="openPersonalizationThemesBtn">Теми оформлення</button>
         <button type="button" class="management-option nav-choice" id="openPersonalizationAnimationsBtn">Анімація фону</button>
+      </div>
+      <div class="control-hand-settings" aria-label="Розташування швидких дій">
+        <strong>Розташування кнопки швидких дій</strong>
+        <button type="button" class="control-hand-choice" data-control-hand-choice="right">Для правої руки</button>
+        <button type="button" class="control-hand-choice" data-control-hand-choice="left">Для лівої руки</button>
       </div>
     </div>
     <div class="hidden" id="personalizationAnimationsView">
@@ -12985,7 +13201,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.74</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.75</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -13010,6 +13226,17 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.75</h3>
+          <ul>
+            <li>домашній екран перетворено на робочий стіл «Інструменти застосунку»;</li>
+            <li>інвентаризацію, замовлення та здачу ГП додано як окремі ярлики разом з іншими інструментами;</li>
+            <li>додано іменовані робочі столи з окремим розташуванням ярликів;</li>
+            <li>велику білу шапку робочих екранів прибрано й замінено компактною назвою;</li>
+            <li>додано універсальну плаваючу кнопку з діями «Інструменти», «Створити», «Меню» та «Налаштування»;</li>
+            <li>у персоналізації додано розташування кнопки для правої або лівої руки.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.74</h3>
           <ul>
@@ -15464,7 +15691,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.74";
+  const APP_VERSION = "4.75";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -15528,6 +15755,10 @@
   const PRODUCTION_WORKSPACE_NAME_KEY = "warehouseJournalProductionWorkspaceName";
   const ADDITIONAL_LAST_TOOL_KEY = "warehouseJournalAdditionalLastTool";
   const ADDITIONAL_DESKTOP_LAYOUT_KEY = "warehouseJournalAdditionalDesktopLayoutV1";
+  const ADDITIONAL_DESKTOPS_KEY = "warehouseJournalAdditionalDesktopsV2";
+  const ADDITIONAL_ACTIVE_DESKTOP_KEY = "warehouseJournalAdditionalActiveDesktopV2";
+  const CONTROL_HAND_KEY = "warehouseJournalControlHandV1";
+  const TOOLS_HOME_MIGRATION_KEY = "warehouseJournalToolsHomeV1";
   const PALLET_CALCULATOR_FORMATS_KEY = "warehouseJournalPalletCalculatorFormatsV1";
   const SHIPMENT_CARD_DRAFT_KEY = "warehouseJournalShipmentCardDraftV1";
   const SHIPMENT_MANUAL_NAMES_KEY = "warehouseJournalShipmentManualNamesV1";
@@ -15590,6 +15821,9 @@
     PRODUCTION_WORKSPACE_NAME_KEY,
     ADDITIONAL_LAST_TOOL_KEY,
     ADDITIONAL_DESKTOP_LAYOUT_KEY,
+    ADDITIONAL_DESKTOPS_KEY,
+    ADDITIONAL_ACTIVE_DESKTOP_KEY,
+    CONTROL_HAND_KEY,
     PALLET_CALCULATOR_FORMATS_KEY,
     SHIPMENT_CARD_DRAFT_KEY,
     SHIPMENT_MANUAL_NAMES_KEY,
@@ -19242,10 +19476,16 @@
 
   function getWorkspaceModePreference() {
     try {
+      if (localStorage.getItem(TOOLS_HOME_MIGRATION_KEY) !== "done") {
+        localStorage.setItem(TOOLS_HOME_MIGRATION_KEY, "done");
+        localStorage.setItem(WORKSPACE_MODE_KEY, "additional");
+        localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, "desktop");
+        return "additional";
+      }
       const saved = localStorage.getItem(WORKSPACE_MODE_KEY);
-      return ["inventory", "orders", "production", "additional"].includes(saved) ? saved : "inventory";
+      return ["inventory", "orders", "production", "additional"].includes(saved) ? saved : "additional";
     } catch (error) {
-      return "inventory";
+      return "additional";
     }
   }
 
@@ -19406,7 +19646,7 @@
     if (workspaceIsOrders()) return "Замовлення";
     if (workspaceIsProduction()) return getProductionWorkspaceName();
     if (workspaceIsLoading()) return "Завантаження фури";
-    if (workspaceIsAdditional()) return "Додатково";
+    if (workspaceIsAdditional()) return "Інструменти";
     return "Інвентаризація";
   }
 
@@ -19758,7 +19998,10 @@
       : (orders ? "Пошук у поточному замовленні" : "Пошук у поточній інвентаризації");
     const productionOptionLabel = document.getElementById("productionWorkspaceOptionLabel");
     if (productionOptionLabel) productionOptionLabel.textContent = getProductionWorkspaceName();
+    const productionToolName = document.getElementById("productionToolName");
+    if (productionToolName) productionToolName.textContent = getProductionWorkspaceName();
     applyOrderEntryMode();
+    updateUniversalFab();
   }
 
   function setWorkspaceMode(mode) {
@@ -20849,6 +21092,49 @@
     returnToWorkspaceHome();
   }
 
+  function getControlHandPreference() {
+    try { return localStorage.getItem(CONTROL_HAND_KEY) === "left" ? "left" : "right"; }
+    catch (error) { return "right"; }
+  }
+
+  function applyControlHandPreference(hand = getControlHandPreference()) {
+    const resolved = hand === "left" ? "left" : "right";
+    document.documentElement.dataset.controlHand = resolved;
+    document.querySelectorAll("[data-control-hand-choice]").forEach(button => {
+      button.classList.toggle("active", button.dataset.controlHandChoice === resolved);
+      button.setAttribute("aria-pressed", String(button.dataset.controlHandChoice === resolved));
+    });
+  }
+
+  function closeUniversalFab() {
+    const fab = document.getElementById("universalFab");
+    fab?.classList.remove("open");
+    document.getElementById("universalFabBtn")?.setAttribute("aria-expanded", "false");
+  }
+
+  function updateUniversalFab() {
+    const fab = document.getElementById("universalFab");
+    if (!fab) return;
+    const onToolsHome = currentPage === "today" && workspaceIsAdditional() && getAdditionalLastTool() === "desktop";
+    const canCreate = currentPage === "today" && !workspaceIsAdditional();
+    const activeTool = workspaceIsAdditional() ? getAdditionalLastTool() : "";
+    const canConfigureTool = currentPage === "today" && workspaceIsAdditional() && ["shifts", "palletCalculator"].includes(activeTool);
+    document.getElementById("universalHomeAction")?.classList.toggle("hidden", onToolsHome);
+    document.getElementById("universalNewAction")?.classList.toggle("hidden", !canCreate);
+    document.getElementById("universalSettingsAction")?.classList.toggle("hidden", !canConfigureTool);
+    const icon = document.querySelector("#universalFabBtn > span");
+    if (icon) icon.textContent = onToolsHome ? "☰" : "⌂";
+    document.getElementById("universalFabBtn")?.setAttribute("aria-label", onToolsHome ? "Відкрити дії та меню" : "Відкрити навігацію");
+    closeUniversalFab();
+  }
+
+  function goToToolsHome() {
+    closeUniversalFab();
+    if (workspaceMode !== "additional") setWorkspaceMode("additional");
+    showPage("today", { fromBack: true });
+    openAdditionalDesktop();
+  }
+
   function hasPageBackDestination(page = currentPage) {
     return hasAdditionalBackDestination() || MENU_RETURN_PAGES.has(page) || Boolean(PAGE_PARENTS[page]);
   }
@@ -20868,6 +21154,7 @@
     document.body.classList.toggle("subpage-swipe-back", showSwipeBackHint && currentPage !== "today");
     document.body.classList.toggle("bottom-nav-visible", showBottomNav);
     updateAppBottomObstructionMetric();
+    updateUniversalFab();
   }
 
   function navigateBack() {
@@ -24925,12 +25212,14 @@
     localStorage.removeItem(ENTRY_SECTION_STATE_KEY);
     localStorage.removeItem(ADDITIONAL_LAST_TOOL_KEY);
     localStorage.removeItem(ADDITIONAL_DESKTOP_LAYOUT_KEY);
+    localStorage.removeItem(ADDITIONAL_DESKTOPS_KEY);
+    localStorage.removeItem(ADDITIONAL_ACTIVE_DESKTOP_KEY);
     localStorage.removeItem(PALLET_CALCULATOR_FORMATS_KEY);
     localStorage.removeItem(SHIFT_SCHEDULE_KEY);
     shiftScheduleState = makeDefaultShiftScheduleState();
     applyEntryUnitVisibility("hidden");
     applyEntrySectionState();
-    workspaceMode = "inventory";
+    workspaceMode = "additional";
     initialWorkspaceChoiceNeeded = true;
     save();
     clearEntryForm();
@@ -26642,17 +26931,127 @@
     try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator", "shipmentCard", "bmsBattery"].includes(tool) ? tool : "desktop"); } catch (error) {}
   }
 
-  function loadAdditionalDesktopLayout() {
+  function defaultAdditionalDesktopLayout() {
+    return {
+      inventory: { column: 0, row: 0 },
+      orders: { column: 1, row: 0 },
+      production: { column: 2, row: 0 },
+      shifts: { column: 0, row: 1 },
+      palletCalculator: { column: 1, row: 1 },
+      shipmentCard: { column: 2, row: 1 },
+      bmsBattery: { column: 0, row: 2 }
+    };
+  }
+
+  function loadAdditionalDesktops() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
-      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, bmsBattery: { column: 0, row: 1 } };
+      const saved = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOPS_KEY) || "null");
+      if (Array.isArray(saved) && saved.length) return saved.filter(item => item && item.id && item.name).map(item => ({
+        id: String(item.id),
+        name: String(item.name).slice(0, 32),
+        layout: item.layout && typeof item.layout === "object" ? item.layout : defaultAdditionalDesktopLayout()
+      }));
+      const legacy = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
+      return [{ id: "main", name: "Основний", layout: legacy && typeof legacy === "object" ? { ...defaultAdditionalDesktopLayout(), ...legacy } : defaultAdditionalDesktopLayout() }];
     } catch (error) {
-      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, bmsBattery: { column: 0, row: 1 } };
+      return [{ id: "main", name: "Основний", layout: defaultAdditionalDesktopLayout() }];
     }
   }
 
+  function saveAdditionalDesktops(desktops) {
+    try { localStorage.setItem(ADDITIONAL_DESKTOPS_KEY, JSON.stringify(desktops)); } catch (error) {}
+  }
+
+  function getActiveAdditionalDesktopId() {
+    const desktops = loadAdditionalDesktops();
+    try {
+      const saved = localStorage.getItem(ADDITIONAL_ACTIVE_DESKTOP_KEY);
+      return desktops.some(item => item.id === saved) ? saved : desktops[0].id;
+    } catch (error) {
+      return desktops[0].id;
+    }
+  }
+
+  function loadAdditionalDesktopLayout() {
+    const desktops = loadAdditionalDesktops();
+    return desktops.find(item => item.id === getActiveAdditionalDesktopId())?.layout || defaultAdditionalDesktopLayout();
+  }
+
   function saveAdditionalDesktopLayout(layout) {
-    try { localStorage.setItem(ADDITIONAL_DESKTOP_LAYOUT_KEY, JSON.stringify(layout)); } catch (error) {}
+    const activeId = getActiveAdditionalDesktopId();
+    const desktops = loadAdditionalDesktops();
+    const active = desktops.find(item => item.id === activeId);
+    if (active) active.layout = layout;
+    saveAdditionalDesktops(desktops);
+  }
+
+  function renderAdditionalDesktopTabs() {
+    const target = document.getElementById("additionalDesktopTabs");
+    if (!target) return;
+    const desktops = loadAdditionalDesktops();
+    const activeId = getActiveAdditionalDesktopId();
+    target.innerHTML = desktops.map(item => `<button type="button" class="additional-desktop-tab${item.id === activeId ? " active" : ""}" data-desktop-id="${escapeHtml(item.id)}">${escapeHtml(item.name)}</button>`).join("");
+  }
+
+  function selectAdditionalDesktop(id) {
+    const desktops = loadAdditionalDesktops();
+    if (!desktops.some(item => item.id === id)) return;
+    try { localStorage.setItem(ADDITIONAL_ACTIVE_DESKTOP_KEY, id); } catch (error) {}
+    renderAdditionalDesktopTabs();
+    positionAdditionalDesktopTools();
+  }
+
+  function openDesktopManager(mode = "edit") {
+    const desktops = loadAdditionalDesktops();
+    const active = desktops.find(item => item.id === getActiveAdditionalDesktopId()) || desktops[0];
+    const overlay = document.getElementById("desktopManagerOverlay");
+    const input = document.getElementById("desktopManagerName");
+    overlay.dataset.mode = mode;
+    input.value = mode === "add" ? "" : active.name;
+    document.getElementById("desktopManagerTitle").textContent = mode === "add" ? "Новий робочий стіл" : "Назва робочого столу";
+    document.getElementById("deleteDesktopManagerBtn").classList.toggle("hidden", mode === "add" || desktops.length < 2);
+    overlay.classList.remove("hidden");
+    window.setTimeout(() => input.focus(), 40);
+  }
+
+  function closeDesktopManager() {
+    document.getElementById("desktopManagerOverlay")?.classList.add("hidden");
+  }
+
+  function saveDesktopManager() {
+    const overlay = document.getElementById("desktopManagerOverlay");
+    const name = String(document.getElementById("desktopManagerName")?.value || "").trim().slice(0, 32);
+    if (!name) return toast("Введи назву робочого столу", true);
+    const desktops = loadAdditionalDesktops();
+    if (overlay.dataset.mode === "add") {
+      const id = `desk-${Date.now().toString(36)}`;
+      desktops.push({ id, name, layout: defaultAdditionalDesktopLayout() });
+      saveAdditionalDesktops(desktops);
+      try { localStorage.setItem(ADDITIONAL_ACTIVE_DESKTOP_KEY, id); } catch (error) {}
+    } else {
+      const active = desktops.find(item => item.id === getActiveAdditionalDesktopId());
+      if (active) active.name = name;
+      saveAdditionalDesktops(desktops);
+    }
+    closeDesktopManager();
+    renderAdditionalDesktopTabs();
+    positionAdditionalDesktopTools();
+    toast("Робочий стіл збережено");
+  }
+
+  async function deleteActiveAdditionalDesktop() {
+    const desktops = loadAdditionalDesktops();
+    if (desktops.length < 2) return;
+    const activeId = getActiveAdditionalDesktopId();
+    const active = desktops.find(item => item.id === activeId);
+    const confirmed = await showAppDialog({ label: "Робочий стіл", title: `Видалити «${active?.name || "робочий стіл"}»?`, message: "Ярлики інструментів і дані застосунку не видаляються.", confirmText: "Видалити", danger: true });
+    if (!confirmed) return;
+    const next = desktops.filter(item => item.id !== activeId);
+    saveAdditionalDesktops(next);
+    try { localStorage.setItem(ADDITIONAL_ACTIVE_DESKTOP_KEY, next[0].id); } catch (error) {}
+    closeDesktopManager();
+    renderAdditionalDesktopTabs();
+    positionAdditionalDesktopTools();
   }
 
   function positionAdditionalDesktopTools() {
@@ -26673,6 +27072,7 @@
   }
 
   function initializeAdditionalDesktop() {
+    renderAdditionalDesktopTabs();
     if (additionalDesktopInitialized) {
       positionAdditionalDesktopTools();
       return;
@@ -26739,6 +27139,9 @@
           event.preventDefault();
           return;
         }
+        if (tile.dataset.additionalTool === "inventory") setWorkspaceMode("inventory");
+        if (tile.dataset.additionalTool === "orders") setWorkspaceMode("orders");
+        if (tile.dataset.additionalTool === "production") setWorkspaceMode("production");
         if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
         if (tile.dataset.additionalTool === "palletCalculator") openPalletCalculator();
         if (tile.dataset.additionalTool === "shipmentCard") openShipmentCard();
@@ -26802,7 +27205,7 @@
       ? "Налаштування"
       : (activeTool === "shifts"
         ? "Графік змін"
-        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : activeTool === "bmsBattery" ? "Battery Fleet" : "Додатково"));
+        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : activeTool === "bmsBattery" ? "Battery Fleet" : "Інструменти"));
     document.body.classList.toggle("additional-tool-open", toolOpen);
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
     document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
@@ -29506,6 +29909,33 @@
   window.addEventListener("message", handleBatteryFleetStorageMessage);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("additionalToolHomeBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("universalFabBtn").addEventListener("click", () => {
+    const fab = document.getElementById("universalFab");
+    const open = !fab.classList.contains("open");
+    fab.classList.toggle("open", open);
+    document.getElementById("universalFabBtn").setAttribute("aria-expanded", String(open));
+  });
+  document.getElementById("universalHomeAction").addEventListener("click", goToToolsHome);
+  document.getElementById("universalNewAction").addEventListener("click", () => { closeUniversalFab(); createNewDay(); });
+  document.getElementById("universalMenuAction").addEventListener("click", () => { closeUniversalFab(); openMenu(); });
+  document.getElementById("universalSettingsAction").addEventListener("click", () => { closeUniversalFab(); openCurrentAdditionalToolSettings(); });
+  document.getElementById("additionalDesktopTabs").addEventListener("click", event => {
+    const button = event.target.closest("[data-desktop-id]");
+    if (button) selectAdditionalDesktop(button.dataset.desktopId);
+  });
+  document.getElementById("addAdditionalDesktopBtn").addEventListener("click", () => openDesktopManager("add"));
+  document.getElementById("editAdditionalDesktopBtn").addEventListener("click", () => openDesktopManager("edit"));
+  document.getElementById("saveDesktopManagerBtn").addEventListener("click", saveDesktopManager);
+  document.getElementById("closeDesktopManagerBtn").addEventListener("click", closeDesktopManager);
+  document.getElementById("deleteDesktopManagerBtn").addEventListener("click", deleteActiveAdditionalDesktop);
+  document.getElementById("desktopManagerOverlay").addEventListener("click", event => { if (event.target === event.currentTarget) closeDesktopManager(); });
+  document.getElementById("desktopManagerName").addEventListener("keydown", event => { if (event.key === "Enter") saveDesktopManager(); });
+  document.querySelectorAll("[data-control-hand-choice]").forEach(button => button.addEventListener("click", () => {
+    const hand = button.dataset.controlHandChoice === "left" ? "left" : "right";
+    try { localStorage.setItem(CONTROL_HAND_KEY, hand); } catch (error) {}
+    applyControlHandPreference(hand);
+    toast(hand === "left" ? "Кнопку перенесено для лівої руки" : "Кнопку перенесено для правої руки");
+  }));
   document.getElementById("addPalletCalculatorFormatBtn").addEventListener("click", () => openPalletCalculatorDialog("format-settings"));
   document.getElementById("closePalletCalculatorDialogBtn").addEventListener("click", closePalletCalculatorDialog);
   document.getElementById("palletCalculatorDialogTitle").addEventListener("click", togglePalletCalculatorDialogTitle);
@@ -29875,7 +30305,14 @@
   document.getElementById("clearHistoryDateSearchBtn").addEventListener("click", clearHistoryDateSearch);
 
   document.querySelectorAll(".menu-btn[data-page]").forEach(btn => {
-    btn.addEventListener("click", () => showPage(btn.dataset.page));
+    btn.addEventListener("click", () => {
+      if (btn.dataset.page === "today") {
+        goToToolsHome();
+        closeMenu();
+        return;
+      }
+      showPage(btn.dataset.page);
+    });
   });
 
   document.getElementById("saveEntryBtn").addEventListener("click", () => {
@@ -30547,6 +30984,7 @@
   syncProductionWorkspaceNameControl();
   applyJoystickMode();
   applyMenuStyle();
+  applyControlHandPreference();
   applyNavigationButtonLayout();
   applyEntryUnitVisibility();
   applyOrderEntryMode();
