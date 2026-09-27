@@ -9375,6 +9375,10 @@
     .additional-settings-toggle small { margin-top: 3px; color: var(--muted); font-size: 10px; }
     .additional-settings-toggle input { width: 22px; height: 22px; margin: 0; }
     body.page-today.additional-battery-fleet-active {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100dvh;
       min-width: 0;
       padding-right: 0;
       padding-top: 0;
@@ -9383,6 +9387,12 @@
       overflow: hidden;
       background: #f5f9fb;
       background-image: none;
+    }
+    html.battery-fleet-embed-active {
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      background: #f5f9fb;
     }
     body.additional-battery-fleet-active .app-header,
     body.additional-battery-fleet-active .app-bottom-nav { display: none !important; }
@@ -9397,11 +9407,11 @@
     body.additional-battery-fleet-active #bmsBatteryView {
       position: fixed;
       z-index: 250;
-      top: 0;
+      top: env(safe-area-inset-top);
       right: 0;
       bottom: 0;
       left: 0;
-      height: 100dvh;
+      height: calc(100dvh - env(safe-area-inset-top));
       overflow: hidden;
       overscroll-behavior: none;
       background: #eef3f4;
@@ -11355,7 +11365,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.76</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.77</span></div>
     </div>
   </div>
 
@@ -12977,7 +12987,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.76</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.77</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -13002,6 +13012,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.77</h3>
+          <ul>
+            <li>вбудований Battery Fleet переведено на власну внутрішню прокрутку, щоб його нерухома шапка більше не рухалася разом з iframe;</li>
+            <li>висоту вбудованої шапки повернено до компактних 64 px без додавання safe-area всередині неї;</li>
+            <li>системну область iPhone тепер окремо закриває суцільний фон контейнера «Обліку».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.76</h3>
           <ul>
@@ -15464,7 +15482,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.76";
+  const APP_VERSION = "4.77";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -26793,6 +26811,7 @@
   function updateAdditionalHeaderUI() {
     if (!workspaceIsAdditional()) {
       document.body.classList.remove("additional-tool-open", "additional-tool-settings-active", "additional-settings-screen", "additional-shift-tool-active", "additional-battery-fleet-active", "additional-home-visible");
+      document.documentElement.classList.remove("battery-fleet-embed-active");
       return;
     }
     const activeTool = getAdditionalLastTool();
@@ -26807,6 +26826,7 @@
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
     document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
     document.body.classList.toggle("additional-battery-fleet-active", activeTool === "bmsBattery");
+    document.documentElement.classList.toggle("battery-fleet-embed-active", activeTool === "bmsBattery");
     document.body.classList.toggle("additional-home-visible", toolOpen || settingsScreenOpen);
     const settingsAvailable = (activeTool === "shifts" && !shiftSettingsAreOpen())
       || (activeTool === "palletCalculator" && !palletCalculatorSettingsAreOpen() && !palletCalculatorDialogIsOpen());
