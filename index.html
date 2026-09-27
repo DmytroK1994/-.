@@ -11091,7 +11091,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=463">
+<link rel="manifest" href="manifest.json?v=464">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11146,7 +11146,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.63</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.64</span></div>
     </div>
   </div>
 
@@ -11624,7 +11624,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=463" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=464" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12755,7 +12755,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.63</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.64</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12780,6 +12780,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.64</h3>
+          <ul>
+            <li>вбудований Battery Fleet тепер дублює батареї, назви, посилання, групи та налаштування у сховищі «Обліку»;</li>
+            <li>після повного закриття PWA дані автоматично відновлюються до початку нового збереження;</li>
+            <li>для повернення з Battery Fleet залишається лише плаваюча кнопка-домик.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.63</h3>
           <ul>
@@ -15147,9 +15155,11 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.63";
+  const APP_VERSION = "4.64";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
+  const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
+  const BATTERY_FLEET_STORAGE_KEY = "warehouseJournalBatteryFleetBackupV1";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEME_USER_SELECTED_KEY = "warehouseJournalThemeChosenByUser";
@@ -26360,6 +26370,34 @@
     if (frame && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src || `${BATTERY_FLEET_URL}?embed=oblik`);
   }
 
+  function handleBatteryFleetStorageMessage(event) {
+    const frame = document.getElementById("bmsBatteryFrame");
+    if (!frame?.contentWindow || event.source !== frame.contentWindow || event.origin !== BATTERY_FLEET_ORIGIN) return;
+    const message = event.data;
+    if (!message || message.source !== "battery-fleet") return;
+    if (message.type === "battery-fleet:request-restore") {
+      let payload = null;
+      try {
+        const stored = localStorage.getItem(BATTERY_FLEET_STORAGE_KEY);
+        if (stored) payload = JSON.parse(stored);
+      } catch (error) {}
+      frame.contentWindow.postMessage({ source: "oblik", type: "battery-fleet:restore", payload }, BATTERY_FLEET_ORIGIN);
+      return;
+    }
+    if (message.type !== "battery-fleet:persist") return;
+    const payload = message.payload;
+    if (!payload || !Array.isArray(payload.batteries) || !Array.isArray(payload.groups) || typeof payload.settings !== "object") return;
+    try {
+      localStorage.setItem(BATTERY_FLEET_STORAGE_KEY, JSON.stringify({
+        batteries: payload.batteries,
+        groups: payload.groups,
+        activeId: String(payload.activeId || ""),
+        defaultBatteryId: String(payload.defaultBatteryId || ""),
+        settings: payload.settings,
+      }));
+    } catch (error) {}
+  }
+
   function openBatteryFleet() {
     setAdditionalLastTool("bmsBattery");
     closeShiftEditor();
@@ -28916,6 +28954,7 @@
   });
 
   document.getElementById("openMenuBtn").addEventListener("click", openMenu);
+  window.addEventListener("message", handleBatteryFleetStorageMessage);
   document.getElementById("additionalDesktopHeaderBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("bmsBatteryHomeBtn").addEventListener("click", openAdditionalDesktop);
