@@ -6,7 +6,7 @@
   <meta name="theme-color" id="themeColorMeta" content="#f9fbfc" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Облік" />
   <title>Облік</title>
   <script>
@@ -11370,7 +11370,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.78</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.79</span></div>
     </div>
   </div>
 
@@ -12992,7 +12992,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.78</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.79</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -13017,6 +13017,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.79</h3>
+          <ul>
+            <li>статус-бар iPhone об’єднано з шапками застосунку: фон тепер малюється під системними значками як одна суцільна поверхня;</li>
+            <li>у вбудованому Battery Fleet повернено суцільну шапку, щоб між нею та статус-баром не виникав напівпрозорий перехід;</li>
+            <li>нижній службовий відступ Battery Fleet скорочено до фактичної safe-area.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.78</h3>
           <ul>
@@ -15494,7 +15502,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.78";
+  const APP_VERSION = "4.79";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
