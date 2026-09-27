@@ -9030,41 +9030,20 @@
     .additional-tool-icon.bms-tool-icon { overflow: hidden; padding: 0; background: #071a35; box-shadow: 0 8px 18px rgba(7,26,53,.34); }
     .additional-tool-icon.bms-tool-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .battery-fleet-embed-shell {
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      gap: 8px;
+      display: block;
       width: 100%;
-      height: calc(100dvh - var(--app-header-bottom, 82px) - env(safe-area-inset-bottom) - 28px);
-      min-height: 480px;
-    }
-    .battery-fleet-embed-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 38px;
-    }
-    .battery-fleet-embed-back {
-      width: auto !important;
-      min-width: 112px !important;
-      min-height: 36px !important;
-      margin: 0 !important;
-      padding: 7px 12px !important;
-      border: 1px solid var(--border) !important;
-      border-radius: 12px !important;
-      background: var(--surface) !important;
-      color: var(--text) !important;
-      box-shadow: none !important;
-      font-size: 12px !important;
-      font-weight: 850 !important;
+      height: calc(100dvh - var(--app-header-bottom, 82px));
+      min-height: 0;
     }
     .battery-fleet-embed-frame-wrap {
       position: relative;
-      min-height: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 20px;
+      border: 0;
+      border-radius: 0;
       background: #eef3f4;
-      box-shadow: 0 14px 34px color-mix(in srgb, var(--popover-shadow) 42%, transparent);
+      box-shadow: none;
     }
     .battery-fleet-embed-frame {
       display: block;
@@ -9156,9 +9135,21 @@
     body.additional-hide-tool-back #backFromShipmentCardBtn,
     body.additional-hide-tool-back #backToAdditionalDesktopBtn,
     body.additional-hide-tool-back #backToShiftScheduleBtn,
-    body.additional-hide-tool-back #backFromBmsBatteryBtn,
     body.additional-hide-tool-back #additionalDesktopHeaderBackBtn { display: none !important; }
-    body.additional-hide-tool-back .battery-fleet-embed-toolbar { display: none; }
+    body.page-today.additional-battery-fleet-active {
+      padding-right: 0;
+      padding-bottom: 0;
+      padding-left: 0;
+      overflow: hidden;
+    }
+    body.additional-battery-fleet-active .additional-shell,
+    body.additional-battery-fleet-active #pageAdditional,
+    body.additional-battery-fleet-active #bmsBatteryView {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
     .additional-tool-name {
       display: flex;
       height: 30px;
@@ -11061,7 +11052,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=459">
+<link rel="manifest" href="manifest.json?v=460">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11116,7 +11107,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.59</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.60</span></div>
     </div>
   </div>
 
@@ -11594,7 +11585,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=459" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=460" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -11603,15 +11594,12 @@
 
       <section id="bmsBatteryView" class="hidden">
         <div class="battery-fleet-embed-shell">
-          <div class="battery-fleet-embed-toolbar">
-            <button type="button" class="battery-fleet-embed-back" id="backFromBmsBatteryBtn">← Додатково</button>
-          </div>
           <div class="battery-fleet-embed-frame-wrap">
             <iframe
               class="battery-fleet-embed-frame"
               id="bmsBatteryFrame"
               title="Battery Fleet"
-              data-src="https://battery-fleet-ua.dimakych.chatgpt.site"
+              data-src="https://battery-fleet-ua.dimakych.chatgpt.site?embed=oblik"
               allow="camera; clipboard-read; clipboard-write; geolocation; fullscreen"
               referrerpolicy="strict-origin-when-cross-origin"
             ></iframe>
@@ -12725,7 +12713,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.59</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.60</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12750,6 +12738,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.60</h3>
+          <ul>
+            <li>Battery Fleet переведено у повноцінний вбудований режим без зовнішньої картки та дубльованої кнопки «Додатково»;</li>
+            <li>робоча область Battery Fleet тепер займає весь доступний простір під шапкою «Обліку», зберігаючи власні функції та керування.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.59</h3>
           <ul>
@@ -15089,7 +15084,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.59";
+  const APP_VERSION = "4.60";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
@@ -26141,7 +26136,7 @@
 
   function updateAdditionalHeaderUI() {
     if (!workspaceIsAdditional()) {
-      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active", "additional-settings-screen", "additional-shift-tool-active");
+      document.body.classList.remove("additional-tool-open", "additional-tool-settings-active", "additional-settings-screen", "additional-shift-tool-active", "additional-battery-fleet-active");
       document.getElementById("additionalDesktopHeaderBackBtn")?.classList.remove("desktop-visible");
       return;
     }
@@ -26156,6 +26151,7 @@
     document.body.classList.toggle("additional-tool-open", toolOpen);
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
     document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
+    document.body.classList.toggle("additional-battery-fleet-active", activeTool === "bmsBattery");
     document.getElementById("additionalDesktopHeaderBackBtn")?.classList.toggle("desktop-visible", hasAdditionalBackDestination());
     const settingsAvailable = (activeTool === "desktop" && !additionalSettingsAreOpen())
       || (activeTool === "shifts" && !shiftSettingsAreOpen())
@@ -26298,7 +26294,7 @@
 
   function prepareBatteryFleet() {
     const frame = document.getElementById("bmsBatteryFrame");
-    if (frame && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src || BATTERY_FLEET_URL);
+    if (frame && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src || `${BATTERY_FLEET_URL}?embed=oblik`);
   }
 
   function openBatteryFleet() {
@@ -28860,7 +28856,6 @@
   document.getElementById("additionalDesktopHeaderBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("backFromAdditionalSettingsBtn").addEventListener("click", openAdditionalDesktop);
-  document.getElementById("backFromBmsBatteryBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("additionalShowBackButton").addEventListener("change", event => setAdditionalBackButtonVisibility(event.target.checked));
   document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("backFromShipmentCardBtn").addEventListener("click", openAdditionalDesktop);
