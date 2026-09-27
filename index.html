@@ -9154,7 +9154,11 @@
     body.additional-hide-tool-back #backFromPalletCalculatorBtn,
     body.additional-hide-tool-back #backToPalletCalculatorBtn,
     body.additional-hide-tool-back #backFromShipmentCardBtn,
-    body.additional-hide-tool-back #backToAdditionalDesktopBtn { display: none !important; }
+    body.additional-hide-tool-back #backToAdditionalDesktopBtn,
+    body.additional-hide-tool-back #backToShiftScheduleBtn,
+    body.additional-hide-tool-back #backFromBmsBatteryBtn,
+    body.additional-hide-tool-back #additionalDesktopHeaderBackBtn { display: none !important; }
+    body.additional-hide-tool-back .battery-fleet-embed-toolbar { display: none; }
     .additional-tool-name {
       display: flex;
       height: 30px;
@@ -11057,7 +11061,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=457">
+<link rel="manifest" href="manifest.json?v=458">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11112,7 +11116,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.57</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.58</span></div>
     </div>
   </div>
 
@@ -11590,7 +11594,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=457" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=458" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -11617,7 +11621,7 @@
 
       <section id="additionalSettingsView" class="hidden">
         <div class="additional-settings-panel">
-          <label class="additional-settings-toggle"><span><strong>Кнопка «Назад»</strong><small>Показувати нижню кнопку повернення в додаткових інструментах</small></span><input id="additionalShowBackButton" type="checkbox" checked /></label>
+          <label class="additional-settings-toggle"><span><strong>Кнопка «Назад»</strong><small>Показувати повернення в усіх додаткових інструментах. За замовчуванням увімкнено; після вимкнення залишається свайп.</small></span><input id="additionalShowBackButton" type="checkbox" checked /></label>
           <button type="button" class="secondary" id="backFromAdditionalSettingsBtn">Назад</button>
         </div>
       </section>
@@ -12721,7 +12725,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.57</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.58</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12746,6 +12750,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.58</h3>
+          <ul>
+            <li>перемикач кнопки «Назад» у налаштуваннях «Додатково» тепер діє на всі внутрішні інструменти, включно з Battery Fleet;</li>
+            <li>за замовчуванням повернення залишається увімкненим, а після його приховування продовжує працювати свайп.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.57</h3>
           <ul>
@@ -15071,7 +15082,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.57";
+  const APP_VERSION = "4.58";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
