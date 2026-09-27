@@ -520,9 +520,9 @@
     }
     body.page-today .app-header {
       overflow: hidden;
-      padding: calc(env(safe-area-inset-top) + 14px) max(10px, env(safe-area-inset-right)) 2px max(10px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 5px) max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left));
       border-bottom-color: transparent;
-      border-radius: 0 0 30px 30px;
+      border-radius: 0 0 24px 24px;
       box-shadow: 0 14px 32px var(--header-shadow);
     }
     body.page-today {
@@ -568,7 +568,12 @@
     body.page-today .topbar {
       grid-template-columns: 40px 1fr 40px;
       gap: 6px;
-      margin-bottom: 1px;
+      margin-bottom: 0;
+    }
+    body.page-today .topbar-left-actions,
+    body.page-today .topbar-right-actions {
+      width: 40px;
+      height: 40px;
     }
     body.page-today .topbar h1 {
       font-size: 20px;
@@ -3206,10 +3211,10 @@
       font-size: 14px;
     }
     body.page-today .date-line {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 850;
       line-height: 1;
-      transform: translateY(-3px);
+      transform: translateY(-2px);
     }
     body.page-today.demo-mode .app-header {
       padding: calc(env(safe-area-inset-top) + 14px) max(10px, env(safe-area-inset-right)) 1px max(10px, env(safe-area-inset-left));
@@ -9411,7 +9416,7 @@
       right: 0;
       bottom: 0;
       left: 0;
-      height: calc(100dvh - env(safe-area-inset-top));
+      height: auto;
       overflow: hidden;
       overscroll-behavior: none;
       background: #eef3f4;
@@ -11365,7 +11370,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.77</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.78</span></div>
     </div>
   </div>
 
@@ -12987,7 +12992,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.77</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.78</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -13012,6 +13017,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.78</h3>
+          <ul>
+            <li>основну шапку інвентаризації, замовлень, здачі ГП та «Додатково» зроблено нижчою й піднято ближче до статус-бара;</li>
+            <li>прибрано порожню нижню смугу у вбудованому Battery Fleet: контейнер тепер точно заповнює простір до нижнього краю екрана.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.77</h3>
           <ul>
@@ -15482,7 +15494,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.77";
+  const APP_VERSION = "4.78";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
