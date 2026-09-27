@@ -9164,7 +9164,7 @@
     .shipment-load-card { padding: 0; overflow: hidden; }
     .shipment-load-heading-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 40px 40px;
+      grid-template-columns: minmax(0, 1fr) 44px;
       align-items: center;
       gap: 8px;
       padding: 4px 7px 4px 0;
@@ -9197,12 +9197,43 @@
       box-shadow: none !important;
       font-size: 20px !important;
     }
+    .shipment-load-heading-action svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; }
     .shipment-load-heading strong { display: block; font-size: 14px; line-height: 1.2; }
     .shipment-load-heading small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
     .shipment-load-chevron { color: var(--muted); font-size: 20px; transition: transform .18s ease; }
-    .shipment-load-card:not(.collapsed) .shipment-load-chevron { transform: rotate(180deg); }
-    .shipment-load-body { display: grid; gap: 11px; padding: 0 13px 13px; border-top: 1px solid var(--border); }
-    .shipment-load-card.collapsed .shipment-load-body { display: none; }
+    .shipment-load-body { display: none; }
+    .shipment-load-card.detail-open { overflow: visible; }
+    .shipment-load-card.detail-open::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: var(--overlay);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .shipment-load-card.detail-open .shipment-load-body {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      right: 12px;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      left: 12px;
+      z-index: 510;
+      display: grid;
+      align-content: start;
+      gap: 11px;
+      width: min(calc(100% - 24px), 720px);
+      margin: auto;
+      padding: 14px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: 0 24px 70px var(--popover-shadow);
+    }
+    .shipment-load-detail-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 7px; }
+    .shipment-load-detail-header strong { min-width: 0; font-size: 16px; line-height: 1.2; }
+    .shipment-load-detail-header button { width: auto; min-width: 40px; min-height: 38px; margin: 0; padding: 7px 10px; }
     .shipment-load-meta { display: grid; grid-template-columns: minmax(100px, .65fr) minmax(0, 1.35fr); gap: 9px; padding-top: 11px; }
     .shipment-load-meta label,
     .shipment-item-dialog-field label {
@@ -9361,10 +9392,26 @@
     .shipment-card-actions { display: grid; gap: 8px; margin-top: 12px; }
     .shipment-card-actions button { width: 100%; margin: 0; }
     .shipment-card-actions.compact { grid-template-columns: 1fr 1fr; margin-top: 0; }
-    .shipment-card-preview { display: grid; gap: 10px; }
+    .shipment-card-preview {
+      position: fixed;
+      inset: 0;
+      z-index: 540;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      overflow: auto;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      border: 0;
+      border-radius: 0;
+      background: var(--overlay);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: none;
+    }
     .shipment-card-preview img {
       display: block;
       width: min(100%, 620px);
+      max-height: min(72dvh, 620px);
       aspect-ratio: 1;
       margin-inline: auto;
       border: 1px solid var(--border);
@@ -9372,7 +9419,7 @@
       background: #fff;
       object-fit: contain;
     }
-    .shipment-card-preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .shipment-card-preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: min(100%, 620px); margin-inline: auto; }
     .shipment-card-preview-actions button { width: 100%; margin: 0; }
     #shipmentItemOverlay .shipment-item-dialog-card { width: min(92vw, 520px); }
     .shipment-item-dialog-title { margin: 0; padding-right: 38px; font-size: 16px; line-height: 1.3; }
@@ -10877,7 +10924,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=448">
+<link rel="manifest" href="manifest.json?v=449">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10932,7 +10979,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.48</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.49</span></div>
     </div>
   </div>
 
@@ -12512,7 +12559,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.48</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.49</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12538,6 +12585,13 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.49</h3>
+          <ul>
+            <li>картки машин більше не розгортаються в загальному списку — їхній вміст відкривається в окремому вікні;</li>
+            <li>кнопка із символом зображення завжди відкриває окремий попередній перегляд сформованої картки;</li>
+            <li>позиції на PNG компонуються щільніше, а назва відображається більшим шрифтом, ніж кількість.</li>
+          </ul>
+
           <h3>Версія 4.48</h3>
           <ul>
             <li>у полях кількості піддонів і коробок у відвантаженнях залишено тільки оператор додавання <code>+</code>;</li>
@@ -14791,7 +14845,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.48";
+  const APP_VERSION = "4.49";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -16275,6 +16329,7 @@
   let shipmentCardDraft = loadShipmentCardDraft();
   let shipmentCardImageUrl = "";
   let shipmentCardImageCardId = "";
+  let shipmentDetailCardId = "";
   let shipmentItemEditContext = null;
   let shipmentMetaEditCardId = "";
   let shipmentPalletTypeEditId = "";
@@ -26127,6 +26182,7 @@
     shipmentCardDraft = { activeDate: todayISO(), cards: [] };
     shipmentCardImageUrl = "";
     shipmentCardImageCardId = "";
+    shipmentDetailCardId = "";
     saveShipmentCardDraft();
     renderShipmentCards();
     renderShipmentHistory();
@@ -26446,6 +26502,19 @@
     return `${details.join(" + ")}${palletSuffix}`;
   }
 
+  function openShipmentDetail(cardId) {
+    if (!shipmentCardDraft.cards.some(card => card.id === cardId)) return;
+    shipmentDetailCardId = cardId;
+    shipmentCardImageUrl = "";
+    shipmentCardImageCardId = "";
+    renderShipmentCards();
+  }
+
+  function closeShipmentDetail() {
+    shipmentDetailCardId = "";
+    renderShipmentCards();
+  }
+
   function renderShipmentCards() {
     const list = document.getElementById("shipmentCardLoads");
     const empty = document.getElementById("shipmentLoadsEmpty");
@@ -26459,13 +26528,13 @@
           <div class="shipment-card-item-name"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(shipmentItemSummary(item))}</small></div>
           <button type="button" class="shipment-card-remove" data-remove-shipment-item="${escapeHtml(item.id)}" data-shipment-card-id="${escapeHtml(card.id)}" aria-label="Видалити позицію">×</button>
         </div>`).join("");
-      return `<article class="shipment-load-card${card.collapsed ? " collapsed" : ""}" data-shipment-load="${escapeHtml(card.id)}">
+      return `<article class="shipment-load-card${shipmentDetailCardId === card.id ? " detail-open" : ""}" data-shipment-load="${escapeHtml(card.id)}">
         <div class="shipment-load-heading-row">
-          <button type="button" class="shipment-load-heading" data-edit-shipment-meta="${escapeHtml(card.id)}"><span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items.length} ${shipmentCardWord(card.items.length, ["позиція", "позиції", "позицій"])} · ${places} із ${capacity} місць</small></span></button>
-          <button type="button" class="shipment-load-heading-action" data-create-shipment-image="${escapeHtml(card.id)}" aria-label="Створити зображення для поширення" title="Поділитися">⇧</button>
-          <button type="button" class="shipment-load-heading-action shipment-load-chevron" data-toggle-shipment-card="${escapeHtml(card.id)}" aria-label="Розгорнути або згорнути">⌃</button>
+          <button type="button" class="shipment-load-heading" data-open-shipment-detail="${escapeHtml(card.id)}"><span><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><small>${card.items.length} ${shipmentCardWord(card.items.length, ["позиція", "позиції", "позицій"])} · ${places} із ${capacity} місць</small></span></button>
+          <button type="button" class="shipment-load-heading-action" data-create-shipment-image="${escapeHtml(card.id)}" aria-label="Відкрити зображення для поширення" title="Зображення"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="8.5" cy="9" r="1.5"></circle><path d="m5 18 5-5 3 3 2-2 4 4"></path></svg></button>
         </div>
         <div class="shipment-load-body">
+          <div class="shipment-load-detail-header"><strong>${escapeHtml(shipmentLoadTitle(card))}</strong><button type="button" class="secondary" data-edit-shipment-meta="${escapeHtml(card.id)}">Редагувати</button><button type="button" class="dialog-icon-close" data-close-shipment-detail aria-label="Закрити">×</button></div>
           <div class="shipment-card-search">
             <div class="shipment-card-entry-mode" aria-label="Спосіб додавання позиції">
               <button type="button" class="${card.entryMode !== "manual" ? "active" : ""}" data-shipment-entry-mode="search">З бази</button>
@@ -26491,14 +26560,14 @@
           <div class="shipment-card-actions compact">
             <button type="button" class="secondary" data-delete-shipment-card="${escapeHtml(card.id)}">Видалити картку</button>
           </div>
-          ${hasPreview ? `<section class="shipment-card-preview" data-shipment-card-preview="${escapeHtml(card.id)}">
+        </div>
+        ${hasPreview ? `<section class="shipment-card-preview" data-shipment-card-preview="${escapeHtml(card.id)}">
             <img data-shipment-card-preview-image alt="Сформована картка ${escapeHtml(shipmentLoadTitle(card))}" />
             <div class="shipment-card-preview-actions">
               <button type="button" data-share-shipment-image>Поділитися</button>
               <button type="button" class="secondary" data-close-shipment-preview>Закрити перегляд</button>
             </div>
           </section>` : ""}
-        </div>
       </article>`;
     }).join("");
     const previewImage = list.querySelector("[data-shipment-card-preview-image]");
@@ -26547,6 +26616,7 @@
     });
     if (!confirmed) return;
     shipmentCardDraft.cards = shipmentCardDraft.cards.filter(entry => entry.id !== cardId);
+    if (shipmentDetailCardId === cardId) shipmentDetailCardId = "";
     if (shipmentCardImageCardId === cardId) {
       shipmentCardImageUrl = "";
       shipmentCardImageCardId = "";
@@ -26672,7 +26742,7 @@
     const rowsPerColumn = Math.ceil(validItems.length / columnCount);
     const columnGap = columnCount === 2 ? 26 : 0;
     const columnWidth = (contentWidth - columnGap) / columnCount;
-    const rowHeight = contentHeight / rowsPerColumn;
+    const rowHeight = Math.min(columnCount === 2 ? 210 : 185, contentHeight / rowsPerColumn);
     validItems.forEach((item, index) => {
       const column = columnCount === 2 ? Math.floor(index / rowsPerColumn) : 0;
       const row = columnCount === 2 ? index % rowsPerColumn : index;
@@ -26690,9 +26760,9 @@
       context.stroke();
       const details = shipmentItemSummary(item);
       const innerWidth = columnWidth - 34;
-      let detailsFont = Math.max(31, Math.min(54, rowHeight * .25));
-      const detailsY = y + rowHeight - Math.max(34, rowHeight * .22);
-      let nameFont = Math.max(25, Math.min(48, rowHeight * .27));
+      let detailsFont = Math.max(24, Math.min(columnCount === 2 ? 32 : 38, rowHeight * .23));
+      const detailsY = y + rowHeight - Math.max(28, rowHeight * .2);
+      let nameFont = Math.max(28, Math.min(columnCount === 2 ? 42 : 50, rowHeight * .31));
       let nameLines = [];
       const availableNameHeight = Math.max(45, detailsY - y - 20);
       while (nameFont >= 16) {
@@ -26710,8 +26780,9 @@
       const nameStartY = y + Math.max(12, (availableNameHeight - namesHeight) / 2) + lineHeight / 2;
       nameLines.forEach((line, lineIndex) => context.fillText(line, x + columnWidth / 2, nameStartY + lineIndex * lineHeight));
       context.fillStyle = "#c6533e";
+      detailsFont = Math.min(detailsFont, Math.max(14, nameFont - 5));
       context.font = `900 ${detailsFont}px system-ui, -apple-system, sans-serif`;
-      while (detailsFont > 20 && context.measureText(details).width > innerWidth) {
+      while (detailsFont > 14 && context.measureText(details).width > innerWidth) {
         detailsFont -= 2;
         context.font = `900 ${detailsFont}px system-ui, -apple-system, sans-serif`;
       }
@@ -26744,10 +26815,8 @@
 
     shipmentCardImageUrl = canvas.toDataURL("image/png");
     shipmentCardImageCardId = card.id;
-    card.collapsed = false;
     saveShipmentCardDraft();
     renderShipmentCards();
-    document.querySelector(`[data-shipment-card-preview="${CSS.escape(card.id)}"]`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     toast("Картку створено");
   }
 
@@ -28431,17 +28500,11 @@
     }
     const edit = event.target.closest("[data-edit-shipment-item]");
     if (edit) return openShipmentItemDialog(edit.dataset.shipmentCardId, "", edit.dataset.editShipmentItem);
+    const openDetail = event.target.closest("[data-open-shipment-detail]");
+    if (openDetail) return openShipmentDetail(openDetail.dataset.openShipmentDetail);
+    if (event.target.closest("[data-close-shipment-detail]")) return closeShipmentDetail();
     const editMeta = event.target.closest("[data-edit-shipment-meta]");
     if (editMeta) return openShipmentMetaDialog(editMeta.dataset.editShipmentMeta);
-    const toggle = event.target.closest("[data-toggle-shipment-card]");
-    if (toggle) {
-      const card = shipmentCardDraft.cards.find(entry => entry.id === toggle.dataset.toggleShipmentCard);
-      if (!card) return;
-      card.collapsed = !card.collapsed;
-      saveShipmentCardDraft();
-      renderShipmentCards();
-      return;
-    }
     const createImage = event.target.closest("[data-create-shipment-image]");
     if (createImage) return createShipmentCardImage(createImage.dataset.createShipmentImage);
     if (event.target.closest("[data-share-shipment-image]")) return shareShipmentCardImage();
