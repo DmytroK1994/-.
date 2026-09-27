@@ -11069,7 +11069,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=467">
+<link rel="manifest" href="manifest.json?v=468">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11124,7 +11124,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.67</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.68</span></div>
     </div>
   </div>
 
@@ -11601,7 +11601,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=467" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=468" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12720,7 +12720,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.67</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.68</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12745,6 +12745,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.68</h3>
+          <ul>
+            <li>прибрано штучні переходи History API, які запускали відомий баг прозорого статус-бара у WebKit/Safari 26;</li>
+            <li>системні свайпи й надалі перехоплюються без зміни історії сторінки;</li>
+            <li>верхня область більше не повинна переходити у напівпрозорий режим після відкриття розділів застосунку.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.67</h3>
           <ul>
@@ -15143,7 +15151,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.67";
+  const APP_VERSION = "4.68";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -15551,27 +15559,6 @@
   }
 
   preventBrowserEdgeNavigation();
-
-  function initIOSBrowserHistoryGuard() {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches
-      || window.navigator.standalone === true;
-    if (!isIOSDevice || standalone) return;
-
-    const guardKey = "warehouseJournalEdgeGuard";
-    try {
-      if (!history.state?.[guardKey]) {
-        history.replaceState({ ...(history.state || {}), warehouseJournalEdgeBase: true }, "", location.href);
-        history.pushState({ [guardKey]: true }, "", location.href);
-      }
-      window.addEventListener("popstate", () => {
-        if (!history.state?.[guardKey]) history.go(1);
-      });
-    } catch (error) {
-      // CSS and touch guards remain active when History API is unavailable (for example in some file viewers).
-    }
-  }
-
-  initIOSBrowserHistoryGuard();
 
   function loadCustomTheme() {
     try {
