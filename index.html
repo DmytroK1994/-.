@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" id="themeColorMeta" content="#ffffff" />
+  <meta name="theme-color" id="themeColorMeta" content="#f9fbfc" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Облік" />
   <title>Облік</title>
   <script>
     try {
       const defaultThemeMigrationKey = "warehouseJournalDefaultThemeWhiteV1";
       const userThemeChoiceKey = "warehouseJournalThemeChosenByUser";
-      let savedTheme = localStorage.getItem("warehouseJournalTheme") || "white";
+      let savedTheme = localStorage.getItem("warehouseJournalTheme") || "cloud";
       if (
         localStorage.getItem(defaultThemeMigrationKey) !== "done"
         && localStorage.getItem(userThemeChoiceKey) !== "yes"
@@ -9026,6 +9026,9 @@
       background: linear-gradient(145deg, #f29b55, #c6533e);
       box-shadow: 0 8px 18px rgba(198,83,62,.28);
     }
+    .additional-tool-icon.shipment-tool-icon svg { width: 39px; height: 31px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .additional-tool-icon.bms-tool-icon { overflow: hidden; padding: 0; background: #071a35; box-shadow: 0 8px 18px rgba(7,26,53,.34); }
+    .additional-tool-icon.bms-tool-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .shipment-truck-glyph {
       position: relative;
       width: 33px;
@@ -11008,7 +11011,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=454">
+<link rel="manifest" href="manifest.json?v=455">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11063,7 +11066,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.54</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.55</span></div>
     </div>
   </div>
 
@@ -11537,8 +11540,12 @@
             <span class="additional-tool-name">Перехідний піддон</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openShipmentCardTool" data-additional-tool="shipmentCard">
-            <span class="additional-tool-icon shipment-tool-icon" aria-hidden="true"><span class="shipment-truck-glyph"></span></span>
+            <span class="additional-tool-icon shipment-tool-icon" aria-hidden="true"><svg viewBox="0 0 48 34"><path d="M3 5h27v20H3z"></path><path d="M30 12h8l7 7v6H30z"></path><path d="M35 12v8h10"></path><circle cx="12" cy="27" r="4"></circle><circle cx="37" cy="27" r="4"></circle><path d="M16 27h17M7 27H3"></path></svg></span>
             <span class="additional-tool-name">Відвантаження</span>
+          </button>
+          <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=455" alt="" /></span>
+            <span class="additional-tool-name">BMS Battery</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
         </div>
@@ -12650,7 +12657,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.54</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.55</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12675,6 +12682,15 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.55</h3>
+          <ul>
+            <li>історію відвантажень згруповано за місяцями, датами та машинами з незалежним згортанням кожного рівня;</li>
+            <li>додано пошук історії за датою у форматі 27.08.2026 та зменшено службові кнопки машини;</li>
+            <li>системну зону iPhone зроблено непрозорою, а стандартною темою нової установки стала «Ранкова хмара»;</li>
+            <li>у «Додатково» інтегровано BMS Battery App з оригінальною іконкою, а для відвантажень додано новий значок фури.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.54</h3>
           <ul>
@@ -14976,8 +14992,9 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.54";
+  const APP_VERSION = "4.55";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
+  const BMS_BATTERY_APP_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEME_USER_SELECTED_KEY = "warehouseJournalThemeChosenByUser";
@@ -16442,8 +16459,8 @@
     syncModalScrollLock();
   }
 
-  let savedTheme = "white";
-  try { savedTheme = localStorage.getItem(THEME_KEY) || "white"; } catch (e) {}
+  let savedTheme = "cloud";
+  try { savedTheme = localStorage.getItem(THEME_KEY) || "cloud"; } catch (e) {}
   if (savedTheme === "custom") {
     try {
       const savedActiveTheme = JSON.parse(localStorage.getItem(ACTIVE_NAMED_CUSTOM_THEME_KEY) || "null");
@@ -23974,7 +23991,7 @@
     workspaceMode = getWorkspaceModePreference();
 
     let restoredTheme = "dark";
-    try { restoredTheme = localStorage.getItem(THEME_KEY) || "dark"; } catch (error) {}
+    try { restoredTheme = localStorage.getItem(THEME_KEY) || "cloud"; } catch (error) {}
     if (restoredTheme === "custom") {
       try {
         const activeTheme = JSON.parse(localStorage.getItem(ACTIVE_NAMED_CUSTOM_THEME_KEY) || "null");
@@ -25880,9 +25897,9 @@
   function loadAdditionalDesktopLayout() {
     try {
       const parsed = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
-      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 } };
+      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, bmsBattery: { column: 0, row: 1 } };
     } catch (error) {
-      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 } };
+      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, bmsBattery: { column: 0, row: 1 } };
     }
   }
 
@@ -25977,6 +25994,7 @@
         if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
         if (tile.dataset.additionalTool === "palletCalculator") openPalletCalculator();
         if (tile.dataset.additionalTool === "shipmentCard") openShipmentCard();
+        if (tile.dataset.additionalTool === "bmsBattery") window.location.assign(BMS_BATTERY_APP_URL);
       });
     });
   }
