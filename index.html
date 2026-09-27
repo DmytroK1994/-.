@@ -456,7 +456,7 @@
       right: 0;
       left: 0;
       display: block;
-      height: max(env(safe-area-inset-top), 2px);
+      height: calc(env(safe-area-inset-top) + 12px);
       background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface)));
       background-image: none;
       opacity: 1;
@@ -465,6 +465,18 @@
       -webkit-backdrop-filter: none;
       pointer-events: none;
     }
+    #appBackgroundEffectsCanvas {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: .42;
+      pointer-events: none;
+    }
+    body.additional-battery-fleet-active #appBackgroundEffectsCanvas,
+    body.drawer-open #appBackgroundEffectsCanvas,
+    body.splash-active #appBackgroundEffectsCanvas { display: none; }
     body.page-today {
       --current-app-header-color: var(--app-header-background, var(--surface));
     }
@@ -505,7 +517,7 @@
       border: 0;
       border-bottom: 1px solid var(--border);
       border-radius: 0;
-      padding: calc(env(safe-area-inset-top) + 10px) max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 18px) max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
       margin-bottom: 0;
       box-shadow: 0 12px 30px var(--header-shadow);
       backdrop-filter: none;
@@ -513,7 +525,7 @@
     }
     body.page-today .app-header {
       overflow: hidden;
-      padding: calc(env(safe-area-inset-top) + 5px) max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
+      padding: calc(env(safe-area-inset-top) + 13px) max(10px, env(safe-area-inset-right)) 5px max(10px, env(safe-area-inset-left));
       border-bottom-color: transparent;
       border-radius: 0 0 30px 30px;
       box-shadow: 0 14px 32px var(--header-shadow);
@@ -1793,6 +1805,52 @@
     #settingsThemeSection {
       position: relative;
       z-index: 7;
+    }
+    .background-effects-settings {
+      position: relative;
+      z-index: 7;
+      display: grid;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .background-effects-settings h2 { margin: 0; }
+    .background-effects-settings .small { margin: -5px 0 0; }
+    .background-effect-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .background-effect-option {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      text-align: left;
+    }
+    .background-effect-option span:first-child {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--primary-bg) 13%, transparent);
+      color: var(--accent-soft);
+      font-size: 17px;
+    }
+    .background-effect-option span:last-child { font-size: 11px; font-weight: 800; }
+    .background-effect-option.selected {
+      border-color: var(--selection-border);
+      box-shadow: inset 0 0 0 1px var(--selection-outline);
+    }
+    #pageThemes.theme-category-open .background-effects-settings { display: none; }
+    @media (max-width: 390px) {
+      .background-effect-options { grid-template-columns: 1fr; }
     }
     #pageThemes.theme-category-root #settingsThemeSection {
       position: sticky;
@@ -9184,11 +9242,11 @@
     body.additional-battery-fleet-active #bmsBatteryView {
       position: fixed;
       z-index: 250;
-      top: env(safe-area-inset-top);
+      top: calc(env(safe-area-inset-top) + 10px);
       right: 0;
       bottom: 0;
       left: 0;
-      height: calc(100dvh - env(safe-area-inset-top));
+      height: calc(100dvh - env(safe-area-inset-top) - 10px);
       overflow: hidden;
       background: #eef3f4;
     }
@@ -11085,7 +11143,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=469">
+<link rel="manifest" href="manifest.json?v=470">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11111,6 +11169,7 @@
 </head>
 <body class="splash-active page-today">
   <div id="iosTopEdgeGuard" class="no-print" aria-hidden="true"></div>
+  <canvas id="appBackgroundEffectsCanvas" class="no-print" aria-hidden="true"></canvas>
   <div class="app-splash" id="appSplash" aria-label="Запуск застосунку Облік">
     <div class="splash-content">
       <div class="splash-stage" id="splashStage">
@@ -11141,7 +11200,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.69</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.70</span></div>
     </div>
   </div>
 
@@ -11618,7 +11677,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=469" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=470" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12242,6 +12301,11 @@
   </div>
 
   <div id="pageThemes" class="hidden">
+    <div class="card background-effects-settings" id="backgroundEffectsSettings">
+      <h2>Анімація фону</h2>
+      <p class="small">Обери легкий рухомий фон для поточної теми або повністю вимкни анімацію.</p>
+      <div class="background-effect-options" id="backgroundEffectOptions"></div>
+    </div>
     <div class="card" id="settingsThemeSection">
       <div class="theme-category-list" id="themeCategoryList"></div>
       <div class="theme-category-view hidden" id="themeCategoryView">
@@ -12737,7 +12801,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.69</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.70</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12762,6 +12826,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.70</h3>
+          <ul>
+            <li>додано суцільну безпечну зону під системною областю iPhone, щоб scroll-edge розмиття не проходило через текст шапки;</li>
+            <li>виправлено прокрутку вбудованого Battery Fleet до самого кінця сторінки;</li>
+            <li>додано 10 адаптивних фонових анімацій та можливість повністю їх вимкнути.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.69</h3>
           <ul>
@@ -15176,7 +15248,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.69";
+  const APP_VERSION = "4.70";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -15190,6 +15262,7 @@
   const CUSTOM_THEME_LIBRARY_KEY = "warehouseJournalCustomThemeLibrary";
   const ACTIVE_NAMED_CUSTOM_THEME_KEY = "warehouseJournalActiveNamedCustomTheme";
   const FAVORITE_THEMES_KEY = "warehouseJournalFavoriteThemes";
+  const BACKGROUND_EFFECT_KEY = "warehouseJournalBackgroundEffectV1";
   const BACK_NAV_KEY = "warehouseJournalBackNavigation";
   const JOYSTICK_MODE_KEY = "warehouseJournalJoystickMode";
   const MENU_STYLE_KEY = "warehouseJournalMenuStyle";
@@ -15270,6 +15343,7 @@
     CUSTOM_THEME_LIBRARY_KEY,
     ACTIVE_NAMED_CUSTOM_THEME_KEY,
     FAVORITE_THEMES_KEY,
+    BACKGROUND_EFFECT_KEY,
     BACK_NAV_KEY,
     JOYSTICK_MODE_KEY,
     MENU_STYLE_KEY,
@@ -16356,6 +16430,194 @@
     toast("Тему змінено");
   }
 
+  const BACKGROUND_EFFECTS = [
+    { value: "none", label: "Вимкнено", icon: "○" },
+    { value: "circuits", label: "Схеми", icon: "⌁" },
+    { value: "board", label: "Плата", icon: "▦" },
+    { value: "grid", label: "Сітка", icon: "⌗" },
+    { value: "radar", label: "Радар", icon: "◉" },
+    { value: "waves", label: "Хвилі", icon: "≈" },
+    { value: "particles", label: "Частинки", icon: "✦" },
+    { value: "aurora", label: "Сяйво", icon: "∿" },
+    { value: "rain", label: "Потік", icon: "╱" },
+    { value: "orbits", label: "Орбіти", icon: "◎" },
+    { value: "constellation", label: "Сузір’я", icon: "⋯" }
+  ];
+  let backgroundEffectFrame = 0;
+  let backgroundEffectNodes = [];
+
+  function getBackgroundEffect() {
+    try {
+      const saved = localStorage.getItem(BACKGROUND_EFFECT_KEY) || "none";
+      return BACKGROUND_EFFECTS.some(item => item.value === saved) ? saved : "none";
+    } catch (error) {
+      return "none";
+    }
+  }
+
+  function renderBackgroundEffectOptions() {
+    const target = document.getElementById("backgroundEffectOptions");
+    if (!target) return;
+    const selected = getBackgroundEffect();
+    target.innerHTML = BACKGROUND_EFFECTS.map(item => `
+      <button type="button" class="background-effect-option${item.value === selected ? " selected" : ""}" data-background-effect="${item.value}" aria-pressed="${item.value === selected}">
+        <span aria-hidden="true">${item.icon}</span><span>${item.label}</span>
+      </button>
+    `).join("");
+  }
+
+  function makeBackgroundEffectNodes(width, height) {
+    const count = Math.max(24, Math.min(70, Math.round(width * height / 15000)));
+    backgroundEffectNodes = Array.from({ length: count }, (_, index) => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - .5) * .22,
+      vy: (Math.random() - .5) * .22,
+      size: 1 + Math.random() * 2.4,
+      phase: index * .61 + Math.random() * 4
+    }));
+  }
+
+  function stopBackgroundEffect() {
+    if (backgroundEffectFrame) cancelAnimationFrame(backgroundEffectFrame);
+    backgroundEffectFrame = 0;
+    const canvas = document.getElementById("appBackgroundEffectsCanvas");
+    canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function startBackgroundEffect() {
+    stopBackgroundEffect();
+    const canvas = document.getElementById("appBackgroundEffectsCanvas");
+    if (!canvas) return;
+    const effect = getBackgroundEffect();
+    canvas.hidden = effect === "none";
+    if (effect === "none") return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    const resize = () => {
+      width = Math.max(1, window.innerWidth);
+      height = Math.max(1, window.innerHeight);
+      dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      makeBackgroundEffectNodes(width, height);
+    };
+    resize();
+    const styles = getComputedStyle(document.documentElement);
+    const primary = styles.getPropertyValue("--primary-bg").trim() || "#2563eb";
+    const secondary = styles.getPropertyValue("--selection-bg").trim() || "#d9a514";
+    const border = styles.getPropertyValue("--border").trim() || "#94a3b8";
+    const draw = timestamp => {
+      if (canvas.hidden || getBackgroundEffect() !== effect) return;
+      const time = timestamp / 1000;
+      context.clearRect(0, 0, width, height);
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      const step = Math.max(38, Math.min(62, width / 7));
+      if (effect === "grid" || effect === "board" || effect === "circuits") {
+        context.strokeStyle = border;
+        context.globalAlpha = effect === "grid" ? .25 : .16;
+        context.lineWidth = 1;
+        const drift = reduceMotion ? 0 : (time * 5) % step;
+        for (let x = -step + drift; x < width + step; x += step) {
+          context.beginPath(); context.moveTo(x, 0); context.lineTo(x, height); context.stroke();
+        }
+        for (let y = -step + drift; y < height + step; y += step) {
+          context.beginPath(); context.moveTo(0, y); context.lineTo(width, y); context.stroke();
+        }
+        if (effect !== "grid") {
+          context.strokeStyle = primary;
+          context.fillStyle = secondary;
+          context.globalAlpha = .24;
+          backgroundEffectNodes.slice(0, 18).forEach((node, index) => {
+            const x = Math.round(node.x / step) * step;
+            const y = Math.round(node.y / step) * step;
+            const length = step * (1.2 + index % 3);
+            context.beginPath(); context.moveTo(x, y); context.lineTo(Math.min(width, x + length), y); context.stroke();
+            context.beginPath(); context.arc(x, y, 2.5, 0, Math.PI * 2); context.fill();
+          });
+        }
+      } else if (effect === "radar") {
+        const radius = Math.min(width, height) * .42;
+        const cx = width * .5, cy = height * .48;
+        context.strokeStyle = primary; context.lineWidth = 1; context.globalAlpha = .22;
+        [1, .75, .5, .25].forEach(scale => { context.beginPath(); context.arc(cx, cy, radius * scale, 0, Math.PI * 2); context.stroke(); });
+        const angle = reduceMotion ? -.7 : time * .45;
+        context.globalAlpha = .38; context.beginPath(); context.moveTo(cx, cy); context.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius); context.stroke();
+      } else if (effect === "waves" || effect === "aurora") {
+        [0, 1, 2, 3].forEach(index => {
+          context.beginPath();
+          context.strokeStyle = index % 2 ? secondary : primary;
+          context.lineWidth = effect === "aurora" ? 10 + index * 5 : 1.5;
+          context.globalAlpha = effect === "aurora" ? .055 : .2;
+          for (let x = -20; x <= width + 20; x += 12) {
+            const y = height * (.22 + index * .19) + Math.sin(x / 75 + index + (reduceMotion ? 0 : time * (.22 + index * .04))) * (20 + index * 6);
+            if (x === -20) context.moveTo(x, y); else context.lineTo(x, y);
+          }
+          context.stroke();
+        });
+      } else if (effect === "rain") {
+        context.strokeStyle = primary; context.globalAlpha = .22; context.lineWidth = 1.2;
+        backgroundEffectNodes.forEach(node => {
+          const y = reduceMotion ? node.y : (node.y + time * (28 + node.size * 10)) % (height + 40) - 20;
+          context.beginPath(); context.moveTo(node.x, y); context.lineTo(node.x - 8, y + 22); context.stroke();
+        });
+      } else if (effect === "orbits") {
+        context.strokeStyle = border; context.globalAlpha = .22; context.lineWidth = 1;
+        const cx = width / 2, cy = height / 2;
+        [70, 130, 195, 265].forEach((radius, index) => {
+          context.beginPath(); context.ellipse(cx, cy, Math.min(radius, width * .42), radius * .55, index * .27, 0, Math.PI * 2); context.stroke();
+          const angle = index + (reduceMotion ? 0 : time * (.18 + index * .05));
+          context.fillStyle = index % 2 ? secondary : primary; context.globalAlpha = .48;
+          context.beginPath(); context.arc(cx + Math.cos(angle) * Math.min(radius, width * .42), cy + Math.sin(angle) * radius * .55, 3, 0, Math.PI * 2); context.fill();
+        });
+      } else {
+        backgroundEffectNodes.forEach(node => {
+          if (!reduceMotion) {
+            node.x = (node.x + node.vx + width) % width;
+            node.y = (node.y + node.vy + height) % height;
+          }
+        });
+        if (effect === "constellation") {
+          context.strokeStyle = primary; context.globalAlpha = .1; context.lineWidth = 1;
+          backgroundEffectNodes.forEach((node, index) => backgroundEffectNodes.slice(index + 1, index + 7).forEach(other => {
+            const distance = Math.hypot(node.x - other.x, node.y - other.y);
+            if (distance < 105) { context.beginPath(); context.moveTo(node.x, node.y); context.lineTo(other.x, other.y); context.stroke(); }
+          }));
+        }
+        backgroundEffectNodes.forEach((node, index) => {
+          context.fillStyle = index % 4 ? primary : secondary;
+          context.globalAlpha = .18 + .12 * Math.sin(time + node.phase);
+          context.beginPath(); context.arc(node.x, node.y, node.size, 0, Math.PI * 2); context.fill();
+        });
+      }
+      context.globalAlpha = 1;
+      if (!reduceMotion) backgroundEffectFrame = requestAnimationFrame(draw);
+    };
+    backgroundEffectFrame = requestAnimationFrame(draw);
+  }
+
+  function initBackgroundEffects() {
+    renderBackgroundEffectOptions();
+    document.getElementById("backgroundEffectOptions")?.addEventListener("click", event => {
+      const button = event.target.closest("[data-background-effect]");
+      if (!button) return;
+      try { localStorage.setItem(BACKGROUND_EFFECT_KEY, button.dataset.backgroundEffect); } catch (error) {}
+      renderBackgroundEffectOptions();
+      startBackgroundEffect();
+    });
+    window.addEventListener("resize", startBackgroundEffect, { passive: true });
+    document.addEventListener("visibilitychange", () => document.hidden ? stopBackgroundEffect() : startBackgroundEffect());
+    startBackgroundEffect();
+  }
+
   function applyTheme(theme, persist = true) {
     const selected = THEMES.includes(theme) ? theme : "dark";
     const customPalette = loadCustomTheme();
@@ -16373,6 +16635,7 @@
     updateCustomThemeControls(customPalette, selected === "custom" && customThemeEditorOpen);
 
     scheduleSystemAreaSync();
+    window.requestAnimationFrame(startBackgroundEffect);
 
     if (persist) {
       try {
@@ -29971,6 +30234,7 @@
   initEntryBlockLayoutControls();
   updateDemoModeUI();
   renderThemeCategories();
+  initBackgroundEffects();
   render();
   updatePageBackButton();
   initAppHeaderBottomMetric();
