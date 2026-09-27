@@ -9282,7 +9282,7 @@
       max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       margin: 0;
       padding: 14px;
-      overflow: hidden;
+      overflow: visible;
       overscroll-behavior: contain;
       border: 1px solid var(--border);
       border-radius: 22px;
@@ -9290,12 +9290,12 @@
       box-shadow: 0 24px 70px var(--popover-shadow);
       transform: translate(-50%, -50%);
     }
-    .shipment-load-detail-header { display: grid; grid-template-columns: minmax(0, 1fr) 38px 38px; align-items: center; gap: 5px; min-height: 38px; }
+    .shipment-load-detail-header { display: grid; grid-template-columns: minmax(0, 1fr) 44px 38px; align-items: center; gap: 5px; min-height: 44px; }
     .shipment-load-detail-title { min-width: 0; text-align: left; }
     .shipment-load-detail-title strong { display: block; min-width: 0; overflow: hidden; font-size: 16px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
     .shipment-load-detail-title small { display: block; min-width: 0; margin-top: 2px; overflow: hidden; color: var(--muted); font-size: 11px; font-weight: 750; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
     .shipment-load-detail-header button { display: grid; place-items: center; width: 38px; min-width: 38px; height: 38px; min-height: 38px; margin: 0; padding: 0; }
-    .shipment-load-edit-icon { border: 0 !important; background: transparent !important; color: var(--text) !important; box-shadow: none !important; font-size: 20px !important; }
+    .shipment-load-edit-icon { width: 44px !important; min-width: 44px !important; height: 44px !important; min-height: 44px !important; border: 0 !important; background: transparent !important; color: var(--text) !important; box-shadow: none !important; font-size: 29px !important; font-weight: 900 !important; line-height: 1 !important; }
     .shipment-load-meta { display: grid; grid-template-columns: minmax(100px, .65fr) minmax(0, 1.35fr); gap: 9px; padding-top: 11px; }
     .shipment-load-meta label,
     .shipment-item-dialog-field label {
@@ -9371,7 +9371,7 @@
       top: calc(100% + 5px);
       right: 0;
       left: 0;
-      z-index: 22;
+      z-index: 80;
       max-height: min(320px, 48dvh);
       overflow: auto;
       overscroll-behavior: contain;
@@ -11011,7 +11011,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=455">
+<link rel="manifest" href="manifest.json?v=456">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11066,7 +11066,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.55</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.56</span></div>
     </div>
   </div>
 
@@ -11544,7 +11544,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=455" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=456" alt="" /></span>
             <span class="additional-tool-name">BMS Battery</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12657,7 +12657,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.55</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.56</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12682,6 +12682,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.56</h3>
+          <ul>
+            <li>значок редагування машини та його зона натискання стали помітно більшими;</li>
+            <li>список результатів пошуку тепер може виходити за межі вікна машини й не обрізається його рамкою.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.55</h3>
           <ul>
@@ -14992,7 +14999,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.55";
+  const APP_VERSION = "4.56";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BMS_BATTERY_APP_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
