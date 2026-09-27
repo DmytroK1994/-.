@@ -6,7 +6,7 @@
   <meta name="theme-color" id="themeColorMeta" content="#f9fbfc" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Облік" />
   <title>Облік</title>
   <script>
@@ -450,7 +450,7 @@
       z-index: 99;
       height: env(safe-area-inset-top);
       opacity: 1;
-      background-color: var(--current-app-header-color);
+      background-color: var(--app-header-safe-background, var(--current-app-header-color));
       background-image: none;
       filter: none;
       backdrop-filter: none;
@@ -501,8 +501,8 @@
       padding: 10px max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
       margin-bottom: 0;
       box-shadow: 0 12px 30px var(--header-shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     body.page-today .app-header {
       overflow: hidden;
@@ -525,8 +525,8 @@
       border-bottom: 1px solid var(--border);
       border-radius: 0 0 30px 30px;
       box-shadow: 0 7px 18px var(--header-shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     body:not(.page-today) .app-header .topbar,
     body:not(.page-today) .app-header .date-line {
@@ -9029,6 +9029,50 @@
     .additional-tool-icon.shipment-tool-icon svg { width: 39px; height: 31px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .additional-tool-icon.bms-tool-icon { overflow: hidden; padding: 0; background: #071a35; box-shadow: 0 8px 18px rgba(7,26,53,.34); }
     .additional-tool-icon.bms-tool-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .battery-fleet-embed-shell {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 8px;
+      width: 100%;
+      height: calc(100dvh - var(--app-header-bottom, 82px) - env(safe-area-inset-bottom) - 28px);
+      min-height: 480px;
+    }
+    .battery-fleet-embed-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 38px;
+    }
+    .battery-fleet-embed-back {
+      width: auto !important;
+      min-width: 112px !important;
+      min-height: 36px !important;
+      margin: 0 !important;
+      padding: 7px 12px !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 12px !important;
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      box-shadow: none !important;
+      font-size: 12px !important;
+      font-weight: 850 !important;
+    }
+    .battery-fleet-embed-frame-wrap {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #eef3f4;
+      box-shadow: 0 14px 34px color-mix(in srgb, var(--popover-shadow) 42%, transparent);
+    }
+    .battery-fleet-embed-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #eef3f4;
+    }
     .shipment-truck-glyph {
       position: relative;
       width: 33px;
@@ -10990,9 +11034,11 @@
     }
     body.workspace-additional { overscroll-behavior-y: none; }
     html.modal-scroll-locked,
-    body.modal-scroll-locked,
-    body.modal-scroll-locked::before {
+    body.modal-scroll-locked {
       background: var(--modal-safe-background, color-mix(in srgb, var(--surface) 86%, rgb(10, 16, 25) 14%)) !important;
+    }
+    body.modal-scroll-locked::before {
+      background: var(--app-header-safe-background, var(--current-app-header-color, var(--surface))) !important;
     }
     [role="dialog"][aria-modal="true"]:not(.hidden) {
       align-items: center !important;
@@ -11011,7 +11057,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=456">
+<link rel="manifest" href="manifest.json?v=457">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11066,7 +11112,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.56</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.57</span></div>
     </div>
   </div>
 
@@ -11544,10 +11590,28 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=456" alt="" /></span>
-            <span class="additional-tool-name">BMS Battery</span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=457" alt="" /></span>
+            <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
+        </div>
+      </section>
+
+      <section id="bmsBatteryView" class="hidden">
+        <div class="battery-fleet-embed-shell">
+          <div class="battery-fleet-embed-toolbar">
+            <button type="button" class="battery-fleet-embed-back" id="backFromBmsBatteryBtn">← Додатково</button>
+          </div>
+          <div class="battery-fleet-embed-frame-wrap">
+            <iframe
+              class="battery-fleet-embed-frame"
+              id="bmsBatteryFrame"
+              title="Battery Fleet"
+              data-src="https://battery-fleet-ua.dimakych.chatgpt.site"
+              allow="camera; clipboard-read; clipboard-write; geolocation; fullscreen"
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+          </div>
         </div>
       </section>
 
@@ -12657,7 +12721,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.56</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.57</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12682,6 +12746,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.57</h3>
+          <ul>
+            <li>верхню системну зону iPhone зроблено суцільною та прив’язаною до кольору шапки без ефекту розмиття;</li>
+            <li>інструмент перейменовано на «Battery Fleet» і вбудовано безпосередньо в «Облік»;</li>
+            <li>на внутрішньому екрані Battery Fleet додано повернення до робочого столу «Додатково».</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.56</h3>
           <ul>
@@ -14999,9 +15071,9 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.56";
+  const APP_VERSION = "4.57";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
-  const BMS_BATTERY_APP_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
+  const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
   const THEME_USER_SELECTED_KEY = "warehouseJournalThemeChosenByUser";
@@ -25891,14 +25963,14 @@
   function getAdditionalLastTool() {
     try {
       const saved = localStorage.getItem(ADDITIONAL_LAST_TOOL_KEY);
-      return ["shifts", "palletCalculator", "shipmentCard"].includes(saved) ? saved : "desktop";
+      return ["shifts", "palletCalculator", "shipmentCard", "bmsBattery"].includes(saved) ? saved : "desktop";
     } catch (error) {
       return "desktop";
     }
   }
 
   function setAdditionalLastTool(tool) {
-    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator", "shipmentCard"].includes(tool) ? tool : "desktop"); } catch (error) {}
+    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator", "shipmentCard", "bmsBattery"].includes(tool) ? tool : "desktop"); } catch (error) {}
   }
 
   function loadAdditionalDesktopLayout() {
@@ -26001,7 +26073,7 @@
         if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
         if (tile.dataset.additionalTool === "palletCalculator") openPalletCalculator();
         if (tile.dataset.additionalTool === "shipmentCard") openShipmentCard();
-        if (tile.dataset.additionalTool === "bmsBattery") window.location.assign(BMS_BATTERY_APP_URL);
+        if (tile.dataset.additionalTool === "bmsBattery") openBatteryFleet();
       });
     });
   }
@@ -26013,13 +26085,15 @@
     document.getElementById("shiftScheduleView")?.classList.toggle("hidden", lastTool !== "shifts");
     document.getElementById("palletCalculatorView")?.classList.toggle("hidden", lastTool !== "palletCalculator");
     document.getElementById("shipmentCardView")?.classList.toggle("hidden", lastTool !== "shipmentCard");
+    document.getElementById("bmsBatteryView")?.classList.toggle("hidden", lastTool !== "bmsBattery");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     if (lastTool === "desktop") initializeAdditionalDesktop();
     else if (lastTool === "shifts") renderShiftSchedule();
     else if (lastTool === "palletCalculator") preparePalletCalculator();
-    else prepareShipmentCard();
+    else if (lastTool === "shipmentCard") prepareShipmentCard();
+    else prepareBatteryFleet();
     updateAdditionalHeaderUI();
   }
 
@@ -26060,7 +26134,7 @@
       ? "Налаштування"
       : (activeTool === "shifts"
         ? "Графік змін"
-        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : "Додатково"));
+        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : activeTool === "bmsBattery" ? "Battery Fleet" : "Додатково"));
     document.body.classList.toggle("additional-tool-open", toolOpen);
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
     document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
@@ -26130,6 +26204,10 @@
       openAdditionalDesktop();
       return true;
     }
+    if (getAdditionalLastTool() === "bmsBattery") {
+      openAdditionalDesktop();
+      return true;
+    }
     return false;
   }
 
@@ -26141,6 +26219,7 @@
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
@@ -26158,6 +26237,7 @@
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
@@ -26177,6 +26257,7 @@
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.remove("hidden");
     preparePalletCalculator();
     updateAdditionalHeaderUI();
@@ -26191,8 +26272,31 @@
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.remove("hidden");
     renderPalletCalculatorSettings();
+    updateAdditionalHeaderUI();
+  }
+
+  function prepareBatteryFleet() {
+    const frame = document.getElementById("bmsBatteryFrame");
+    if (frame && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src || BATTERY_FLEET_URL);
+  }
+
+  function openBatteryFleet() {
+    setAdditionalLastTool("bmsBattery");
+    closeShiftEditor();
+    closeShiftStats();
+    closePalletCalculatorDialog();
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.remove("hidden");
+    prepareBatteryFleet();
     updateAdditionalHeaderUI();
   }
 
@@ -26207,6 +26311,7 @@
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.remove("hidden");
     prepareShipmentCard();
     renderShipmentHistory();
@@ -26239,6 +26344,7 @@
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.remove("hidden");
     applyAdditionalBackButtonPreference();
     updateAdditionalHeaderUI();
@@ -28736,6 +28842,7 @@
   document.getElementById("additionalDesktopHeaderBackBtn").addEventListener("click", navigateDesktopBack);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("backFromAdditionalSettingsBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("backFromBmsBatteryBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("additionalShowBackButton").addEventListener("change", event => setAdditionalBackButtonVisibility(event.target.checked));
   document.getElementById("backFromPalletCalculatorBtn").addEventListener("click", openAdditionalDesktop);
   document.getElementById("backFromShipmentCardBtn").addEventListener("click", openAdditionalDesktop);
