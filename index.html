@@ -9014,6 +9014,7 @@
       font-size: 17px;
       font-weight: 950;
       letter-spacing: -.04em;
+      animation: shift-calendar-breathe 4.8s ease-in-out infinite;
     }
     .additional-tool-icon.pallet-tool-icon {
       background: linear-gradient(145deg, #55bfa0, #23806f);
@@ -9026,9 +9027,28 @@
       background: linear-gradient(145deg, #f29b55, #c6533e);
       box-shadow: 0 8px 18px rgba(198,83,62,.28);
     }
-    .additional-tool-icon.shipment-tool-icon svg { width: 39px; height: 31px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .additional-tool-icon.shipment-tool-icon svg { width: 39px; height: 31px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; animation: shipment-truck-idle 4.2s ease-in-out infinite; }
     .additional-tool-icon.bms-tool-icon { overflow: hidden; padding: 0; background: #071a35; box-shadow: 0 8px 18px rgba(7,26,53,.34); }
-    .additional-tool-icon.bms-tool-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .additional-tool-icon.bms-tool-icon img { display: block; width: 100%; height: 100%; object-fit: cover; animation: battery-fleet-logo-pulse 3.2s ease-in-out infinite; }
+    @keyframes battery-fleet-logo-pulse {
+      0%, 100% { filter: brightness(.88) drop-shadow(0 0 1px rgba(72,149,255,.22)); }
+      50% { filter: brightness(1.18) drop-shadow(0 0 8px rgba(72,149,255,.9)); }
+    }
+    @keyframes shift-calendar-breathe {
+      0%, 100% { color: #fff; text-shadow: 0 0 0 rgba(255,255,255,0); }
+      50% { color: #fff7fb; text-shadow: 0 0 8px rgba(255,205,231,.7); }
+    }
+    @keyframes shipment-truck-idle {
+      0%, 70%, 100% { transform: translateX(0) translateY(0); }
+      78% { transform: translateX(2px) translateY(-1px); }
+      86% { transform: translateX(-1px) translateY(0); }
+      93% { transform: translateX(1px) translateY(-.5px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .additional-tool-icon.shift-tool-icon,
+      .additional-tool-icon.shipment-tool-icon svg,
+      .additional-tool-icon.bms-tool-icon img { animation: none; }
+    }
     .battery-fleet-embed-shell {
       display: block;
       width: 100%;
@@ -11052,7 +11072,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=460">
+<link rel="manifest" href="manifest.json?v=461">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11107,7 +11127,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.60</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.61</span></div>
     </div>
   </div>
 
@@ -11585,7 +11605,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=460" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=461" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12713,7 +12733,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.60</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.61</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12738,6 +12758,13 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.61</h3>
+          <ul>
+            <li>значок Battery Fleet отримав м’яке синє пульсуюче світіння;</li>
+            <li>для «Графіка змін» і «Відвантажень» додано легкі ненав’язливі анімації, які вимикаються разом із системним обмеженням руху.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.60</h3>
           <ul>
@@ -15084,7 +15111,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.60";
+  const APP_VERSION = "4.61";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const STORAGE_KEY = "warehouseJournalV3";
