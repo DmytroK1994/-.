@@ -1811,7 +1811,7 @@
       z-index: 7;
       display: grid;
       gap: 12px;
-      margin-bottom: 12px;
+      overflow: hidden;
     }
     .background-effects-settings h2 { margin: 0; }
     .background-effects-settings .small { margin: -5px 0 0; }
@@ -1822,7 +1822,7 @@
     }
     .background-effect-option {
       display: grid;
-      grid-template-columns: 30px minmax(0, 1fr);
+      grid-template-columns: 54px minmax(0, 1fr);
       align-items: center;
       gap: 8px;
       min-height: 48px;
@@ -1833,22 +1833,154 @@
       color: var(--text);
       text-align: left;
     }
-    .background-effect-option span:first-child {
-      display: grid;
-      place-items: center;
-      width: 30px;
-      height: 30px;
+    .background-effect-mini {
+      position: relative;
+      display: block;
+      width: 54px;
+      height: 38px;
+      overflow: hidden;
+      border: 1px solid var(--border);
       border-radius: 10px;
-      background: color-mix(in srgb, var(--primary-bg) 13%, transparent);
-      color: var(--accent-soft);
-      font-size: 17px;
+      background: var(--bg);
     }
-    .background-effect-option span:last-child { font-size: 11px; font-weight: 800; }
+    .background-effect-mini i,
+    .background-effect-mini::before,
+    .background-effect-mini::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+    .background-effect-option > span:last-child { font-size: 11px; font-weight: 800; }
     .background-effect-option.selected {
       border-color: var(--selection-border);
       box-shadow: inset 0 0 0 1px var(--selection-outline);
     }
-    #pageThemes.theme-category-open .background-effects-settings { display: none; }
+    .background-effect-preview {
+      position: relative;
+      min-height: 210px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--bg);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface) 40%, transparent);
+    }
+    .background-effect-preview-motion {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .background-effect-preview-motion i {
+      position: absolute;
+      display: block;
+      pointer-events: none;
+    }
+    .background-effect-preview-ui {
+      position: absolute;
+      z-index: 2;
+      inset: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 42px 1fr;
+      gap: 9px;
+    }
+    .background-effect-preview-ui span {
+      border: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+      border-radius: 13px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      box-shadow: 0 8px 22px color-mix(in srgb, var(--card-shadow) 45%, transparent);
+    }
+    .background-effect-preview-ui .preview-header-line {
+      grid-column: 1 / -1;
+      border-radius: 16px;
+    }
+    .background-effect-preview > strong {
+      position: absolute;
+      z-index: 3;
+      right: 14px;
+      bottom: 12px;
+      padding: 6px 9px;
+      border-radius: 9px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 10px;
+    }
+    .background-effect-preview[data-effect="none"] .background-effect-preview-motion { display: none; }
+    .background-effect-preview[data-effect="grid"] .background-effect-preview-motion,
+    .background-effect-preview[data-effect="board"] .background-effect-preview-motion,
+    .background-effect-preview[data-effect="circuits"] .background-effect-preview-motion,
+    .background-effect-mini[data-effect="grid"],
+    .background-effect-mini[data-effect="board"],
+    .background-effect-mini[data-effect="circuits"] {
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--border) 38%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--border) 38%, transparent) 1px, transparent 1px);
+      background-size: 28px 28px;
+      animation: effectGridMove 5s linear infinite;
+    }
+    .background-effect-preview[data-effect="circuits"] .background-effect-preview-motion::after,
+    .background-effect-preview[data-effect="board"] .background-effect-preview-motion::after,
+    .background-effect-mini[data-effect="circuits"]::after,
+    .background-effect-mini[data-effect="board"]::after {
+      content: "";
+      position: absolute;
+      inset: 18% 8%;
+      border: 2px solid color-mix(in srgb, var(--primary-bg) 50%, transparent);
+      border-left-color: transparent;
+      border-radius: 8px;
+      animation: effectCircuitPulse 2.4s ease-in-out infinite;
+    }
+    .background-effect-preview[data-effect="radar"] .background-effect-preview-motion,
+    .background-effect-mini[data-effect="radar"] {
+      background: repeating-radial-gradient(circle, transparent 0 18px, color-mix(in srgb, var(--primary-bg) 22%, transparent) 19px 20px), var(--bg);
+    }
+    .background-effect-preview[data-effect="radar"] .background-effect-preview-motion::after,
+    .background-effect-mini[data-effect="radar"]::after {
+      content: ""; position: absolute; inset: -35%;
+      background: conic-gradient(from 0deg, transparent 0 78%, color-mix(in srgb, var(--primary-bg) 45%, transparent));
+      animation: effectRotate 3.4s linear infinite;
+    }
+    .background-effect-preview[data-effect="waves"] .background-effect-preview-motion i,
+    .background-effect-preview[data-effect="aurora"] .background-effect-preview-motion i {
+      left: -15%; width: 130%; height: 36px; border-radius: 50%;
+      border-top: 3px solid color-mix(in srgb, var(--primary-bg) 45%, transparent);
+      animation: effectWave 3.2s ease-in-out infinite alternate;
+    }
+    .background-effect-preview[data-effect="waves"] i:nth-child(1), .background-effect-preview[data-effect="aurora"] i:nth-child(1) { top: 28%; }
+    .background-effect-preview[data-effect="waves"] i:nth-child(2), .background-effect-preview[data-effect="aurora"] i:nth-child(2) { top: 49%; animation-delay: -.8s; }
+    .background-effect-preview[data-effect="waves"] i:nth-child(3), .background-effect-preview[data-effect="aurora"] i:nth-child(3) { top: 70%; animation-delay: -1.6s; }
+    .background-effect-preview[data-effect="aurora"] .background-effect-preview-motion i { height: 70px; border-width: 14px; filter: blur(10px); opacity: .42; }
+    .background-effect-mini[data-effect="waves"], .background-effect-mini[data-effect="aurora"] { background: radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--primary-bg) 38%, transparent), transparent 55%), var(--bg); animation: effectWave 2.6s ease-in-out infinite alternate; }
+    .background-effect-preview[data-effect="particles"] .background-effect-preview-motion,
+    .background-effect-preview[data-effect="constellation"] .background-effect-preview-motion,
+    .background-effect-mini[data-effect="particles"], .background-effect-mini[data-effect="constellation"] {
+      background-image: radial-gradient(circle at 15% 25%, var(--primary-bg) 0 2px, transparent 3px), radial-gradient(circle at 62% 18%, var(--selection-bg) 0 2px, transparent 3px), radial-gradient(circle at 82% 67%, var(--primary-bg) 0 2px, transparent 3px), radial-gradient(circle at 34% 78%, var(--selection-bg) 0 1px, transparent 2px);
+      background-size: 82px 73px;
+      animation: effectParticles 5s linear infinite;
+    }
+    .background-effect-preview[data-effect="rain"] .background-effect-preview-motion,
+    .background-effect-mini[data-effect="rain"] {
+      background-image: repeating-linear-gradient(118deg, transparent 0 17px, color-mix(in srgb, var(--primary-bg) 28%, transparent) 18px 19px, transparent 20px 38px);
+      background-size: 70px 70px;
+      animation: effectRain 2.5s linear infinite;
+    }
+    .background-effect-preview[data-effect="orbits"] .background-effect-preview-motion::before,
+    .background-effect-preview[data-effect="orbits"] .background-effect-preview-motion::after,
+    .background-effect-mini[data-effect="orbits"]::before,
+    .background-effect-mini[data-effect="orbits"]::after {
+      content: ""; position: absolute; inset: 16% 24%; border: 1px solid color-mix(in srgb, var(--primary-bg) 38%, transparent); border-radius: 50%; animation: effectRotate 4.5s linear infinite;
+    }
+    .background-effect-preview[data-effect="orbits"] .background-effect-preview-motion::after,
+    .background-effect-mini[data-effect="orbits"]::after { inset: 28% 12%; animation-direction: reverse; }
+    @keyframes effectGridMove { to { background-position: 28px 28px; } }
+    @keyframes effectCircuitPulse { 50% { opacity: .35; transform: scale(.96); } }
+    @keyframes effectRotate { to { transform: rotate(360deg); } }
+    @keyframes effectWave { to { transform: translateY(12px) scaleY(1.25); } }
+    @keyframes effectParticles { to { background-position: 82px 73px; } }
+    @keyframes effectRain { to { background-position: -70px 70px; } }
+    @media (prefers-reduced-motion: reduce) {
+      .background-effect-preview-motion, .background-effect-mini { animation-play-state: paused !important; }
+    }
     @media (max-width: 390px) {
       .background-effect-options { grid-template-columns: 1fr; }
     }
@@ -11143,7 +11275,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=471">
+<link rel="manifest" href="manifest.json?v=472">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -11200,7 +11332,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.71</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.72</span></div>
     </div>
   </div>
 
@@ -11677,7 +11809,7 @@
             <span class="additional-tool-name">Відвантаження</span>
           </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
-            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=471" alt="" /></span>
+            <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=472" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
           </button>
           <div class="additional-desktop-hint">Затисни ярлик на секунду, щоб перемістити його по робочому столу</div>
@@ -12086,7 +12218,7 @@
       </div>
       <div class="management-options" id="managementWheel">
         <button class="management-option nav-choice" id="openProductsBtn">Найменування</button>
-        <button class="management-option nav-choice" id="openThemeSettingsBtn">Теми</button>
+        <button class="management-option nav-choice" id="openThemeSettingsBtn">Персоналізація</button>
         <button class="management-option nav-choice" id="openBackupSettingsBtn">Резервна копія</button>
         <button class="management-option nav-choice" id="openTrashSettingsBtn">Кошик</button>
         <button class="management-option nav-choice" id="openOtherSettingsBtn">Інші налаштування</button>
@@ -12301,12 +12433,32 @@
   </div>
 
   <div id="pageThemes" class="hidden">
-    <div class="card background-effects-settings" id="backgroundEffectsSettings">
-      <h2>Анімація фону</h2>
-      <p class="small">Обери легкий рухомий фон для поточної теми або повністю вимкни анімацію.</p>
-      <div class="background-effect-options" id="backgroundEffectOptions"></div>
+    <div class="management-shell" id="personalizationRootView">
+      <div class="management-heading">
+        <p class="small">Обери, що хочеш змінити у вигляді застосунку.</p>
+      </div>
+      <div class="management-options personalization-options">
+        <button type="button" class="management-option nav-choice" id="openPersonalizationThemesBtn">Теми оформлення</button>
+        <button type="button" class="management-option nav-choice" id="openPersonalizationAnimationsBtn">Анімація фону</button>
+      </div>
     </div>
-    <div class="card" id="settingsThemeSection">
+    <div class="hidden" id="personalizationAnimationsView">
+      <div class="card background-effects-settings" id="backgroundEffectsSettings">
+        <h2>Анімація фону</h2>
+        <p class="small">Натисни на варіант — анімація одразу з’явиться на цьому екрані та в попередньому перегляді.</p>
+        <div class="background-effect-preview" id="backgroundEffectPreview" data-effect="none" aria-label="Попередній перегляд анімації">
+          <div class="background-effect-preview-motion" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="background-effect-preview-ui" aria-hidden="true">
+            <span class="preview-header-line"></span>
+            <span></span><span></span><span></span>
+          </div>
+          <strong id="backgroundEffectPreviewLabel">Анімацію вимкнено</strong>
+        </div>
+        <div class="background-effect-options" id="backgroundEffectOptions"></div>
+      </div>
+    </div>
+    <div class="hidden" id="personalizationThemesView">
+      <div class="card" id="settingsThemeSection">
       <div class="theme-category-list" id="themeCategoryList"></div>
       <div class="theme-category-view hidden" id="themeCategoryView">
         <button type="button" class="secondary theme-category-back" id="closeThemeCategoryBtn">Назад до категорій</button>
@@ -12422,6 +12574,7 @@
       <span class="gesture-pad-handle"></span>
       <span class="gesture-pad-selection" id="themeGestureSelection">Проведи вгору або вниз, щоб вибрати пункт</span>
       <span class="gesture-pad-hint">Затисни й веди вгору або вниз · один дотик — відкрити</span>
+    </div>
     </div>
   </div>
 
@@ -12801,7 +12954,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.71</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.72</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12826,6 +12979,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.72</h3>
+          <ul>
+            <li>пункт «Теми» замінено на «Персоналізація»;</li>
+            <li>теми оформлення та фонові анімації розділено на окремі екрани;</li>
+            <li>для анімацій додано живий попередній перегляд на макеті поточного екрана.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.71</h3>
           <ul>
@@ -15255,7 +15416,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.71";
+  const APP_VERSION = "4.72";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -15535,6 +15696,7 @@
   ];
   let activeCustomPreviewId = "customBg";
   let activeThemeCategory = "";
+  let personalizationSection = "root";
   let customThemeEditorOpen = false;
   let themeDesignerActive = false;
   let themeDesignerBaseTheme = "custom";
@@ -15590,7 +15752,7 @@
     historyProduction: "Історія здачі ГП",
     management: "Налаштування",
     products: "Найменування",
-    themes: "Теми оформлення",
+    themes: "Персоналізація",
     backup: "Резервна копія",
     account: "Акаунт",
     trash: "Кошик",
@@ -16309,6 +16471,27 @@
     target.style.setProperty("--mirrored-menu-letter-spacing", style.letterSpacing);
   }
 
+  function showPersonalizationSection(section = "root") {
+    personalizationSection = ["themes", "animations"].includes(section) ? section : "root";
+    document.getElementById("personalizationRootView")?.classList.toggle("hidden", personalizationSection !== "root");
+    document.getElementById("personalizationThemesView")?.classList.toggle("hidden", personalizationSection !== "themes");
+    document.getElementById("personalizationAnimationsView")?.classList.toggle("hidden", personalizationSection !== "animations");
+    const title = personalizationSection === "themes"
+      ? "Теми оформлення"
+      : (personalizationSection === "animations" ? "Анімація фону" : "Персоналізація");
+    const headerTitle = document.getElementById("sectionHeaderTitle");
+    if (headerTitle) headerTitle.textContent = title;
+    document.title = `${title} — Облік`;
+    if (personalizationSection === "themes") {
+      activeThemeCategory = "";
+      renderThemeCategories();
+    } else if (personalizationSection === "animations") {
+      renderBackgroundEffectOptions();
+    }
+    updatePageBackButton();
+    scrollAppToTop();
+  }
+
   function renderThemeCategories() {
     const categoryList = document.getElementById("themeCategoryList");
     const categoryView = document.getElementById("themeCategoryView");
@@ -16466,9 +16649,14 @@
     const target = document.getElementById("backgroundEffectOptions");
     if (!target) return;
     const selected = getBackgroundEffect();
+    const selectedOption = BACKGROUND_EFFECTS.find(item => item.value === selected) || BACKGROUND_EFFECTS[0];
+    const preview = document.getElementById("backgroundEffectPreview");
+    const previewLabel = document.getElementById("backgroundEffectPreviewLabel");
+    if (preview) preview.dataset.effect = selected;
+    if (previewLabel) previewLabel.textContent = selected === "none" ? "Анімацію вимкнено" : selectedOption.label;
     target.innerHTML = BACKGROUND_EFFECTS.map(item => `
       <button type="button" class="background-effect-option${item.value === selected ? " selected" : ""}" data-background-effect="${item.value}" aria-pressed="${item.value === selected}">
-        <span aria-hidden="true">${item.icon}</span><span>${item.label}</span>
+        <span class="background-effect-mini" data-effect="${item.value}" aria-hidden="true"><i></i></span><span>${item.label}</span>
       </button>
     `).join("");
   }
@@ -20568,8 +20756,12 @@
 
   function navigateBack() {
     if (navigateAdditionalBack()) return;
-    if (currentPage === "themes" && activeThemeCategory) {
+    if (currentPage === "themes" && personalizationSection === "themes" && activeThemeCategory) {
       closeThemeCategory();
+      return;
+    }
+    if (currentPage === "themes" && personalizationSection !== "root") {
+      showPersonalizationSection("root");
       return;
     }
     if (currentPage === "otherSettings" && activeOtherSettingsCategory) {
@@ -20596,8 +20788,12 @@
 
   function navigateDesktopBack() {
     if (navigateAdditionalBack()) return;
-    if (currentPage === "themes" && activeThemeCategory) {
+    if (currentPage === "themes" && personalizationSection === "themes" && activeThemeCategory) {
       closeThemeCategory();
+      return;
+    }
+    if (currentPage === "themes" && personalizationSection !== "root") {
+      showPersonalizationSection("root");
       return;
     }
     if (currentPage === "otherSettings" && activeOtherSettingsCategory) {
@@ -21682,7 +21878,7 @@
     if (page === "themes") {
       document.getElementById("pageThemes").classList.remove("hidden");
       activeThemeCategory = "";
-      renderThemeCategories();
+      showPersonalizationSection("root");
     }
     if (page === "backup") document.getElementById("pageBackup").classList.remove("hidden");
     if (page === "backup") fitBackupSection();
@@ -29883,6 +30079,8 @@
     chooseTheme(event.target.value);
   });
   document.getElementById("closeThemeCategoryBtn").addEventListener("click", closeThemeCategory);
+  document.getElementById("openPersonalizationThemesBtn").addEventListener("click", () => showPersonalizationSection("themes"));
+  document.getElementById("openPersonalizationAnimationsBtn").addEventListener("click", () => showPersonalizationSection("animations"));
   document.getElementById("saveNamedCustomThemeBtn").addEventListener("click", saveCurrentThemeWithName);
   document.getElementById("openCustomThemeEditorBtn").addEventListener("click", enterCustomThemeEditor);
   document.getElementById("finishCustomThemeBtn").addEventListener("click", finishCustomThemeEditor);
