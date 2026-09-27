@@ -9150,7 +9150,13 @@
       background: var(--surface);
       box-shadow: 0 14px 34px color-mix(in srgb, var(--popover-shadow) 38%, transparent);
     }
-    .shipment-card-toolbar { display: grid; gap: 8px; }
+    .shipment-card-toolbar {
+      position: sticky;
+      top: calc(var(--app-header-bottom, 82px) - 2px);
+      z-index: 30;
+      display: grid;
+      gap: 8px;
+    }
     .shipment-card-toolbar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .shipment-card-toolbar button { width: 100%; margin: 0; }
     .shipment-history-list { display: grid; gap: 9px; }
@@ -9225,24 +9231,26 @@
     }
     .shipment-load-card.detail-open .shipment-load-body {
       position: fixed;
-      top: max(14px, env(safe-area-inset-top));
-      right: 12px;
-      bottom: max(14px, env(safe-area-inset-bottom));
-      left: 12px;
+      top: 50%;
+      right: auto;
+      bottom: auto;
+      left: 50%;
       z-index: 510;
       display: grid;
       align-content: start;
       gap: 11px;
       width: min(calc(100% - 24px), 720px);
-      margin: auto;
+      max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      margin: 0;
       padding: 14px;
       overflow: auto;
       border: 1px solid var(--border);
       border-radius: 22px;
       background: var(--surface);
       box-shadow: 0 24px 70px var(--popover-shadow);
+      transform: translate(-50%, -50%);
     }
-    .shipment-load-detail-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 7px; }
+    .shipment-load-detail-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 7px; min-height: 38px; }
     .shipment-load-detail-header strong { min-width: 0; font-size: 16px; line-height: 1.2; }
     .shipment-load-detail-header button { width: auto; min-width: 40px; min-height: 38px; margin: 0; padding: 7px 10px; }
     .shipment-load-meta { display: grid; grid-template-columns: minmax(100px, .65fr) minmax(0, 1.35fr); gap: 9px; padding-top: 11px; }
@@ -9301,8 +9309,9 @@
     .shipment-card-manual-row input { min-width: 0; margin: 0; }
     .shipment-card-manual-row button { min-width: 82px; margin: 0; }
     .shipment-card-manual-wrap { position: relative; }
-    .shipment-manual-result { display: grid; grid-template-columns: minmax(0, 1fr) 34px; align-items: center; gap: 4px; }
+    .shipment-manual-result { display: grid; grid-template-columns: minmax(0, 1fr) 34px 34px; align-items: center; gap: 4px; }
     .shipment-card-search-results .shipment-manual-result-name { width: 100%; text-align: left; }
+    .shipment-card-search-results .shipment-manual-result-edit,
     .shipment-card-search-results .shipment-manual-result-delete {
       width: 34px;
       min-width: 34px;
@@ -9432,6 +9441,15 @@
     }
     .shipment-card-preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: min(100%, 620px); margin-inline: auto; }
     .shipment-card-preview-actions button { width: 100%; margin: 0; }
+    .shipment-preview-notice {
+      width: min(100%, 620px);
+      margin: 0 auto;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .55);
+    }
     #shipmentItemOverlay .shipment-item-dialog-card { width: min(92vw, 520px); }
     .shipment-item-dialog-title { margin: 0; padding-right: 38px; font-size: 16px; line-height: 1.3; }
     .shipment-item-dialog-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 14px; }
@@ -9492,10 +9510,11 @@
     .shipment-item-dialog-actions button { width: 100%; margin: 0; }
     @media (min-width: 901px) {
       .shipment-card-search { top: calc(var(--desktop-header-height) - 2px); }
+      .shipment-card-toolbar { top: calc(var(--desktop-header-height) - 2px); }
     }
     @media (max-width: 600px) {
       .shipment-card-toolbar { grid-template-columns: 1fr 1fr; }
-      .shipment-card-toolbar button:first-child { grid-column: 1 / -1; }
+      .shipment-card-toolbar button:last-child { grid-column: 1 / -1; }
       .shipment-card-panel { padding: 10px; }
       .shipment-card-item { grid-template-columns: minmax(0, 1fr) 30px; gap: 6px; padding: 9px 8px; }
       .shipment-card-remove { width: 30px !important; min-width: 30px !important; }
@@ -10938,7 +10957,7 @@
     document.documentElement.style.setProperty("--app-header-safe-background", initialHeaderColor);
   } catch (error) {}
 </script>
-<link rel="manifest" href="manifest.json?v=450">
+<link rel="manifest" href="manifest.json?v=452">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=303">
 <link rel="apple-touch-icon" href="icon-512.png?v=303">
 <meta name="application-name" content="Облік">
@@ -10993,7 +11012,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.50</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.52</span></div>
     </div>
   </div>
 
@@ -11550,9 +11569,9 @@
       <section id="shipmentCardView" class="hidden">
         <div class="shipment-card-shell">
           <section class="shipment-card-panel shipment-card-toolbar">
-            <button type="button" id="createShipmentLoadBtn">+ Нова машина</button>
             <button type="button" class="secondary" id="startShipmentDayBtn">Новий день</button>
             <button type="button" class="secondary" id="toggleShipmentHistoryBtn">Історія</button>
+            <button type="button" id="createShipmentLoadBtn">+ Нова машина</button>
           </section>
           <div class="shipment-history-list hidden" id="shipmentHistoryList"></div>
           <div class="shipment-load-list" id="shipmentCardLoads"></div>
@@ -11590,6 +11609,13 @@
             <h3 class="shipment-item-dialog-title" id="shipmentPalletTypeEditorTitle">Тип піддона</h3>
             <label class="shipment-item-dialog-field" for="shipmentPalletTypeName">Назва<input id="shipmentPalletTypeName" type="text" maxlength="60" autocomplete="off" /></label>
             <div class="shipment-item-dialog-actions"><button type="button" id="saveShipmentPalletTypeBtn">Зберегти</button><button type="button" class="secondary" id="closeShipmentPalletTypeEditorBtn">Закрити</button></div>
+          </aside>
+        </div>
+        <div class="shift-editor-overlay hidden" id="shipmentManualNameEditorOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentManualNameEditorTitle">
+          <aside class="shift-editor-panel shipment-item-dialog-card">
+            <h3 class="shipment-item-dialog-title" id="shipmentManualNameEditorTitle">Редагувати ручну назву</h3>
+            <label class="shipment-item-dialog-field" for="shipmentManualNameEditorInput">Назва<input id="shipmentManualNameEditorInput" type="text" maxlength="300" autocomplete="off" /></label>
+            <div class="shipment-item-dialog-actions"><button type="button" id="saveShipmentManualNameBtn">Зберегти</button><button type="button" class="secondary" id="closeShipmentManualNameEditorBtn">Закрити</button></div>
           </aside>
         </div>
       </section>
@@ -12573,7 +12599,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.50</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.52</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -12599,6 +12625,20 @@
       </div>
       <div class="changelog-list">
         <section class="changelog-entry">
+          <h3>Версія 4.52</h3>
+          <ul>
+            <li>під час редагування позиції або машини вікно картки тимчасово ховається, тому новий діалог завжди знаходиться зверху;</li>
+            <li>панель «Новий день / Історія / Нова машина» закріплено під шапкою та змінено порядок кнопок;</li>
+            <li>останній режим «З бази» або «Вручну» запам’ятовується для всіх машин;</li>
+            <li>додано перейменування збережених ручних назв, а повідомлення про створення картинки перенесено над її переглядом.</li>
+          </ul>
+
+          <h3>Версія 4.51</h3>
+          <ul>
+            <li>вікно машини у відвантаженнях більше не розтягується на всю висоту екрана;</li>
+            <li>висота автоматично підлаштовується під вміст, а прокрутка з’являється лише для великої кількості позицій.</li>
+          </ul>
+
           <h3>Версія 4.50</h3>
           <ul>
             <li>історія відвантажень тепер показує кожну машину окремою карткою з повним списком позицій;</li>
@@ -14866,7 +14906,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.50";
+  const APP_VERSION = "4.52";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const STORAGE_KEY = "warehouseJournalV3";
   const THEME_KEY = "warehouseJournalTheme";
@@ -14932,6 +14972,7 @@
   const SHIPMENT_MANUAL_NAMES_KEY = "warehouseJournalShipmentManualNamesV1";
   const SHIPMENT_PALLET_TYPES_KEY = "warehouseJournalShipmentPalletTypesV1";
   const SHIPMENT_HISTORY_KEY = "warehouseJournalShipmentHistoryV1";
+  const SHIPMENT_ENTRY_MODE_KEY = "warehouseJournalShipmentEntryModeV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -14993,6 +15034,7 @@
     SHIPMENT_MANUAL_NAMES_KEY,
     SHIPMENT_PALLET_TYPES_KEY,
     SHIPMENT_HISTORY_KEY,
+    SHIPMENT_ENTRY_MODE_KEY,
     SHIFT_SCHEDULE_KEY,
     SHIFT_CALENDAR_VIEW_KEY,
     TRASH_RETENTION_KEY,
@@ -16356,6 +16398,8 @@
   let shipmentItemEditContext = null;
   let shipmentMetaEditCardId = "";
   let shipmentPalletTypeEditId = "";
+  let shipmentManualNameEditValue = "";
+  let shipmentDetailSuspendedForDialog = false;
   let initialWorkspaceChoiceNeeded = !demoModeActive && shouldPromptInitialWorkspaceChoice();
   let historySelectMode = false;
   let selectedHistoryIds = new Set();
@@ -26306,6 +26350,15 @@
     try { localStorage.setItem(SHIPMENT_MANUAL_NAMES_KEY, JSON.stringify(names.slice(0, 300))); } catch (error) {}
   }
 
+  function getShipmentEntryModePreference() {
+    try { return localStorage.getItem(SHIPMENT_ENTRY_MODE_KEY) === "manual" ? "manual" : "search"; }
+    catch (error) { return "search"; }
+  }
+
+  function saveShipmentEntryModePreference(mode) {
+    try { localStorage.setItem(SHIPMENT_ENTRY_MODE_KEY, mode === "manual" ? "manual" : "search"); } catch (error) {}
+  }
+
   function rememberShipmentManualName(name) {
     const cleanName = String(name || "").trim().slice(0, 300);
     if (!cleanName) return;
@@ -26324,7 +26377,7 @@
       .filter(name => !normalizedQuery || normalizePalletCalculatorSearchValue(name).includes(normalizedQuery))
       .slice(0, 40);
     results.innerHTML = matches.length
-      ? matches.map(name => `<div class="shipment-manual-result"><button type="button" class="shipment-manual-result-name" data-use-shipment-manual-name="${escapeHtml(name)}">${escapeHtml(name)}</button><button type="button" class="shipment-manual-result-delete" data-delete-shipment-manual-name="${escapeHtml(name)}" aria-label="Видалити назву ${escapeHtml(name)}"><span class="product-trash-icon" aria-hidden="true"></span></button></div>`).join("")
+      ? matches.map(name => `<div class="shipment-manual-result"><button type="button" class="shipment-manual-result-name" data-use-shipment-manual-name="${escapeHtml(name)}">${escapeHtml(name)}</button><button type="button" class="shipment-manual-result-edit" data-edit-shipment-manual-name="${escapeHtml(name)}" aria-label="Редагувати назву ${escapeHtml(name)}">✎</button><button type="button" class="shipment-manual-result-delete" data-delete-shipment-manual-name="${escapeHtml(name)}" aria-label="Видалити назву ${escapeHtml(name)}"><span class="product-trash-icon" aria-hidden="true"></span></button></div>`).join("")
       : `<div class="shipment-card-empty">Збережених назв не знайдено</div>`;
     results.classList.remove("hidden");
   }
@@ -26343,6 +26396,37 @@
     const input = document.querySelector(`[data-shipment-load="${CSS.escape(cardId)}"] [data-shipment-manual-name]`);
     renderShipmentManualNameResults(cardId, input?.value || "");
     toast("Збережену назву видалено");
+  }
+
+  function openShipmentManualNameEditor(name, cardId = "") {
+    shipmentManualNameEditValue = String(name || "").trim();
+    suspendShipmentDetailForDialog(cardId);
+    document.getElementById("shipmentManualNameEditorInput").value = shipmentManualNameEditValue;
+    document.getElementById("shipmentManualNameEditorOverlay")?.classList.remove("hidden");
+    requestAnimationFrame(() => document.getElementById("shipmentManualNameEditorInput")?.focus());
+  }
+
+  function closeShipmentManualNameEditor() {
+    shipmentManualNameEditValue = "";
+    document.getElementById("shipmentManualNameEditorOverlay")?.classList.add("hidden");
+    resumeShipmentDetailAfterDialog();
+  }
+
+  function saveShipmentManualNameEditor() {
+    const nextName = String(document.getElementById("shipmentManualNameEditorInput")?.value || "").trim().slice(0, 300);
+    if (!nextName) return toast("Введи нову назву", true);
+    const previousNormalized = normalizePalletCalculatorSearchValue(shipmentManualNameEditValue);
+    const nextNormalized = normalizePalletCalculatorSearchValue(nextName);
+    const names = loadShipmentManualNames();
+    if (names.some(name => normalizePalletCalculatorSearchValue(name) === nextNormalized && normalizePalletCalculatorSearchValue(name) !== previousNormalized)) return toast("Така ручна назва вже є", true);
+    saveShipmentManualNames(names.map(name => normalizePalletCalculatorSearchValue(name) === previousNormalized ? nextName : name));
+    shipmentCardDraft.cards.forEach(card => card.items.forEach(item => {
+      if (!item.productId && normalizePalletCalculatorSearchValue(item.name) === previousNormalized) item.name = nextName;
+    }));
+    saveShipmentCardDraft();
+    closeShipmentManualNameEditor();
+    renderShipmentCards();
+    toast("Ручну назву змінено");
   }
 
   function shipmentCardOccupiedPlaces(card) {
@@ -26385,7 +26469,7 @@
       capacity: 33,
       createdAt: new Date().toISOString(),
       collapsed: false,
-      entryMode: "search",
+      entryMode: getShipmentEntryModePreference(),
       items: []
     };
     shipmentCardDraft.cards.unshift(card);
@@ -26394,10 +26478,25 @@
     openShipmentMetaDialog(card.id);
   }
 
+  function suspendShipmentDetailForDialog(cardId) {
+    if (!shipmentDetailCardId || shipmentDetailCardId !== cardId) return;
+    const cardElement = document.querySelector(`[data-shipment-load="${CSS.escape(cardId)}"]`);
+    if (!cardElement?.classList.contains("detail-open")) return;
+    cardElement.classList.remove("detail-open");
+    shipmentDetailSuspendedForDialog = true;
+  }
+
+  function resumeShipmentDetailAfterDialog() {
+    if (!shipmentDetailSuspendedForDialog) return;
+    shipmentDetailSuspendedForDialog = false;
+    renderShipmentCards();
+  }
+
   function openShipmentMetaDialog(cardId) {
     const card = shipmentCardDraft.cards.find(entry => entry.id === cardId);
     if (!card) return;
     shipmentMetaEditCardId = cardId;
+    suspendShipmentDetailForDialog(cardId);
     document.getElementById("shipmentMetaRamp").value = card.ramp || "";
     document.getElementById("shipmentMetaDriver").value = card.driver || "";
     document.getElementById("shipmentMetaCapacity").value = card.capacity || 33;
@@ -26408,6 +26507,7 @@
   function closeShipmentMetaDialog() {
     shipmentMetaEditCardId = "";
     document.getElementById("shipmentMetaOverlay")?.classList.add("hidden");
+    resumeShipmentDetailAfterDialog();
   }
 
   function saveShipmentMeta() {
@@ -26500,6 +26600,7 @@
         : null;
     const name = existing?.name || product?.name || String(customName || "").trim().slice(0, 300);
     if (!name) return;
+    suspendShipmentDetailForDialog(cardId);
     shipmentItemEditContext = { cardId, itemId: existing?.id || "", productId: existing?.productId || productId, name };
     document.getElementById("shipmentItemDialogTitle").textContent = name;
     document.getElementById("shipmentItemPallets").value = existing?.pallets || "";
@@ -26532,6 +26633,7 @@
     shipmentItemEditContext = null;
     closeShipmentPalletTypeMenu();
     document.getElementById("shipmentItemOverlay")?.classList.add("hidden");
+    resumeShipmentDetailAfterDialog();
   }
 
   function updateShipmentItemUnitUI() {
@@ -26647,6 +26749,7 @@
           </div>
         </div>
         ${hasPreview ? `<section class="shipment-card-preview" data-shipment-card-preview="${escapeHtml(card.id)}">
+            <div class="shipment-preview-notice" role="status">Картку створено</div>
             <img data-shipment-card-preview-image alt="Сформована картка ${escapeHtml(shipmentLoadTitle(card))}" />
             <div class="shipment-card-preview-actions">
               <button type="button" data-share-shipment-image>Поділитися</button>
@@ -26661,10 +26764,14 @@
   }
 
   function prepareShipmentCard() {
-    shipmentCardDraft.cards.forEach(card => card.items.forEach(item => {
-      const currentProduct = state.products.find(product => product.id === item.productId);
-      if (currentProduct) item.name = currentProduct.name;
-    }));
+    const preferredEntryMode = getShipmentEntryModePreference();
+    shipmentCardDraft.cards.forEach(card => {
+      card.entryMode = preferredEntryMode;
+      card.items.forEach(item => {
+        const currentProduct = state.products.find(product => product.id === item.productId);
+        if (currentProduct) item.name = currentProduct.name;
+      });
+    });
     saveShipmentCardDraft();
     renderShipmentCards();
   }
@@ -26902,7 +27009,6 @@
     shipmentCardImageCardId = card.id;
     saveShipmentCardDraft();
     renderShipmentCards();
-    toast("Картку створено");
   }
 
   async function shareShipmentCardImage() {
@@ -28567,6 +28673,12 @@
       const cardElement = savedManualName.closest("[data-shipment-load]");
       return openShipmentItemDialog(cardElement.dataset.shipmentLoad, "", "", savedManualName.dataset.useShipmentManualName);
     }
+    const editManualName = event.target.closest("[data-edit-shipment-manual-name]");
+    if (editManualName) {
+      event.stopPropagation();
+      const cardElement = editManualName.closest("[data-shipment-load]");
+      return openShipmentManualNameEditor(editManualName.dataset.editShipmentManualName, cardElement?.dataset.shipmentLoad || "");
+    }
     const deleteManualName = event.target.closest("[data-delete-shipment-manual-name]");
     if (deleteManualName) {
       event.stopPropagation();
@@ -28578,7 +28690,9 @@
       const cardElement = entryMode.closest("[data-shipment-load]");
       const card = shipmentCardDraft.cards.find(entry => entry.id === cardElement?.dataset.shipmentLoad);
       if (!card || card.entryMode === entryMode.dataset.shipmentEntryMode) return;
-      card.entryMode = entryMode.dataset.shipmentEntryMode === "manual" ? "manual" : "search";
+      const selectedMode = entryMode.dataset.shipmentEntryMode === "manual" ? "manual" : "search";
+      shipmentCardDraft.cards.forEach(item => { item.entryMode = selectedMode; });
+      saveShipmentEntryModePreference(selectedMode);
       saveShipmentCardDraft();
       renderShipmentCards();
       requestAnimationFrame(() => document.querySelector(`[data-shipment-load="${CSS.escape(card.id)}"] ${card.entryMode === "manual" ? "[data-shipment-manual-name]" : "[data-shipment-product-search]"}`)?.focus());
@@ -28630,6 +28744,8 @@
   document.getElementById("deleteShipmentPalletTypeBtn").addEventListener("click", deleteSelectedShipmentPalletType);
   document.getElementById("saveShipmentPalletTypeBtn").addEventListener("click", saveShipmentPalletTypeEditor);
   document.getElementById("closeShipmentPalletTypeEditorBtn").addEventListener("click", closeShipmentPalletTypeEditor);
+  document.getElementById("saveShipmentManualNameBtn").addEventListener("click", saveShipmentManualNameEditor);
+  document.getElementById("closeShipmentManualNameEditorBtn").addEventListener("click", closeShipmentManualNameEditor);
   document.getElementById("saveShipmentMetaBtn").addEventListener("click", saveShipmentMeta);
   document.getElementById("closeShipmentMetaBtn").addEventListener("click", closeShipmentMetaDialog);
   document.getElementById("shipmentItemOverlay").addEventListener("click", event => {
@@ -28640,6 +28756,9 @@
   });
   document.getElementById("shipmentPalletTypeEditorOverlay").addEventListener("click", event => {
     if (event.target.id === "shipmentPalletTypeEditorOverlay") closeShipmentPalletTypeEditor();
+  });
+  document.getElementById("shipmentManualNameEditorOverlay").addEventListener("click", event => {
+    if (event.target.id === "shipmentManualNameEditorOverlay") closeShipmentManualNameEditor();
   });
   document.querySelectorAll("[data-toggle-pallet-calculator-section]").forEach(button => {
     button.addEventListener("click", () => togglePalletCalculatorSection(button.dataset.togglePalletCalculatorSection));
