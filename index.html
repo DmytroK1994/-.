@@ -5774,8 +5774,10 @@
       overscroll-behavior: none;
     }
     html.modal-scroll-locked {
+      height: 100%;
       min-height: 100%;
       background: var(--bg);
+      overflow: hidden !important;
       overscroll-behavior: none;
     }
     [role="dialog"][aria-modal="true"] {
@@ -9526,6 +9528,23 @@
     .shipment-history-position small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
     #shipmentItemOverlay,
     #shipmentMetaOverlay { z-index: 560; }
+    #shipmentPalletTypeEditorOverlay,
+    #shipmentManualNameEditorOverlay { z-index: 590; }
+    #shipmentItemOverlay,
+    #shipmentMetaOverlay,
+    #shipmentPalletTypeEditorOverlay,
+    #shipmentManualNameEditorOverlay {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    #shipmentItemOverlay .shipment-item-dialog-card,
+    #shipmentMetaOverlay .shipment-item-dialog-card,
+    #shipmentPalletTypeEditorOverlay .shipment-item-dialog-card,
+    #shipmentManualNameEditorOverlay .shipment-item-dialog-card {
+      position: relative;
+      max-height: none;
+      overflow: visible;
+    }
     .shipment-load-list { display: grid; gap: 10px; }
     .shipment-load-card { padding: 0; overflow: hidden; }
     .shipment-load-heading-row {
@@ -9859,6 +9878,7 @@
       box-shadow: 0 16px 36px var(--popover-shadow);
     }
     .shipment-pallet-type-options { display: grid; max-height: 230px; overflow: auto; padding: 5px; }
+    .shipment-pallet-type-options { overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
     .shipment-pallet-type-options button { margin: 0; border: 0; background: transparent; color: var(--text); box-shadow: none; text-align: left; }
     .shipment-pallet-type-options button.active { background: var(--field-hover); font-weight: 900; }
     .shipment-pallet-type-tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 5px; border-top: 1px solid var(--border); }
@@ -9872,6 +9892,26 @@
     .shipment-item-dialog-loose input { width: 20px; height: 20px; margin: 0; }
     .shipment-item-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
     .shipment-item-dialog-actions button { width: 100%; margin: 0; }
+    .shipment-dialog-close {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      width: 34px !important;
+      min-width: 34px !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--muted) !important;
+      box-shadow: none !important;
+      font-size: 25px !important;
+      line-height: 1 !important;
+    }
     @media (min-width: 901px) {
       .shipment-card-search { top: calc(var(--desktop-header-height) - 2px); }
       .shipment-card-toolbar { top: calc(var(--desktop-header-height) - 2px); }
@@ -11370,7 +11410,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.79</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.80</span></div>
     </div>
   </div>
 
@@ -11946,11 +11986,12 @@
         </div>
         <div class="shift-editor-overlay hidden" id="shipmentItemOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentItemDialogTitle">
           <aside class="shift-editor-panel shipment-item-dialog-card">
+            <button type="button" class="shipment-dialog-close" id="closeShipmentItemTopBtn" aria-label="Закрити">×</button>
             <h3 class="shipment-item-dialog-title" id="shipmentItemDialogTitle">Позиція</h3>
             <div class="shipment-item-dialog-fields">
               <div class="shipment-item-dialog-field"><div class="shipment-item-dialog-field-heading"><label for="shipmentItemPallets">Кількість</label><select id="shipmentItemLoadUnit" class="shipment-item-unit-select" aria-label="У чому відвантажується"><option value="pallet">Піддони</option><option value="cargoPlace">Вантажні місця</option><option value="piece">Штуки</option></select></div><div class="shipment-item-quantity-wrap expression-input-wrap"><input id="shipmentItemPallets" type="text" inputmode="numeric" autocomplete="off" /><div class="expression-operator-control" data-expression-input="shipmentItemPallets"><button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Додати ще кількість">+</button></div></div></div>
               <div class="shipment-item-dialog-field"><label for="shipmentItemBoxes">Коробок</label><div class="shipment-item-quantity-wrap expression-input-wrap"><input id="shipmentItemBoxes" type="text" inputmode="numeric" autocomplete="off" /><div class="expression-operator-control" data-expression-input="shipmentItemBoxes"><button type="button" class="expression-operator-insert" data-selected-operator="+" aria-label="Додати ще коробки">+</button></div></div></div>
-              <div class="shipment-item-dialog-field full" id="shipmentItemPalletTypeField"><label>Тип піддона</label><div class="shipment-pallet-type-picker"><input id="shipmentItemPalletType" type="hidden" /><button type="button" class="shipment-pallet-type-trigger" id="shipmentPalletTypeTrigger" aria-expanded="false"><span id="shipmentPalletTypeLabel">Пластик</span><span aria-hidden="true">⌄</span></button><div class="shipment-pallet-type-menu hidden" id="shipmentPalletTypeMenu"><div class="shipment-pallet-type-options" id="shipmentPalletTypeOptions"></div><div class="shipment-pallet-type-tools"><button type="button" id="addShipmentPalletTypeBtn">+ Додати</button><button type="button" class="secondary" id="editShipmentPalletTypeBtn">Редагувати</button><button type="button" class="secondary" id="deleteShipmentPalletTypeBtn">Видалити</button></div></div></div></div>
+              <div class="shipment-item-dialog-field full" id="shipmentItemPalletTypeField"><label>Вид тари</label><div class="shipment-pallet-type-picker"><input id="shipmentItemPalletType" type="hidden" /><button type="button" class="shipment-pallet-type-trigger" id="shipmentPalletTypeTrigger" aria-expanded="false" aria-label="Обрати вид тари"><span id="shipmentPalletTypeLabel">Пластик</span><span aria-hidden="true">⌄</span></button><div class="shipment-pallet-type-menu hidden" id="shipmentPalletTypeMenu"><div class="shipment-pallet-type-options" id="shipmentPalletTypeOptions"></div><div class="shipment-pallet-type-tools"><button type="button" id="addShipmentPalletTypeBtn">+ Додати</button><button type="button" class="secondary" id="editShipmentPalletTypeBtn">Редагувати</button><button type="button" class="secondary" id="deleteShipmentPalletTypeBtn">Видалити</button></div></div></div></div>
               <label class="shipment-item-dialog-loose full"><input id="shipmentItemLooseBoxes" type="checkbox" />Коробки без піддона</label>
             </div>
             <div class="shipment-item-dialog-actions">
@@ -11961,6 +12002,7 @@
         </div>
         <div class="shift-editor-overlay hidden" id="shipmentMetaOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentMetaDialogTitle">
           <aside class="shift-editor-panel shipment-item-dialog-card">
+            <button type="button" class="shipment-dialog-close" id="closeShipmentMetaTopBtn" aria-label="Закрити">×</button>
             <h3 class="shipment-item-dialog-title" id="shipmentMetaDialogTitle">Машина</h3>
             <div class="shipment-meta-dialog-fields">
               <label>Рампа<input id="shipmentMetaRamp" type="text" maxlength="20" /></label>
@@ -11972,13 +12014,15 @@
         </div>
         <div class="shift-editor-overlay hidden" id="shipmentPalletTypeEditorOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentPalletTypeEditorTitle">
           <aside class="shift-editor-panel shipment-item-dialog-card">
-            <h3 class="shipment-item-dialog-title" id="shipmentPalletTypeEditorTitle">Тип піддона</h3>
+            <button type="button" class="shipment-dialog-close" id="closeShipmentPalletTypeEditorTopBtn" aria-label="Закрити">×</button>
+            <h3 class="shipment-item-dialog-title" id="shipmentPalletTypeEditorTitle">Вид тари</h3>
             <label class="shipment-item-dialog-field" for="shipmentPalletTypeName">Назва<input id="shipmentPalletTypeName" type="text" maxlength="60" autocomplete="off" /></label>
             <div class="shipment-item-dialog-actions"><button type="button" id="saveShipmentPalletTypeBtn">Зберегти</button><button type="button" class="secondary" id="closeShipmentPalletTypeEditorBtn">Закрити</button></div>
           </aside>
         </div>
         <div class="shift-editor-overlay hidden" id="shipmentManualNameEditorOverlay" role="dialog" aria-modal="true" aria-labelledby="shipmentManualNameEditorTitle">
           <aside class="shift-editor-panel shipment-item-dialog-card">
+            <button type="button" class="shipment-dialog-close" id="closeShipmentManualNameEditorTopBtn" aria-label="Закрити">×</button>
             <h3 class="shipment-item-dialog-title" id="shipmentManualNameEditorTitle">Редагувати ручну назву</h3>
             <label class="shipment-item-dialog-field" for="shipmentManualNameEditorInput">Назва<input id="shipmentManualNameEditorInput" type="text" maxlength="300" autocomplete="off" /></label>
             <div class="shipment-item-dialog-actions"><button type="button" id="saveShipmentManualNameBtn">Зберегти</button><button type="button" class="secondary" id="closeShipmentManualNameEditorBtn">Закрити</button></div>
@@ -12992,7 +13036,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.79</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.80</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -13017,6 +13061,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.80</h3>
+          <ul>
+            <li>у відвантаженнях «Тип піддона» замінено універсальним «Вид тари» для піддонів, ємностей та інших вантажних місць;</li>
+            <li>редактори виду тари та ручної назви тепер відкриваються поверх поточного вікна, а всі вікна отримали окремий хрестик закриття;</li>
+            <li>діалоги відвантаження зафіксовано, випадаючі списки винесено поверх них, а сторінка більше не прокручується разом із пошуковими результатами.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.79</h3>
           <ul>
@@ -15502,7 +15554,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.79";
+  const APP_VERSION = "4.80";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -17271,6 +17323,7 @@
   let shipmentMetaEditHistoryDayId = "";
   let shipmentMetaNewCardId = "";
   let shipmentPalletTypeEditId = "";
+  let shipmentPalletTypeEditorReturnToItem = false;
   let shipmentManualNameEditValue = "";
   let shipmentDetailSuspendedForDialog = false;
   let initialWorkspaceChoiceNeeded = !demoModeActive && shouldPromptInitialWorkspaceChoice();
@@ -27541,7 +27594,7 @@
     const input = document.getElementById("shipmentItemPalletType");
     if (input) input.value = selected?.id || "";
     const label = document.getElementById("shipmentPalletTypeLabel");
-    if (label) label.textContent = selected?.name || "Тип піддона";
+    if (label) label.textContent = selected?.name || "Вид тари";
     const options = document.getElementById("shipmentPalletTypeOptions");
     if (options) options.innerHTML = types.map(type => `<button type="button" class="${type.id === selected?.id ? "active" : ""}" data-shipment-pallet-type="${escapeHtml(type.id)}">${escapeHtml(type.name)}</button>`).join("");
   }
@@ -27554,8 +27607,10 @@
   function openShipmentPalletTypeEditor(id = "") {
     const type = loadShipmentPalletTypes().find(entry => entry.id === id);
     shipmentPalletTypeEditId = type?.id || "";
-    document.getElementById("shipmentPalletTypeEditorTitle").textContent = type ? "Редагувати тип піддона" : "Новий тип піддона";
+    shipmentPalletTypeEditorReturnToItem = !document.getElementById("shipmentItemOverlay")?.classList.contains("hidden");
+    document.getElementById("shipmentPalletTypeEditorTitle").textContent = type ? "Редагувати вид тари" : "Новий вид тари";
     document.getElementById("shipmentPalletTypeName").value = type?.name || "";
+    if (shipmentPalletTypeEditorReturnToItem) document.getElementById("shipmentItemOverlay")?.classList.add("hidden");
     document.getElementById("shipmentPalletTypeEditorOverlay")?.classList.remove("hidden");
     closeShipmentPalletTypeMenu();
     requestAnimationFrame(() => document.getElementById("shipmentPalletTypeName")?.focus());
@@ -27564,13 +27619,17 @@
   function closeShipmentPalletTypeEditor() {
     shipmentPalletTypeEditId = "";
     document.getElementById("shipmentPalletTypeEditorOverlay")?.classList.add("hidden");
+    if (shipmentPalletTypeEditorReturnToItem && shipmentItemEditContext) {
+      document.getElementById("shipmentItemOverlay")?.classList.remove("hidden");
+    }
+    shipmentPalletTypeEditorReturnToItem = false;
   }
 
   function saveShipmentPalletTypeEditor() {
     const name = String(document.getElementById("shipmentPalletTypeName")?.value || "").trim().slice(0, 60);
-    if (!name) return toast("Введи назву типу піддона", true);
+    if (!name) return toast("Введи назву виду тари", true);
     const types = loadShipmentPalletTypes();
-    if (types.some(type => type.id !== shipmentPalletTypeEditId && normalizePalletCalculatorSearchValue(type.name) === normalizePalletCalculatorSearchValue(name))) return toast("Такий тип піддона вже є", true);
+    if (types.some(type => type.id !== shipmentPalletTypeEditId && normalizePalletCalculatorSearchValue(type.name) === normalizePalletCalculatorSearchValue(name))) return toast("Такий вид тари вже є", true);
     let selectedId = shipmentPalletTypeEditId;
     const current = types.find(type => type.id === shipmentPalletTypeEditId);
     if (current) current.name = name;
@@ -27588,8 +27647,8 @@
     const types = loadShipmentPalletTypes();
     const type = types.find(entry => entry.id === id);
     if (!type) return;
-    if (types.length <= 1) return toast("Повинен залишитися хоча б один тип піддона", true);
-    const confirmed = await showAppDialog({ label: "Тип піддона", title: "Видалити назву?", message: `«${type.name}» буде видалено зі списку.`, confirmText: "Видалити", cancelText: "Скасувати" });
+    if (types.length <= 1) return toast("Повинен залишитися хоча б один вид тари", true);
+    const confirmed = await showAppDialog({ label: "Вид тари", title: "Видалити назву?", message: `«${type.name}» буде видалено зі списку.`, confirmText: "Видалити", cancelText: "Скасувати" });
     if (!confirmed) return;
     const nextTypes = types.filter(entry => entry.id !== id);
     saveShipmentPalletTypes(nextTypes);
@@ -27650,8 +27709,8 @@
   }
 
   function updateShipmentItemUnitUI() {
-    const isPallet = document.getElementById("shipmentItemLoadUnit")?.value === "pallet";
-    document.getElementById("shipmentItemPalletTypeField")?.classList.toggle("hidden", !isPallet);
+    const usesCargoType = document.getElementById("shipmentItemLoadUnit")?.value !== "piece";
+    document.getElementById("shipmentItemPalletTypeField")?.classList.toggle("hidden", !usesCargoType);
   }
 
   function saveShipmentItem() {
@@ -27704,7 +27763,7 @@
         : ["піддон", "піддони", "піддонів"];
     if (item.pallets > 0) details.push(`${item.pallets} ${shipmentCardWord(item.pallets, mainForms)}`);
     if (item.boxes > 0) details.push(`${item.boxes} ${shipmentCardWord(item.boxes, ["коробка", "коробки", "коробок"])}${item.looseBoxes ? " без піддона" : ""}`);
-    const palletSuffix = loadUnit === "pallet" ? ` (${shipmentPalletTypeName(item.palletType).toLocaleLowerCase("uk-UA")})` : "";
+    const palletSuffix = loadUnit !== "piece" ? ` (${shipmentPalletTypeName(item.palletType).toLocaleLowerCase("uk-UA")})` : "";
     return `${details.join(" + ")}${palletSuffix}`;
   }
 
@@ -29677,6 +29736,14 @@
     const manualCard = manualInput?.closest("[data-shipment-load]");
     if (manualInput && manualCard) renderShipmentManualNameResults(manualCard.dataset.shipmentLoad, manualInput.value);
   });
+  document.getElementById("shipmentCardLoads").addEventListener("focusout", event => {
+    if (!event.target.matches("[data-shipment-product-search], [data-shipment-manual-name]")) return;
+    const cardElement = event.target.closest("[data-shipment-load]");
+    window.setTimeout(() => {
+      if (!cardElement || cardElement.contains(document.activeElement)) return;
+      cardElement.querySelectorAll("[data-shipment-search-results], [data-shipment-manual-results]").forEach(element => element.classList.add("hidden"));
+    }, 120);
+  });
   document.getElementById("shipmentCardLoads").addEventListener("input", event => {
     const cardElement = event.target.closest("[data-shipment-load]");
     if (!cardElement) return;
@@ -29783,6 +29850,7 @@
   });
   document.getElementById("saveShipmentItemBtn").addEventListener("click", saveShipmentItem);
   document.getElementById("closeShipmentItemBtn").addEventListener("click", closeShipmentItemDialog);
+  document.getElementById("closeShipmentItemTopBtn").addEventListener("click", closeShipmentItemDialog);
   document.getElementById("shipmentItemLoadUnit").addEventListener("change", updateShipmentItemUnitUI);
   document.getElementById("shipmentPalletTypeTrigger").addEventListener("click", () => {
     const menu = document.getElementById("shipmentPalletTypeMenu");
@@ -29801,10 +29869,13 @@
   document.getElementById("deleteShipmentPalletTypeBtn").addEventListener("click", deleteSelectedShipmentPalletType);
   document.getElementById("saveShipmentPalletTypeBtn").addEventListener("click", saveShipmentPalletTypeEditor);
   document.getElementById("closeShipmentPalletTypeEditorBtn").addEventListener("click", closeShipmentPalletTypeEditor);
+  document.getElementById("closeShipmentPalletTypeEditorTopBtn").addEventListener("click", closeShipmentPalletTypeEditor);
   document.getElementById("saveShipmentManualNameBtn").addEventListener("click", saveShipmentManualNameEditor);
   document.getElementById("closeShipmentManualNameEditorBtn").addEventListener("click", closeShipmentManualNameEditor);
+  document.getElementById("closeShipmentManualNameEditorTopBtn").addEventListener("click", closeShipmentManualNameEditor);
   document.getElementById("saveShipmentMetaBtn").addEventListener("click", saveShipmentMeta);
   document.getElementById("closeShipmentMetaBtn").addEventListener("click", closeShipmentMetaDialog);
+  document.getElementById("closeShipmentMetaTopBtn").addEventListener("click", closeShipmentMetaDialog);
   document.getElementById("shipmentItemOverlay").addEventListener("click", event => {
     if (event.target.id === "shipmentItemOverlay") closeShipmentItemDialog();
   });
