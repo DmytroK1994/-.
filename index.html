@@ -9235,6 +9235,11 @@
       box-shadow: 0 8px 18px rgba(198,83,62,.28);
     }
     .additional-tool-icon.shipment-tool-icon svg { width: 39px; height: 31px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; animation: shipment-truck-idle 4.2s ease-in-out infinite; }
+    .additional-tool-icon.raw-check-tool-icon {
+      background: linear-gradient(145deg, #6fc6a3, #247a69);
+      box-shadow: 0 8px 18px rgba(36,122,105,.3);
+    }
+    .additional-tool-icon.raw-check-tool-icon svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .additional-tool-icon.bms-tool-icon { overflow: hidden; padding: 0; background: #071a35; box-shadow: 0 8px 18px rgba(7,26,53,.34); }
     .additional-tool-icon.bms-tool-icon img { display: block; width: 100%; height: 100%; object-fit: cover; animation: battery-fleet-logo-pulse 3.2s ease-in-out infinite; }
     @keyframes battery-fleet-logo-pulse {
@@ -9303,6 +9308,66 @@
     body.additional-home-visible .additional-tool-home { display: grid; }
     .additional-tool-home svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
     .additional-tool-home:active { transform: scale(.94); }
+    .raw-check-shell { display: grid; gap: 10px; width: min(100%, 720px); margin-inline: auto; padding-bottom: 76px; }
+    .raw-check-tabs { position: sticky; top: calc(var(--app-header-bottom, 70px) - 1px); z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 5px; border: 1px solid var(--border); border-radius: 15px; background: var(--surface); box-shadow: 0 8px 22px var(--header-shadow); }
+    .raw-check-tabs button { min-height: 38px; margin: 0; padding: 7px 4px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); box-shadow: none; font-size: 10px; }
+    .raw-check-tabs button.active { background: var(--surface-strong); color: var(--text); box-shadow: 0 3px 10px var(--header-shadow); }
+    .raw-check-panel { display: grid; gap: 10px; }
+    .raw-check-card { padding: 12px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); box-shadow: 0 10px 24px var(--card-shadow); }
+    .raw-check-card h3 { margin: 0; font-size: 15px; }
+    .raw-check-date-strip { display: flex; gap: 7px; overflow-x: auto; padding: 2px 1px 7px; overscroll-behavior-inline: contain; scrollbar-width: none; }
+    .raw-check-date-strip::-webkit-scrollbar { display: none; }
+    .raw-check-date-chip { display: grid; flex: 0 0 78px; min-height: 58px; margin: 0; padding: 7px 5px; place-items: center; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-strong); color: var(--text); box-shadow: none; font-size: 13px; font-weight: 900; }
+    .raw-check-date-chip small { color: var(--muted); font-size: 8px; font-weight: 750; }
+    .raw-check-date-chip.active { border-color: var(--accent-soft); background: color-mix(in srgb, var(--accent-soft) 16%, var(--surface)); color: var(--accent-soft); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-soft) 22%, transparent); }
+    .raw-check-date-chip.warning small { color: #d57a12; }
+    .raw-check-shifts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .raw-check-shifts button { min-height: 54px; margin: 0; padding: 8px 4px; background: var(--surface-strong); color: var(--text); }
+    .raw-check-shifts button.active { border-color: var(--accent-soft); background: var(--accent-soft); color: #fff; }
+    .raw-check-current { padding: 14px; text-align: center; }
+    .raw-check-current-selection { font-size: clamp(21px, 6vw, 30px); font-weight: 950; letter-spacing: -.04em; }
+    .raw-check-current-totals { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 800; }
+    .raw-check-match { display: grid; gap: 4px; margin-top: 10px; padding: 9px; border-radius: 12px; background: var(--surface-deep); font-size: 11px; }
+    .raw-check-status-ok { color: #168661; }
+    .raw-check-status-short { color: #d54646; }
+    .raw-check-status-over { color: #d17812; }
+    .raw-check-status-unlinked { color: #b36b10; }
+    .raw-check-weight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .raw-check-weight-grid button { min-height: 72px; margin: 0; font-size: 21px; font-weight: 950; }
+    .raw-check-undo { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px; }
+    .raw-check-undo button { width: auto; min-height: 38px; margin: 0; padding: 7px 10px; }
+    .raw-check-last { min-width: 0; color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .raw-check-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 7px; }
+    .raw-check-toolbar button { width: auto; min-height: 38px; margin: 0; padding: 7px 11px; }
+    .raw-check-list { display: grid; gap: 8px; }
+    .raw-check-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+    .raw-check-row-main { min-width: 0; }
+    .raw-check-row strong { display: block; font-size: 13px; }
+    .raw-check-row small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .raw-check-row-actions { display: flex; gap: 4px; }
+    .raw-check-row-actions button { width: 34px; min-width: 34px; height: 34px; min-height: 34px; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; font-size: 18px; }
+    .raw-check-overview-date { display: grid; gap: 6px; }
+    .raw-check-overview-date h3 { padding: 0 3px; }
+    .raw-check-overview-row { width: 100%; margin: 0; text-align: left; }
+    .raw-check-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .raw-check-summary-grid article { padding: 12px; border-radius: 14px; background: var(--surface-deep); }
+    .raw-check-summary-grid small { display: block; color: var(--muted); font-size: 9px; }
+    .raw-check-summary-grid strong { display: block; margin-top: 4px; font-size: 18px; }
+    .raw-check-empty { padding: 22px 12px; color: var(--muted); text-align: center; font-size: 12px; }
+    .raw-check-dialog { position: relative; width: min(calc(100% - 24px), 520px); max-height: min(88dvh, 700px); padding: 16px; overflow: auto; }
+    .raw-check-dialog h3 { margin: 0 40px 13px 0; }
+    .raw-check-dialog-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .raw-check-dialog-fields label { color: var(--muted); font-size: 10px; font-weight: 850; }
+    .raw-check-dialog-fields label.full { grid-column: 1 / -1; }
+    .raw-check-dialog-fields input, .raw-check-dialog-fields select, .raw-check-dialog-fields textarea { margin: 5px 0 0; }
+    .raw-check-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+    .raw-check-dialog-actions button { width: 100%; margin: 0; }
+    .raw-check-map-options { display: grid; gap: 7px; }
+    .raw-check-map-options button { margin: 0; text-align: left; }
+    .raw-check-pallet-list { display: grid; gap: 7px; max-height: 42dvh; overflow: auto; }
+    .raw-check-pallet-row { display: grid; grid-template-columns: minmax(0, 1fr) 34px; align-items: center; gap: 7px; padding: 8px 9px; border-radius: 11px; background: var(--surface-deep); }
+    .raw-check-pallet-row button { width: 34px; min-width: 34px; height: 34px; min-height: 34px; margin: 0; padding: 0; }
+    @media (min-width: 901px) { .raw-check-tabs { top: calc(var(--desktop-header-height) - 1px); } .raw-check-shell { width: min(100%, 880px); } }
     .shipment-truck-glyph {
       position: relative;
       width: 33px;
@@ -11410,7 +11475,7 @@
           <img class="splash-logo" src="icon-512.png?v=303" alt="">
         </div>
       </div>
-      <div class="splash-version">Версія <span id="splashVersionLabel">4.80</span></div>
+      <div class="splash-version">Версія <span id="splashVersionLabel">4.81</span></div>
     </div>
   </div>
 
@@ -11886,6 +11951,10 @@
             <span class="additional-tool-icon shipment-tool-icon" aria-hidden="true"><svg viewBox="0 0 48 34"><path d="M3 5h27v20H3z"></path><path d="M30 12h8l7 7v6H30z"></path><path d="M35 12v8h10"></path><circle cx="12" cy="27" r="4"></circle><circle cx="37" cy="27" r="4"></circle><path d="M16 27h17M7 27H3"></path></svg></span>
             <span class="additional-tool-name">Відвантаження</span>
           </button>
+          <button type="button" class="additional-tool-tile" id="openRawCheckTool" data-additional-tool="rawCheck">
+            <span class="additional-tool-icon raw-check-tool-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M8 30V12h24v18z"></path><path d="M12 12V8h16v4M13 18h14M13 23h9"></path><path d="m24 27 3 3 6-7"></path></svg></span>
+            <span class="additional-tool-name">Звірка сировини</span>
+          </button>
           <button type="button" class="additional-tool-tile" id="openBmsBatteryTool" data-additional-tool="bmsBattery">
             <span class="additional-tool-icon bms-tool-icon" aria-hidden="true"><img src="assets/bms-battery-icon.svg?v=473" alt="" /></span>
             <span class="additional-tool-name">Battery Fleet</span>
@@ -11906,6 +11975,82 @@
               referrerpolicy="strict-origin-when-cross-origin"
             ></iframe>
           </div>
+        </div>
+      </section>
+
+      <section id="rawCheckView" class="hidden">
+        <div class="raw-check-shell">
+          <nav class="raw-check-tabs" aria-label="Розділи звірки">
+            <button type="button" class="active" data-raw-check-view="walk">Обхід</button>
+            <button type="button" data-raw-check-view="invoice">Накладна</button>
+            <button type="button" data-raw-check-view="overview">Огляд</button>
+            <button type="button" data-raw-check-view="summary">Підсумок</button>
+          </nav>
+          <div id="rawCheckContent"></div>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="rawCheckInvoiceOverlay" role="dialog" aria-modal="true" aria-labelledby="rawCheckInvoiceTitle">
+          <section class="shift-editor-panel raw-check-dialog">
+            <button type="button" class="shipment-dialog-close" id="closeRawCheckInvoiceBtn" aria-label="Закрити">×</button>
+            <h3 id="rawCheckInvoiceTitle">Позиція накладної</h3>
+            <div class="raw-check-dialog-fields">
+              <label class="full">Партія<input id="rawCheckInvoiceBatch" type="text" maxlength="80" autocomplete="off" /></label>
+              <label>Дата<input id="rawCheckInvoiceDate" type="date" /></label>
+              <label>Зміна<select id="rawCheckInvoiceShift"><option value="">Не вказана</option><option value="1">1 зміна</option><option value="2">2 зміна</option><option value="3">3 зміна</option></select></label>
+              <label class="full">Планова вага, кг<input id="rawCheckInvoicePlan" type="number" min="0" step="0.01" inputmode="decimal" /></label>
+              <label class="full">Примітка<textarea id="rawCheckInvoiceNote" rows="2" maxlength="300"></textarea></label>
+            </div>
+            <div class="raw-check-dialog-actions"><button type="button" id="saveRawCheckInvoiceBtn">Зберегти</button><button type="button" class="secondary" id="cancelRawCheckInvoiceBtn">Закрити</button></div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="rawCheckDateOverlay" role="dialog" aria-modal="true" aria-labelledby="rawCheckDateTitle">
+          <section class="shift-editor-panel raw-check-dialog">
+            <button type="button" class="shipment-dialog-close" id="closeRawCheckDateBtn" aria-label="Закрити">×</button>
+            <h3 id="rawCheckDateTitle">Додати дату</h3>
+            <div class="raw-check-dialog-fields"><label class="full">Дата<input id="rawCheckExtraDate" type="date" /></label></div>
+            <div class="raw-check-dialog-actions"><button type="button" id="saveRawCheckDateBtn">Додати</button><button type="button" class="secondary" id="cancelRawCheckDateBtn">Закрити</button></div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="rawCheckWeightOverlay" role="dialog" aria-modal="true" aria-labelledby="rawCheckWeightTitle">
+          <section class="shift-editor-panel raw-check-dialog">
+            <button type="button" class="shipment-dialog-close" id="closeRawCheckWeightBtn" aria-label="Закрити">×</button>
+            <h3 id="rawCheckWeightTitle">Інша вага</h3>
+            <div class="raw-check-dialog-fields"><label class="full">Вага піддона, кг<input id="rawCheckCustomWeight" type="number" min="0.01" step="0.01" inputmode="decimal" enterkeyhint="done" /></label></div>
+            <div class="raw-check-dialog-actions"><button type="button" id="saveRawCheckWeightBtn">Додати</button><button type="button" class="secondary" id="cancelRawCheckWeightBtn">Закрити</button></div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="rawCheckMapOverlay" role="dialog" aria-modal="true" aria-labelledby="rawCheckMapTitle">
+          <section class="shift-editor-panel raw-check-dialog">
+            <button type="button" class="shipment-dialog-close" id="closeRawCheckMapBtn" aria-label="Закрити">×</button>
+            <h3 id="rawCheckMapTitle">Прив’язати до партії</h3>
+            <div class="raw-check-map-options" id="rawCheckMapOptions"></div>
+            <div class="raw-check-dialog-actions"><button type="button" class="secondary" id="leaveRawCheckUnlinkedBtn">Залишити без прив’язки</button><button type="button" class="secondary" id="cancelRawCheckMapBtn">Закрити</button></div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="rawCheckGroupOverlay" role="dialog" aria-modal="true" aria-labelledby="rawCheckGroupTitle">
+          <section class="shift-editor-panel raw-check-dialog">
+            <button type="button" class="shipment-dialog-close" id="closeRawCheckGroupBtn" aria-label="Закрити">×</button>
+            <h3 id="rawCheckGroupTitle">Група</h3>
+            <div class="raw-check-pallet-list" id="rawCheckPalletList"></div>
+            <div class="raw-check-dialog-actions"><button type="button" id="mapRawCheckGroupBtn">Прив’язати</button><button type="button" class="secondary" id="cancelRawCheckGroupBtn">Закрити</button></div>
+          </section>
+        </div>
+
+        <div class="shift-editor-overlay hidden" id="rawCheckPalletOverlay" role="dialog" aria-modal="true" aria-labelledby="rawCheckPalletTitle">
+          <section class="shift-editor-panel raw-check-dialog">
+            <button type="button" class="shipment-dialog-close" id="closeRawCheckPalletBtn" aria-label="Закрити">×</button>
+            <h3 id="rawCheckPalletTitle">Редагувати піддон</h3>
+            <div class="raw-check-dialog-fields">
+              <label class="full">Вага, кг<input id="rawCheckPalletWeight" type="number" min="0.01" step="0.01" inputmode="decimal" /></label>
+              <label>Дата<input id="rawCheckPalletDate" type="date" /></label>
+              <label>Зміна<select id="rawCheckPalletShift"><option value="1">1 зміна</option><option value="2">2 зміна</option><option value="3">3 зміна</option></select></label>
+            </div>
+            <div class="raw-check-dialog-actions"><button type="button" id="saveRawCheckPalletBtn">Зберегти</button><button type="button" class="secondary" id="deleteRawCheckPalletBtn">Видалити</button></div>
+          </section>
         </div>
       </section>
 
@@ -13036,7 +13181,7 @@
       <div class="about-card-viewport">
         <section class="card about-card about-card-primary about-card-static is-active" data-about-card aria-label="Додаток і дії">
           <div class="about-heading-row about-version-row">
-            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.80</span></button>
+            <button type="button" class="about-version about-version-button" id="openChangelogBtn">Версія <span id="aboutVersionLabel">4.81</span></button>
           </div>
           <div class="about-single-description">
             <p><strong>Облік</strong> — універсальний мобільний і комп’ютерний інструмент для інвентаризації, формування замовлень і здачі продукції.</p>
@@ -13061,6 +13206,14 @@
         <button type="button" class="dialog-icon-close" id="closeChangelogBtn" aria-label="Закрити">×</button>
       </div>
       <div class="changelog-list">
+        <section class="changelog-entry">
+          <h3>Версія 4.81</h3>
+          <ul>
+            <li>у «Додатково» додано мобільний інструмент «Звірка сировини» для швидкого обліку піддонів за датою та зміною;</li>
+            <li>реалізовано перенесення накладної, автоматичні й ручні прив’язки партій, швидкі ваги, скасування останньої дії та редагування піддонів;</li>
+            <li>додано огляд усіх дат і змін, автоматичне порівняння плану з фактом та підсумковий блок проблемних і неприв’язаних груп.</li>
+          </ul>
+        </section>
         <section class="changelog-entry">
           <h3>Версія 4.80</h3>
           <ul>
@@ -15554,7 +15707,7 @@
   "use strict";
 
   // Збільшуй номер після кожного оновлення додатка.
-  const APP_VERSION = "4.80";
+  const APP_VERSION = "4.81";
   const APP_SHARE_URL = "https://dmytrok1994.github.io/-./";
   const BATTERY_FLEET_URL = "https://battery-fleet-ua.dimakych.chatgpt.site";
   const BATTERY_FLEET_ORIGIN = new URL(BATTERY_FLEET_URL).origin;
@@ -15624,6 +15777,7 @@
   const SHIPMENT_PALLET_TYPES_KEY = "warehouseJournalShipmentPalletTypesV1";
   const SHIPMENT_HISTORY_KEY = "warehouseJournalShipmentHistoryV1";
   const SHIPMENT_ENTRY_MODE_KEY = "warehouseJournalShipmentEntryModeV1";
+  const RAW_RECONCILIATION_KEY = "warehouseJournalRawReconciliationV1";
   const SHIFT_SCHEDULE_KEY = "warehouseJournalShiftScheduleV1";
   const SHIFT_CALENDAR_VIEW_KEY = "warehouseJournalShiftCalendarViewV1";
   const DEMO_MODE_KEY = "warehouseJournalDemoMode";
@@ -15686,6 +15840,7 @@
     SHIPMENT_PALLET_TYPES_KEY,
     SHIPMENT_HISTORY_KEY,
     SHIPMENT_ENTRY_MODE_KEY,
+    RAW_RECONCILIATION_KEY,
     SHIFT_SCHEDULE_KEY,
     SHIFT_CALENDAR_VIEW_KEY,
     TRASH_RETENTION_KEY,
@@ -17367,6 +17522,12 @@
   const orderWarehouseGroupOpenState = new Map();
   let workspaceMode = getWorkspaceModePreference();
   let shiftScheduleState = loadShiftScheduleState();
+  let rawCheckState = loadRawCheckState();
+  let rawCheckCurrentView = "walk";
+  let rawCheckInvoiceEditId = "";
+  let rawCheckMapKey = "";
+  let rawCheckGroupEditKey = "";
+  let rawCheckPalletEditId = "";
   let palletCalculatorDialogContext = { type: "", id: "" };
   let shiftCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 12);
   let shiftCalendarView = (() => {
@@ -26720,25 +26881,147 @@
     try { localStorage.setItem(SHIFT_SCHEDULE_KEY, JSON.stringify(shiftScheduleState)); } catch (error) {}
   }
 
+  function loadRawCheckState() {
+    const fallback = { version: 1, invoice: [], pallets: [], mappings: {}, extraDates: [], activeDate: "", activeShift: "1", quickWeights: [900, 730, 260] };
+    try {
+      const parsed = JSON.parse(localStorage.getItem(RAW_RECONCILIATION_KEY) || "null");
+      if (!parsed || typeof parsed !== "object") return fallback;
+      return {
+        version: 1,
+        invoice: Array.isArray(parsed.invoice) ? parsed.invoice : [],
+        pallets: Array.isArray(parsed.pallets) ? parsed.pallets : [],
+        mappings: parsed.mappings && typeof parsed.mappings === "object" ? parsed.mappings : {},
+        extraDates: Array.isArray(parsed.extraDates) ? parsed.extraDates : [],
+        activeDate: /^\d{4}-\d{2}-\d{2}$/.test(parsed.activeDate || "") ? parsed.activeDate : "",
+        activeShift: ["1", "2", "3"].includes(String(parsed.activeShift)) ? String(parsed.activeShift) : "1",
+        quickWeights: Array.isArray(parsed.quickWeights) && parsed.quickWeights.length ? parsed.quickWeights.map(Number).filter(value => value > 0).slice(0, 6) : [900, 730, 260]
+      };
+    } catch (error) { return fallback; }
+  }
+
+  function saveRawCheckState() {
+    try { localStorage.setItem(RAW_RECONCILIATION_KEY, JSON.stringify(rawCheckState)); } catch (error) {}
+  }
+  function rawCheckGroupKey(date, shift) { return `${date}|${shift}`; }
+  function rawCheckDateLabel(date) {
+    const [year, month, day] = String(date || "").split("-");
+    return year && month && day ? `${day}.${month}` : "—";
+  }
+  function rawCheckFullDate(date) {
+    const [year, month, day] = String(date || "").split("-");
+    return year && month && day ? `${day}.${month}.${year}` : "—";
+  }
+  function rawCheckNumber(value) { return new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 2 }).format(Number(value) || 0); }
+  function rawCheckDates() {
+    return Array.from(new Set([...rawCheckState.invoice.map(entry => entry.date), ...rawCheckState.extraDates, ...rawCheckState.pallets.map(entry => entry.date)].filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date)))).sort();
+  }
+  function rawCheckGroup(date, shift) {
+    const pallets = rawCheckState.pallets.filter(entry => entry.date === date && String(entry.shift) === String(shift));
+    return { date, shift: String(shift), pallets, count: pallets.length, fact: pallets.reduce((sum, entry) => sum + (Number(entry.weight) || 0), 0) };
+  }
+  function rawCheckCandidates(date, shift) {
+    return rawCheckState.invoice.filter(entry => entry.date === date && (!entry.shift || String(entry.shift) === String(shift)));
+  }
+  function rawCheckResolvedInvoice(date, shift) {
+    const explicit = rawCheckState.mappings[rawCheckGroupKey(date, shift)];
+    if (explicit === "unlinked") return null;
+    if (explicit) return rawCheckState.invoice.find(entry => entry.id === explicit) || null;
+    const exact = rawCheckState.invoice.filter(entry => entry.date === date && String(entry.shift || "") === String(shift));
+    return exact.length === 1 ? exact[0] : null;
+  }
+  function rawCheckStatus(date, shift) {
+    const group = rawCheckGroup(date, shift);
+    const invoice = rawCheckResolvedInvoice(date, shift);
+    if (!invoice) return { type: "unlinked", icon: "⚠️", text: rawCheckState.invoice.some(entry => entry.date === date) ? "Зміна не прив’язана до партії" : "Немає відповідності в накладній", group, invoice: null };
+    const difference = group.fact - (Number(invoice.plan) || 0);
+    if (Math.abs(difference) < .01) return { type: "ok", icon: "✅", text: "Зійшлося", group, invoice, difference: 0 };
+    if (difference < 0) return { type: "short", icon: "🔴", text: `Не вистачає ${rawCheckNumber(Math.abs(difference))} кг`, group, invoice, difference };
+    return { type: "over", icon: "🟠", text: `Надлишок ${rawCheckNumber(difference)} кг`, group, invoice, difference };
+  }
+  function rawCheckStatusClass(type) { return `raw-check-status-${type}`; }
+  function setRawCheckView(view) {
+    rawCheckCurrentView = ["walk", "invoice", "overview", "summary"].includes(view) ? view : "walk";
+    renderRawCheck();
+  }
+  function renderRawCheck() {
+    if (!document.getElementById("rawCheckContent")) return;
+    document.querySelectorAll("[data-raw-check-view]").forEach(button => button.classList.toggle("active", button.dataset.rawCheckView === rawCheckCurrentView));
+    if (rawCheckCurrentView === "invoice") return renderRawCheckInvoice();
+    if (rawCheckCurrentView === "overview") return renderRawCheckOverview();
+    if (rawCheckCurrentView === "summary") return renderRawCheckSummary();
+    renderRawCheckWalk();
+  }
+
+  function renderRawCheckWalk() {
+    const content = document.getElementById("rawCheckContent");
+    const dates = rawCheckDates();
+    if (!rawCheckState.activeDate && dates.length) rawCheckState.activeDate = dates[0];
+    if (rawCheckState.activeDate && !dates.includes(rawCheckState.activeDate)) rawCheckState.activeDate = dates[0] || "";
+    const activeDate = rawCheckState.activeDate;
+    const activeShift = rawCheckState.activeShift;
+    const group = rawCheckGroup(activeDate, activeShift);
+    const status = activeDate ? rawCheckStatus(activeDate, activeShift) : null;
+    const last = rawCheckState.pallets[rawCheckState.pallets.length - 1];
+    const chips = dates.map(date => {
+      const pallets = rawCheckState.pallets.filter(entry => entry.date === date);
+      const unlinked = ["1", "2", "3"].some(shift => rawCheckGroup(date, shift).count && !rawCheckResolvedInvoice(date, shift));
+      return `<button type="button" class="raw-check-date-chip ${date === activeDate ? "active" : ""} ${unlinked ? "warning" : ""}" data-raw-check-date="${escapeHtml(date)}"><span>${rawCheckDateLabel(date)}</span><small>${pallets.length ? `${pallets.length} підд.` : "ще немає"}${unlinked ? " · ⚠️" : ""}</small></button>`;
+    }).join("");
+    const match = !status ? "" : status.invoice
+      ? `<div class="raw-check-match"><strong>Партія: ${escapeHtml(status.invoice.batch)}</strong><span>План: ${rawCheckNumber(status.invoice.plan)} кг · Факт: ${rawCheckNumber(group.fact)} кг</span><b class="${rawCheckStatusClass(status.type)}">${status.icon} ${escapeHtml(status.text)}</b></div>`
+      : `<div class="raw-check-match"><b class="${rawCheckStatusClass(status.type)}">${status.icon} ${escapeHtml(status.text)}</b>${group.count ? `<button type="button" class="secondary" data-raw-check-map="${escapeHtml(rawCheckGroupKey(activeDate, activeShift))}">Прив’язати до партії</button>` : ""}</div>`;
+    content.innerHTML = `<div class="raw-check-panel">
+      <section class="raw-check-card"><div class="raw-check-date-strip">${chips}<button type="button" class="raw-check-date-chip" data-raw-check-add-date><span>＋ Дата</span><small>додати</small></button></div></section>
+      <section class="raw-check-shifts">${["1", "2", "3"].map(shift => `<button type="button" class="${shift === activeShift ? "active" : ""}" data-raw-check-shift="${shift}">${shift} зміна</button>`).join("")}</section>
+      <section class="raw-check-card raw-check-current"><div class="raw-check-current-selection">${activeDate ? `${rawCheckDateLabel(activeDate)} · ${activeShift} зміна` : "Оберіть дату"}</div><div class="raw-check-current-totals">Піддонів: ${group.count} · Вага: ${rawCheckNumber(group.fact)} кг</div>${match}${group.count ? `<button type="button" class="secondary" data-raw-check-open-group="${escapeHtml(rawCheckGroupKey(activeDate, activeShift))}">Редагувати піддони</button>` : ""}</section>
+      <section class="raw-check-weight-grid">${rawCheckState.quickWeights.map(weight => `<button type="button" data-raw-check-weight="${weight}" ${activeDate ? "" : "disabled"}>${rawCheckNumber(weight)} кг</button>`).join("")}<button type="button" class="secondary" data-raw-check-custom-weight ${activeDate ? "" : "disabled"}>Інша вага</button></section>
+      <section class="raw-check-card raw-check-undo"><button type="button" class="secondary" data-raw-check-undo ${last ? "" : "disabled"}>↶ Скасувати</button><div class="raw-check-last">${last ? `Останнє: ${rawCheckDateLabel(last.date)} · ${last.shift} зміна · ${rawCheckNumber(last.weight)} кг` : "Доданих піддонів ще немає"}</div></section>
+    </div>`;
+    saveRawCheckState();
+  }
+
+  function renderRawCheckInvoice() {
+    const content = document.getElementById("rawCheckContent");
+    const rows = rawCheckState.invoice.map(entry => `<article class="raw-check-row"><div class="raw-check-row-main"><strong>${escapeHtml(entry.batch)}</strong><small>${rawCheckFullDate(entry.date)} · ${entry.shift ? `${entry.shift} зміна` : "зміна не вказана"} · план ${rawCheckNumber(entry.plan)} кг${entry.note ? ` · ${escapeHtml(entry.note)}` : ""}</small></div><div class="raw-check-row-actions"><button type="button" data-raw-check-edit-invoice="${escapeHtml(entry.id)}" aria-label="Редагувати">✎</button><button type="button" data-raw-check-delete-invoice="${escapeHtml(entry.id)}" aria-label="Видалити">⌫</button></div></article>`).join("");
+    content.innerHTML = `<div class="raw-check-panel"><section class="raw-check-card"><div class="raw-check-toolbar"><h3>Дані з накладної</h3><button type="button" data-raw-check-add-invoice>+ Додати позицію</button></div></section><div class="raw-check-list">${rows || `<div class="raw-check-card raw-check-empty">Додайте партії, дати та планову вагу з накладної</div>`}</div><section class="raw-check-card"><h3>Швидкі ваги</h3><label class="shipment-item-dialog-field">Ваги через кому, кг<input id="rawCheckQuickWeights" type="text" inputmode="decimal" value="${escapeHtml(rawCheckState.quickWeights.join(", "))}" /></label><button type="button" data-raw-check-save-weights>Зберегти ваги</button></section></div>`;
+  }
+
+  function renderRawCheckOverview() {
+    const content = document.getElementById("rawCheckContent");
+    const dates = rawCheckDates();
+    content.innerHTML = `<div class="raw-check-panel">${dates.map(date => `<section class="raw-check-card raw-check-overview-date"><h3>${rawCheckFullDate(date)}</h3>${["1", "2", "3"].map(shift => { const status = rawCheckStatus(date, shift); return `<button type="button" class="secondary raw-check-overview-row" data-raw-check-select-group="${escapeHtml(rawCheckGroupKey(date, shift))}"><strong>${shift} зміна — ${status.group.count ? `${rawCheckNumber(status.group.fact)} кг` : "—"}</strong><small class="${rawCheckStatusClass(status.type)}">${status.group.count ? `${status.icon} ${escapeHtml(status.text)}` : "Піддонів немає"}</small></button>`; }).join("")}</section>`).join("") || `<div class="raw-check-card raw-check-empty">Дат ще немає</div>`}</div>`;
+  }
+
+  function renderRawCheckSummary() {
+    const content = document.getElementById("rawCheckContent");
+    const groups = rawCheckDates().flatMap(date => ["1", "2", "3"].map(shift => rawCheckStatus(date, shift))).filter(status => status.group.count);
+    const totalFact = rawCheckState.pallets.reduce((sum, entry) => sum + (Number(entry.weight) || 0), 0);
+    const totalPlan = rawCheckState.invoice.reduce((sum, entry) => sum + (Number(entry.plan) || 0), 0);
+    const matched = groups.filter(status => status.type === "ok").length;
+    const unlinked = groups.filter(status => !status.invoice);
+    const attention = groups.filter(status => status.type !== "ok");
+    content.innerHTML = `<div class="raw-check-panel"><section class="raw-check-card raw-check-summary-grid"><article><small>Піддонів</small><strong>${rawCheckState.pallets.length}</strong></article><article><small>Фактична вага</small><strong>${rawCheckNumber(totalFact)} кг</strong></article><article><small>Планова вага</small><strong>${rawCheckNumber(totalPlan)} кг</strong></article><article><small>Загальна різниця</small><strong>${rawCheckNumber(totalFact - totalPlan)} кг</strong></article><article><small>Зійшлося</small><strong>${matched}</strong></article><article><small>Не прив’язано</small><strong>${unlinked.length}</strong></article></section><section class="raw-check-card"><h3>Потребують уваги</h3><div class="raw-check-list">${attention.map(status => `<button type="button" class="secondary raw-check-overview-row" data-raw-check-open-group="${escapeHtml(rawCheckGroupKey(status.group.date, status.group.shift))}"><strong>${rawCheckDateLabel(status.group.date)} · ${status.group.shift} зміна · ${rawCheckNumber(status.group.fact)} кг</strong><small class="${rawCheckStatusClass(status.type)}">${status.icon} ${escapeHtml(status.text)}</small></button>`).join("") || `<div class="raw-check-empty">Усі введені групи зійшлися</div>`}</div></section>${unlinked.length ? `<section class="raw-check-card"><h3>Потребують прив’язки</h3><div class="raw-check-list">${unlinked.map(status => `<button type="button" data-raw-check-map="${escapeHtml(rawCheckGroupKey(status.group.date, status.group.shift))}">${rawCheckDateLabel(status.group.date)} · ${status.group.shift} зміна · ${rawCheckNumber(status.group.fact)} кг</button>`).join("")}</div></section>` : ""}</div>`;
+  }
+
   function getAdditionalLastTool() {
     try {
       const saved = localStorage.getItem(ADDITIONAL_LAST_TOOL_KEY);
-      return ["shifts", "palletCalculator", "shipmentCard", "bmsBattery"].includes(saved) ? saved : "desktop";
+      return ["shifts", "palletCalculator", "shipmentCard", "rawCheck", "bmsBattery"].includes(saved) ? saved : "desktop";
     } catch (error) {
       return "desktop";
     }
   }
 
   function setAdditionalLastTool(tool) {
-    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator", "shipmentCard", "bmsBattery"].includes(tool) ? tool : "desktop"); } catch (error) {}
+    try { localStorage.setItem(ADDITIONAL_LAST_TOOL_KEY, ["shifts", "palletCalculator", "shipmentCard", "rawCheck", "bmsBattery"].includes(tool) ? tool : "desktop"); } catch (error) {}
   }
 
   function loadAdditionalDesktopLayout() {
     try {
       const parsed = JSON.parse(localStorage.getItem(ADDITIONAL_DESKTOP_LAYOUT_KEY) || "null");
-      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, bmsBattery: { column: 0, row: 1 } };
+      return parsed && typeof parsed === "object" ? parsed : { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, rawCheck: { column: 0, row: 1 }, bmsBattery: { column: 1, row: 1 } };
     } catch (error) {
-      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, bmsBattery: { column: 0, row: 1 } };
+      return { shifts: { column: 0, row: 0 }, palletCalculator: { column: 1, row: 0 }, shipmentCard: { column: 2, row: 0 }, rawCheck: { column: 0, row: 1 }, bmsBattery: { column: 1, row: 1 } };
     }
   }
 
@@ -26833,6 +27116,7 @@
         if (tile.dataset.additionalTool === "shifts") openShiftSchedule();
         if (tile.dataset.additionalTool === "palletCalculator") openPalletCalculator();
         if (tile.dataset.additionalTool === "shipmentCard") openShipmentCard();
+        if (tile.dataset.additionalTool === "rawCheck") openRawCheck();
         if (tile.dataset.additionalTool === "bmsBattery") openBatteryFleet();
       });
     });
@@ -26845,6 +27129,7 @@
     document.getElementById("shiftScheduleView")?.classList.toggle("hidden", lastTool !== "shifts");
     document.getElementById("palletCalculatorView")?.classList.toggle("hidden", lastTool !== "palletCalculator");
     document.getElementById("shipmentCardView")?.classList.toggle("hidden", lastTool !== "shipmentCard");
+    document.getElementById("rawCheckView")?.classList.toggle("hidden", lastTool !== "rawCheck");
     document.getElementById("bmsBatteryView")?.classList.toggle("hidden", lastTool !== "bmsBattery");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
@@ -26853,6 +27138,7 @@
     else if (lastTool === "shifts") renderShiftSchedule();
     else if (lastTool === "palletCalculator") preparePalletCalculator();
     else if (lastTool === "shipmentCard") prepareShipmentCard();
+    else if (lastTool === "rawCheck") renderRawCheck();
     else prepareBatteryFleet();
     updateAdditionalHeaderUI();
   }
@@ -26894,7 +27180,7 @@
       ? "Налаштування"
       : (activeTool === "shifts"
         ? "Графік змін"
-        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : activeTool === "bmsBattery" ? "Battery Fleet" : "Додатково"));
+        : (activeTool === "palletCalculator" ? "Перехідний піддон" : activeTool === "shipmentCard" ? "Відвантаження" : activeTool === "rawCheck" ? "Звірка сировини" : activeTool === "bmsBattery" ? "Battery Fleet" : "Додатково"));
     document.body.classList.toggle("additional-tool-open", toolOpen);
     document.body.classList.toggle("additional-settings-screen", settingsScreenOpen);
     document.body.classList.toggle("additional-shift-tool-active", activeTool === "shifts");
@@ -26964,6 +27250,10 @@
       openAdditionalDesktop();
       return true;
     }
+    if (getAdditionalLastTool() === "rawCheck") {
+      openAdditionalDesktop();
+      return true;
+    }
     if (getAdditionalLastTool() === "bmsBattery") {
       openAdditionalDesktop();
       return true;
@@ -26979,6 +27269,7 @@
     document.getElementById("shiftScheduleView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.add("hidden");
     document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
@@ -26997,6 +27288,7 @@
     document.getElementById("additionalDesktopView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.add("hidden");
     document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("shiftSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
@@ -27017,6 +27309,7 @@
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.add("hidden");
     document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.remove("hidden");
     preparePalletCalculator();
@@ -27032,6 +27325,7 @@
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("palletCalculatorView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.add("hidden");
     document.getElementById("bmsBatteryView")?.classList.add("hidden");
     document.getElementById("palletCalculatorSettingsView")?.classList.remove("hidden");
     renderPalletCalculatorSettings();
@@ -27083,6 +27377,7 @@
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.add("hidden");
     document.getElementById("bmsBatteryView")?.classList.remove("hidden");
     prepareBatteryFleet();
     updateAdditionalHeaderUI();
@@ -27100,11 +27395,226 @@
     document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
     document.getElementById("additionalSettingsView")?.classList.add("hidden");
     document.getElementById("bmsBatteryView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.add("hidden");
     document.getElementById("shipmentCardView")?.classList.remove("hidden");
     prepareShipmentCard();
     renderShipmentHistory();
     if (shipmentCardDraft.activeDate !== todayISO()) void startNewShipmentDay({ automatic: true });
     updateAdditionalHeaderUI();
+  }
+
+  function openRawCheck() {
+    setAdditionalLastTool("rawCheck");
+    closeShiftEditor();
+    closeShiftStats();
+    closePalletCalculatorDialog();
+    document.getElementById("additionalDesktopView")?.classList.add("hidden");
+    document.getElementById("shiftScheduleView")?.classList.add("hidden");
+    document.getElementById("shiftSettingsView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorView")?.classList.add("hidden");
+    document.getElementById("palletCalculatorSettingsView")?.classList.add("hidden");
+    document.getElementById("additionalSettingsView")?.classList.add("hidden");
+    document.getElementById("shipmentCardView")?.classList.add("hidden");
+    document.getElementById("bmsBatteryView")?.classList.add("hidden");
+    document.getElementById("rawCheckView")?.classList.remove("hidden");
+    renderRawCheck();
+    updateAdditionalHeaderUI();
+  }
+
+  function openRawCheckInvoiceDialog(id = "") {
+    const entry = rawCheckState.invoice.find(item => item.id === id);
+    rawCheckInvoiceEditId = entry?.id || "";
+    document.getElementById("rawCheckInvoiceTitle").textContent = entry ? "Редагувати позицію накладної" : "Нова позиція накладної";
+    document.getElementById("rawCheckInvoiceBatch").value = entry?.batch || "";
+    document.getElementById("rawCheckInvoiceDate").value = entry?.date || rawCheckState.activeDate || todayISO();
+    document.getElementById("rawCheckInvoiceShift").value = entry?.shift || "";
+    document.getElementById("rawCheckInvoicePlan").value = entry?.plan || "";
+    document.getElementById("rawCheckInvoiceNote").value = entry?.note || "";
+    document.getElementById("rawCheckInvoiceOverlay")?.classList.remove("hidden");
+    requestAnimationFrame(() => document.getElementById("rawCheckInvoiceBatch")?.focus());
+  }
+  function closeRawCheckInvoiceDialog() {
+    rawCheckInvoiceEditId = "";
+    document.getElementById("rawCheckInvoiceOverlay")?.classList.add("hidden");
+  }
+  function saveRawCheckInvoiceEntry() {
+    const batch = String(document.getElementById("rawCheckInvoiceBatch")?.value || "").trim().slice(0, 80);
+    const date = String(document.getElementById("rawCheckInvoiceDate")?.value || "");
+    const shift = String(document.getElementById("rawCheckInvoiceShift")?.value || "");
+    const plan = Math.max(0, Number(document.getElementById("rawCheckInvoicePlan")?.value) || 0);
+    const note = String(document.getElementById("rawCheckInvoiceNote")?.value || "").trim().slice(0, 300);
+    if (!batch) return toast("Вкажи партію", true);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast("Вкажи дату", true);
+    if (!plan) return toast("Вкажи планову вагу", true);
+    const current = rawCheckState.invoice.find(entry => entry.id === rawCheckInvoiceEditId);
+    if (current) Object.assign(current, { batch, date, shift, plan, note });
+    else rawCheckState.invoice.push({ id: `raw-invoice-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, batch, date, shift, plan, note });
+    if (!rawCheckState.activeDate) rawCheckState.activeDate = date;
+    saveRawCheckState();
+    closeRawCheckInvoiceDialog();
+    renderRawCheck();
+  }
+  async function deleteRawCheckInvoiceEntry(id) {
+    const entry = rawCheckState.invoice.find(item => item.id === id);
+    if (!entry) return;
+    const confirmed = await showAppDialog({ label: "Звірка сировини", title: "Видалити позицію?", message: `Партію «${entry.batch}» буде видалено з накладної. Введені піддони залишаться.`, confirmText: "Видалити", cancelText: "Скасувати" });
+    if (!confirmed) return;
+    rawCheckState.invoice = rawCheckState.invoice.filter(item => item.id !== id);
+    Object.keys(rawCheckState.mappings).forEach(key => { if (rawCheckState.mappings[key] === id) delete rawCheckState.mappings[key]; });
+    saveRawCheckState();
+    renderRawCheck();
+  }
+
+  function openRawCheckDateDialog() {
+    document.getElementById("rawCheckExtraDate").value = rawCheckState.activeDate || todayISO();
+    document.getElementById("rawCheckDateOverlay")?.classList.remove("hidden");
+  }
+  function closeRawCheckDateDialog() { document.getElementById("rawCheckDateOverlay")?.classList.add("hidden"); }
+  function saveRawCheckExtraDate() {
+    const date = String(document.getElementById("rawCheckExtraDate")?.value || "");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast("Оберіть дату", true);
+    if (!rawCheckDates().includes(date)) rawCheckState.extraDates.push(date);
+    rawCheckState.activeDate = date;
+    saveRawCheckState();
+    closeRawCheckDateDialog();
+    setRawCheckView("walk");
+  }
+
+  function addRawCheckPallet(weight) {
+    const value = Number(weight);
+    if (!rawCheckState.activeDate) return toast("Спочатку оберіть дату", true);
+    if (!value || value <= 0) return toast("Вкажи вагу", true);
+    const date = rawCheckState.activeDate;
+    const shift = rawCheckState.activeShift;
+    rawCheckState.pallets.push({ id: `raw-pallet-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, date, shift, weight: value, createdAt: new Date().toISOString() });
+    saveRawCheckState();
+    renderRawCheck();
+    if (!rawCheckResolvedInvoice(date, shift) && rawCheckCandidates(date, shift).length && rawCheckState.mappings[rawCheckGroupKey(date, shift)] !== "unlinked") openRawCheckMapDialog(rawCheckGroupKey(date, shift));
+  }
+  function openRawCheckWeightDialog() {
+    document.getElementById("rawCheckCustomWeight").value = "";
+    document.getElementById("rawCheckWeightOverlay")?.classList.remove("hidden");
+    requestAnimationFrame(() => document.getElementById("rawCheckCustomWeight")?.focus());
+  }
+  function closeRawCheckWeightDialog() { document.getElementById("rawCheckWeightOverlay")?.classList.add("hidden"); }
+  function saveRawCheckCustomWeight() {
+    const weight = Number(document.getElementById("rawCheckCustomWeight")?.value);
+    if (!weight || weight <= 0) return toast("Вкажи вагу", true);
+    closeRawCheckWeightDialog();
+    addRawCheckPallet(weight);
+  }
+  function undoRawCheckPallet() {
+    const last = rawCheckState.pallets.pop();
+    if (!last) return;
+    saveRawCheckState();
+    renderRawCheck();
+    toast(`Скасовано ${rawCheckNumber(last.weight)} кг`);
+  }
+
+  function openRawCheckMapDialog(key) {
+    const [date, shift] = String(key || "").split("|");
+    if (!date || !shift) return;
+    rawCheckMapKey = key;
+    document.getElementById("rawCheckMapTitle").textContent = `${rawCheckDateLabel(date)} · ${shift} зміна`;
+    const candidates = rawCheckState.invoice.filter(entry => entry.date === date);
+    document.getElementById("rawCheckMapOptions").innerHTML = candidates.length
+      ? `<p class="small">Оберіть партію:</p>${candidates.map(entry => `<button type="button" data-raw-check-map-invoice="${escapeHtml(entry.id)}"><strong>${escapeHtml(entry.batch)}</strong><small>${entry.shift ? `${entry.shift} зміна · ` : "зміна не вказана · "}план ${rawCheckNumber(entry.plan)} кг</small></button>`).join("")}`
+      : `<div class="raw-check-empty">На цю дату немає партій у накладній. Дані піддонів залишаться збереженими.</div>`;
+    document.getElementById("rawCheckMapOverlay")?.classList.remove("hidden");
+  }
+  function closeRawCheckMapDialog() {
+    rawCheckMapKey = "";
+    document.getElementById("rawCheckMapOverlay")?.classList.add("hidden");
+  }
+  function chooseRawCheckMapping(invoiceId) {
+    if (!rawCheckMapKey || !rawCheckState.invoice.some(entry => entry.id === invoiceId)) return;
+    rawCheckState.mappings[rawCheckMapKey] = invoiceId;
+    saveRawCheckState();
+    closeRawCheckMapDialog();
+    renderRawCheck();
+    if (rawCheckGroupEditKey) openRawCheckGroupDialog(rawCheckGroupEditKey);
+  }
+  function leaveRawCheckUnlinked() {
+    if (rawCheckMapKey) rawCheckState.mappings[rawCheckMapKey] = "unlinked";
+    saveRawCheckState();
+    closeRawCheckMapDialog();
+    renderRawCheck();
+  }
+
+  function openRawCheckGroupDialog(key) {
+    const [date, shift] = String(key || "").split("|");
+    if (!date || !shift) return;
+    rawCheckGroupEditKey = key;
+    const status = rawCheckStatus(date, shift);
+    document.getElementById("rawCheckGroupTitle").textContent = `${rawCheckDateLabel(date)} · ${shift} зміна · ${rawCheckNumber(status.group.fact)} кг`;
+    document.getElementById("rawCheckPalletList").innerHTML = status.group.pallets.length
+      ? status.group.pallets.map((entry, index) => `<article class="raw-check-pallet-row"><div><strong>${index + 1}. ${rawCheckNumber(entry.weight)} кг</strong><small>${rawCheckFullDate(entry.date)} · ${entry.shift} зміна</small></div><button type="button" data-raw-check-edit-pallet="${escapeHtml(entry.id)}" aria-label="Редагувати">✎</button></article>`).join("")
+      : `<div class="raw-check-empty">У цій групі ще немає піддонів</div>`;
+    const mapButton = document.getElementById("mapRawCheckGroupBtn");
+    if (mapButton) mapButton.textContent = status.invoice ? `Партія: ${status.invoice.batch}` : "Прив’язати до партії";
+    document.getElementById("rawCheckGroupOverlay")?.classList.remove("hidden");
+  }
+  function closeRawCheckGroupDialog() {
+    rawCheckGroupEditKey = "";
+    document.getElementById("rawCheckGroupOverlay")?.classList.add("hidden");
+  }
+  function selectRawCheckGroup(key) {
+    const [date, shift] = String(key || "").split("|");
+    if (!date || !shift) return;
+    rawCheckState.activeDate = date;
+    rawCheckState.activeShift = shift;
+    saveRawCheckState();
+    setRawCheckView("walk");
+  }
+  function openRawCheckPalletDialog(id) {
+    const entry = rawCheckState.pallets.find(item => item.id === id);
+    if (!entry) return;
+    rawCheckPalletEditId = id;
+    document.getElementById("rawCheckPalletWeight").value = entry.weight;
+    document.getElementById("rawCheckPalletDate").value = entry.date;
+    document.getElementById("rawCheckPalletShift").value = entry.shift;
+    document.getElementById("rawCheckGroupOverlay")?.classList.add("hidden");
+    document.getElementById("rawCheckPalletOverlay")?.classList.remove("hidden");
+  }
+  function closeRawCheckPalletDialog() {
+    rawCheckPalletEditId = "";
+    document.getElementById("rawCheckPalletOverlay")?.classList.add("hidden");
+    if (rawCheckGroupEditKey) openRawCheckGroupDialog(rawCheckGroupEditKey);
+  }
+  function saveRawCheckPalletEdit() {
+    const entry = rawCheckState.pallets.find(item => item.id === rawCheckPalletEditId);
+    if (!entry) return;
+    const weight = Number(document.getElementById("rawCheckPalletWeight")?.value);
+    const date = String(document.getElementById("rawCheckPalletDate")?.value || "");
+    const shift = String(document.getElementById("rawCheckPalletShift")?.value || "1");
+    if (!weight || weight <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast("Перевір вагу та дату", true);
+    Object.assign(entry, { weight, date, shift });
+    if (!rawCheckDates().includes(date)) rawCheckState.extraDates.push(date);
+    rawCheckState.activeDate = date;
+    rawCheckState.activeShift = shift;
+    rawCheckGroupEditKey = rawCheckGroupKey(date, shift);
+    saveRawCheckState();
+    closeRawCheckPalletDialog();
+    renderRawCheck();
+  }
+  async function deleteRawCheckPalletEdit() {
+    const entry = rawCheckState.pallets.find(item => item.id === rawCheckPalletEditId);
+    if (!entry) return;
+    const confirmed = await showAppDialog({ label: "Звірка сировини", title: "Видалити піддон?", message: `${rawCheckNumber(entry.weight)} кг буде видалено з підрахунку.`, confirmText: "Видалити", cancelText: "Скасувати" });
+    if (!confirmed) return;
+    rawCheckState.pallets = rawCheckState.pallets.filter(item => item.id !== entry.id);
+    saveRawCheckState();
+    closeRawCheckPalletDialog();
+    renderRawCheck();
+  }
+
+  function saveRawCheckQuickWeights() {
+    const values = String(document.getElementById("rawCheckQuickWeights")?.value || "").split(/[,;\s]+/).map(value => Number(value.replace(",", "."))).filter(value => value > 0).slice(0, 6);
+    if (!values.length) return toast("Вкажи хоча б одну вагу", true);
+    rawCheckState.quickWeights = values;
+    saveRawCheckState();
+    renderRawCheck();
+    toast("Швидкі ваги збережено");
   }
 
   function loadShipmentCardDraft() {
@@ -29605,6 +30115,58 @@
   window.addEventListener("message", handleBatteryFleetStorageMessage);
   document.getElementById("additionalToolSettingsBtn").addEventListener("click", openCurrentAdditionalToolSettings);
   document.getElementById("additionalToolHomeBtn").addEventListener("click", openAdditionalDesktop);
+  document.getElementById("rawCheckView").addEventListener("click", event => {
+    const view = event.target.closest("[data-raw-check-view]");
+    if (view) return setRawCheckView(view.dataset.rawCheckView);
+    const date = event.target.closest("[data-raw-check-date]");
+    if (date) { rawCheckState.activeDate = date.dataset.rawCheckDate; saveRawCheckState(); return renderRawCheck(); }
+    const shift = event.target.closest("[data-raw-check-shift]");
+    if (shift) { rawCheckState.activeShift = shift.dataset.rawCheckShift; saveRawCheckState(); return renderRawCheck(); }
+    const weight = event.target.closest("[data-raw-check-weight]");
+    if (weight) return addRawCheckPallet(weight.dataset.rawCheckWeight);
+    if (event.target.closest("[data-raw-check-custom-weight]")) return openRawCheckWeightDialog();
+    if (event.target.closest("[data-raw-check-add-date]")) return openRawCheckDateDialog();
+    if (event.target.closest("[data-raw-check-undo]")) return undoRawCheckPallet();
+    if (event.target.closest("[data-raw-check-add-invoice]")) return openRawCheckInvoiceDialog();
+    const editInvoice = event.target.closest("[data-raw-check-edit-invoice]");
+    if (editInvoice) return openRawCheckInvoiceDialog(editInvoice.dataset.rawCheckEditInvoice);
+    const deleteInvoice = event.target.closest("[data-raw-check-delete-invoice]");
+    if (deleteInvoice) return deleteRawCheckInvoiceEntry(deleteInvoice.dataset.rawCheckDeleteInvoice);
+    if (event.target.closest("[data-raw-check-save-weights]")) return saveRawCheckQuickWeights();
+    const selectGroup = event.target.closest("[data-raw-check-select-group]");
+    if (selectGroup) return selectRawCheckGroup(selectGroup.dataset.rawCheckSelectGroup);
+    const openGroup = event.target.closest("[data-raw-check-open-group]");
+    if (openGroup) return openRawCheckGroupDialog(openGroup.dataset.rawCheckOpenGroup);
+    const map = event.target.closest("[data-raw-check-map]");
+    if (map) return openRawCheckMapDialog(map.dataset.rawCheckMap);
+    const mapInvoice = event.target.closest("[data-raw-check-map-invoice]");
+    if (mapInvoice) return chooseRawCheckMapping(mapInvoice.dataset.rawCheckMapInvoice);
+    const editPallet = event.target.closest("[data-raw-check-edit-pallet]");
+    if (editPallet) return openRawCheckPalletDialog(editPallet.dataset.rawCheckEditPallet);
+  });
+  document.getElementById("saveRawCheckInvoiceBtn").addEventListener("click", saveRawCheckInvoiceEntry);
+  ["closeRawCheckInvoiceBtn", "cancelRawCheckInvoiceBtn"].forEach(id => document.getElementById(id).addEventListener("click", closeRawCheckInvoiceDialog));
+  document.getElementById("saveRawCheckDateBtn").addEventListener("click", saveRawCheckExtraDate);
+  ["closeRawCheckDateBtn", "cancelRawCheckDateBtn"].forEach(id => document.getElementById(id).addEventListener("click", closeRawCheckDateDialog));
+  document.getElementById("saveRawCheckWeightBtn").addEventListener("click", saveRawCheckCustomWeight);
+  ["closeRawCheckWeightBtn", "cancelRawCheckWeightBtn"].forEach(id => document.getElementById(id).addEventListener("click", closeRawCheckWeightDialog));
+  document.getElementById("rawCheckCustomWeight").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); saveRawCheckCustomWeight(); } });
+  ["closeRawCheckMapBtn", "cancelRawCheckMapBtn"].forEach(id => document.getElementById(id).addEventListener("click", closeRawCheckMapDialog));
+  document.getElementById("leaveRawCheckUnlinkedBtn").addEventListener("click", leaveRawCheckUnlinked);
+  ["closeRawCheckGroupBtn", "cancelRawCheckGroupBtn"].forEach(id => document.getElementById(id).addEventListener("click", closeRawCheckGroupDialog));
+  document.getElementById("mapRawCheckGroupBtn").addEventListener("click", () => { const key = rawCheckGroupEditKey; document.getElementById("rawCheckGroupOverlay")?.classList.add("hidden"); openRawCheckMapDialog(key); });
+  document.getElementById("saveRawCheckPalletBtn").addEventListener("click", saveRawCheckPalletEdit);
+  document.getElementById("deleteRawCheckPalletBtn").addEventListener("click", deleteRawCheckPalletEdit);
+  document.getElementById("closeRawCheckPalletBtn").addEventListener("click", closeRawCheckPalletDialog);
+  ["rawCheckInvoiceOverlay", "rawCheckDateOverlay", "rawCheckWeightOverlay", "rawCheckMapOverlay", "rawCheckGroupOverlay", "rawCheckPalletOverlay"].forEach(id => document.getElementById(id).addEventListener("click", event => {
+    if (event.target !== event.currentTarget) return;
+    if (id === "rawCheckInvoiceOverlay") closeRawCheckInvoiceDialog();
+    if (id === "rawCheckDateOverlay") closeRawCheckDateDialog();
+    if (id === "rawCheckWeightOverlay") closeRawCheckWeightDialog();
+    if (id === "rawCheckMapOverlay") closeRawCheckMapDialog();
+    if (id === "rawCheckGroupOverlay") closeRawCheckGroupDialog();
+    if (id === "rawCheckPalletOverlay") closeRawCheckPalletDialog();
+  }));
   document.getElementById("addPalletCalculatorFormatBtn").addEventListener("click", () => openPalletCalculatorDialog("format-settings"));
   document.getElementById("closePalletCalculatorDialogBtn").addEventListener("click", closePalletCalculatorDialog);
   document.getElementById("palletCalculatorDialogTitle").addEventListener("click", togglePalletCalculatorDialogTitle);
